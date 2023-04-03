@@ -69,8 +69,8 @@
 
 (use-package tsx-ts-mode
   :straight (:type built-in)
-  :mode ("\\.tsx\\'" . tsx-ts-mode)
   :mode ("\\.tsx\\'" . web-mode)
+  :mode ("\\.tsx\\'" . tsx-ts-mode)
   :hook (tsx-ts-mode . +javascript-add-npm-path-h)
   :hook (tsx-ts-mode . apheleia-mode)
   ;:hook (tsx-ts-mode . tsx-ts-helper-mode)

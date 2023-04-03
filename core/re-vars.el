@@ -166,7 +166,7 @@ RivenEmacs hooks will be run in this order:
 (let ((mono-font (cond (os/linux "Ligalex Mono")
                        (os/win "Lucida Console")
                        (os/mac "monospace")))
-      (varp-font (cond (os/linux "sans")
+      (varp-font (cond (os/linux "Noto Sans Mono CJK SC")
                        (os/win "Tahoma")
                        (os/mac "monospace")))
       (unicode-font (cond (os/linux "Noto Sans Mono CJK SC")
