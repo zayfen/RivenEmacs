@@ -163,16 +163,19 @@ RivenEmacs hooks will be run in this order:
   :type 'hook)
 
 ;; Setup default fonts (depending on the OS)
-(let ((mono-font (cond (os/linux "monospace")
+(let ((mono-font (cond (os/linux "Ligalex Mono")
                        (os/win "Lucida Console")
                        (os/mac "monospace")))
-      (varp-font (cond (os/linux "monospace")
+      (varp-font (cond (os/linux "sans")
                        (os/win "Tahoma")
-                       (os/mac "monospace"))))
+                       (os/mac "monospace")))
+      (unicode-font (cond (os/linux "Noto Sans Mono CJK SC")
+                          (os/win "sans")
+                          (os/mac "sans"))))
   (defconst rivenemacs-default-fonts
     `(:font-family ,mono-font
       :font-size 13
-      :unicode-font-family nil
+      :unicode-font-family ,unicode-font
       :variable-pitch-font-family ,varp-font
       :variable-pitch-font-size 13)
     "Default fonts of RivenEmacs."))

@@ -134,7 +134,6 @@ Useful for keeping track of the enabled theme."
   (dashboard-items '((recents . 5) (projects . 5) (bookmarks . 5)))
   (dashboard-image-banner-max-width 600)
   (dashboard-projects-backend 'project-el)
-  (dashboard-startup-banner (concat rivenemacs-assets-dir "images/rivenemacs.png"))
   :config
   ;; Ensure setting the keybindings before openning the dashboard
   ;; (evil-collection-dashboard-setup)
