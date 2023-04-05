@@ -10,19 +10,20 @@
   :straight (:type built-in)
   :init
   (+map! "tf" #'flymake-mode)
+  :hook (python-ts-mode . flymake-mode)
   :custom
   (flymake-fringe-indicator-position 'right-fringe)
   (flymake-error-bitmap '(+flymake-bitmap-left-arrow-hi-res compilation-error))
   (flymake-warning-bitmap '(+flymake-bitmap-left-arrow-hi-res compilation-warning))
   (flymake-note-bitmap '(+flymake-bitmap-left-arrow-hi-res compilation-info))
   :config
-  (+map-local! :keymaps 'flymake-mode-map
-    "f"  '(nil :wk "flymake")
-    "fn" #'flymake-goto-next-error
-    "fN" #'flymake-goto-prev-error
-    "fs" #'flymake-start
-    "fb" #'flymake-show-buffer-diagnostics
-    "fp" #'flymake-show-project-diagnostics)
+  (+map! :keymaps 'flymake-mode-map
+    "!"  '(nil :wk "flymake")
+    "!n" #'flymake-goto-next-error
+    "!p" #'flymake-goto-prev-error
+    "!s" #'flymake-start
+    "!d" #'flymake-show-buffer-diagnostics
+    "!D" #'flymake-show-project-diagnostics)
 
   ;; Use the session's load-path with flymake
   (setq elisp-flymake-byte-compile-load-path load-path)

@@ -39,6 +39,13 @@
   (yas-global-mode 1))
 
 
+(use-package yasnippet-snippets
+  :straight t
+  :ensure t
+  :after (yasnippet))
+
+
+
 (use-package markdown-mode
   :ensure t
   :straight t)
@@ -50,6 +57,7 @@
 
 
 (use-package lsp-bridge
+  :ensure t
   :straight (:host github
                    :repo "zayfen/lsp-bridge"
                    :files ("*" (:exclude ".git")))
@@ -114,11 +122,6 @@
       (lsp-bridge-find-def-return))
      (t
       (require 'dumb-jump)
-      (dumb-jump-back))))
-
-  (global-set-key (kbd "M-.") 'lsp-bridge-jump)
-  (global-set-key (kbd "M-,") 'lsp-bridge-jump-back))
-
-
+      (dumb-jump-back)))))
 
 (provide 're-lsp-bridge)

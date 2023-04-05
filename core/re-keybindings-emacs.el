@@ -204,7 +204,7 @@
 (use-package hydra
   :straight t)
 
-
+;; Global keybindings
 
 
 (provide 're-emacs-keybindings)

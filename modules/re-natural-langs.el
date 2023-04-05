@@ -78,18 +78,16 @@
   :init
   (+map-local! :keymaps '(org-mode-map text-mode-map markdown-mode-map
                           tex-mode-map TeX-mode-map latex-mode-map LaTeX-mode-map)
-    "t" '(nil :wk "translate")
-    "tb" `(,(+cmdfy! (+gts-translate-with 'bing)) :wk "Translate with Bing")
-    "td" `(,(+cmdfy! (+gts-translate-with 'deepl)) :wk "Translate with DeepL")
-    "tg" `(,(+cmdfy! (+gts-translate-with)) :wk "Translate with Google")
-    "tr" #'+gts-yank-translated-region
-    "tt" #'gts-do-translate)
+    "T" '(nil :wk "Translate")
+    "Tb" `(,(+cmdfy! (+gts-translate-with 'bing)) :wk "Translate with Bing")
+    "Td" `(,(+cmdfy! (+gts-translate-with 'deepl)) :wk "Translate with DeepL")
+    "Tg" `(,(+cmdfy! (+gts-translate-with)) :wk "Translate with Google")
+    "Tr" #'+gts-yank-translated-region
+    "Tt" #'gts-do-translate)
   :custom
   ;; Your languages pairs
-  (gts-translate-list '(("en" "fr")
-                        ("en" "ar")
-                        ("fr" "ar")
-                        ("fr" "en")))
+  (gts-translate-list '(("en" "zh")
+                        ("zh" "en")))
   :config
   ;; Config the default translator, which will be used by the command `gts-do-translate'
   (setq gts-default-translator

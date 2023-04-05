@@ -36,115 +36,6 @@
   (hide-ifdef-shadow t)
   (hide-ifdef-initially t))
 
-(use-package eglot
-  :straight `(:type ,(if (< emacs-major-version 29) 'git 'built-in))
-  :commands +eglot-auto-enable
-  :hook (eglot-managed-mode . eglot-inlay-hints-mode)
-  :custom
-  (eglot-autoshutdown t) ; shutdown after closing the last managed buffer
-  (eglot-sync-connect 0) ; async, do not block
-  (eglot-extend-to-xref t) ; can be interesting!
-  (eglot-report-progress nil) ; disable annoying messages in echo area!
-  :init
-  ;; Register global keybinding
-  ;; (+map! :infix "c"
-  ;;   "e"  '(nil :wk "eglot session")
-  ;;   "ee" #'eglot
-  ;;   "eA" #'+eglot-auto-enable)
-  (defcustom +eglot-auto-enable-modes
-    '(c++-mode c++-ts-mode c-mode c-ts-mode
-      python-mode python-ts-mode
-      rust-mode cmake-mode
-      js-mode js-ts-mode typescript-mode typescript-ts-mode
-      json-mode json-ts-mode js-json-mode)
-    "Modes for which Eglot can be automatically enabled by `+eglot-auto-enable'."
-    :group 'rivenemacs-prog
-    :type '(repeat symbol))
-  :config
-  (defun +eglot-auto-enable ()
-    "Auto-enable Eglot in configured modes in `+eglot-auto-enable-modes'."
-    (interactive)
-    (dolist (mode +eglot-auto-enable-modes)
-      (let ((hook (intern (format "%s-hook" mode))))
-        (add-hook hook #'eglot-ensure)
-        (remove-hook hook #'lsp-deferred))))
-
-  (+map! :keymaps 'eglot-mode-map
-    :infix "c"
-    "fF" #'eglot-format-buffer
-    "d"  '(eglot-find-declaration :wk "Find declaration")
-    "i"  '(eglot-find-implementation :wk "Find implementation")
-    "t"  '(eglot-find-typeDefinition :wk "Find type definition")
-    "a"  '(eglot-code-actions :wk "Code actions")
-    "r"  '(nil :wk "refactor")
-    "rr" '(eglot-rename :wk "Rename")
-    "rR" '(eglot-code-action-rewrite :wk "Rewrite")
-    "rf" '(eglot-code-action-quickfix :wk "Quick fix")
-    "ri" '(eglot-code-action-inline :wk "Inline")
-    "re" '(eglot-code-action-extract :wk "Extract")
-    "ro" '(eglot-code-action-organize-imports :wk "Organize imports")
-    "eq" '(eglot-shutdown :wk "Shutdown")
-    "er" '(eglot-reconnect :wk "Reconnect")
-    "eQ" '(eglot-shutdown-all :wk "Shutdown all")
-    "w"  '(eglot-show-workspace-configuration :wk "Eglot workspace config"))
-
-  (+eglot-register
-    '(c++-mode c++-ts-mode c-mode c-ts-mode)
-    '("clangd"
-      "--background-index"
-      "-j=12"
-      "--query-driver=/usr/bin/**/clang-*,/bin/clang,/bin/clang++,/usr/bin/gcc,/usr/bin/g++"
-      "--clang-tidy"
-      ;; "--clang-tidy-checks=*"
-      "--all-scopes-completion"
-      "--cross-file-rename"
-      "--completion-style=detailed"
-      "--header-insertion-decorators"
-      "--header-insertion=iwyu"
-      "--pch-storage=memory")
-    "ccls")
-
-  ;; From: github.com/MaskRay/ccls/wiki/eglot#misc
-  (defun +eglot-ccls-inheritance-hierarchy (&optional derived)
-    "Show inheritance hierarchy for the thing at point.
-If DERIVED is non-nil (interactively, with prefix argument), show
-the children of class at point."
-    (interactive "P")
-    (if-let* ((res (jsonrpc-request
-                    (eglot--current-server-or-lose)
-                    :$ccls/inheritance
-                    (append (eglot--TextDocumentPositionParams)
-                            `(:derived ,(if derived t :json-false))
-                            '(:levels 100) '(:hierarchy t))))
-              (tree (list (cons 0 res))))
-        (with-help-window "*ccls inheritance*"
-          (with-current-buffer standard-output
-            (while tree
-              (pcase-let ((`(,depth . ,node) (pop tree)))
-                (cl-destructuring-bind (&key uri range) (plist-get node :location)
-                  (insert (make-string depth ?\ ) (plist-get node :name) "\n")
-                  (make-text-button
-                   (+ (pos-bol 0) depth) (pos-eol 0)
-                   'action (lambda (_arg)
-                             (interactive)
-                             (find-file (eglot--uri-to-path uri))
-                             (goto-char (car (eglot--range-region range)))))
-                  (cl-loop for child across (plist-get node :children)
-                           do (push (cons (1+ depth) child) tree)))))))
-      (eglot--error "Hierarchy unavailable"))))
-
-(use-package consult-eglot
-  :straight t
-  :after consult eglot
-  :init
-  (+map! :keymaps 'eglot-mode-map
-    "cs" '(consult-eglot-symbols :wk "Symbols"))
-  :config
-  ;; Provide `consult-lsp' functionality from `consult-eglot', useful for
-  ;; packages that relays on `consult-lsp' (like `dirvish-subtree').
-  (unless (memq 're-lsp rivenemacs-modules)
-    (defalias 'consult-lsp-file-symbols #'consult-eglot-symbols)))
-
 (use-package eldoc
   :straight (:type built-in)
   :custom
@@ -153,7 +44,7 @@ the children of class at point."
 (use-package eldoc-box
   :straight t
   :hook (prog-mode . eldoc-box-hover-at-point-mode)
-  :hook (eglot-managed-mode . eldoc-box-hover-at-point-mode)
+  :hook (lsp-bridge-mode . eldoc-box-hover-at-point-mode)
   :hook ((tab-bar-mode tool-bar-mode) . +eldoc-box-hover-at-point-fix-h)
   :config
   ;; HACK: Temporary fix for `eldoc-box-hover-at-point-mode' with `tab-bar-mode'
@@ -254,11 +145,13 @@ the children of class at point."
 
 (use-package editorconfig
   :straight t
+  :ensure t
   :hook (prog-mode . editorconfig-mode)
   :init
   (+map!
     "fc" '(editorconfig-find-current-editorconfig :wk "Find current EditorConfig")
-    "cfe" #'editorconfig-format-buffer))
+    "cfe" #'editorconfig-format-buffer)
+  :config (editorconfig-mode 1))
 
 (use-package clang-format
   :straight t
@@ -280,27 +173,6 @@ the children of class at point."
   :straight (:host github :repo "Lindydancer/cmake-font-lock" :files (:defaults "*"))
   :hook (cmake-mode . cmake-font-lock-activate))
 
-(use-package rust-mode
-  :straight t
-  :commands
-  rust-compile rust-compile-release
-  rust-check rust-test
-  rust-run rust-run-release rust-run-clippy
-  rust-format-buffer rust-goto-format-problem
-  rust-enable-format-on-save
-  :init
-  (+map-local! :keymaps '(rust-mode-map rust-ts-mode-map)
-    "c" #'rust-compile
-    "C" #'rust-compile-release
-    "k" #'rust-check
-    "t" #'rust-test
-    "r" #'rust-run
-    "R" #'rust-run-release
-    "y" #'rust-run-clippy
-    "f" #'rust-format-buffer
-    "F" #'rust-goto-format-problem
-    "S" #'rust-enable-format-on-save))
-
 (use-package cuda-mode
   :straight t
   :hook (cuda-mode . display-line-numbers-mode)
@@ -318,7 +190,7 @@ the children of class at point."
   (dumb-jump-selector 'completing-read)
   :init
   (+map!
-    "cj" '(+dumb-jump-hydra/body :wk "+dumb-jump-hydra"))
+    "j" '(+dumb-jump-hydra/body :wk "+dumb-jump-hydra"))
   ;; Use as xref backend
   (with-eval-after-load 'xref
     (add-hook 'xref-backend-functions #'dumb-jump-xref-activate 101))

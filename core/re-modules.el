@@ -52,7 +52,9 @@
     re-workspaces    ; Workspace separation (tabspaces, tab-bar, ...). NOTE: This is a WIP
     re-binary        ; Display binary files in hex or decompile them (hexl, ...) ...
     re-window        ; Frame & window tweaks
-    langs/web)
+    langs/web        ; web (js, jsx, ts, tsx)
+    langs/rust       ; rust
+    langs/re-python)    ;python
 
   "RivenEmacs enabled modules."
   :group 'rivenemacs-core

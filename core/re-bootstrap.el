@@ -51,4 +51,10 @@
  ;; Defer loading packages by default, use `:demand' to force loading a package
  use-package-always-defer t)
 
+;; load env from exec-path-from-shell
+(use-package exec-path-from-shell
+  :straight t
+  :ensure t
+  :hook (rivenemacs-after-startup . exec-path-from-shell-initialize))
+
 (provide 're-bootstrap)

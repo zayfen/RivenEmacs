@@ -29,6 +29,7 @@
          ("\\.html\\.tera\\'" . web-mode)
          ("\\.html\\.jinja\\'" . web-mode)
          ("\\.html\\.j2\\'" . web-mode))
+  :hook (tsx-ts-mode . web-mode)
   :custom
   (web-mode-markup-indent-offset 2)
   (web-mode-css-indent-offset 2)
@@ -69,7 +70,6 @@
 
 (use-package tsx-ts-mode
   :straight (:type built-in)
-  :mode ("\\.tsx\\'" . web-mode)
   :mode ("\\.tsx\\'" . tsx-ts-mode)
   :hook (tsx-ts-mode . +javascript-add-npm-path-h)
   :hook (tsx-ts-mode . apheleia-mode)

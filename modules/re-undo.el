@@ -19,9 +19,9 @@
   :after rivenemacs-loaded
   :demand t
   :config
-  (with-eval-after-load 'evil
-    (setq evil-undo-system 'undo-fu)
-    (evil-set-undo-system 'undo-fu)))
+  (global-set-key (kbd "M-_") 'undo-redo)
+  (global-set-key [remap undo-redo] #'undo-fu-only-redo)
+  (global-set-key [remap undo] #'undo-fu-only-undo))
 
 (use-package undo-fu-session
   :straight t
