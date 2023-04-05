@@ -86,6 +86,7 @@
     "a"  '(lsp-bridge-code-action :wk "Code actions")
     "d"  '(lsp-bridge-find-def :wk "Find definition")
     "e"  '(lsp-bridge-diagnostic-list :wk "Diagnostic list")
+    "t"  '(lsp-bridge-find-type-def :wk "Find type definition")
     "fF" #'lsp-bridge-code-format
     "i"  '(lsp-bridge-find-impl :wk "Find implementation")
     "k"  '(lsp-bridge-popup-documentation :wk "Find Document")
