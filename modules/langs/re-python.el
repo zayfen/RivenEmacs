@@ -3,8 +3,8 @@
 (use-package python
   :mode ("\\.py\\'" . python-ts-mode)
   :mode ("[./]flake8\\'" . conf-mode)
-  :mode ("/Pipfile\\'" . conf-mode)
- )
+  :mode ("/Pipfile\\'" . conf-mode))
+
 
 (use-package pip-requirements
   :straight t)

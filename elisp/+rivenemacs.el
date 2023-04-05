@@ -94,8 +94,12 @@ If NO-MESSAGE-LOG is non-nil, do not print any message to *Messages* buffer."
                    (plist-get rivenemacs-default-fonts :variable-pitch-font-family))
                   (or (plist-get rivenemacs-fonts :variable-pitch-font-size)
                    (plist-get rivenemacs-default-fonts :variable-pitch-font-size))))))))
-  ;; Run hooks
-  (run-hooks 'rivenemacs-after-set-fonts-hook))
+  ;; set chinese font
+ (dolist (charset '(kana han symbol cjk-misc bopomofo))
+     (set-fontset-font (frame-parameter nil 'font) charset
+                       (font-spec :family "WenQuanYi Zen Hei Mono" :size 23)))
+   ;; Run hooks
+ (run-hooks 'rivenemacs-after-set-fonts-hook))
 
 ;;;###autoload
 (defun +load-theme ()
