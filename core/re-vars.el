@@ -174,7 +174,7 @@ RivenEmacs hooks will be run in this order:
                           (os/mac "sans"))))
   (defconst rivenemacs-default-fonts
     `(:font-family ,mono-font
-      :font-size 13
+      :font-size 12
       :unicode-font-family ,unicode-font
       :variable-pitch-font-family ,varp-font
       :variable-pitch-font-size 13)

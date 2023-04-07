@@ -5,9 +5,6 @@
 ;; Author: Abdelhak Bougouffa (concat "abougouffa" "@" "fedora" "project" "." "org")
 
 
-(if (not (+emacs-features-p 'tree-sitter))
-    ;; Use the external `tree-sitter' module
-    (+load rivenemacs-modules-dir "obsolete/re-tree-sitter.el")
 
   ;; Use built-in `treesit' when available
   (use-package treesit
@@ -22,7 +19,7 @@
     (treesit-auto-install 'prompt)
     :config
     ;; Install all languages when calling `treesit-auto-install-all'
-    (setq treesit-language-source-alist (treesit-auto--build-treesit-source-alist))))
+    (setq treesit-language-source-alist (treesit-auto--build-treesit-source-alist)))
 
 (use-package hideif
   :straight (:type built-in)

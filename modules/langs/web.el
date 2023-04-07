@@ -9,12 +9,11 @@
 (use-package emmet-mode
   :straight t
   :preface (defvar emmet-mode-keymap (make-sparse-keymap))
-  :hook (css-mode web-mode html-mode haml-mode nxml-mode rjsx-mode tsx-ts-mode reason-mode)
+  :hook ((css-mode web-mode html-mode haml-mode nxml-mode rjsx-mode tsx-ts-mode reason-mode) . emmet-mode)
   :config
   (when (require 'yasnippet nil t)
     (add-hook 'emmet-mode-hook #'yas-minor-mode-on))
   (setq emmet-move-cursor-between-quotes t)
-  (add-hook 'tsx-ts-mode-hook 'emmet-expand-jsx-className)
   (+map! :keymaps 'emmet-mode-keymap
         "v TAB" #'emmet-wrap-with-markup
         "TAB" #'+web/indent-or-yas-or-emmet-expand
@@ -28,23 +27,56 @@
          ("\\.html\\.heex\\'" . web-mode)
          ("\\.html\\.tera\\'" . web-mode)
          ("\\.html\\.jinja\\'" . web-mode)
-         ("\\.html\\.j2\\'" . web-mode))
-  :hook (tsx-ts-mode . web-mode)
+         ("\\.html\\.j2\\'" . web-mode)
+         ("\\.tsx\\'" . web-mode))
   :custom
   (web-mode-markup-indent-offset 2)
   (web-mode-css-indent-offset 2)
   (web-mode-code-indent-offset 2)
   (web-mode-enable-auto-indentation nil)
   (web-mode-enable-auto-pairing nil)
-  (web-mode-engines-alist '(("django" . "\\.html\\.tera\\'"))))
+  (web-mode-engines-alist '(("django" . "\\.html\\.tera\\'")))
+
+  :after smartparens
+  :config
+
+
+  (defun +web-is-auto-close-style-3 (_id action _context)
+    (and (eq action 'insert)
+         (eq web-mode-auto-close-style 3)))
+  (sp-local-pair 'web-mode "<" ">" :unless '(:add +web-is-auto-close-style-3))
+
+   ;; let smartparens handle these
+  (setq web-mode-enable-auto-quoting nil
+        web-mode-enable-auto-pairing t)
+
+   ;; 1. Remove web-mode auto pairs whose end pair starts with a latter
+   ;;    (truncated autopairs like <?p and hp ?>). Smartparens handles these
+   ;;    better.
+   ;; 2. Strips out extra closing pairs to prevent redundant characters
+   ;;    inserted by smartparens.
+  (dolist (alist web-mode-engines-auto-pairs)
+    (setcdr alist
+            (cl-loop for pair in (cdr alist)
+                     unless (string-match-p "^[a-z-]" (cdr pair))
+                     collect (cons (car pair)
+                                   (string-trim-right (cdr pair)
+                                                      "\\(?:>\\|]\\|}\\)+\\'")))))
+  (delq! nil web-mode-engines-auto-pairs))
+
+(add-to-list 'auto-mode-alist '("\\.tsx?$" . web-mode))
+(setq web-mode-content-types-alist '(("jsx" . "\\.ts[x]?\\'")))
 
 (use-package css-ts-mode
   :straight (:type built-in)
-  :mode (("\\.css\\'" . css-ts-mode)
-         ("\\.scss\\'" . css-ts-mode))
+  :mode (("\\.css\\'" . css-ts-mode))
   :hook (css-ts-mode . +javascript-add-npm-path-h)
   :hook (css-ts-mode . apheleia-mode)
   :custom (css-indent-offset 2))
+
+(use-package sass-mode
+  :straight t
+  :custom (scss-indent-offset 2))
 
 (use-package json-ts-mode
   :straight (:type built-in)
@@ -54,8 +86,7 @@
 
 (use-package js-ts-mode
   :straight (:type built-in)
-  :mode (("\\.js\\'" . js-ts-mode)
-         ("\\.jsx\\'" . js-ts-mode))
+  :mode ("\\.js\\'" . js-ts-mode)
   :hook (js-ts-mode . +javascript-add-npm-path-h)
   :hook (js-ts-mode . apheleia-mode)
   :custom (js-indent-level 2))
@@ -70,8 +101,11 @@
 
 (use-package tsx-ts-mode
   :straight (:type built-in)
-  :mode ("\\.tsx\\'" . tsx-ts-mode)
-  :hook (tsx-ts-mode . +javascript-add-npm-path-h)
-  :hook (tsx-ts-mode . apheleia-mode)
-  ;:hook (tsx-ts-mode . tsx-ts-helper-mode)
+;;  :hook (tsx-ts-mode . +javascript-add-npm-path-h)
+;;  :hook (tsx-ts-mode . apheleia-mode)
   :custom (typescript-ts-mode-indent-offset 2))
+
+(setq auto-mode-alist
+   (append '(("\\.tsx\\'" . tsx-ts-mode)  ; note these are encapsulated in a '() list
+             ("\\.ts\\'" . typescript-ts-mode))
+           auto-mode-alist))
