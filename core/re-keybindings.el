@@ -70,7 +70,7 @@
     ";"   '(pp-eval-expression :wk "Eval expression")
     "X"   #'org-capture
     "u"   '(universal-argument :wk "C-u")
-    "C"   #'universal-coding-system-argument
+;;    "C"   #'universal-coding-system-argument
 
     ;; ====== Quit/Session ======
     "q"   '(nil :wk "quit/session")
@@ -172,7 +172,7 @@
     "cf"  '(nil :wk "format buffer")
 
     ;; ====== Workspaces ======
-    "r"   '(nil :wk "workspace") ;; TODO: use tab-bar-mode and tab-line-mode
+    ;; "r"   '(nil :wk "workspace") ;; TODO: use tab-bar-mode and tab-line-mode
 
     ;; ====== Notes ======
     "n"   '(nil :wk "notes")

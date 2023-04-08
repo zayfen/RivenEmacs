@@ -41,11 +41,8 @@
     "Fp" '(project-forget-project :wk "Project")
     "Fu" '(project-forget-projects-under :wk "Projects under...")
     ;; search/replace
-    "s"  '(nil :wk "search/replace")
-    "ss" #'project-search
-    "sn" '(fileloop-continue :wk "Next match")
-    "sr" #'project-query-replace-regexp
-    "sf" #'project-find-regexp))
+    "s"  '(consult-ripgrep :wk "search/replace")
+   ))
 
 (use-package consult-project-extra
   :straight t

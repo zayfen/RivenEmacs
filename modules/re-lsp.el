@@ -99,17 +99,17 @@
      :clang (:extraArgs ["--clang-tidy"]
              :excludeArgs []))))
 
-(use-package lsp-pyright
-  :straight t
-  :after lsp-mode
-  :demand t)
+;; (use-package lsp-pyright
+;;   :straight t
+;;   :after lsp-mode
+;;   :demand t)
 
-(use-package consult-lsp
-  :straight t
-  :after consult lsp-mode
-  :init
-  (+map! :keymaps 'lsp-mode-map
-    "cs" '(consult-lsp-file-symbols :wk "Symbols")))
+;; (use-package consult-lsp
+;;   :straight t
+;;   :after consult lsp-mode
+;;   :init
+;;   (+map! :keymaps 'lsp-mode-map
+;;     "cs" '(consult-lsp-file-symbols :wk "Symbols")))
 
 (use-package dap-mode
   :straight t
