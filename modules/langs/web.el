@@ -27,8 +27,8 @@
          ("\\.html\\.heex\\'" . web-mode)
          ("\\.html\\.tera\\'" . web-mode)
          ("\\.html\\.jinja\\'" . web-mode)
-         ("\\.html\\.j2\\'" . web-mode)
-         ("\\.tsx\\'" . web-mode))
+         ("\\.html\\.j2\\'" . web-mode))
+
   :custom
   (web-mode-markup-indent-offset 2)
   (web-mode-css-indent-offset 2)
@@ -64,7 +64,7 @@
                                                       "\\(?:>\\|]\\|}\\)+\\'")))))
   (delq! nil web-mode-engines-auto-pairs))
 
-(add-to-list 'auto-mode-alist '("\\.tsx?$" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.tsx$" . web-mode))
 (setq web-mode-content-types-alist '(("jsx" . "\\.ts[x]?\\'")))
 
 (use-package css-ts-mode
@@ -101,8 +101,9 @@
 
 (use-package tsx-ts-mode
   :straight (:type built-in)
-;;  :hook (tsx-ts-mode . +javascript-add-npm-path-h)
-;;  :hook (tsx-ts-mode . apheleia-mode)
+  :hook (tsx-ts-mode . +javascript-add-npm-path-h)
+  :hook (tsx-ts-mode . apheleia-mode)
+  :hook (tsx-ts-mode . web-mode)
   :custom (typescript-ts-mode-indent-offset 2))
 
 (setq auto-mode-alist
