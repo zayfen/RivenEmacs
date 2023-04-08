@@ -158,6 +158,7 @@
     ;; ====== Toggle ======
     "t"   '(nil :wk "toggle")
     "td"  '(toggle-debug-on-error :wk "Debug on error")
+    "tf"  '(toggle-frame-fullscreen :wk "Fullscreen")
     "tr"  #'read-only-mode
     "tl"  #'follow-mode
     "tV"  '(netextender-toggle :wk "NetExtender")
