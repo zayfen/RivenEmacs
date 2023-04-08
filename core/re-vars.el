@@ -177,7 +177,7 @@ RivenEmacs hooks will be run in this order:
       :font-size 12
       :unicode-font-family ,unicode-font
       :variable-pitch-font-family ,varp-font
-      :variable-pitch-font-size 13)
+      :variable-pitch-font-size 12)
     "Default fonts of RivenEmacs."))
 
 (defcustom +env-save-vars

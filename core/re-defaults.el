@@ -309,7 +309,9 @@
  ;; Small tab is enough!
  tab-width 2
  ;; Save buffer status
- desktop-save-buffer t)
+ desktop-save-buffer t
+ ;; set line-height
+ line-spacing 0.15)
 
 ;; ====== Misc hooks and advices ======
 ;; Advice `emacs-session-filename' to ensure creating "session.ID" files in
