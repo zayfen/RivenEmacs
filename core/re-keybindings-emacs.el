@@ -64,7 +64,8 @@
   (+rivenemacs--executor-map!
    ">"   '(switch-to-next-buffer :wk "Next buffer")
    "<"   '(switch-to-prev-buffer :wk "Previous buffer")
-   ";"   '(pp-eval-expression :wk "Eval expression"))
+   ";"   '(pp-eval-expression :wk "Eval expression")
+   "tF" '(toggle-frame-fullscreen :wk "Toggle Fullscreen"))
 
   ;; Define the built-in global keybindings
   (+rivenemacs--internal-map!
@@ -158,7 +159,6 @@
     ;; ====== Toggle ======
     "t"   '(nil :wk "toggle")
     "td"  '(toggle-debug-on-error :wk "Debug on error")
-    "tf"  '(toggle-frame-fullscreen :wk "Fullscreen")
     "tr"  #'read-only-mode
     "tl"  #'follow-mode
     "tV"  '(netextender-toggle :wk "NetExtender")

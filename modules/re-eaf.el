@@ -8,7 +8,7 @@
 (unless (+emacs-features-p 'lucid)
   (use-package eaf
     :straight (:host github :repo "emacs-eaf/emacs-application-framework" :files (:defaults "*"))
-    :init
+    :iniapt
     (+map! "oo" #'eaf-open)
     ;; Evil integration doesn't work, start `eaf-mode' in `emacs-state'.
     (with-eval-after-load 'evil
