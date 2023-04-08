@@ -119,13 +119,8 @@ Compiled from the `system-configuration-features'.")
   :group 'rivenemacs-keybinding
   :type 'string)
 
-(defcustom rivenemacs-global-leader-prefix "SPC"
-  "RivenEmacs general leader key."
-  :group 'rivenemacs-keybinding
-  :type 'string)
-
-(defcustom rivenemacs-global-mode-prefix "SPC m"
-  "RivenEmacs general local leader (a.k.a. mode specific) key sequence."
+(defcustom rivenemacs-executor-key "C-x"
+  "RivenEmacs executor key."
   :group 'rivenemacs-keybinding
   :type 'string)
 

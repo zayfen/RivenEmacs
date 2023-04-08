@@ -4,7 +4,6 @@
 
 (defcustom rivenemacs-core-modules
   '(re-splash        ; Simple splash screen
-    ;;re-keybindings   ; Keybinding (general, which-key, hydra, ...)
     ;; re-evil          ; Emacs as Vim (evil, evil-collection, evil-escape, evil-snipe, evil-numbers, ...)
     re-keybindings-emacs   ; Keybinding for vanila emacs user
     re-defuns            ; defined functions
@@ -36,7 +35,7 @@
     re-org           ; Org-mode for life (org, org-contrib, org-modern, org-appear, ...)
     re-extra         ; Extra features (better-jumper, crux, ...)
     re-notes         ; Notes & Zettelkasten (org-roam, consult-org-roam, ...)
-    re-eaf           ; EAF apps (browser, jupyter, file-sender, ...)
+    ;; re-eaf           ; EAF apps (browser, jupyter, file-sender, ...)
     ;; re-email      ; Email (mu4e, mu4e-alert, org-msg, ...)
     ;; re-rss        ; News feed (elfeed, ...)
     ;; re-lifestyle  ; *Very* opinionated lifestyle packages (awqat, ...)

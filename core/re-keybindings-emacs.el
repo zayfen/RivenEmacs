@@ -57,16 +57,19 @@
     :keymaps 'override
     :prefix rivenemacs-localleader-key)
 
+  (general-create-definer +rivenemacs--executor-map!
+   :keymaps 'override
+   :prefix rivenemacs-executor-key)
+
+  (+rivenemacs--executor-map!
+   ">"   '(switch-to-next-buffer :wk "Next buffer")
+   "<"   '(switch-to-prev-buffer :wk "Previous buffer")
+   ";"   '(pp-eval-expression :wk "Eval expression"))
+
   ;; Define the built-in global keybindings
   (+rivenemacs--internal-map!
     ;; ====== Top level functions ======
-    "SPC" '(execute-extended-command :wk "M-x")
-    ">"   '(switch-to-next-buffer :wk "Next buffer")
-    "<"   '(switch-to-prev-buffer :wk "Previous buffer")
-    ";"   '(pp-eval-expression :wk "Eval expression")
     "X"   #'org-capture
-    "u"   '(universal-argument :wk "C-u")
-    "C"   #'universal-coding-system-argument
 
     ;; ====== Quit/Session ======
     "q"   '(nil :wk "quit/session")
@@ -82,8 +85,6 @@
     "f"   '(nil :wk "file")
     "fS"  '(write-file :wk "Save as ...")
     "fD"  #'+delete-this-file
-    "fu"  #'+sudo-find-file
-    "fU"  #'+sudo-this-file
     "fR"  #'+move-this-file
     "ff"  #'find-file
     "fs"  #'save-buffer
@@ -96,7 +97,6 @@
     ;; ====== Buffers ======
     "b"   '(nil :wk "buffer")
     "bI"  #'ibuffer
-    "bu"  #'+sudo-save-buffer
     "bS"  #'save-some-buffers
     "bs"  #'scratch-buffer
     "bM"  #'view-echo-area-messages

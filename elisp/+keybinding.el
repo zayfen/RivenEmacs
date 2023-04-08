@@ -31,6 +31,15 @@ It is deferred until `general' gets loaded and configured."
   `(with-eval-after-load 're-general-ready
     (+rivenemacs--internal-map-local! ,@args)))
 
+
+(defmacro +map-executor! (&rest args)
+  "A wrapper around `+rivenemacs--internal-map!'.
+It is deferred until `general' gets loaded and configured."
+  (declare (indent defun))
+  `(with-eval-after-load 're-general-ready
+    (+rivenemacs--internal-map! ,@args)))
+
+
 ;; Wrappers around `general's VIM like definers, needs `general-evil-setup' to
 ;; be executed (See `re-keybindings')
 ;;;###autoload

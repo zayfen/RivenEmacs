@@ -8,7 +8,7 @@
 ;; github.com/doomemacs/doomemacs/blob/master/modules/tools/debugger/autoload/evil.el
 
 ;;;###autoload(autoload '+realgud:start "../modules/extras/re-realgud" "Start the RealGUD debugger suitable for the current mode." t)
-(evil-define-command +realgud:start (&optional path)
+(defun +realgud:start (&optional path)
   "Start the RealGUD debugger suitable for the current mode."
   (interactive "<f>")
   (let ((default-directory
@@ -20,8 +20,10 @@
        (realgud:gdb (if path (concat "gdb " path))))
       ((or 'rust-mode 'rust-ts-mode)
        (realgud--lldb (if path (concat "gdb " path))))
-      ((or 'js-mode 'js2-mode 'js3-mode 'typescript-mode 'js-ts-mode 'typescript-ts-mode)
+      ((or 'js-mode 'js2-mode 'js3-mode 'typescript-mode 'js-ts-mode 'typescript-ts-mode 'tsx-ts-mode)
        (realgud:trepanjs))
+      ((or 'python-mode 'python-ts-mode)
+       (realgud:pdb))
       ((or 'sh-mode 'bash-ts-mode)
        (let ((shell sh-shell))
          (when (string= shell "sh")
@@ -35,7 +37,7 @@
       (_ (user-error "No debugger for %s" major-mode)))))
 
 ;;;###autoload(autoload '+realgud:toggle-breakpoint "../modules/extras/re-realgud" "Toggle break point." t)
-(evil-define-command +realgud:toggle-breakpoint (&optional bang)
+(defun +realgud:toggle-breakpoint (&optional bang)
   "Toggle break point."
   (interactive "<!>")
   (call-interactively (if bang #'realgud:cmd-clear #'realgud:cmd-break)))

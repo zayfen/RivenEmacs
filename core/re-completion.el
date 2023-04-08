@@ -4,76 +4,6 @@
 
 ;; Author: Abdelhak Bougouffa (concat "abougouffa" "@" "fedora" "project" "." "org")
 
-
-;; (use-package cape
-;;   :straight t
-;;   :after rivenemacs-loaded
-;;   :demand t
-;;   :config
-;;   (dolist (fn '(cape-file cape-ispell cape-symbol cape-keyword))
-;;     (add-to-list 'completion-at-point-functions fn)))
-
-;; (use-package corfu
-;;   :straight t
-;;   :hook (rivenemacs-after-startup . global-corfu-mode)
-;;   :init
-;;   (add-to-list
-;;    'load-path
-;;    (format "%sstraight/%s/corfu/extensions" straight-base-dir straight-build-dir))
-;;   :custom
-;;   (corfu-auto t) ; Enable auto completion
-;;   (corfu-cycle t) ; Allows cycling through candidates
-;;   (corfu-min-width 25)
-;;   (corfu-auto-delay 0.2)
-;;   :config
-;;   (with-eval-after-load 'evil
-;;     (define-key corfu-map (kbd "C-j") #'corfu-next)
-;;     (define-key corfu-map (kbd "C-k") #'corfu-previous))
-
-;;   (defun +corfu-enable-in-minibuffer ()
-;;     "Enable Corfu in the minibuffer if `completion-at-point' is bound."
-;;     (when (where-is-internal #'completion-at-point (list (current-local-map)))
-;;       (setq-local corfu-auto nil) ; Enable/disable auto completion
-;;       (corfu-mode 1)))
-
-;;   (add-hook 'minibuffer-setup-hook #'+corfu-enable-in-minibuffer))
-
-;; (use-package corfu-popupinfo
-;;   :hook (corfu-mode . corfu-popupinfo-mode)
-;;   :custom
-;;   (corfu-popupinfo-delay 0.1)
-;;   (corfu-popupinfo-max-height 15)
-;;   :config
-;;   (define-key corfu-map (kbd "M-p") #'corfu-popupinfo-scroll-down)
-;;   (define-key corfu-map (kbd "M-n") #'corfu-popupinfo-scroll-up)
-;;   (define-key corfu-map (kbd "M-d") #'corfu-popupinfo-toggle))
-
-;; (use-package corfu-history
-;;   :hook (corfu-mode . corfu-history-mode)
-;;   :config
-;;   (unless (bound-and-true-p savehist-mode)
-;;     (savehist-mode 1))
-;;   (add-to-list 'savehist-additional-variables 'corfu-history))
-
-;; (use-package corfu-terminal
-;;   :straight t
-;;   :hook (corfu-mode . corfu-terminal-mode))
-
-(use-package kind-icon
-  :straight t
-  :demand t
-  :custom
-  (kind-icon-default-style '(:padding 0
-                             :stroke 0
-                             :margin 0
-                             :radius 0
-                             :height 0.8
-                             :scale 1.05)) ; Fix the scaling/height
-  (kind-icon-use-icons (+emacs-features-p 'rsvg)) ; Use icons only in Emacs built with SVG support
-  (kind-icon-blend-background nil) ; Use midpoint color between foreground and background colors ("blended")?
-)
-
-
 (use-package consult
   :straight t
   :hook (embark-collect-mode . consult-preview-at-point-mode)
@@ -100,8 +30,7 @@
     ;; git/vc
     "gG"  #'consult-git-grep
     ;; search
-    "ss"  #'consult-ripgrep
-    "sg"  #'consult-grep
+    "s."  #'consult-ripgrep
     "sf"  #'consult-find
     "sM"  #'consult-man
     "st"  #'consult-locate
@@ -226,6 +155,32 @@
   :hook (minibuffer-setup . vertico-repeat-save)
   :init
   (keymap-global-set "M-R" #'vertico-repeat))
+
+
+(use-package blink-search
+  :straight (:host github :repo "manateelazycat/blink-search" :files ("*" (:exclude ".git")))
+  :commands (blink-search)
+  :init
+  (setq blink-search-browser-function
+        (if (display-graphic-p)
+            #'xwidget-webkit-browse-url
+          #'eww))
+  (+map! :infix "s"
+    "s" '(blink-search :wk "Blink Search")))
+
+
+(use-package color-rg
+  :straight (:host github :repo "manateelazycat/color-rg" :files ("*" (:exclude ".git")))
+  :commands (color-rg-search-input-in-project color-rg-search-symbol-in-project color-rg-search-input-in-current-file color-rg-search-symbol-in-current-file)
+  :init
+  (+map! :infix "s"
+    "p" '(color-rg-search-symbol-in-project :wk "Search project at point")
+    "P" '(color-rg-search-input-in-project :wk "Search project")
+    "b" '(color-rg-search-symbol-in-current-file :wk "Search buffer at point")
+    "B" '(color-rg-search-input-in-current-file :wk "Search buffer")))
+
+
+
 
 
 (provide 're-completion)
