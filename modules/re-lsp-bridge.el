@@ -71,6 +71,7 @@
    '((("ts" "tsx") . "typescript_eslint")))
 
 
+
   :config
   (use-package lsp-bridge-jdtls)
   (setq acm-enable-icon t)
@@ -80,6 +81,7 @@
   (setq acm-backend-yas-match-by-trigger-keyword t)
   (setq lsp-bridge-enable-hover-diagnostic t)
   (setq lsp-bridge-code-action-enable-popup-menu t)
+  (setq lsp-bridge-python-multi-lsp-server "pyright_ruff")
 
   (+map! :keymaps 'lsp-bridge-mode-map
     :infix "c"
