@@ -4,34 +4,6 @@
 
 ;; Author zayfen (zhangyunfeng0101@gmail.com)
 
-;; (use-package lsp-bridge
-;;   :straight ()
-;;   :init
-;;   (use-package! yasnippet)
-;;   (use-package! markdown-mode)
-;;   (use-package! posframe)
-
-;;   :config
-;;   (use-package! lsp-bridge-jdtls)
-
-;;   (set-lookup-handlers! 'lsp-bridge-mode
-;;      :definition      #'lsp-bridge-find-def
-;;      :references      #'lsp-bridge-find-references
-;;      :implementations #'lsp-bridge-find-impl
-;;      :type-definition #'lsp-bridge-find-def
-;;      :documentation   #'lsp-bridge-popup-documentation)
-
-;;   (setq acm-enable-icon t)
-;;   (setq acm-enable-doc t)
-;;   (setq acm-enable-doc-markdown-render t)
-;;   (setq acm-enable-path t)
-
-;;   (setq lsp-bridge-enable-auto-format-code nil)
-;;   (setq lsp-bridge-enable-diagnostics nil) ;; disable diagnostics, use flycheck instead!
-;;   (setq lsp-bridge-enable-hover-diagnostic t)
-;;   (setq lsp-bridge-code-action-enable-popup-menu nil)
-;;   (yas-global-mode))
-
 (use-package yasnippet
   :ensure t
   :straight t
@@ -80,7 +52,7 @@
   (setq acm-enable-path t)
   (setq acm-backend-yas-match-by-trigger-keyword t)
   (setq lsp-bridge-enable-hover-diagnostic t)
-  (setq lsp-bridge-code-action-enable-popup-menu t)
+  (setq lsp-bridge-code-action-enable-popup-menu nil)
   (setq lsp-bridge-python-multi-lsp-server "pyright_ruff")
 
   (+map! :keymaps 'lsp-bridge-mode-map

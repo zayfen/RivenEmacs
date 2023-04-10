@@ -86,6 +86,7 @@
     "f"   '(nil :wk "file")
     "fS"  '(write-file :wk "Save as ...")
     "fD"  #'+delete-this-file
+    "fe"  #'recentf
     "fR"  #'+move-this-file
     "ff"  #'find-file
     "fs"  #'save-buffer
@@ -194,7 +195,8 @@
     "hdp" #'describe-package
 
     ;; ====== Project ======
-    "p"   '(nil :wk "project"))
+    "p"   '(nil :wk "project")
+    "pe"  #'projectile-recentf)
 
   ;; HACK: This is a synchronization feature, providing `re-general-ready' tells
   ;; the `+map!', `+map-local!', ... macros that `general' is ready and the
