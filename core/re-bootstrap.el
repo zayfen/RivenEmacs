@@ -27,6 +27,9 @@
   (defvaralias 'native-comp-deferred-compilation 'native-comp-jit-compilation)
   (defvaralias 'native-comp-deferred-compilation-deny-list 'native-comp-jit-compilation-deny-list))
 
+;; prevent some packges from native-compile
+(setq native-comp-deferred-compilation-deny-list '("blink-search" "lsp-bridge" "color-rg"))
+
 ;; Bootstraping straight.el
 ;; See: github.com/radian-software/straight.el#bootstrapping-straightel
 (defvar bootstrap-version)
@@ -56,5 +59,7 @@
   :straight t
   :ensure t
   :hook (rivenemacs-after-startup . exec-path-from-shell-initialize))
+
+
 
 (provide 're-bootstrap)
