@@ -10,7 +10,7 @@
   (use-package treesit
     :straight (:type built-in)
     :custom
-    (treesit-font-lock-level 2))
+    (treesit-font-lock-level 3))
 
   (use-package treesit-auto
     :straight (:host github :repo "renzmann/treesit-auto")
