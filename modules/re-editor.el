@@ -117,10 +117,10 @@
   :hook ((prog-mode text-mode) . goggles-mode)
   :config
   ;; Pulse for evil commands
-  (goggles-define undo primitive-undo evil-undo)
-  (goggles-define yank yank yank-pop evil-yank evil-yank-line)
+  (goggles-define undo primitive-undo)
+  (goggles-define yank yank yank-pop)
   (goggles-define kill kill-region)
-  (goggles-define delete delete-region evil-delete evil-delete-line))
+  (goggles-define delete delete-region))
 
 
 ;; anzu replace

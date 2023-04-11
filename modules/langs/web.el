@@ -81,14 +81,18 @@
 (use-package json-ts-mode
   :straight (:type built-in)
   :mode (("\\.json\\'" . json-ts-mode))
+  :hook (json-ts-mode . smartparens-mode)
   :hook (json-ts-mode . +javascript-add-npm-path-h)
+  :hook (json-ts-mode . electric-pair-mode)
   :hook (json-ts-mode . apheleia-mode))
 
 (use-package js-ts-mode
   :straight (:type built-in)
   :mode ("\\.js\\'" . js-ts-mode)
   :hook (js-ts-mode . +javascript-add-npm-path-h)
+  :hook (js-ts-mode . smartparens-mode)
   :hook (js-ts-mode . apheleia-mode)
+  :hook (js-ts-mode . electric-pair-mode)  tsx
   :custom (js-indent-level 2))
 
 (use-package typescript-ts-mode
@@ -96,6 +100,8 @@
   :mode (("\\.ts\\'" . typescript-ts-mode))
   :hook (typescript-ts-mode . +javascript-add-npm-path-h)
   :hook (typescript-ts-mode . apheleia-mode)
+  :hook (typescript-ts-mode . smartparens-mode)
+  :hook (typescript-ts-mode . electric-pair-mode)
   :custom (typescript-ts-mode-indent-offset 2))
 
 
@@ -103,8 +109,11 @@
   :straight (:type built-in)
   :hook (tsx-ts-mode . +javascript-add-npm-path-h)
   :hook (tsx-ts-mode . apheleia-mode)
+  :hook (tsx-ts-mode . smartparens-mode)
+  :hook (tsx-ts-mode . electric-pair-mode)
 ;;  :hook (tsx-ts-mode . web-mode)
   :custom (typescript-ts-mode-indent-offset 2))
+
 
 (setq auto-mode-alist
    (append '(("\\.tsx\\'" . tsx-ts-mode)  ; note these are encapsulated in a '() list

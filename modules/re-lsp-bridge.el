@@ -51,7 +51,7 @@
   (setq acm-enable-doc-markdown-render t)
   (setq acm-enable-path t)
   (setq acm-backend-yas-match-by-trigger-keyword t)
-  (setq lsp-bridge-enable-hover-diagnostic t)
+  (setq lsp-bridge-enable-hover-diagnostic nil)
   (setq lsp-bridge-code-action-enable-popup-menu nil)
   (setq lsp-bridge-python-multi-lsp-server "pyright_ruff")
 
