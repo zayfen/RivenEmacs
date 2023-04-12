@@ -12,7 +12,7 @@
      'line-number nil
      :background (face-attribute 'default :background)
      :height (truncate (* 0.95 (face-attribute 'default :height)))
-     :weight 'semi-light)
+     :weight 'normal)
     (set-face-attribute
      'line-number-current-line nil
      :height (truncate (* 0.95 (face-attribute 'default :height)))
@@ -45,13 +45,13 @@ Useful for keeping track of the enabled theme."
   (setq modus-themes-italic-constructs t
         modus-themes-bold-constructs t
         modus-themes-mixed-fonts t
-        modus-themes-variable-pitch-ui t
+        modus-themes-variable-pitch-ui nil
         modus-themes-custom-auto-reload t
 
   ;;       ;; Options for `modus-themes-prompts' are either nil (the
   ;;       ;; default), or a list of properties that may include any of those
   ;;       ;; symbols: `italic', `WEIGHT'
-        modus-themes-prompts '(semi-bold)
+  ;;      modus-themes-prompts '(semi-bold)
 
   ;;       ;; The `modus-themes-completions' is an alist that reads two
   ;;       ;; keys: `matches', `selection'.  Each accepts a nil value (or
@@ -60,7 +60,7 @@ Useful for keeping track of the enabled theme."
   ;;       ;; `matches'   :: `underline', `italic', `WEIGHT'
   ;;       ;; `selection' :: `underline', `italic', `WEIGHT'
          modus-themes-completions
-         '((matches   . (extrabold))
+         '((matches   . (italic extrabold))
            (selection . (semibold text-also)))
 
   ;;       modus-themes-org-blocks 'gray-background ; {nil,'gray-background,'tinted-background}
@@ -89,7 +89,7 @@ Useful for keeping track of the enabled theme."
            (underline-link-symbolic border)))
 
   ;; Load the theme of your choice.
-  (load-theme 'modus-operandi-tinted t))
+  (load-theme 'modus-vivendi t))
 
 (use-package all-the-icons
   :straight t
@@ -133,6 +133,7 @@ Useful for keeping track of the enabled theme."
   (doom-modeline-buffer-encoding 'nondefault)
   (doom-modeline-unicode-fallback t)
   :config
+  (setq inhibit-compacting-font-caches t)
   ;; HACK: Add some padding to the right
   (doom-modeline-def-modeline 'main
     '(bar workspace-name window-number modals matches follow buffer-info
