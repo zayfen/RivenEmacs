@@ -34,7 +34,6 @@
     ;; re-modeling   ; Modeling tools (scad-mode, ...)
     re-org           ; Org-mode for life (org, org-contrib, org-modern, org-appear, ...)
     re-extra         ; Extra features (better-jumper, crux, ...)
-    re-notes         ; Notes & Zettelkasten (org-roam, consult-org-roam, ...)
     ;; re-eaf           ; EAF apps (browser, jupyter, file-sender, ...)
     ;; re-email      ; Email (mu4e, mu4e-alert, org-msg, ...)
     ;; re-rss        ; News feed (elfeed, ...)

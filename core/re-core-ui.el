@@ -12,7 +12,7 @@
      'line-number nil
      :background (face-attribute 'default :background)
      :height (truncate (* 0.95 (face-attribute 'default :height)))
-     :weight 'normal)
+     :weight 'semibold)
     (set-face-attribute
      'line-number-current-line nil
      :height (truncate (* 0.95 (face-attribute 'default :height)))
@@ -80,8 +80,8 @@ Useful for keeping track of the enabled theme."
   ;;         (t                . (1.1)))
 
   ;;         ;; From the section "Make the mode line borderless"
-           (border-mode-line-active unspecified)
-           (border-mode-line-inactive unspecified)
+           ;; (border-mode-line-active unspecified)
+           ;; (border-mode-line-inactive unspecified)
 
   ;;         ;; Links
            (underline-link border)

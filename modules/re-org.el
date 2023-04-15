@@ -225,6 +225,9 @@
 
 (use-package org-agenda
   :straight (:type built-in)
+  :init
+  (+map! :infix "n"
+    "a" #'org-agenda)
   :custom
   (org-agenda-tags-column 0)
   (org-agenda-block-separator ?─)
@@ -296,15 +299,40 @@
                    visual-fill-column-center-text (plist-get +org-present--vcm-params :center-text))
        (visual-fill-column-mode 1)))))
 
-(use-package evil-org
-  :straight t
-  :hook (org-mode . evil-org-mode))
 
-(use-package evil-org-agenda
-  :after evil-org
+;; org notes part
+(use-package org-roam
+  :straight t
+  :init
+  (+map! :infix "n"
+    "f" #'org-roam-node-find
+    "r" #'org-roam-ref-find
+    "i" #'org-roam-node-insert
+    "R" #'org-roam-node-random))
+
+(use-package org-roam-ui
+  :straight t
+  :init
+  (+map! "nR" #'org-roam-ui-open))
+
+(use-package consult-org-roam
+  :straight t
+  :after org-roam
   :demand t
+  :init
+  (+map! :infix "n"
+    "s" #'consult-org-roam-search
+    "l" #'consult-org-roam-forward-links
+    "b" #'consult-org-roam-backlinks
+    "F" #'consult-org-roam-file-find)
+  :custom
+  (consult-org-roam-grep-func #'consult-ripgrep)
+  (consult-org-roam-buffer-narrow-key ?r) ; custom narrow key for `consult-buffer'
+  (consult-org-roam-buffer-after-buffers t)
   :config
-  (evil-org-agenda-set-keys))
+  (consult-org-roam-mode 1)
+  ;; Eventually suppress previewing for certain functions
+  (consult-customize consult-org-roam-forward-links :preview-key (kbd "M-.")))
 
 
 (provide 're-org)

@@ -183,14 +183,17 @@
   :straight t
   :commands
   +dumb-jump-hydra/body
+  :after xref
   :custom
   (dumb-jump-selector 'completing-read)
   :init
+  ;; remove etag feature and only use dumb-jump as xref-backend
+  (setq xref-backend-functions (remq 'etags--xref-backend xref-backend-functions))
+  (add-to-list 'xref-backend-functions #'dumb-jump-xref-activate t)
+
   (+map!
     "j" '(+dumb-jump-hydra/body :wk "+dumb-jump-hydra"))
-  ;; Use as xref backend
-  (with-eval-after-load 'xref
-    (add-hook 'xref-backend-functions #'dumb-jump-xref-activate 101))
+
   :config
   ;; Define Hydra keybinding (from the repo's examples)
   (defhydra +dumb-jump-hydra (:color blue :columns 3)
@@ -202,6 +205,11 @@
     ("i" dumb-jump-go-prompt "Prompt")
     ("l" dumb-jump-quick-look "Quick look")
     ("b" dumb-jump-back "Back")))
+
+(use-package xref
+  :straight (:type built-in)
+ )
+
 
 (use-package hl-todo
   :straight (:host github :repo "tarsius/hl-todo")
@@ -256,6 +264,23 @@
 (use-package ts-fold-indicators
   :straight (ts-fold-indicators :type git :host github :repo "emacs-tree-sitter/ts-fold")
   :init (add-hook 'tree-sitter-after-on-hook #'ts-fold-indicators-mode))
+
+
+(defvar-local +electric-indent-words '()
+  "The list of electric words. Typing these will trigger reindentation of the
+current line.")
+
+;;
+(after! electric
+  (setq-default electric-indent-chars '(?\n ?\^?))
+
+  (add-hook! 'electric-indent-functions
+    (defun +electric-indent-char-fn (_c)
+      (when (and (eolp) +electric-indent-words)
+        (save-excursion
+          (backward-word)
+          (looking-at-p (concat "\\<" (regexp-opt +electric-indent-words))))))))
+
 
 (provide 're-prog)
 

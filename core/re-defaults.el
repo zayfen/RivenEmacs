@@ -465,5 +465,4 @@ or file path may exist now."
  (global-subword-mode 1))
 
 
-
 (provide 're-defaults)

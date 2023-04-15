@@ -41,6 +41,8 @@
   :config
   ;; Advise `define-key' to automatically unbind keys when necessary.
   (general-auto-unbind-keys)
+  (defalias 'define-key! #'general-def)
+  (defalias 'undefine-key! #'general-unbind)
 
   ;; Set up some basic equivalents (like `general-nmap') with short named
   ;; aliases (like `nmap') for VIM mapping functions.
@@ -86,7 +88,6 @@
     "f"   '(nil :wk "file")
     "fS"  '(write-file :wk "Save as ...")
     "fD"  #'+delete-this-file
-    "fe"  #'recentf
     "fR"  #'+move-this-file
     "ff"  #'find-file
     "fs"  #'save-buffer
@@ -109,6 +110,8 @@
             :wk "Kill this buffer and its windows")
     "br"  '(revert-buffer :wk "Revert")
     "bR"  '(rename-buffer :wk "Rename")
+
+
     ;; Bookmarks
     "bm"  '(nil :wk "bookmark")
     "bmm"  #'bookmark-set
@@ -141,7 +144,6 @@
     ;; ====== Applications (Open) ======
     "o"   '(nil   :wk "app/open")
     "o-"  '(dired :wk "Dired") ;; Will be overwritten if dirvish is used
-    "oa"  #'org-agenda
     "oe"  #'eshell
 
     ;; ====== Search ======
