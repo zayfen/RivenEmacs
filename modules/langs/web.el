@@ -102,11 +102,13 @@
   :hook (typescript-ts-mode . apheleia-mode)
   :hook (typescript-ts-mode . smartparens-mode)
   :hook (typescript-ts-mode . electric-pair-mode)
+  :init
+  (after! flycheck
+    (flycheck-add-mode 'javascript-eslint 'typescript-ts-mode)
+   (flycheck-add-mode 'typescript-tslint 'typescript-ts-mode))
   :custom (typescript-ts-mode-indent-offset 2)
   :config
-  (set-electric! 'typescript-ts-mode :chars '(?\} ?\)) :words '("||" "&&"))
-  (flycheck-add-mode 'javascript-eslint 'typescript-ts-mode)
-  (flycheck-add-mode 'typescript-tslint 'typescript-ts-mode))
+  (set-electric! 'typescript-ts-mode :chars '(?\} ?\)) :words '("||" "&&")))
 
 
 (use-package tsx-ts-mode
@@ -115,12 +117,15 @@
   :hook (tsx-ts-mode . apheleia-mode)
   :hook (tsx-ts-mode . smartparens-mode)
   :hook (tsx-ts-mode . electric-pair-mode)
-;;  :hook (tsx-ts-mode . web-mode)
+  :init
+  (after! flycheck
+    (flycheck-add-mode 'javascript-eslint 'tsx-ts-mode)
+   (flycheck-add-mode 'typescript-tslint 'tsx-ts-mode))
   :custom (typescript-ts-mode-indent-offset 2)
+
   :config
-  (set-electric! 'typescript-ts-mode :chars '(?\} ?\)) :words '("||" "&&"))
-  (flycheck-add-mode 'javascript-eslint 'tsx-ts-mode)
-  (flycheck-add-mode 'typescript-tslint 'tsx-ts-mode))
+  (set-electric! 'typescript-ts-mode :chars '(?\} ?\)) :words '("||" "&&")))
+
 
 
 

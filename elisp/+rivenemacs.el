@@ -77,7 +77,7 @@ If NO-MESSAGE-LOG is non-nil, do not print any message to *Messages* buffer."
         (t
          (let ((emacs-font-size 12)
                ;; (chinese-font-name  "TsangerJinKai03-6763")
-               (chinese-font-name "Noto Sans CJK SC Regular")
+               (chinese-font-name "Noto Sans CJK SC")
                english-font-name)
            (cond
             ((featurep 'cocoa)
