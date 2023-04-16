@@ -39,6 +39,7 @@
 
   :custom
   (lsp-bridge-signature-function 'eldoc-message)
+
   (lsp-bridge-multi-lang-server-extension-list
    '((("ts" "tsx") . "typescript_eslint")))
 
@@ -50,10 +51,13 @@
   (setq acm-enable-doc t)
   (setq acm-enable-doc-markdown-render t)
   (setq acm-enable-path t)
+  (setq acm-backend-lsp-candidate-min-length 2)
+  (setq acm-doc-frame-max-lines 30)
   (setq acm-backend-yas-match-by-trigger-keyword t)
-  (setq lsp-bridge-enable-hover-diagnostic t)
+  (setq lsp-bridge-enable-hover-diagnostic nil)
   (setq lsp-bridge-code-action-enable-popup-menu nil)
   (setq lsp-bridge-python-multi-lsp-server "pyright_ruff")
+
 
   (+map! :keymaps 'lsp-bridge-mode-map
     :infix "c"
@@ -76,7 +80,7 @@
 
 
 
-  ;; 融合 `lsp-bridge' `find-function' 以及 `dumb-jump' 的智能跳转
+   ;; 融合 `lsp-bridge' `find-function' 以及 `dumb-jump' 的智能跳转
   (defun lsp-bridge-jump ()
     (interactive)
     (cond
