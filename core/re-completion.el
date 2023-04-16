@@ -168,6 +168,7 @@ If INITIAL is non-nil, use as initial input."
     ;; help
     "hu"  #'consult-theme
     "hI"  #'consult-info)
+
   (+map-local! :keymaps 'org-mode-map
     "h"   #'consult-org-heading)
   :config
@@ -300,6 +301,15 @@ If INITIAL is non-nil, use as initial input."
     "P" '(color-rg-search-input-in-project :wk "Search project")
     "b" '(color-rg-search-symbol-in-current-file :wk "Search buffer at point")
     "B" '(color-rg-search-input-in-current-file :wk "Search buffer")))
+
+
+(use-package find-file-in-project
+  :straight t
+  :init
+  (+map! :infix "f"
+    "." 'find-file-in-project-at-point
+    "g" 'find-file-in-project-by-selected
+    "f" 'find-file-in-project))
 
 
 

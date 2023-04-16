@@ -1,5 +1,6 @@
 (use-package rust-mode
   :straight t
+  :mode ("\\.rs\\'" . rust-mode)
   :commands
   rust-compile rust-compile-release
   rust-check rust-test
@@ -20,5 +21,7 @@
     "S" #'rust-enable-format-on-save)
   :hook
   (rust-mode . editorconfig-apply))
+
+
 
 (provide 'rust)

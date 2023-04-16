@@ -16,12 +16,9 @@
   :ensure t
   :after (yasnippet))
 
-
-
 (use-package markdown-mode
   :ensure t
   :straight t)
-
 
 (use-package posframe
   :ensure t
@@ -43,8 +40,6 @@
   (lsp-bridge-multi-lang-server-extension-list
    '((("ts" "tsx") . "typescript_eslint")))
 
-
-
   :config
   (use-package lsp-bridge-jdtls)
   (setq acm-enable-icon t)
@@ -54,7 +49,8 @@
   (setq acm-backend-lsp-candidate-min-length 2)
   (setq acm-doc-frame-max-lines 30)
   (setq acm-backend-yas-match-by-trigger-keyword t)
-  (setq lsp-bridge-enable-hover-diagnostic nil)
+  (setq lsp-bridge-enable-diagnostics t)
+  (setq lsp-bridge-enable-hover-diagnostic t)
   (setq lsp-bridge-code-action-enable-popup-menu nil)
   (setq lsp-bridge-python-multi-lsp-server "pyright_ruff")
 

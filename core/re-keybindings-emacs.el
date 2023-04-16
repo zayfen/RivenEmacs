@@ -89,10 +89,7 @@
     "fS"  '(write-file :wk "Save as ...")
     "fD"  #'+delete-this-file
     "fR"  #'+move-this-file
-    "ff"  #'find-file
-    "fs"  #'save-buffer
     "ft"  #'recover-this-file
-    "fT"  #'recover-file
     "fy"  #'+yank-this-file-name
     "fE"  `(,(+cmdfy! (dired (or rivenemacs-config-dir rivenemacs-root-dir)))
             :wk "User config directory")

@@ -54,3 +54,11 @@
 (let ((early-config-path (concat rivenemacs-config-dir "early-config.el")))
   (when (file-exists-p early-config-path)
     (load early-config-path nil (not rivenemacs-verbose))))
+
+
+(setq package-archives '(("gnu-elpa"   . "http://1.15.88.122/gnu/")
+                         ("nongun-elpa" . "http://1.15.88.122/nongnu/")
+                         ("melpa" . "http://1.15.88.122/melpa/")
+                         ("melpa-stable" . "http://1.15.88.122/stable-melpa/")
+                         ("org" . "http://1.15.88.122/org/")))
+(package-initialize)
