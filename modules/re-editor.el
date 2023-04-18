@@ -136,9 +136,27 @@
 
 ;; symbol-overlay
 (use-package symbol-overlay
-  :straight
+  :straight t
   :ensure t
- )
+  :init
+  (setq symbol-overlay-map (make-sparse-keymap))
+  (setq re/symbol-overlay-keymap (make-sparse-keymap))
+  (define-key re/symbol-overlay-keymap (kbd ".") 'symbol-overlay-put)
+  (define-key re/symbol-overlay-keymap (kbd "n") 'symbol-overlay-jump-next)
+  (define-key re/symbol-overlay-keymap (kbd "p") 'symbol-overlay-jump-prev)
+  (define-key re/symbol-overlay-keymap (kbd "w") 'symbol-overlay-save-symbol)
+  (define-key re/symbol-overlay-keymap (kbd "t") 'symbol-overlay-toggle-in-scope)
+  (define-key re/symbol-overlay-keymap (kbd "e") 'symbol-overlay-echo-mark)
+  (define-key re/symbol-overlay-keymap (kbd "d") 'symbol-overlay-jump-to-definition)
+  (define-key re/symbol-overlay-keymap (kbd "s") 'symbol-overlay-isearch-literally)
+  (define-key re/symbol-overlay-keymap (kbd "q") 'symbol-overlay-query-replace)
+  (define-key re/symbol-overlay-keymap (kbd "r") 'symbol-overlay-rename)
+  (global-set-key (kbd "M-o") re/symbol-overlay-keymap)
+  (global-set-key (kbd "M-n") 'symbol-overlay-jump-next)
+  (global-set-key (kbd "M-p") 'symbol-overlay-jump-prev)
+  :hook ((prog-mode text-mode) . symbol-overlay-mode))
+
+
 
 
 (provide 're-editor)
