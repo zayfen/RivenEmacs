@@ -102,11 +102,10 @@
   :hook (typescript-ts-mode . apheleia-mode)
   :hook (typescript-ts-mode . smartparens-mode)
   :hook (typescript-ts-mode . electric-pair-mode)
-  :hook (typescript-ts-mode . electric-indent-mode)
   :init
   (after! flycheck
     (flycheck-add-mode 'javascript-eslint 'typescript-ts-mode)
-   (flycheck-add-mode 'typescript-tslint 'typescript-ts-mode))
+    (flycheck-add-mode 'typescript-tslint 'typescript-ts-mode))
   :custom (typescript-ts-mode-indent-offset 2)
   :config
   (set-electric! 'typescript-ts-mode :chars '(?\} ?\)) :words '("||" "&&")))
@@ -118,7 +117,6 @@
   :hook (tsx-ts-mode . apheleia-mode)
   :hook (tsx-ts-mode . smartparens-mode)
   :hook (tsx-ts-mode . electric-pair-mode)
-  :hook (tsx-ts-mode . electric-indent-mode)
   :init
   (after! flycheck
     (flycheck-add-mode 'javascript-eslint 'tsx-ts-mode)
