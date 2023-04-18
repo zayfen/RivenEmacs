@@ -207,7 +207,7 @@
   :straight t)
 
 ;; Global keybindings
-
+(global-set-key (kbd "C-m") 'newline-and-indent)
 
 (provide 're-emacs-keybindings)
 
