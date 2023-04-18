@@ -17,7 +17,11 @@
             lisp-mode
             racket-mode
             hy-mode)
-           . parinfer-rust-mode)))
+           . parinfer-rust-mode)
+    :config
+    ;; close electric-indent-mode and electric-pair-mode
+    (setq electric-indent-mode nil)
+    (setq electric-pair-mode nil)))
 
 ;; Common Lisp
 (use-package sly

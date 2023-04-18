@@ -92,7 +92,7 @@
   :hook (js-ts-mode . +javascript-add-npm-path-h)
   :hook (js-ts-mode . smartparens-mode)
   :hook (js-ts-mode . apheleia-mode)
-  :hook (js-ts-mode . electric-pair-mode)  tsx
+  :hook (js-ts-mode . electric-pair-mode)
   :custom (js-indent-level 2))
 
 (use-package typescript-ts-mode
@@ -102,6 +102,7 @@
   :hook (typescript-ts-mode . apheleia-mode)
   :hook (typescript-ts-mode . smartparens-mode)
   :hook (typescript-ts-mode . electric-pair-mode)
+  :hook (typescript-ts-mode . electric-indent-mode)
   :init
   (after! flycheck
     (flycheck-add-mode 'javascript-eslint 'typescript-ts-mode)
@@ -117,6 +118,7 @@
   :hook (tsx-ts-mode . apheleia-mode)
   :hook (tsx-ts-mode . smartparens-mode)
   :hook (tsx-ts-mode . electric-pair-mode)
+  :hook (tsx-ts-mode . electric-indent-mode)
   :init
   (after! flycheck
     (flycheck-add-mode 'javascript-eslint 'tsx-ts-mode)
