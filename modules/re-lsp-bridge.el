@@ -7,7 +7,10 @@
 (use-package yasnippet
   :ensure t
   :straight t
+  :bind (("M-i" . yas-insert-snippet)
+         ("M-]" . yas-expand))
   :config
+  (add-to-list 'yas-snippet-dirs "~/.emacs.d/snippets")
   (yas-global-mode 1))
 
 
@@ -43,6 +46,7 @@
   :config
   (use-package lsp-bridge-jdtls)
   (setq acm-enable-icon t)
+  (setq acm-enable-yas t)
   (setq acm-enable-doc t)
   (setq acm-enable-doc-markdown-render t)
   (setq acm-enable-path t)

@@ -207,8 +207,8 @@
     ("b" dumb-jump-back "Back")))
 
 (use-package xref
-  :straight (:type built-in)
- )
+  :straight (:type built-in))
+
 
 
 (use-package hl-todo
@@ -280,6 +280,18 @@ current line.")
         (save-excursion
           (backward-word)
           (looking-at-p (concat "\\<" (regexp-opt +electric-indent-words))))))))
+
+
+;; evil-nerd-commenter
+(defun prog-mode-hook-comment-config()
+    (local-set-key (kbd "M-;") 'evilnc-comment-or-uncomment-lines))
+
+(use-package evil-nerd-commenter
+  :straight t
+  :ensure t
+  :commands evilnc-comment-or-uncomment-lines
+  :hook (prog-mode . prog-mode-hook-comment-config))
+
 
 
 (provide 're-prog)
