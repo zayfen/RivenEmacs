@@ -134,4 +134,11 @@
 (global-set-key [remap query-replace] 'anzu-query-replace)
 (global-set-key [remap query-replace-regexp] 'anzu-query-replace-regexp)
 
+;; symbol-overlay
+(use-package symbol-overlay
+  :straight
+  :ensure t
+ )
+
+
 (provide 're-editor)

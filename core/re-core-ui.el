@@ -59,9 +59,9 @@ Useful for keeping track of the enabled theme."
   ;;       ;; the following (for WEIGHT read further below):
   ;;       ;; `matches'   :: `underline', `italic', `WEIGHT'
   ;;       ;; `selection' :: `underline', `italic', `WEIGHT'
-         modus-themes-completions
-         '((matches   . (italic extrabold))
-           (selection . (semibold text-also)))
+         ;; modus-themes-completions
+         ;; '((matches   . (italic extrabold))
+         ;;   (selection . (semibold text-also)))
 
   ;;       modus-themes-org-blocks 'gray-background ; {nil,'gray-background,'tinted-background}
 

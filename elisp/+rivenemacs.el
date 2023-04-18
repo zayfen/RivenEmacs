@@ -72,98 +72,35 @@ If NO-MESSAGE-LOG is non-nil, do not print any message to *Messages* buffer."
      (interactive)
      ,@body))
 
-(defun load-font-setup()
-  (cond
-        (t
-         (let ((emacs-font-size 12)
-               ;; (chinese-font-name  "TsangerJinKai03-6763")
-               (chinese-font-name "Noto Sans CJK SC")
-               english-font-name)
-           (cond
-            ((featurep 'cocoa)
-             (setq english-font-name "Monaco"))
-            ((string-equal system-type "gnu/linux")
-             (setq english-font-name "BlexMono Nerd Font")))
-           (when (display-grayscale-p)
-             (set-frame-font (format "%s-%s" (eval english-font-name) (eval emacs-font-size)))
-             (set-fontset-font (frame-parameter nil 'font) 'unicode (eval english-font-name))
-
-             (dolist (charset '(kana han symbol cjk-misc bopomofo))
-               (set-fontset-font (frame-parameter nil 'font) charset (font-spec :family (eval chinese-font-name)))))))))
-
-;; This is hacking to fix Emacs 29 will decrease font after standby.
-(add-function :after after-focus-change-function #'load-font-setup)
-
-(dolist (hook (list
-               'c-mode-common-hook
-               'c-mode-hook
-               'c++-mode-hook
-               'c++-ts-mode-hook
-               'java-mode-hook
-               'haskell-mode-hook
-               'emacs-lisp-mode-hook
-               'lisp-interaction-mode-hook
-               'lisp-mode-hook
-               'maxima-mode-hook
-               'ielm-mode-hook
-               'sh-mode-hook
-               'makefile-gmake-mode-hook
-               'php-mode-hook
-               'python-mode-hook
-               'python-ts-mode-hook
-               'js-mode-hook
-               'go-mode-hook
-               'qml-mode-hook
-               'jade-mode-hook
-               'css-mode-hook
-               'ruby-mode-hook
-               'coffee-mode-hook
-               'rust-mode-hook
-               'rust-ts-mode-hook
-               'qmake-mode-hook
-               'lua-mode-hook
-               'swift-mode-hook
-               'web-mode-hook
-               'markdown-mode-hook
-               'llvm-mode-hook
-               'conf-toml-mode-hook
-               'nim-mode-hook
-               'typescript-mode-hook
-               'typescript-ts-mode-hook
-               'tsx-ts-mode-hook))
-
-  (add-hook hook #'(lambda () (load-font-setup))))
-
-
 ;;;###autoload
 (defun +set-fonts ()
   "Set Emacs' fonts from `rivenemacs-fonts'."
   (interactive)
-  (load-font-setup))
+
   ;; TODO: use (font-family-list) to check if the font is available
-  ;; (custom-set-faces
- ;;   `(default
- ;;     ((t (:font ,(format "%s %d"
- ;;                  (or (plist-get rivenemacs-fonts :font-family)
- ;;                   (plist-get rivenemacs-default-fonts :font-family))
- ;;                  (or (plist-get rivenemacs-fonts :font-size)
- ;;                   (plist-get rivenemacs-default-fonts :font-size)))))))
- ;;   `(fixed-pitch
- ;;     ((t (:inherit (default)))))
- ;;   `(fixed-pitch-serif
- ;;     ((t (:inherit (default)))))
- ;;   `(variable-pitch
- ;;     ((t (:font ,(format "%s %d"
- ;;                  (or (plist-get rivenemacs-fonts :variable-pitch-font-family)
- ;;                   (plist-get rivenemacs-default-fonts :variable-pitch-font-family))
- ;;                  (or (plist-get rivenemacs-fonts :variable-pitch-font-size)
- ;;                   (plist-get rivenemacs-default-fonts :variable-pitch-font-size))))))))
- ;;  ;; set chinese font
- ;; (dolist (charset '(kana han symbol cjk-misc bopomofo))
- ;;     (set-fontset-font (frame-parameter nil 'font) charset
- ;;                       (font-spec :family "Noto Sans Mono CJK SC Regular" :size 23)))
- ;;   ;; Run hooks
- ;; (run-hooks 'rivenemacs-after-set-fonts-hook)
+  (custom-set-faces
+   `(default
+     ((t (:font ,(format "%s %d"
+                  (or (plist-get rivenemacs-fonts :font-family)
+                   (plist-get rivenemacs-default-fonts :font-family))
+                  (or (plist-get rivenemacs-fonts :font-size)
+                   (plist-get rivenemacs-default-fonts :font-size)))))))
+   `(fixed-pitch
+     ((t (:inherit (default)))))
+   `(fixed-pitch-serif
+     ((t (:inherit (default)))))
+   `(variable-pitch
+     ((t (:font ,(format "%s %d"
+                  (or (plist-get rivenemacs-fonts :variable-pitch-font-family)
+                   (plist-get rivenemacs-default-fonts :variable-pitch-font-family))
+                  (or (plist-get rivenemacs-fonts :variable-pitch-font-size)
+                   (plist-get rivenemacs-default-fonts :variable-pitch-font-size))))))))
+  ;; set chinese font
+ (dolist (charset '(kana han symbol cjk-misc bopomofo))
+     (set-fontset-font (frame-parameter nil 'font) charset
+                       (font-spec :family "Noto Sans Mono CJK SC Regular" :size 23)))
+   ;; Run hooks
+ (run-hooks 'rivenemacs-after-set-fonts-hook))
 
 
 ;;;###autoload
