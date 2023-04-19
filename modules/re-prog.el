@@ -283,14 +283,14 @@ current line.")
 
 
 ;; evil-nerd-commenter
-(defun prog-mode-hook-comment-config()
-    (local-set-key (kbd "M-;") 'evilnc-comment-or-uncomment-lines))
+;; (defun prog-mode-hook-comment-config()
+;;     (local-set-key (kbd "M-;") 'evilnc-comment-or-uncomment-lines))
 
-(use-package evil-nerd-commenter
-  :straight t
-  :ensure t
-  :commands evilnc-comment-or-uncomment-lines
-  :hook (prog-mode . prog-mode-hook-comment-config))
+;; (use-package evil-nerd-commenter
+;;   :straight t
+;;   :ensure t
+;;   :commands evilnc-comment-or-uncomment-lines
+;;   :hook (prog-mode . prog-mode-hook-comment-config))
 
 (use-package aggressive-indent-mode
   :straight t
