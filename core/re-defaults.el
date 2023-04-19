@@ -150,7 +150,7 @@
  ;; Enable time in the mode-line
  display-time-string-forms '((propertize (concat 24-hours ":" minutes)))
  ;; Relative line numbering
-;;  display-line-numbers-type 'relative
+ ;;  display-line-numbers-type 'relative
  ;; No ugly button for widgets
  widget-image-enable nil
  ;; Show unprettified symbol under cursor (when in `prettify-symbols-mode')
@@ -175,6 +175,7 @@
  whitespace-action '(cleanup auto-cleanup)
  ;; End files with newline
  require-final-newline t
+ next-line-add-newlines t
  ;; Enable Drag-and-Drop of regions
  mouse-drag-and-drop-region t
  ;; Enable Drag-and-Drop of regions from Emacs to external programs

@@ -12,7 +12,7 @@
  ;; Magic Hack) gets loaded in the `re-gc' module (see "init.el").
  gc-cons-threshold most-positive-fixnum
  garbage-collection-messages t
-  ;; Do not wast time checking the modification time of each file
+ ;; Do not wast time checking the modification time of each file
  load-prefer-newer noninteractive
  ;; Remove some unneeded UI elements
  default-frame-alist '((tool-bar-lines . 0)
@@ -25,7 +25,8 @@
  ;; Explicitly set modes disabled in `default-frame-alist' to nil
  tool-bar-mode nil
  menu-bar-mode nil
- scroll-bar-mode nil)
+ scroll-bar-mode nil
+ )
 
 ;; NOTE: In Emacs29+, frames can have a transparent background via the
 ;; `alpha-background' parameter. For a better experience, this value should be
