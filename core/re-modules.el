@@ -8,7 +8,8 @@
     re-keybindings-emacs   ; Keybinding for vanila emacs user
     re-defuns            ; defined functions
     re-core-ui       ; Core UI (doom-themes, modus-themes, doom-modeline, ...)
-    re-completion)   ; Completion (vertico, marginalia, corfu, cape, consult, embark, ...)
+    re-completion
+    re-font)   ; Completion (vertico, marginalia, corfu, cape, consult, embark, ...)
   "RivenEmacs enabled core modules."
   :group 'rivenemacs-core
   :type '(repeat symbol))

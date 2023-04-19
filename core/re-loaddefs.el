@@ -315,8 +315,6 @@ Suppress new messages temporarily in the echo area while BODY is evaluated.
 Convert BODY to an interactive command.
 
 (fn &rest BODY)" nil t)
-(autoload '+set-fonts "../elisp/+rivenemacs" "\
-Set Emacs' fonts from `rivenemacs-fonts'." t)
 (autoload '+load-theme "../elisp/+rivenemacs" "\
 Load Emacs' theme from `rivenemacs-theme'." t)
 (autoload '+eval-when-idle "../elisp/+rivenemacs" "\

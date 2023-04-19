@@ -129,11 +129,6 @@ Compiled from the `system-configuration-features'.")
   :group 'rivenemacs-ui
   :type 'symbol)
 
-(defcustom rivenemacs-after-set-fonts-hook nil
-  "Runs after setting RivenEmacs fonts, runs at the end of `+set-fonts'."
-  :group 'rivenemacs-ui
-  :type 'hook)
-
 (defcustom rivenemacs-after-load-theme-hook nil
   "Runs after loading RivenEmacs theme, runs at the end of `+load-theme'."
   :group 'rivenemacs-ui
@@ -157,24 +152,6 @@ RivenEmacs hooks will be run in this order:
   :group 'rivenemacs-core
   :type 'hook)
 
-;; Setup default fonts (depending on the OS)
-(let ((mono-font (cond (os/linux "BlexMono Nerd Font Mono")
-                       (os/win "Lucida Console")
-                       (os/mac "monospace")))
-      (varp-font (cond (os/linux "BlexMono Nerd Font Mono")
-                       (os/win "Tahoma")
-                       (os/mac "monospace")))
-      (unicode-font (cond (os/linux "Noto Sans Mono CJK SC")
-                          (os/win "sans")
-                          (os/mac "sans"))))
-  (defconst rivenemacs-default-fonts
-    `(:font-family ,mono-font
-      :font-size 13
-      :unicode-font-family ,unicode-font
-      :variable-pitch-font-family ,varp-font
-      :variable-pitch-font-size 13)
-    "Default fonts of RivenEmacs."))
-
 (defcustom +env-save-vars
   '("PATH" "MANPATH" "CMAKE_PREFIX_PATH" "PKG_CONFIG_PATH" "LSP_USE_PLISTS")
   "List of the environment variables to saved by `+env-save'.
@@ -182,8 +159,6 @@ You need to run Emacs from terminal to get the environment variables.
 RivenEmacs then save them when calling `+env-save' to be used in GUI sessions as well."
   :group 'rivenemacs-core
   :type '(repeat string))
-
-
 
 ;; Load env file steal from doomemacs
 (defun load-envvars-file (file &optional noerror)

@@ -73,37 +73,6 @@ If NO-MESSAGE-LOG is non-nil, do not print any message to *Messages* buffer."
      ,@body))
 
 ;;;###autoload
-(defun +set-fonts ()
-  "Set Emacs' fonts from `rivenemacs-fonts'."
-  (interactive)
-
-  ;; TODO: use (font-family-list) to check if the font is available
-  (custom-set-faces
-   `(default
-     ((t (:font ,(format "%s %d"
-                  (or (plist-get rivenemacs-fonts :font-family)
-                   (plist-get rivenemacs-default-fonts :font-family))
-                  (or (plist-get rivenemacs-fonts :font-size)
-                   (plist-get rivenemacs-default-fonts :font-size)))))))
-   `(fixed-pitch
-     ((t (:inherit (default)))))
-   `(fixed-pitch-serif
-     ((t (:inherit (default)))))
-   `(variable-pitch
-     ((t (:font ,(format "%s %d"
-                  (or (plist-get rivenemacs-fonts :variable-pitch-font-family)
-                   (plist-get rivenemacs-default-fonts :variable-pitch-font-family))
-                  (or (plist-get rivenemacs-fonts :variable-pitch-font-size)
-                   (plist-get rivenemacs-default-fonts :variable-pitch-font-size))))))))
-  ;; set chinese font
- (dolist (charset '(kana han symbol cjk-misc bopomofo))
-     (set-fontset-font (frame-parameter nil 'font) charset
-                       (font-spec :family "Noto Sans Mono CJK SC Regular" :size 23)))
-   ;; Run hooks
- (run-hooks 'rivenemacs-after-set-fonts-hook))
-
-
-;;;###autoload
 (defun +load-theme ()
   "Load Emacs' theme from `rivenemacs-theme'."
   (interactive)

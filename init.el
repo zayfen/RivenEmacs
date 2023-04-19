@@ -156,10 +156,6 @@
   ;; When running in an async Org export context, there is no need to set
   ;; the fonts, load the theme or play with the scratch buffer.
   (unless (featurep 're-org-export-async-init)
-    (+log! "Applying `rivenemacs-fonts'.")
-    ;; Load fonts, values are read from `rivenemacs-fonts' if set in config.el,
-    ;; otherwise, they are read from the default `rivenemacs-default-fonts'.
-    (+set-fonts)
 
     ;; Initially RivenEmacs loads the `doom-one-light' theme, and when
     ;; `rivenemacs-theme' is set in user configuration, it is loaded here.
@@ -198,9 +194,6 @@
   (let ((user-conf-modules (concat rivenemacs-config-dir "modules.el")))
     (when (file-exists-p user-conf-modules)
       (+load user-conf-modules))))
-
-;; Load fonts early (they are read from the default `rivenemacs-default-fonts').
-(+set-fonts)
 
 ;; NOTE: Ensure the `re-gc' module is in the core modules list. This module
 ;; enables the `gcmh-mode' package (a.k.a. the Garbage Collector Magic Hack).

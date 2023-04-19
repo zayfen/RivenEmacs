@@ -4,24 +4,25 @@
 
 ;; Author: Abdelhak Bougouffa (concat "abougouffa" "@" "fedora" "project" "." "org")
 
-(when (+emacs-features-p 'modules)
-  (use-package parinfer-rust-mode
-    :straight t
-    :when (eq sys/arch 'x86_64)
-    :custom
-    (parinfer-rust-library-directory (concat rivenemacs-local-dir "parinfer-rust/"))
-    (parinfer-rust-auto-download (eq sys/arch 'x86_64))
-    :hook ((emacs-lisp-mode
-            clojure-mode
-            schere-mode
-            lisp-mode
-            racket-mode
-            hy-mode)
-           . parinfer-rust-mode)
-    :config
-    ;; close electric-indent-mode and electric-pair-mode
-    (setq electric-indent-mode nil)
-    (setq electric-pair-mode nil)))
+;; disabled parinfer-rust-mode
+;; (when (+emacs-features-p 'modules)
+;;   (use-package parinfer-rust-mode
+;;     :straight t
+;;     :when (eq sys/arch 'x86_64)
+;;     :custom
+;;     (parinfer-rust-library-directory (concat rivenemacs-local-dir "parinfer-rust/"))
+;;     (parinfer-rust-auto-download (eq sys/arch 'x86_64))
+;;     :hook ((emacs-lisp-mode
+;;             clojure-mode
+;;             schere-mode
+;;             lisp-mode
+;;             racket-mode
+;;             hy-mode)
+;;            . parinfer-rust-mode)
+;;     :config
+;;     ;; close electric-indent-mode and electric-pair-mode
+;;     (setq electric-indent-mode nil)
+;;     (setq electric-pair-mode nil)))
 
 ;; Common Lisp
 (use-package sly
