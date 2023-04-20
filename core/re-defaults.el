@@ -263,6 +263,8 @@
  desktop-restore-eager 5
  ;; Avoid writing contents unchanged between auto-saves
  desktop-file-checksum t
+ desktop-load-locked-desktop t
+ desktop-save-mode t
 
  ;; ====== Compilation ======
  ;; Scroll compilation buffer
@@ -462,8 +464,9 @@ or file path may exist now."
   ;; Save Emacs state from one session to another
   (desktop-save-mode 1)
 
-   ;; Global SubWord mode
- (global-subword-mode 1))
+  ;; Global SubWord mode
+  (global-subword-mode 1))
 
+(desktop-read)
 
 (provide 're-defaults)
