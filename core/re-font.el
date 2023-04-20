@@ -30,25 +30,6 @@
 
 ;; set font for chinese
 ;;(dolist (charset '(kana han symbol cjk-misc bopomofo))
-(set-fontset-font
- t
- 'han
- (cond
-  ((string-equal system-type "windows-nt")
-   (cond
-    ((member "Microsoft YaHei" (font-family-list)) "Microsoft YaHei")
-    ((member "Microsoft JhengHei" (font-family-list)) "Microsoft JhengHei")
-    ((member "SimHei" (font-family-list)) "SimHei")))
-  ((string-equal system-type "darwin")
-   (cond
-    ((member "Hei" (font-family-list)) "Hei")
-    ((member "Heiti SC" (font-family-list)) "Heiti SC")
-    ((member "Heiti TC" (font-family-list)) "Heiti TC")))
-  ((string-equal system-type "gnu/linux")
-   (cond
-    ((member "WenQuanYi Micro Hei Regular" (font-family-list)) "WenQuanYi Micro Hei Regular")))))
-
-
 (defun +set-chinese-font()
   (interactive)
   (set-fontset-font
@@ -67,7 +48,7 @@
       ((member "Heiti TC" (font-family-list)) "Heiti TC")))
     ((string-equal system-type "gnu/linux")
      (cond
-      ((member "WenQuanYi Micro Hei Regular" (font-family-list)) "WenQuanYi Micro Hei Regular"))))))
+      ((member "WenQuanYi Micro Hei" (font-family-list)) "WenQuanYi Micro Hei"))))))
 
 (add-hook 'buffer-list-update-hook '+set-chinese-font)
 
