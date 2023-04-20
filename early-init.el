@@ -11,7 +11,6 @@
  ;; This will be overwritten when `gcmh-mode' (a.k.a. the Garbage Collector
  ;; Magic Hack) gets loaded in the `re-gc' module (see "init.el").
  gc-cons-threshold most-positive-fixnum
- garbage-collection-messages t
  ;; Do not wast time checking the modification time of each file
  load-prefer-newer noninteractive
  ;; Remove some unneeded UI elements
