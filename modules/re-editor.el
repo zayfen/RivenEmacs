@@ -92,14 +92,7 @@
 
 (use-package smartparens
   :straight t
-  :hook (prog-mode . smartparens-mode)
-  :config
-  (with-eval-after-load 'evil-mc
-    ;; Make evil-mc cooperate with smartparens better
-    (let ((vars (cdr (assq :default evil-mc-cursor-variables))))
-      (unless (memq (car sp--mc/cursor-specific-vars) vars)
-        (setcdr (assq :default evil-mc-cursor-variables)
-                (append vars sp--mc/cursor-specific-vars))))))
+  :hook (prog-mode . smartparens-mode))
 
 ;; Default `smartparens' configuration (for example, do not complete a single
 ;; quote)
@@ -111,17 +104,6 @@
   :straight t
   :init
   (global-set-key (kbd "C-=") #'er/expand-region))
-
-(use-package goggles
-  :straight t
-  :hook ((prog-mode text-mode) . goggles-mode)
-  :config
-  ;; Pulse for evil commands
-  (goggles-define undo primitive-undo)
-  (goggles-define yank yank yank-pop)
-  (goggles-define kill kill-region)
-  (goggles-define delete delete-region))
-
 
 ;; anzu replace
 (use-package anzu
@@ -155,8 +137,5 @@
   (global-set-key (kbd "M-n") 'symbol-overlay-jump-next)
   (global-set-key (kbd "M-p") 'symbol-overlay-jump-prev)
   :hook ((prog-mode text-mode) . symbol-overlay-mode))
-
-
-
 
 (provide 're-editor)

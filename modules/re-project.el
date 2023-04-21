@@ -17,7 +17,7 @@
   (+map!
     ;; project
     :infix "p"
-    "w"  #'project-switch-project
+    "p"  #'project-switch-project
     "c"  #'project-compile
     "d"  #'project-find-dir
     "f"  #'project-find-file
@@ -42,13 +42,13 @@
     "Fu" '(project-forget-projects-under :wk "Projects under...")
     ;; search/replace
     "s"  '(consult-ripgrep :wk "search/replace")
-   ))
+    ))
 
 (use-package consult-project-extra
   :straight t
   :init
   (+map!
-    "pp" #'consult-project-extra-find
-    "pP" #'consult-project-extra-find-other-window))
+    "pw" #'consult-project-extra-find
+    "pW" #'consult-project-extra-find-other-window))
 
 (provide 're-project)

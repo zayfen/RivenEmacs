@@ -124,8 +124,7 @@
 
 (use-package apheleia
   :straight t
-  :init
-  (+map! "cff" #'apheleia-format-buffer))
+  )
 
 (use-package apheleia-formatters
   :config
@@ -147,7 +146,7 @@
   :init
   (+map!
     "fc" '(editorconfig-find-current-editorconfig :wk "Find current EditorConfig")
-    "cfe" #'editorconfig-format-buffer)
+    "bf" #'editorconfig-format-buffer)
   :config (editorconfig-mode 1))
 
 (use-package clang-format
@@ -155,11 +154,6 @@
   :init
   (+map! :keymaps '(c-mode-map c++-mode-map cuda-mode-map scad-mode-map)
     "cfc" #'clang-format-buffer))
-
-;;; Modes
-;; (use-package vimrc-mode
-;;   :straight t
-;;   :mode "\\.vim\\(rc\\)?\\'")
 
 (use-package cmake-mode
   :straight (:host github :repo "emacsmirror/cmake-mode" :files (:defaults "*"))
@@ -209,8 +203,6 @@
 (use-package xref
   :straight (:type built-in))
 
-
-
 (use-package hl-todo
   :straight (:host github :repo "tarsius/hl-todo")
   :hook (prog-mode . hl-todo-mode)
@@ -236,19 +228,6 @@
   :custom
   (lua-indent-level 2))
 
-(use-package powershell
-  :straight t)
-
-(use-package franca-idl
-  :straight (:host github :repo "zeph1e/franca-idl.el"))
-
-(use-package bnf-mode
-  :straight t)
-
-(use-package ebnf-mode
-  :straight (:host github :repo "jeramey/ebnf-mode")
-  :hook (ebnf-mode . display-line-numbers-mode)
-  :mode "\\.ebnf\\'")
 
 ;; avy-goto-char
 (use-package avy
@@ -266,36 +245,13 @@
   :init (add-hook 'tree-sitter-after-on-hook #'ts-fold-indicators-mode))
 
 
-(defvar-local +electric-indent-words '()
-  "The list of electric words. Typing these will trigger reindentation of the
-current line.")
-
-;;
-(after! electric
-  (setq-default electric-indent-chars '(?\n ?\^?))
-
-  (add-hook! 'electric-indent-functions
-    (defun +electric-indent-char-fn (_c)
-      (when (and (eolp) +electric-indent-words)
-        (save-excursion
-          (backward-word)
-          (looking-at-p (concat "\\<" (regexp-opt +electric-indent-words))))))))
-
-
-;; evil-nerd-commenter
-;; (defun prog-mode-hook-comment-config()
-;;     (local-set-key (kbd "M-;") 'evilnc-comment-or-uncomment-lines))
-
-;; (use-package evil-nerd-commenter
-;;   :straight t
-;;   :ensure t
-;;   :commands evilnc-comment-or-uncomment-lines
-;;   :hook (prog-mode . prog-mode-hook-comment-config))
-
 (use-package aggressive-indent-mode
   :straight t
   :ensure t
-  :hook (prog-mode . aggressive-indent-mode)
+  :hook ((prog-mode . aggressive-indent-mode)
+         (find-file . (lambda ()
+                        (if (> (buffer-size) (* 3000 80))
+                            (aggressive-indent-mode -1)))))
   :config
   (add-to-list 'aggressive-indent-excluded-modes 'html-mode)
   ;; The variable aggressive-indent-dont-indent-if lets you customize when you don't want indentation to happen.
@@ -303,9 +259,18 @@ current line.")
   ;; yet, you could add the following clause:
   (add-to-list
    'aggressive-indent-dont-indent-if
-   '(and (derived-mode-p 'c++-mode)
-         (null (string-match "\\([;{}]\\|\\b\\(if\\|for\\|while\\)\\b\\)"
-                             (thing-at-point 'line))))))
+   '(and (derived-mode-p 'c++-mode 'c-mode 'csharp-mode 'c++-ts-mode 'c-ts-mode 'csharp-ts-mode)
+     (null (string-match "\\([;{}]\\|\\b\\(if\\|for\\|while\\)\\b\\)"
+            (thing-at-point 'line))))))
+
+(use-package goto-last-point
+  :straight t
+  :ensure t
+  :init
+  (global-set-key (kbd "C-<") 'goto-last-point)
+  :commands goto-last-point
+  :config
+  (goto-last-point-mode))
 
 (provide 're-prog)
 

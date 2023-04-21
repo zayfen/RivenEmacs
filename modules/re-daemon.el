@@ -1,27 +1,5 @@
 ;;; re-daemon.el --- Daemon -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2022-2023  Abdelhak Bougouffa
-
-;; Author: Abdelhak Bougouffa (concat "abougouffa" "@" "fedora" "project" "." "org")
-
-;; Email (mu4e)
-(+lazy-when! (memq 're-email rivenemacs-modules)
-  (when (require 'mu4e nil t)
-    (unless (mu4e-running-p)
-      (let ((inhibit-message t))
-        (mu4e t)
-        (+info! "Started `mu4e' in background.")))))
-
-;; RSS (elfeed)
-(+lazy-when! (memq 're-rss rivenemacs-modules)
-  (run-at-time
-   (* 60 5) ;; 5min
-   (* 60 60) ;; 1h
-   (lambda ()
-     (+info! "Updating RSS feed.")
-     (let ((inhibit-message t))
-       (elfeed-update)))))
-
 ;; When we start in a non-daemon Emacs, we start a server whe Emacs is idle.
 (+lazy-unless! (daemonp)
   (require 'server) ; For using `server-running-p'

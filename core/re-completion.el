@@ -133,8 +133,6 @@ If INITIAL is non-nil, use as initial input."
     ;; buffer
     "bl"  #'consult-line
     "bb"  #'consult-buffer
-    "bB"  #'consult-buffer-other-window
-    "bF"  #'consult-buffer-other-frame
     "bmM" #'consult-bookmark
     "bO"  #'consult-outline
     ;; file
@@ -155,7 +153,6 @@ If INITIAL is non-nil, use as initial input."
     "pl"  #'consult-line-multi
     "pi"  #'consult-imenu-multi
     ;; code
-    "cm"  #'consult-flymake
     "cE"  #'consult-compile-error
     ;; unclassified
     "xc"  #'consult-complex-command
@@ -173,9 +170,9 @@ If INITIAL is non-nil, use as initial input."
     "h"   #'consult-org-heading)
   :config
   (defadvice! +vertico--consult-recent-file-a (&rest _args)
-   "`consult-recent-file' needs to have `recentf-mode' on to work correctly"
-   :before #'consult-recent-file
-   (recentf-mode +1))
+    "`consult-recent-file' needs to have `recentf-mode' on to work correctly"
+    :before #'consult-recent-file
+    (recentf-mode +1))
 
   (setq consult-narrow-key "<"
         consult-line-numbers-widen t

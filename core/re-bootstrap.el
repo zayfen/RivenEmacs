@@ -60,11 +60,6 @@
   :ensure t
   :hook (rivenemacs-after-startup . exec-path-from-shell-initialize))
 
-
-(use-package esup
-  :ensure t
-  :pin melpa)
-
 (use-package explain-pause-mode
   :straight (explain-pause-mode :type git :host github :repo "lastquestion/explain-pause-mode"))
 
