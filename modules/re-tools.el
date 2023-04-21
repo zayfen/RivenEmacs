@@ -105,15 +105,6 @@
 (use-package logview
   :straight t)
 
-;; (use-package tramp
-;;   :straight (:type built-in)
-;;   :init
-;;   ;; This is faster than the default "scp"
-;;   (unless os/win
-;;     (setq tramp-default-method "ssh"))
-;;   :custom
-;;   (tramp-default-remote-shell "/bin/bash"))
-
 (use-package bitwarden
   :straight (:host github :repo "seanfarley/emacs-bitwarden")
   :preface
