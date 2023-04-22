@@ -74,8 +74,8 @@
  ring-bell-function #'ignore
  ;; Set to non-nil to flash!
  visible-bell nil
- ;; Increase the large file threshold to 50 MiB
- large-file-warning-threshold (* 50 1024 1024)
+ ;; Increase the large file threshold to 20 MiB
+ large-file-warning-threshold (* 20 1024 1024)
  ;; Initial scratch message (will be overridden if "fortune" is installed)
  initial-scratch-message ";; RivenEmacs -- start here!"
  ;; Set initial buffer to fundamental-mode for faster load
@@ -151,8 +151,7 @@
  display-time-string-forms '((propertize (concat 24-hours ":" minutes)))
  ;; Relative line numbering
  ;;  display-line-numbers-type 'relative
- ;; No ugly button for widgets
- widget-image-enable nil
+
  ;; Show unprettified symbol under cursor (when in `prettify-symbols-mode')
  prettify-symbols-unprettify-at-point t
  ;; Make tooltips last a bit longer (default 10s)
@@ -227,7 +226,8 @@
       "eln-cache"
       "/cache/"
       ".maildir/"
-      ".cache/")
+      ".cache/"
+      "node_modules")
      (* any)
      (? (or "html" "pdf" "tex" "epub")))
    ,(rx "/"
@@ -263,7 +263,6 @@
  desktop-restore-eager 5
  ;; Avoid writing contents unchanged between auto-saves
  desktop-file-checksum t
- desktop-load-locked-desktop t
  desktop-save-mode t
 
  ;; ====== Compilation ======
@@ -466,7 +465,5 @@ or file path may exist now."
 
   ;; Global SubWord mode
   (global-subword-mode 1))
-
-(desktop-read)
 
 (provide 're-defaults)

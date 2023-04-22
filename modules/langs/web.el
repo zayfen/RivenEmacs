@@ -128,8 +128,6 @@
   (set-electric! 'typescript-ts-mode :chars '(?\} ?\)) :words '("||" "&&")))
 
 
-
-
 (setq auto-mode-alist
       (append '(("\\.tsx\\'" . tsx-ts-mode)  ; note these are encapsulated in a '() list
                 )
