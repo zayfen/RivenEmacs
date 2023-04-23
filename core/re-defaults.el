@@ -161,11 +161,11 @@
 
  ;; ====== Undo ======
  ;; 10MB (default is 160kB)
- undo-limit 10000000
+ undo-limit 1000000
  ;; 50MB (default is 240kB)
- undo-strong-limit 50000000
+ undo-strong-limit 5000000
  ;; 150MB (default is 24MB)
- undo-outer-limit 150000000
+ undo-outer-limit 30000000
 
  ;; ====== Editing ======
  ;; Hitting TAB behavior
@@ -174,7 +174,7 @@
  whitespace-action '(cleanup auto-cleanup)
  ;; End files with newline
  require-final-newline t
- next-line-add-newlines t
+
  ;; Enable Drag-and-Drop of regions
  mouse-drag-and-drop-region t
  ;; Enable Drag-and-Drop of regions from Emacs to external programs
@@ -215,7 +215,7 @@
 
  ;; ====== Recent files ======
  ;; Increase the maximum number of saved items
- recentf-max-saved-items 100
+ recentf-max-saved-items 50
  ;; Ignore case when searching recentf files
  recentf-case-fold-search t
  ;; Exclude some files from being remembered by recentf
@@ -465,5 +465,6 @@ or file path may exist now."
 
   ;; Global SubWord mode
   (global-subword-mode 1))
+
 
 (provide 're-defaults)

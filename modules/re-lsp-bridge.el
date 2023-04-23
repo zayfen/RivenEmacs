@@ -50,8 +50,7 @@
   (setq acm-enable-doc t)
   (setq acm-enable-doc-markdown-render t)
   (setq acm-enable-path t)
-  (setq acm-backend-lsp-candidate-min-length 2)
-  (setq acm-doc-frame-max-lines 30)
+  (setq acm-doc-frame-max-lines 20)
   (setq acm-backend-yas-match-by-trigger-keyword t)
   ;;(setq lsp-bridge-enable-diagnostics t)
   ;;(setq lsp-bridge-enable-hover-diagnostic t)
@@ -63,6 +62,7 @@
     :infix "c"
     "a"  '(lsp-bridge-code-action :wk "Code actions")
     "d"  '(lsp-bridge-find-def :wk "Find definition")
+    "D"  '(lsp-bridge-find-def-return :wk "Find definition return")
     "e"  '(lsp-bridge-diagnostic-list :wk "Diagnostic list")
     "t"  '(lsp-bridge-find-type-def :wk "Find type definition")
     "f" '(lsp-bridge-code-format :wk "Format code")
