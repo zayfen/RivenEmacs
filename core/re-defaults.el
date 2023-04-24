@@ -263,7 +263,6 @@
  desktop-restore-eager 5
  ;; Avoid writing contents unchanged between auto-saves
  desktop-file-checksum t
- desktop-save-mode t
 
  ;; ====== Compilation ======
  ;; Scroll compilation buffer
