@@ -39,6 +39,12 @@
   (web-mode-engines-alist '(("django" . "\\.html\\.tera\\'")))
 
   :config
+  (add-hook 'web-mode-hook
+            #'(lambda ()
+                (unless (flycheck-checker-supports-major-mode-p
+                         'javascript-eslint 'web-mode)
+                 (flycheck-add-mode 'javascript-eslint 'web-mode))
+                (flycheck-mode t)))
   (defun +web-is-auto-close-style-3 (_id action _context)
     (and (eq action 'insert)
          (eq web-mode-auto-close-style 3)))
