@@ -1,10 +1,10 @@
-(use-package apheleia
-  :straight t
-  :commands apheleia-mode
-  :config
-  (push '(tsx-ts-mode . prettier-typescript) apheleia-mode-alist)
-  (setf (alist-get 'prettier-json apheleia-formatters)
-        '(npx "prettier" "--stdin-filepath" filepath)))
+;; (use-package apheleia
+;;   :straight t
+;;   :commands apheleia-mode
+;;   :config
+;;   (push '(tsx-ts-mode . prettier-typescript) apheleia-mode-alist)
+;;   (setf (alist-get 'prettier-json apheleia-formatters)
+;;         '(npx "prettier" "--stdin-filepath" filepath)))
 
 (use-package emmet-mode
   :straight t
@@ -15,9 +15,9 @@
     (add-hook 'emmet-mode-hook #'yas-minor-mode-on))
   (setq emmet-move-cursor-between-quotes t)
   (+map! :keymaps 'emmet-mode-keymap
-        "v TAB" #'emmet-wrap-with-markup
-        "TAB" #'+web/indent-or-yas-or-emmet-expand
-        "M-E" #'emmet-expand-line))
+    "v TAB" #'emmet-wrap-with-markup
+    "TAB" #'+web/indent-or-yas-or-emmet-expand
+    "M-E" #'emmet-expand-line))
 
 (use-package web-mode
   :straight t
@@ -70,7 +70,7 @@
   :straight (:type built-in)
   :mode (("\\.css\\'" . css-ts-mode))
   :hook (css-ts-mode . +javascript-add-npm-path-h)
-  :hook (css-ts-mode . apheleia-mode)
+  ;;  :hook (css-ts-mode . apheleia-mode)
   :custom (css-indent-offset 2))
 
 (use-package sass-mode
@@ -82,8 +82,8 @@
   :mode (("\\.json\\'" . json-ts-mode))
   :hook (json-ts-mode . smartparens-mode)
   :hook (json-ts-mode . +javascript-add-npm-path-h)
-  :hook (json-ts-mode . electric-pair-mode)
-  :hook (json-ts-mode . apheleia-mode))
+  :hook (json-ts-mode . electric-pair-mode))
+;;  :hook (json-ts-mode . apheleia-mode)
 
 (use-package js-ts-mode
   :straight (:type built-in)
@@ -98,7 +98,7 @@
   :straight (:type built-in)
   :mode (("\\.ts\\'" . typescript-ts-mode))
   :hook ((typescript-ts-mode . +javascript-add-npm-path-h)
-         (typescript-ts-mode . apheleia-mode)
+ ;;        (typescript-ts-mode . apheleia-mode)
          (typescript-ts-mode . smartparens-mode)
          (typescript-ts-mode . electric-pair-mode))
   :init
@@ -114,7 +114,7 @@
   :straight (:type built-in)
   :mode ("\\.tsx\\'" . tsx-ts-mode)
   :hook ((tsx-ts-mode . +javascript-add-npm-path-h)
-         (tsx-ts-mode . apheleia-mode)
+;;         (tsx-ts-mode . apheleia-mode)
          (tsx-ts-mode . smartparens-mode)
          (tsx-ts-mode . electric-pair-mode)
          (tsx-ts-mode . web-mode))
