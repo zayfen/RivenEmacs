@@ -250,6 +250,7 @@ If INITIAL is non-nil, use as initial input."
   (vertico-cycle t)
   (vertico-resize nil)
   (vertico-count 12)
+  (vertico-sort-funtion #'vertico-sort-history-alpha)
   :init
   (add-to-list
    'load-path (concat
