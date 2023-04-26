@@ -310,5 +310,17 @@ If INITIAL is non-nil, use as initial input."
     "f" 'find-file-in-project))
 
 
+(use-package prescient
+  :straight t
+  :after vertico
+  :config
+  (prescient-persist-mode 1))
+
+(use-package vertico-prescient
+  :straight t
+  :after prescient
+  :config
+  (vertico-prescient-mode 1))
+
 
 (provide 're-completion)
