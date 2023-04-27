@@ -334,6 +334,8 @@
   ;; Eventually suppress previewing for certain functions
   (consult-customize consult-org-roam-forward-links :preview-key (kbd "M-.")))
 
+(setq org-directory "~/Qsync/Org/")
+(setq org-agenda-files (list "~/Qsync/Org/GTD/todo.org" "~/Qsync/Org/GTD/done.org"))
 
 (provide 're-org)
 
