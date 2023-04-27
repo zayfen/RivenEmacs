@@ -130,7 +130,7 @@ Useful for keeping track of the enabled theme."
   (doom-modeline-height 35)
   (doom-modeline-bar-width 8)
   (doom-modeline-time-icon nil)
-  (doom-modeline-buffer-encoding 'nondefault)
+  (doom-modeline-buffer-encoding t)
   (doom-modeline-unicode-fallback t)
   :config
   (setq inhibit-compacting-font-caches t)
