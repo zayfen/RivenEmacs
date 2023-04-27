@@ -208,6 +208,8 @@
 
 ;; Global keybindings
 (global-set-key (kbd "C-m") 'newline-and-indent)
+(global-set-key (kbd "M-g f") 'forward-whitespace)
+
 
 (provide 're-emacs-keybindings)
 
