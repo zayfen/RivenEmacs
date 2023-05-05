@@ -6,6 +6,26 @@
 ;;   (setf (alist-get 'prettier-json apheleia-formatters)
 ;;         '(npx "prettier" "--stdin-filepath" filepath)))
 
+(defun +web/indent-or-yas-or-emmet-expand ()
+  "Do-what-I-mean on TAB.
+
+Invokes `indent-for-tab-command' if at or before text bol, `yas-expand' if on a
+snippet, or `emmet-expand-yas'/`emmet-expand-line', depending on whether
+`yas-minor-mode' is enabled or not."
+  (interactive)
+  (call-interactively
+   (cond ((or (<= (current-column) (current-indentation))
+              (not (eolp))
+              (not (or (memq (char-after) (list ?\n ?\s ?\t))
+                       (eobp))))
+          #'indent-for-tab-command)
+         (t
+          (require 'yasnippet)
+          (if (yas--templates-for-key-at-point)
+              #'yas-expand
+            #'emmet-expand-yas))
+         (#'emmet-expand-line))))
+
 (use-package emmet-mode
   :straight t
   :preface (defvar emmet-mode-keymap (make-sparse-keymap))
@@ -120,18 +140,17 @@
   :straight (:type built-in)
   :mode ("\\.tsx\\'" . tsx-ts-mode)
   :hook ((tsx-ts-mode . +javascript-add-npm-path-h)
-;;         (tsx-ts-mode . apheleia-mode)
+         ;;         (tsx-ts-mode . apheleia-mode)
          (tsx-ts-mode . smartparens-mode)
-         (tsx-ts-mode . electric-pair-mode)
-         (tsx-ts-mode . web-mode))
+         (tsx-ts-mode . electric-pair-mode))
   :init
   (after! flycheck
     (flycheck-add-mode 'javascript-eslint 'tsx-ts-mode)
     (flycheck-add-mode 'typescript-tslint 'tsx-ts-mode))
   :custom (typescript-ts-mode-indent-offset 2)
-
   :config
-  (set-electric! 'typescript-ts-mode :chars '(?\} ?\)) :words '("||" "&&")))
+  (set-electric! 'typescript-ts-mode :chars '(?\} ?\)) :words '("||" "&&"))
+  )
 
 
 (setq auto-mode-alist

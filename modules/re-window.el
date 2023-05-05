@@ -100,6 +100,6 @@
     (global-set-key [remap other-window] 'ace-window)
     (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))))
 
-
-
+(set-frame-parameter (selected-frame)
+                     'internal-border-width 0)
 (provide 're-window)
