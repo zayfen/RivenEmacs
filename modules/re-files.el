@@ -17,12 +17,10 @@
   (dirvish-use-header-line t) ; 'global make header line span all panes
   (dirvish-use-mode-line t)
   :init
-  (+map!
-    ;; Open
-    "o-" '(dirvish :wk "Dirvish")
-    "oq" '(dirvish-quick-access :wk "Dirvish quick access")
-    ;; Search
-    "sd" '(dirvish-fd :wk "Dirvish fd"))
+  (+map! :infix "d"
+    "d" '(dirvish :wk "Open Dirvish")
+    "q" '(dirvish-quick-access :wk "Dirvish quick access")
+    "f" '(dirvish-fd :wk "Dirvish fd"))
   :config
   (+nvmap! :keymaps 'dirvish-mode-map
     "q" #'dirvish-quit
