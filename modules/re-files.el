@@ -18,6 +18,7 @@
   (dirvish-use-mode-line t)
   :init
   (+map! :infix "d"
+    "" '(nil :wk "Dirvish")
     "d" '(dirvish :wk "Open Dirvish")
     "q" '(dirvish-quick-access :wk "Dirvish quick access")
     "f" '(dirvish-fd :wk "Dirvish fd"))
