@@ -53,7 +53,7 @@
   (setq acm-doc-frame-max-lines 20)
   (setq acm-backend-yas-match-by-trigger-keyword t)
   (setq acm-enable-tabnine nil)
-  ;;(setq lsp-bridge-enable-diagnostics t)
+  (setq lsp-bridge-enable-diagnostics nil) ;; we use flycheck only
   ;;(setq lsp-bridge-enable-hover-diagnostic t)
   (setq lsp-bridge-code-action-enable-popup-menu nil)
   (setq lsp-bridge-python-multi-lsp-server "pyright_ruff")
