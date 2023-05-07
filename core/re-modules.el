@@ -41,7 +41,9 @@
     re-window        ; Frame & window tweaks
     langs/web        ; web (js, jsx, ts, tsx)
     langs/rust       ; rust
-    langs/re-python)    ;python
+    langs/re-python  ;python
+    re-leetcode
+    re-hackernews)
 
   "RivenEmacs enabled modules."
   :group 'rivenemacs-core

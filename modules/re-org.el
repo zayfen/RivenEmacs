@@ -337,6 +337,10 @@
   ;; Eventually suppress previewing for certain functions
   (consult-customize consult-org-roam-forward-links :preview-key (kbd "M-.")))
 
+(use-package ox-gfm :defer t)
+
+(use-package toc-org
+  :hook (org-mode . toc-org-mode))
 
 (provide 're-org)
 
