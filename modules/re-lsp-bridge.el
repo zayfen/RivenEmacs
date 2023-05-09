@@ -65,7 +65,7 @@
 
   (lsp-bridge-multi-lang-server-extension-list
    '(
-     ;;(("ts" "tsx") . "typescript_eslint")
+     (("ts" "tsx") . "typescript_eslint")
      (("scss" "sass" "less") . "css_emmet")
      ))
 
@@ -76,7 +76,6 @@
   (setq acm-enable-doc t)
   (setq acm-enable-doc-markdown-render t)
   (setq acm-enable-path t)
-  (setq acm-doc-frame-max-lines 20)
   (setq acm-backend-yas-match-by-trigger-keyword t)
   (setq acm-enable-tabnine nil)
   (setq lsp-bridge-enable-diagnostics nil) ;; we use flycheck only
