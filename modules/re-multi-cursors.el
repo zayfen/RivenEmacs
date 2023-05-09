@@ -17,7 +17,7 @@
     "Face for iedit occurrence highlighting.")
   (add-hook 'iedit-mode-hook
             (lambda ()
-              (set-face-attribute 'iedit-occurrence nil :background "yello" :foreground "white"))))
+              (set-face-attribute 'iedit-occurrence nil :background "yellow" :foreground "white"))))
 
 
 (use-package multiple-cursors
