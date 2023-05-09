@@ -63,13 +63,7 @@ Useful for keeping track of the enabled theme."
   (setcdr (assoc "m" all-the-icons-extension-icon-alist)
           (cdr (assoc "matlab" all-the-icons-extension-icon-alist))))
 
-(use-package doom-themes
-  :straight t)
-
 (use-package dracula-theme
-  :straight t)
-
-(use-package apropospriate-theme
   :straight t)
 
 (use-package dashboard
