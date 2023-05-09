@@ -124,4 +124,10 @@
        ""))))
 
 
+(use-package quickrun
+  :ensure t
+  :commands (quickrun)
+  :bind ("<f5>" . quickrun))
+
+
 (provide 're-tools)
