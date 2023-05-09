@@ -10,8 +10,7 @@
     (set-frame-font "Menlo" t t)))
  ((string-equal system-type "gnu/linux") ; linux
   (when (member "DejaVu Sans Mono" (font-family-list))
-    (set-frame-font "Ligalex Mono-12" t t))))
-
+    (set-frame-font "Ligalex Mono 12" t t))))
 
 ;; set font for symbols
 (set-fontset-font

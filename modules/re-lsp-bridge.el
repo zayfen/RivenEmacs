@@ -64,8 +64,10 @@
   (lsp-bridge-signature-function 'eldoc-message)
 
   (lsp-bridge-multi-lang-server-extension-list
-   '((("ts" "tsx") . "typescript_eslint")
-     (("scss" "sass" "less") . "css_emmet")))
+   '(
+     ;;(("ts" "tsx") . "typescript_eslint")
+     (("scss" "sass" "less") . "css_emmet")
+     ))
 
   :config
   (use-package lsp-bridge-jdtls)

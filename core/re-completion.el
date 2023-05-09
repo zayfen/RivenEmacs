@@ -321,5 +321,4 @@ If INITIAL is non-nil, use as initial input."
   :config
   (vertico-prescient-mode 1))
 
-
 (provide 're-completion)

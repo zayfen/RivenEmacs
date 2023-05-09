@@ -66,6 +66,9 @@ Useful for keeping track of the enabled theme."
 (use-package doom-themes
   :straight t)
 
+(use-package dracula-theme
+  :straight t)
+
 (use-package apropospriate-theme
   :straight t)
 

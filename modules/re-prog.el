@@ -6,20 +6,21 @@
 
 
 
-  ;; Use built-in `treesit' when available
-  (use-package treesit
-    :straight (:type built-in)
-    :custom
-    (treesit-font-lock-level 3))
+;; Use built-in `treesit' when available
+(use-package treesit
+  :straight (:type built-in)
+  :custom
+  (treesit-font-lock-level 3))
 
-  (use-package treesit-auto
-    :straight (:host github :repo "renzmann/treesit-auto")
-    :hook (rivenemacs-after-startup . global-treesit-auto-mode)
-    :custom
-    (treesit-auto-install 'prompt)
-    :config
-    ;; Install all languages when calling `treesit-auto-install-all'
-    (setq treesit-language-source-alist (treesit-auto--build-treesit-source-alist)))
+(use-package treesit-auto
+  :straight (:host github :repo "renzmann/treesit-auto")
+  :hook (rivenemacs-after-startup . global-treesit-auto-mode)
+  :custom
+  (treesit-auto-install 'prompt)
+  :config
+  ;; Install all languages when calling `treesit-auto-install-all'
+  (setq treesit-language-source-alist (treesit-auto--build-treesit-source-alist))
+  (global-tree-sitter-mode))
 
 (use-package hideif
   :straight (:type built-in)
