@@ -9,7 +9,15 @@
   :after rivenemacs-lazy
   :demand t
   :preface
-  (+fn-inhibit-messages! iedit-update-key-bindings))
+  (+fn-inhibit-messages! iedit-update-key-bindings)
+  :config
+  ;; Define a new face for iedit occurrence highlighting
+  (defface iedit-occurrence
+    '((t (:background "yellow" :foreground "white")))
+    "Face for iedit occurrence highlighting.")
+  (add-hook 'iedit-mode-hook
+            (lambda ()
+              (set-face-attribute 'iedit-occurrence nil :background "yello" :foreground "white"))))
 
 
 (use-package multiple-cursors
