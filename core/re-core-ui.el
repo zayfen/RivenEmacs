@@ -95,16 +95,8 @@ Useful for keeping track of the enabled theme."
   (doom-modeline-buffer-encoding t)
   (doom-modeline-unicode-fallback t)
   (doom-modeline-icon nil)
-  (inhibit-compacting-font-caches t)  ;; Don’t compact font caches during GC.
-  :config
-  ;; (setq inhibit-compacting-font-caches t)
-  ;; HACK: Add some padding to the right
-  (doom-modeline-def-modeline 'main
-    '(bar workspace-name window-number modals matches follow buffer-info
-      remote-host buffer-position word-count parrot selection-info)
-    '(compilation objed-state misc-info persp-name grip irc mu4e gnus
-      github debug repl lsp minor-modes input-method indent-info buffer-encoding
-      major-mode process vcs checker time "  ")))
+  ;; Don’t compact font caches during GC.
+  (inhibit-compacting-font-caches t))  
 
 
 (provide 're-core-ui)
