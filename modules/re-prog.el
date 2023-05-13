@@ -42,7 +42,6 @@
 (use-package eldoc-box
   :straight t
   :hook (prog-mode . eldoc-box-hover-at-point-mode)
-  :hook (lsp-bridge-mode . eldoc-box-hover-at-point-mode)
   :hook ((tab-bar-mode tool-bar-mode) . +eldoc-box-hover-at-point-fix-h)
   :config
   ;; HACK: Temporary fix for `eldoc-box-hover-at-point-mode' with `tab-bar-mode'

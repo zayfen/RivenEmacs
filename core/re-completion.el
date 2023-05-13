@@ -213,7 +213,10 @@ If INITIAL is non-nil, use as initial input."
                (list dir)
                (if (and (called-interactively-p) (not (minibufferp)))
                    (list (or initial (+region-or-thing-at-point)))
-                 (list initial))))))))
+                 (list initial)))))))
+
+  ;; consult-buffer exclude *Name* buffers
+  (add-to-list 'consult-buffer-filter "^\*.*\*$"))
 
 (use-package embark
   :straight t
@@ -235,13 +238,34 @@ If INITIAL is non-nil, use as initial input."
   :straight t
   :hook (marginalia-mode . all-the-icons-completion-marginalia-setup))
 
+;; A few more useful configurations...
+(use-package emacs
+  :init
+  ;; Add prompt indicator to `completing-read-multiple'.
+  ;; We display [CRM<separator>], e.g., [CRM,] if the separator is a comma.
+  (defun crm-indicator (args)
+    (cons (format "[CRM%s] %s"
+                  (replace-regexp-in-string
+                   "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
+                   crm-separator)
+                  (car args))
+          (cdr args)))
+  (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
+
+  ;; Do not allow the cursor in the minibuffer prompt
+  (setq minibuffer-prompt-properties
+        '(read-only t cursor-intangible t face minibuffer-prompt))
+  (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
+  (setq enable-recursive-minibuffers t))
+
 (use-package orderless
   :straight t
   :after rivenemacs-loaded
   :demand t
   :custom
   (completion-styles '(orderless basic))
-  (completion-category-overrides '((file (styles basic partial-completion)))))
+  (completion-category-defaults nil)
+  (completion-category-overrides '((file (styles partial-completion)))))
 
 (use-package vertico
   :straight t
@@ -249,7 +273,6 @@ If INITIAL is non-nil, use as initial input."
   :custom
   (vertico-cycle t)
   (vertico-resize nil)
-  (vertico-count 12)
   :init
   (add-to-list
    'load-path (concat
@@ -320,5 +343,10 @@ If INITIAL is non-nil, use as initial input."
   :after prescient
   :config
   (vertico-prescient-mode 1))
+
+;; ignore file buffer cases
+(setq read-file-name-completion-ignore-case t
+      read-buffer-completion-ignore-case t
+      completion-ignore-case t)
 
 (provide 're-completion)

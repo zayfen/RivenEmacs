@@ -13,15 +13,6 @@
   (define-key flycheck-mode-map [remap next-error] #'flycheck-next-error)
   (define-key flycheck-mode-map [remap previous-error] #'flycheck-previous-error))
 
-
-;; Other pkgs
-(use-package flycheck-tip
-  :ensure t
-  :commands 'flycheck-tip-cycle
-  :after flycheck
-  :bind (:map flycheck-mode-map
-              ("C-c C-n" . flycheck-tip-cycle)))
-
 (use-package flycheck-package
   :ensure t)
 
