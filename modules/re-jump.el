@@ -44,17 +44,16 @@
          ("M-?" . smart-jump-references))
   :config
   (smart-jump-setup-default-registers)
-  :custom
   (smart-jump-register :modes '(prog-mode)
-                     :jump-fn 'lsp-bridge-find-def
-                     :pop-fn 'lsp-bridge-find-def-return
-                     :refs-fn 'lsp-bridge-find-references
-                     :should-jump t
-                     :heuristic 'point
-                     :async 500
-                     :order 1))
+                       :jump-fn '#lsp-bridge-find-def
+                       :pop-fn '#lsp-bridge-find-def-return
+                       :refs-fn '#lsp-bridge-find-references
+                       :should-jump t
+                       :heuristic 'point
+                       :async 500
+                       :order 1))
 
-  (use-package goto-last-point
+(use-package goto-last-point
   :ensure t
   :init
   (global-set-key (kbd "C-<") 'goto-last-point)
@@ -62,4 +61,4 @@
   :config
   (goto-last-point-mode))
 
-  (provide 're-jump)
+(provide 're-jump)
