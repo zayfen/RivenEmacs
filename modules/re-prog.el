@@ -183,7 +183,8 @@
   :init
   ;; remove etag feature and only use dumb-jump as xref-backend
   (setq xref-backend-functions (remq 'etags--xref-backend xref-backend-functions))
-  (add-to-list 'xref-backend-functions #'dumb-jump-xref-activate t)
+  (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
+  (setq xref-show-definitions-function #'xref-show-definitions-completing-read)
 
   (+map!
     "j" '(+dumb-jump-hydra/body :wk "+dumb-jump-hydra"))
