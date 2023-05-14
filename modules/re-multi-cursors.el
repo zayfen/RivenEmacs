@@ -13,11 +13,11 @@
   :config
   ;; Define a new face for iedit occurrence highlighting
   (defface iedit-occurrence
-    '((t (:background "yellow" :foreground "black")))
+    '((t (:background "#1A8899" :foreground "black")))
     "Face for iedit occurrence highlighting.")
   (add-hook 'iedit-mode-hook
             (lambda ()
-              (set-face-attribute 'iedit-occurrence nil :background "yellow" :foreground "black"))))
+              (set-face-attribute 'iedit-occurrence nil :background "#1A8899" :foreground "black"))))
 
 
 (use-package multiple-cursors

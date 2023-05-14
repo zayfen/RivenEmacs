@@ -103,9 +103,7 @@ If INITIAL is non-nil, use as initial input."
   :straight t
   :hook (embark-collect-mode . consult-preview-at-point-mode)
   :custom
-  ;; Use `consult-xref' for `xref-find-references'
   (xref-show-xrefs-function #'consult-xref)
-  ;; Better formatting for `view-register'
   (register-preview-function #'consult-register-format)
   :preface
   (define-key!
@@ -169,6 +167,13 @@ If INITIAL is non-nil, use as initial input."
   (+map-local! :keymaps 'org-mode-map
     "h"   #'consult-org-heading)
   :config
+  (consult-customize
+   consult-ripgrep consult-git-grep consult-grep
+   consult-bookmark consult-recent-file consult-xref
+   consult--source-bookmark consult--source-file-register
+   consult--source-recent-file consult--source-project-recent-file
+   :preview-key '(:debounce 0.2 any))
+
   (defadvice! +vertico--consult-recent-file-a (&rest _args)
     "`consult-recent-file' needs to have `recentf-mode' on to work correctly"
     :before #'consult-recent-file

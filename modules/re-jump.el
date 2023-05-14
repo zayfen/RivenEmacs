@@ -20,7 +20,6 @@
   (setq xref-backend-functions (remq 'etags--xref-backend xref-backend-functions))
   (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
   (setq xref-show-definitions-function #'xref-show-definitions-completing-read)
-
   (+map!
     "j" '(+dumb-jump-hydra/body :wk "+dumb-jump-hydra"))
 
