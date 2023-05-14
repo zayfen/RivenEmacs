@@ -173,36 +173,6 @@
   :straight t
   :mode "\\.cl\\'")
 
-(use-package dumb-jump
-  :straight t
-  :commands
-  +dumb-jump-hydra/body
-  :after xref
-  :custom
-  (dumb-jump-selector 'completing-read)
-  :init
-  ;; remove etag feature and only use dumb-jump as xref-backend
-  (setq xref-backend-functions (remq 'etags--xref-backend xref-backend-functions))
-  (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
-  (setq xref-show-definitions-function #'xref-show-definitions-completing-read)
-
-  (+map!
-    "j" '(+dumb-jump-hydra/body :wk "+dumb-jump-hydra"))
-
-  :config
-  ;; Define Hydra keybinding (from the repo's examples)
-  (defhydra +dumb-jump-hydra (:color blue :columns 3)
-    "Dumb Jump."
-    ("j" dumb-jump-go "Go")
-    ("o" dumb-jump-go-other-window "Other window")
-    ("e" dumb-jump-go-prefer-external "Go external")
-    ("x" dumb-jump-go-prefer-external-other-window "Go external other window")
-    ("i" dumb-jump-go-prompt "Prompt")
-    ("l" dumb-jump-quick-look "Quick look")
-    ("b" dumb-jump-back "Back")))
-
-(use-package xref
-  :straight (:type built-in))
 
 (use-package hl-todo
   :straight (:host github :repo "tarsius/hl-todo")
@@ -264,14 +234,7 @@
      (null (string-match "\\([;{}]\\|\\b\\(if\\|for\\|while\\)\\b\\)"
             (thing-at-point 'line))))))
 
-(use-package goto-last-point
-  :straight t
-  :ensure t
-  :init
-  (global-set-key (kbd "C-<") 'goto-last-point)
-  :commands goto-last-point
-  :config
-  (goto-last-point-mode))
+
 
 (provide 're-prog)
 

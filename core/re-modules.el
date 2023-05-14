@@ -43,7 +43,8 @@
     langs/rust       ; rust
     langs/re-python  ;python
     re-leetcode
-    re-hackernews)
+    re-hackernews
+    re-jump)
 
   "RivenEmacs enabled modules."
   :group 'rivenemacs-core
