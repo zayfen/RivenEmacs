@@ -168,8 +168,8 @@
  undo-outer-limit 30000000
 
  ;; ====== Editing ======
- ;; Hitting TAB behavior
- tab-always-indent nil
+ tab-always-indent t
+
  ;; Default behavior for `whitespace-cleanup'
  whitespace-action '(cleanup auto-cleanup)
  ;; End files with newline
@@ -297,6 +297,8 @@
    ("Reddit"        . [simple-query "www.reddit.com" "www.reddit.com/search/?q=" ""])
    ("Wikipedia"     . [simple-query "wikipedia.org" "wikipedia.org/wiki/" ""])))
 
+
+;; OOOOOOOOOOOOOK
 (setq-default
  ;; ====== Buffer-local variables ======
  ;; Display long lines
