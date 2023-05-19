@@ -22,6 +22,7 @@
                'append))
 
 (use-package poetry
+  :ensure t
   :after python
   :init
   (setq poetry-tracking-strategy 'switch-buffer))
@@ -86,4 +87,4 @@
     "tp" #'python-pytest-dispatch))
 
 
-(provide 'python)
+(provide 're-python)
