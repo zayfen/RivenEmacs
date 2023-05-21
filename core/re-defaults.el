@@ -168,7 +168,7 @@
  undo-outer-limit 30000000
 
  ;; ====== Editing ======
- tab-always-indent t
+ tab-always-indent 'complete
 
  ;; Default behavior for `whitespace-cleanup'
  whitespace-action '(cleanup auto-cleanup)

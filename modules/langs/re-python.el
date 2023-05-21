@@ -1,9 +1,20 @@
 ;; modules/langs/re-python.el -*- lexical-binding: t; -*-
 
+;; (use-package highlight-indent-guides
+;;   :ensure t
+;;   :hook (python-mode-hook . highlight-indent-guides-mode)
+;;   :config
+;;   (setq highlight-indent-guides-method 'character)
+;;   (set-face-background 'highlight-indent-guides-odd-face "#cccccc")
+;;   (set-face-background 'highlight-indent-guides-even-face "#cccccc")
+;;   (set-face-foreground 'highlight-indent-guides-character-face "#cccccc"))
+
+
 (use-package python
-  :mode ("\\.py\\'" . python-ts-mode)
-  :mode ("[./]flake8\\'" . conf-mode)
-  :mode ("/Pipfile\\'" . conf-mode))
+  :ensure t
+  :mode (("\\.py\\'" . python-ts-mode)
+         ("[./]flake8\\'" . conf-mode)
+         ("/Pipfile\\'" . conf-mode)))
 
 
 (use-package pip-requirements
@@ -22,7 +33,7 @@
                'append))
 
 (use-package poetry
-  :ensure t
+  :straight t
   :after python
   :init
   (setq poetry-tracking-strategy 'switch-buffer))
