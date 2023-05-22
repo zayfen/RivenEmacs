@@ -1,15 +1,5 @@
 ;; modules/langs/re-python.el -*- lexical-binding: t; -*-
 
-;; (use-package highlight-indent-guides
-;;   :ensure t
-;;   :hook (python-mode-hook . highlight-indent-guides-mode)
-;;   :config
-;;   (setq highlight-indent-guides-method 'character)
-;;   (set-face-background 'highlight-indent-guides-odd-face "#cccccc")
-;;   (set-face-background 'highlight-indent-guides-even-face "#cccccc")
-;;   (set-face-foreground 'highlight-indent-guides-character-face "#cccccc"))
-
-
 (use-package python
   :ensure t
   :mode (("\\.py\\'" . python-ts-mode)

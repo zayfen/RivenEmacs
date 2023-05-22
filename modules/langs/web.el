@@ -1,10 +1,10 @@
-;; (use-package apheleia
-;;   :straight t
-;;   :commands apheleia-mode
-;;   :config
-;;   (push '(tsx-ts-mode . prettier-typescript) apheleia-mode-alist)
-;;   (setf (alist-get 'prettier-json apheleia-formatters)
-;;         '(npx "prettier" "--stdin-filepath" filepath)))
+(use-package apheleia
+  :straight t
+  :commands apheleia-mode
+  :config
+  (push '(tsx-ts-mode . prettier-typescript) apheleia-mode-alist)
+  (setf (alist-get 'prettier-json apheleia-formatters)
+        '(npx "prettier" "--stdin-filepath" filepath)))
 
 (defun +web/indent-or-yas-or-emmet-expand ()
   "Do-what-I-mean on TAB.
