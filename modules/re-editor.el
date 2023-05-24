@@ -90,15 +90,30 @@
   :straight t
   :hook (prog-mode . highlight-numbers-mode))
 
-(use-package smartparens
-  :straight t
-  :hook (prog-mode . smartparens-mode))
+;; Use puni-mode globally and disable it for term-mode.
+(use-package puni
+  :ensure t
+  :defer t
+  :commands (puni-splice puni-wrap-round puni-transpose)
+  :init
+  ;; The autoloads of Puni are set up so you can enable `puni-mode` or
+  ;; `puni-global-mode` before `puni` is actually loaded. Only after you press
+  ;; any key that calls Puni commands, it's loaded.
+  (puni-global-mode)
+  (add-hook 'term-mode-hook #'puni-disable-puni-mode)
+  (global-set-key (kbd "M-s -") #'puni-splice)
+  (global-set-key (kbd "M-s +") #'puni-wrap-round)
+  (global-set-key (kbd "M-s =") #'puni-transpose))
+
+;; (use-package smartparens
+;;   :straight t
+;;   :hook (prog-mode . smartparens-mode))
 
 ;; Default `smartparens' configuration (for example, do not complete a single
 ;; quote)
-(use-package smartparens-config
-  :after smartparens
-  :demand t)
+;; (use-package smartparens-config
+;;   :after smartparens
+;;   :demand t)
 
 (use-package expand-region
   :straight t

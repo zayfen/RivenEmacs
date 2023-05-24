@@ -68,12 +68,12 @@ snippet, or `emmet-expand-yas'/`emmet-expand-line', depending on whether
   (defun +web-is-auto-close-style-3 (_id action _context)
     (and (eq action 'insert)
          (eq web-mode-auto-close-style 3)))
-  (require 'smartparens)
-  (sp-local-pair 'web-mode "<" ">" :unless '(:add +web-is-auto-close-style-3))
+  ;; (require 'smartparens)
+  ;; (sp-local-pair 'web-mode "<" ">" :unless '(:add +web-is-auto-close-style-3))
 
   ;; let smartparens handle these
-  (setq web-mode-enable-auto-quoting nil
-        web-mode-enable-auto-pairing t)
+  ;; (setq web-mode-enable-auto-quoting nil
+  ;;       web-mode-enable-auto-pairing t)
 
   ;; 1. Remove web-mode auto pairs whose end pair starts with a latter
   ;;    (truncated autopairs like <?p and hp ?>). Smartparens handles these
@@ -106,7 +106,7 @@ snippet, or `emmet-expand-yas'/`emmet-expand-line', depending on whether
 (use-package json-ts-mode
   :straight (:type built-in)
   :mode (("\\.json\\'" . json-ts-mode))
-  :hook (json-ts-mode . smartparens-mode)
+;;  :hook (json-ts-mode . smartparens-mode)
   :hook (json-ts-mode . +javascript-add-npm-path-h)
   :hook (json-ts-mode . electric-pair-mode))
 ;;  :hook (json-ts-mode . apheleia-mode)
@@ -115,7 +115,7 @@ snippet, or `emmet-expand-yas'/`emmet-expand-line', depending on whether
   :straight (:type built-in)
   :mode ("\\.js\\'" . js-ts-mode)
   :hook (js-ts-mode . +javascript-add-npm-path-h)
-  :hook (js-ts-mode . smartparens-mode)
+;;  :hook (js-ts-mode . smartparens-mode)
   :hook (js-ts-mode . apheleia-mode)
   :hook (js-ts-mode . electric-pair-mode)
   :custom (js-indent-level 2))
@@ -125,7 +125,7 @@ snippet, or `emmet-expand-yas'/`emmet-expand-line', depending on whether
   :mode (("\\.ts\\'" . typescript-ts-mode))
   :hook ((typescript-ts-mode . +javascript-add-npm-path-h)
  ;;        (typescript-ts-mode . apheleia-mode)
-         (typescript-ts-mode . smartparens-mode)
+;;         (typescript-ts-mode . smartparens-mode)
          (typescript-ts-mode . electric-pair-mode))
   :init
   (after! flycheck
@@ -141,7 +141,7 @@ snippet, or `emmet-expand-yas'/`emmet-expand-line', depending on whether
   :mode ("\\.tsx\\'" . tsx-ts-mode)
   :hook ((tsx-ts-mode . +javascript-add-npm-path-h)
          ;;         (tsx-ts-mode . apheleia-mode)
-         (tsx-ts-mode . smartparens-mode)
+  ;;       (tsx-ts-mode . smartparens-mode)
          (tsx-ts-mode . electric-pair-mode))
   :init
   (after! flycheck
