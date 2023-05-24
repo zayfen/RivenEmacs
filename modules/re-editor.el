@@ -92,7 +92,7 @@
 
 ;; Use puni-mode globally and disable it for term-mode.
 (use-package puni
-  :ensure t
+  :straight (:host github :repo "zayfen/puni" :files ("*" (:exclude ".git")))
   :defer t
   :commands (puni-splice puni-wrap-round puni-transpose)
   :init

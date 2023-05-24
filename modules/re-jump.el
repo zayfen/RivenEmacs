@@ -51,7 +51,7 @@
                      :refs-fn 'lsp-bridge-find-references
                      :should-jump t
                      :heuristic 'point
-                     :async 500
+                     :async t
                      :order 1)
 
 (use-package goto-last-change
