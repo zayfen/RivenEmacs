@@ -24,6 +24,8 @@
     "j" '(+dumb-jump-hydra/body :wk "+dumb-jump-hydra"))
 
   :config
+  (setq dumb-jump-quiet t)
+  (setq dumb-jump-prefer-searcher 'rg)
   ;; Define Hydra keybinding (from the repo's examples)
   (defhydra +dumb-jump-hydra (:color blue :columns 3)
     "Dumb Jump."
