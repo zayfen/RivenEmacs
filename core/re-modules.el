@@ -44,7 +44,8 @@
     langs/re-python  ;python
     re-leetcode
     re-hackernews
-    re-jump)
+    re-jump
+    re-treesit)
 
   "RivenEmacs enabled modules."
   :group 'rivenemacs-core
