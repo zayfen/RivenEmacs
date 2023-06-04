@@ -40,19 +40,7 @@
   :init
   (setq pcache-directory (concat rivenemacs-local-dir "pcache/")))
 
-(use-package unicode-fonts
-  :straight t
-  :hook (rivenemacs-after-startup . +unicode-fonts-setup)
-  :config
-  (defun +unicode-fonts-setup ()
-    "Prefer the `:unicode-font-family' from `rivenemacs-fonts'."
-    (when-let ((frame (selected-frame)))
-      (when (display-multi-font-p frame)
-        (with-selected-frame frame
-          (when-let ((unicode-font-family (plist-get rivenemacs-fonts :unicode-font-family)))
-            (dolist (unicode-block unicode-fonts-block-font-mapping)
-              (push unicode-font-family (cadr unicode-block))))
-          (unicode-fonts-setup))))))
+
 
 (when (and (>= emacs-major-version 28) (+emacs-features-p 'harfbuzz 'cairo))
   (use-package ligature
@@ -152,5 +140,27 @@
   (global-set-key (kbd "M-n") 'symbol-overlay-jump-next)
   (global-set-key (kbd "M-p") 'symbol-overlay-jump-prev)
   :hook ((prog-mode text-mode) . symbol-overlay-mode))
+
+
+(use-package hl-todo
+  :straight (:host github :repo "tarsius/hl-todo")
+  :hook (prog-mode . hl-todo-mode)
+  :config
+  (setq hl-todo-keyword-faces
+        (append
+         hl-todo-keyword-faces
+         '(("BUG" . "#ee5555")
+           ("PROJ" . "#447f44")
+           ("IDEA" . "#0fa050")
+           ("INFO" . "#0e9030")
+           ("TWEAK" . "#fe9030")
+           ("PERF" . "#e09030")))))
+
+(use-package rainbow-mode
+  :straight t
+  :init
+  (+map! :keymaps '(prog-mode-map conf-mode-map text-mode-map)
+    "tR" #'rainbow-mode))
+
 
 (provide 're-editor)

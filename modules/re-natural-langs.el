@@ -1,10 +1,5 @@
 ;;; re-natural-langs.el --- Natural languages stuff -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2022-2023  Abdelhak Bougouffa
-
-;; Author: Abdelhak Bougouffa (concat "abougouffa" "@" "fedora" "project" "." "org")
-
-
 (defconst +aspell-available-p (executable-find "aspell"))
 
 (use-package spell-fu
@@ -183,18 +178,5 @@
     "C-p" #'lexic-search-history-backwards
     "C-n" #'lexic-search-history-forwards
     "/" `(,(+cmdfy! (call-interactively #'lexic-search)) :wk "Search")))
-
-;; Add this to .dir-locals.el
-;; ((nil (eglot-workspace-configuration
-;;        . ((ltex . ((language . "fr")
-;;                    (disabledRules . ((fr . ["FRENCH_WHITESPACE"])))
-;;                    (additionalRules . ((languageModel . "/usr/share/ngrams/")))))))))
-(use-package re-eglot-ltex-extras
-  :after eglot
-  :demand t
-  :config
-  (eglot-ltex-enable-handling-client-commands)
-  (+eglot-register '(org-mode latex-mode LaTeX-mode markdown-mode text-mode) "ltex-ls"))
-
 
 (provide 're-natural-langs)

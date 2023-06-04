@@ -22,7 +22,6 @@
     re-multi-cursors ; Multi-cursors editing (iedit, evil-mc, evil-iedit-state, ...)
     re-vc            ; Version control (magit, forge, core-review, diff-hl, ...)
     re-project       ; Project management (project, projectile, consult-projectile, treemacs-projectile, ...)
-    re-prog          ; Programming stuff (tree-sitter, eglot, eldoc, eldoc-box, apheleia, editorconfig, ...)
     re-checkers      ; Static checkers (flymake, flymake-easy, ...)
     re-debug         ; Debugging tools (gdb-mi, realgud, disaster, ...)
     re-lsp-bridge    ; Lsp bridge mode
@@ -39,13 +38,19 @@
     re-workspaces    ; Workspace separation (tabspaces, tab-bar, ...). NOTE: This is a WIP
     re-binary        ; Display binary files in hex or decompile them (hexl, ...) ...
     re-window        ; Frame & window tweaks
-    langs/web        ; web (js, jsx, ts, tsx)
-    langs/rust       ; rust
-    langs/re-python  ;python
     re-leetcode
     re-hackernews
     re-jump
-    re-treesit)
+    re-treesit
+    re-formatter
+    re-fold
+    re-indent
+    re-popup
+    langs/re-lua
+    langs/web        ; web (js, jsx, ts, tsx)
+    langs/rust       ; rust
+    langs/re-python  ;python
+)
 
   "RivenEmacs enabled modules."
   :group 'rivenemacs-core

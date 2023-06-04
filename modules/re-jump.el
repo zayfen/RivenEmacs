@@ -63,4 +63,10 @@
   :commands goto-last-change
 )
 
+;; avy-goto-char
+(use-package avy
+  :ensure t
+  :bind ("C-:" . avy-goto-char-timer))
+
+
 (provide 're-jump)

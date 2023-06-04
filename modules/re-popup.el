@@ -1,4 +1,5 @@
-;;; re-prog.el --- Programming stuff -*- lexical-binding: t; -*-
+;;; re-popup.el --- Config for popup -*- lexical-binding: t; -*-
+
 
 (use-package eldoc
   :straight (:type built-in)
@@ -20,11 +21,4 @@
 
 
 
-
-
-
-
-
-(provide 're-prog)
-
-;;; re-prog.el ends here
+(provide 're-popup)
