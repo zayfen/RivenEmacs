@@ -9,6 +9,7 @@
     re-core-ui
     re-completion
     re-font)
+    "RivenEmacs enabled core modules."
   :group 'rivenemacs-core
   :type '(repeat symbol))
 
