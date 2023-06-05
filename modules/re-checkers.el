@@ -17,28 +17,6 @@
   (define-key flycheck-mode-map [remap next-error] #'flycheck-next-error)
   (define-key flycheck-mode-map [remap previous-error] #'flycheck-previous-error)
 
-  (flycheck-define-checker python-ruff
-    "A Python syntax and style checker using the ruff utility.
-To override the path to the ruff executable, set
-`flycheck-python-ruff-executable'.
-See URL `http://pypi.python.org/pypi/ruff'."
-    :command ("ruff"
-              "--format=text"
-              (eval (when buffer-file-name
-                      (concat "--stdin-filename=" buffer-file-name)))
-              "-")
-    :standard-input t
-    :error-filter (lambda (errors)
-                    (let ((errors (flycheck-sanitize-errors errors)))
-                      (seq-map #'flycheck-flake8-fix-error-level errors)))
-    :error-patterns
-    ((warning line-start
-              (file-name) ":" line ":" (optional column ":") " "
-              (id (one-or-more (any alpha)) (one-or-more digit)) " "
-              (message (one-or-more not-newline))
-              line-end))
-    :modes python-ts-mode)
-
   :custom
   (flycheck-indication-mode 'right-fringe)
   (flycheck-emacs-lisp-load-path 'inherit)
