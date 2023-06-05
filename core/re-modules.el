@@ -3,14 +3,12 @@
 ;; Copyright (C) 2022 Abdelhak Bougouffa
 
 (defcustom rivenemacs-core-modules
-  '(re-splash        ; Simple splash screen
-    ;; re-evil          ; Emacs as Vim (evil, evil-collection, evil-escape, evil-snipe, evil-numbers, ...)
-    re-keybindings-emacs   ; Keybinding for vanila emacs user
-    re-defuns            ; defined functions
-    re-core-ui       ; Core UI (doom-themes, modus-themes, doom-modeline, ...)
+  '(re-splash
+    re-keybindings-emacs
+    re-defuns
+    re-core-ui
     re-completion
-    re-font)   ; Completion (vertico, marginalia, corfu, cape, consult, embark, ...)
-  "RivenEmacs enabled core modules."
+    re-font)
   :group 'rivenemacs-core
   :type '(repeat symbol))
 
