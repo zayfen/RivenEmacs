@@ -2,7 +2,7 @@
 
 (use-package python
   :ensure t
-  :mode (("\\.py\\'" . python-ts-mode)
+  :mode (("\\.py\\'" . python-mode)
          ("[./]flake8\\'" . conf-mode)
          ("/Pipfile\\'" . conf-mode)))
 
@@ -39,7 +39,7 @@
   :straight t
   :after python
   :init
-  (+map-local! :keymaps 'python-ts-mode-map
+  (+map-local! :keymaps 'python-mode-map
     "i"  '(nil :wk "imports")
     "ii" #'pyimport-insert-missing
     "iR" #'pyimport-remove-unused
