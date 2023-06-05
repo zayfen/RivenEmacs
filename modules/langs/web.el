@@ -124,7 +124,7 @@ snippet, or `emmet-expand-yas'/`emmet-expand-line', depending on whether
   :straight (:type built-in)
   :mode (("\\.ts\\'" . typescript-ts-mode))
   :hook ((typescript-ts-mode . +javascript-add-npm-path-h)
- ;;        (typescript-ts-mode . apheleia-mode)
+        (typescript-ts-mode . apheleia-mode)
 ;;         (typescript-ts-mode . smartparens-mode)
          (typescript-ts-mode . electric-pair-mode))
   :init
@@ -140,7 +140,7 @@ snippet, or `emmet-expand-yas'/`emmet-expand-line', depending on whether
   :straight (:type built-in)
   :mode ("\\.tsx\\'" . tsx-ts-mode)
   :hook ((tsx-ts-mode . +javascript-add-npm-path-h)
-         ;;         (tsx-ts-mode . apheleia-mode)
+                 (tsx-ts-mode . apheleia-mode)
   ;;       (tsx-ts-mode . smartparens-mode)
          (tsx-ts-mode . electric-pair-mode))
   :init
