@@ -83,8 +83,8 @@
   ;;(setq lsp-bridge-enable-hover-diagnostic t)
   (setq lsp-bridge-code-action-enable-popup-menu nil)
   (setq lsp-bridge-python-multi-lsp-server "pyright_ruff")
-  (setq acm-enable-quick-access nil)
-
+  (setq acm-enable-quick-access t)
+  (setq acm-quick-access-use-number-select nil)
 
   (+map! :keymaps 'lsp-bridge-mode-map
     :infix "c"
