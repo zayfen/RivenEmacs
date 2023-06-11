@@ -105,7 +105,7 @@
  ;; Display the true file name for symlinks
  find-file-visit-truename t
  ;; Use completion in the minibuffer instead of definitions buffer
- xref-show-definitions-function #'xref-show-definitions-completing-read
+ ;; xref-show-definitions-function #'xref-show-definitions-completing-read
  ;; Enable recursive calls to minibuffer
  enable-recursive-minibuffers t
  ;; Kill the shell buffer after exit
