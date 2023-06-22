@@ -78,7 +78,7 @@
   (setq acm-enable-path t)
   (setq acm-backend-yas-match-by-trigger-keyword t)
   (setq acm-enable-tabnine nil)
-  (setq acm-enable-codeium t)
+  (setq acm-enable-codeium nil)
   (setq lsp-bridge-enable-diagnostics nil) ;; we use flycheck only
   ;;(setq lsp-bridge-enable-hover-diagnostic t)
   (setq lsp-bridge-code-action-enable-popup-menu nil)
