@@ -314,7 +314,7 @@
  ;; Save buffer status
  desktop-save-buffer t
  ;; set line-height
- line-spacing 0.18)
+ line-spacing 0.15)
 
 ;; ====== Misc hooks and advices ======
 ;; Advice `emacs-session-filename' to ensure creating "session.ID" files in
