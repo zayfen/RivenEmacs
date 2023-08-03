@@ -71,7 +71,10 @@
      (("scss" "sass" "less") . "css_emmet")
 ;;     ("vue" . "volar_emmet")
      ))
-
+  :bind (:map lsp-bridge-mode-map
+         ("M-." . lsp-bridge-find-def)
+         ("M-," . lsp-bridge-find-def-return)
+         ("M-?" . lsp-bridge-find-references))
   :config
   (use-package lsp-bridge-jdtls)
   (setq acm-enable-icon t)

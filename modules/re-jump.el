@@ -48,12 +48,12 @@
 )
 
 (smart-jump-register :modes 'prog-mode
-                     :jump-fn 'lsp-bridge-find-def
-                     :pop-fn 'lsp-bridge-find-def-return
-                     :refs-fn 'lsp-bridge-find-references
+                     :jump-fn 'dumb-jump-go
+                     :pop-fn 'dumb-jump-back
+                     :refs-fn 'xref-find-references
                      :should-jump t
                      :heuristic 'point
-                     :async nil
+                     :async t
                      :order 1)
 
 (use-package goto-last-change
