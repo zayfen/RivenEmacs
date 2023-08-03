@@ -44,7 +44,7 @@
          ("M-," . smart-jump-back)
          ("M-?" . smart-jump-references))
   :config
-  (smart-jump-setup-default-registers)
+  ;;(smart-jump-setup-default-registers)
 )
 
 (smart-jump-register :modes 'prog-mode
@@ -53,7 +53,7 @@
                      :refs-fn 'lsp-bridge-find-references
                      :should-jump t
                      :heuristic 'point
-                     :async t
+                     :async nil
                      :order 1)
 
 (use-package goto-last-change

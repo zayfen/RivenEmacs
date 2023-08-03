@@ -64,11 +64,12 @@
   :hook ((prog-mode) . lsp-bridge-mode)
   :custom
   (lsp-bridge-signature-function 'eldoc-message)
+  (lsp-bridge-single-lang-server-extension-list '(("vue" . "volar")))
   (lsp-bridge-multi-lang-server-extension-list
    '(
      (("ts" "tsx") . "typescript_eslint")
      (("scss" "sass" "less") . "css_emmet")
-     (("vue") . "volar_emmet")
+;;     ("vue" . "volar_emmet")
      ))
 
   :config
@@ -87,47 +88,8 @@
   (setq lsp-bridge-python-multi-lsp-server "pyright_ruff")
   (setq acm-enable-quick-access t)
   (setq acm-quick-access-use-number-select nil)
+  (setq lsp-bridge-find-def-fallback #'dumb-jump-go)
+  (setq lsp-bridge-find-ref-fallback #'xref-find-references))
 
-  (+map! :keymaps 'lsp-bridge-mode-map
-    :infix "c"
-    "a"  '(lsp-bridge-code-action :wk "Code actions")
-    "d"  '(lsp-bridge-find-def :wk "Find definition")
-    "D"  '(lsp-bridge-find-def-return :wk "Find definition return")
-    "e"  '(lsp-bridge-diagnostic-list :wk "Diagnostic list")
-    "t"  '(lsp-bridge-find-type-def :wk "Find type definition")
-    "f" '(lsp-bridge-code-format :wk "Format code")
-    "F" '(lsp-bridge-code-action--fix :wk "Quick fix")
-    "i"  '(lsp-bridge-find-impl :wk "Find implementation")
-    "k"  '(lsp-bridge-popup-documentation :wk "Find Document")
-    "x" '(lsp-bridge-workspace-list-symbols :wk "Symbols & Jump to define")
-    "?"  '(lsp-bridge-find-references :wk "Find References")
-    "p" '(lsp-bridge-peek :wk "Peek")
-    "r" '(lsp-bridge-rename :wk "Rename")
-    "ld" '(lsp-bridge-toggle-sdcv-helper :wk "Toggle Dictionary")
-    "lr" '(lsp-workspace-restart :wk "Restart"))
-
-
-  ;; 融合 `lsp-bridge' `find-function' 以及 `dumb-jump' 的智能跳转
-  (defun lsp-bridge-jump ()
-    (interactive)
-    (cond
-     ((eq major-mode 'emacs-lisp-mode)
-      (let ((symb (function-called-at-point)))
-        (when symb
-          (find-function symb))))
-     (lsp-bridge-mode
-      (lsp-bridge-find-def))
-     (t
-      (require 'dumb-jump)
-      (dumb-jump-go))))
-
-  (defun lsp-bridge-jump-back ()
-    (interactive)
-    (cond
-     (lsp-bridge-mode
-      (lsp-bridge-find-def-return))
-     (t
-      (require 'dumb-jump)
-      (dumb-jump-back)))))
 
 (provide 're-lsp-bridge)

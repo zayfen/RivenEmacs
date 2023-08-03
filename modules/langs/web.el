@@ -49,8 +49,7 @@ snippet, or `emmet-expand-yas'/`emmet-expand-line', depending on whether
          ("\\.html\\.jinja\\'" . web-mode)
          ("\\.html\\.j2\\'" . web-mode)
          ("\\.vue\\'" . web-mode)
-         ("\\.ejs\\'" . web-mode)
-         )
+         ("\\.ejs\\'" . web-mode))
 
   :custom
   (web-mode-markup-indent-offset 2)
@@ -58,7 +57,8 @@ snippet, or `emmet-expand-yas'/`emmet-expand-line', depending on whether
   (web-mode-code-indent-offset 2)
   (web-mode-enable-auto-indentation nil)
   (web-mode-enable-auto-pairing nil)
-  (web-mode-engines-alist '(("django" . "\\.html\\.tera\\'")))
+  (web-mode-engines-alist '(("django" . "\\.html\\.tera\\'")
+                            ("mustache" . "\\.vue\\")))
 
   :config
   (add-hook 'web-mode-hook
@@ -66,23 +66,7 @@ snippet, or `emmet-expand-yas'/`emmet-expand-line', depending on whether
                 (unless (flycheck-checker-supports-major-mode-p
                          'javascript-eslint 'web-mode)
                  (flycheck-add-mode 'javascript-eslint 'web-mode))
-                (flycheck-mode t)))
-  ;; 1. Remove web-mode auto pairs whose end pair starts with a latter
-  ;;    (truncated autopairs like <?p and hp ?>). Smartparens handles these
-  ;;    better.
-  ;; 2. Strips out extra closing pairs to prevent redundant characters
-  ;;    inserted by smartparens.
-  (dolist (alist web-mode-engines-auto-pairs)
-    (setcdr alist
-            (cl-loop for pair in (cdr alist)
-                     unless (string-match-p "^[a-z-]" (cdr pair))
-                     collect (cons (car pair)
-                                   (string-trim-right (cdr pair)
-                                                      "\\(?:>\\|]\\|}\\)+\\'")))))
-  (delq! nil web-mode-engines-auto-pairs))
-
-;; (add-to-list 'auto-mode-alist '("\\.tsx$" . web-mode))
-(setq web-mode-content-types-alist '(("jsx" . "\\.ts[x]?\\'")))
+                (flycheck-mode t))))
 
 (use-package css-ts-mode
   :straight (:type built-in)
