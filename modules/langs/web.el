@@ -61,6 +61,8 @@ snippet, or `emmet-expand-yas'/`emmet-expand-line', depending on whether
   (web-mode-enable-css-colorization t)
   (web-mode-enable-current-element-highlight t)
   (web-mode-enable-current-column-highlight t)
+  (web-mode-style-padding 0)
+  (web-mode-script-padding 0)
   (web-mode-engines-alist '(("django" . "\\.html\\.tera\\'")
                             ("mustache" . "\\.vue\\")))
 
