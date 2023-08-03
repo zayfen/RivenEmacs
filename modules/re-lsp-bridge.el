@@ -65,9 +65,7 @@
   :bind (:map lsp-bridge-mode-map
          ("M-." . lsp-bridge-find-def)
          ("M-," . lsp-bridge-find-def-return)
-         ("M-?" . lsp-bridge-find-references)
-         ("M-[" . lsp-bridge-peek)
-         ("M-]" . lsp-bridge-rename))
+         ("M-?" . lsp-bridge-find-references))
   :config
   (use-package lsp-bridge-jdtls)
   (setq acm-enable-icon t)
@@ -85,7 +83,20 @@
   (setq acm-enable-quick-access t)
   (setq acm-quick-access-use-number-select nil)
   (setq lsp-bridge-find-def-fallback #'dumb-jump-go)
-  (setq lsp-bridge-find-ref-fallback #'xref-find-references))
+  (setq lsp-bridge-find-ref-fallback #'xref-find-references)
+
+  (+map! :keymaps 'lsp-bridge-mode-map
+    :infix "c"
+    "a"  '(lsp-bridge-code-action :wk "Code actions")
+    "e"  '(lsp-bridge-diagnostic-list :wk "Diagnostic list")
+    "f" '(lsp-bridge-code-format :wk "Format code")
+    "F" '(lsp-bridge-code-action--fix :wk "Quick fix")
+    "i"  '(lsp-bridge-find-impl :wk "Find implementation")
+    "k"  '(lsp-bridge-popup-documentation :wk "Find Document")
+    "p"  '(lsp-bridge-peek :wk "Peek")
+    "r" '(lsp-bridge-rename :wk "Rename")
+    "t"  '(lsp-bridge-find-type-def :wk "Find type definition"))
+  )
 
 
 (provide 're-lsp-bridge)
