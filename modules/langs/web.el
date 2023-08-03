@@ -42,6 +42,7 @@ snippet, or `emmet-expand-yas'/`emmet-expand-line', depending on whether
 (use-package web-mode
   :straight t
   :hook (web-mode . +javascript-add-npm-path-h)
+  :hook (web-mode . electric-pair-mode)
   :mode (("\\.html\\'" . web-mode)
          ("\\.html\\.eex\\'" . web-mode)
          ("\\.html\\.heex\\'" . web-mode)
@@ -56,7 +57,10 @@ snippet, or `emmet-expand-yas'/`emmet-expand-line', depending on whether
   (web-mode-css-indent-offset 2)
   (web-mode-code-indent-offset 2)
   (web-mode-enable-auto-indentation nil)
-  (web-mode-enable-auto-pairing nil)
+  (web-mode-enable-auto-pairing t)
+  (web-mode-enable-css-colorization t)
+  (web-mode-enable-current-element-highlight t)
+  (web-mode-enable-current-column-highlight t)
   (web-mode-engines-alist '(("django" . "\\.html\\.tera\\'")
                             ("mustache" . "\\.vue\\")))
 

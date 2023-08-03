@@ -37,7 +37,7 @@
                                (when file-name
                                  (treesit-parser-create
                                   (pcase (file-name-extension file-name)
-                                    ("vue" 'vue)
+                                    ;;("vue" 'vue)
                                     ("html" 'html))))
                                )))
 
