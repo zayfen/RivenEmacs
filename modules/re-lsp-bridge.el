@@ -4,15 +4,6 @@
 
 ;; Author zayfen (zhangyunfeng0101@gmail.com)
 
-;; (use-package yasnippet
-;;   :ensure t
-;;   :straight t
-;;   :bind (("M-i" . yas-insert-snippet)
-;;          ("M-]" . yas-expand))
-;;   :config
-;;   (add-to-list 'yas-snippet-dirs "~/.emacs.d/snippets")
-;;   (yas-global-mode 1))
-
 (use-package yasnippet
   :diminish yas-minor-mode
   :init
@@ -74,7 +65,9 @@
   :bind (:map lsp-bridge-mode-map
          ("M-." . lsp-bridge-find-def)
          ("M-," . lsp-bridge-find-def-return)
-         ("M-?" . lsp-bridge-find-references))
+         ("M-?" . lsp-bridge-find-references)
+         ("M-[" . lsp-bridge-peek)
+         ("M-]" . lsp-bridge-rename))
   :config
   (use-package lsp-bridge-jdtls)
   (setq acm-enable-icon t)
