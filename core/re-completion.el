@@ -292,6 +292,7 @@ If INITIAL is non-nil, use as initial input."
 (use-package vertico-directory
   :after vertico
   :demand t
+  :commands (vertico-directory-enter vertico-directory-delete-char vertico-directory-delete-word vertico-directory-tidy)
   :config
   (define-key vertico-map "\r" #'vertico-directory-enter)
   (define-key vertico-map "\d" #'vertico-directory-delete-char)
@@ -301,12 +302,18 @@ If INITIAL is non-nil, use as initial input."
 
 (use-package vertico-repeat
   :hook (minibuffer-setup . vertico-repeat-save)
+  :commands (vertico-repeat)
   :init
   (keymap-global-set "M-R" #'vertico-repeat))
 
 
 (use-package blink-search
-  :straight (:host github :repo "manateelazycat/blink-search" :files ("*" (:exclude ".git")))
+  :straight (blink-search
+             :type git
+             :host github
+             :repo "manateelazycat/blink-search"
+             :files ("*" (:exclude ".git"))
+             :build nil)
   :commands (blink-search)
   :init
   (setq blink-search-browser-function
@@ -318,7 +325,12 @@ If INITIAL is non-nil, use as initial input."
 
 
 (use-package color-rg
-  :straight (:host github :repo "manateelazycat/color-rg" :files ("*" (:exclude ".git")))
+  :straight (color-rg
+             :type git
+             :host github
+             :repo "manateelazycat/color-rg"
+             :files ("*" (:exclude ".git"))
+             :build nil)
   :commands (color-rg-search-input-in-project color-rg-search-symbol-in-project color-rg-search-input-in-current-file color-rg-search-symbol-in-current-file)
   :init
   (+map! :infix "s"

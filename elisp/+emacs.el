@@ -115,9 +115,9 @@ prefix or universal argument, it waits for a moment (defined by
                       (prog1 (thing-at-point 'region t)
                         (deactivate-mark))
                       (thing-at-point 'symbol t)
+                      (thing-at-point 'url t)
                       (thing-at-point 'email t)
                       (thing-at-point 'number t)
-                      (thing-at-point 'string t)
                       (thing-at-point 'word t))))
     (if (length> (string-lines thing) 1)
         ;; If the matching thing has multi-lines, use the first one
