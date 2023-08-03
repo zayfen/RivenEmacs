@@ -18,6 +18,13 @@
 (use-package let-alist
   :straight (:type built-in))
 
+(use-package autorevert
+  :ensure nil
+  :hook (after-init . global-auto-revert-mode))
+
+(use-package so-long
+  :ensure nil
+  :config (global-so-long-mode 1))
 
 
 (provide 're-builtin)

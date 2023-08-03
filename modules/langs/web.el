@@ -48,6 +48,8 @@ snippet, or `emmet-expand-yas'/`emmet-expand-line', depending on whether
          ("\\.html\\.tera\\'" . web-mode)
          ("\\.html\\.jinja\\'" . web-mode)
          ("\\.html\\.j2\\'" . web-mode)
+         ("\\.vue\\'" . web-mode)
+         ("\\.ejs\\'" . web-mode)
          )
 
   :custom
@@ -65,16 +67,6 @@ snippet, or `emmet-expand-yas'/`emmet-expand-line', depending on whether
                          'javascript-eslint 'web-mode)
                  (flycheck-add-mode 'javascript-eslint 'web-mode))
                 (flycheck-mode t)))
-  (defun +web-is-auto-close-style-3 (_id action _context)
-    (and (eq action 'insert)
-         (eq web-mode-auto-close-style 3)))
-  ;; (require 'smartparens)
-  ;; (sp-local-pair 'web-mode "<" ">" :unless '(:add +web-is-auto-close-style-3))
-
-  ;; let smartparens handle these
-  ;; (setq web-mode-enable-auto-quoting nil
-  ;;       web-mode-enable-auto-pairing t)
-
   ;; 1. Remove web-mode auto pairs whose end pair starts with a latter
   ;;    (truncated autopairs like <?p and hp ?>). Smartparens handles these
   ;;    better.

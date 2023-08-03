@@ -53,20 +53,22 @@
 
 (use-package lsp-bridge
   :ensure t
-  :straight (:host github
-                   :repo "zayfen/lsp-bridge"
-                   :files ("*" (:exclude ".git")))
+  :straight (lsp-bridge
+             :type git
+             :host github
+             :repo "manateelazycat/lsp-bridge"
+             :files ("*" (:exclude ".git"))
+             :build nil)
   :init
-
+  (add-to-list 'load-path (straight--repos-dir "lsp-bridge"))
   :hook ((prog-mode) . lsp-bridge-mode)
-
   :custom
   (lsp-bridge-signature-function 'eldoc-message)
-
   (lsp-bridge-multi-lang-server-extension-list
    '(
      (("ts" "tsx") . "typescript_eslint")
      (("scss" "sass" "less") . "css_emmet")
+     (("vue") . "volar_emmet")
      ))
 
   :config
@@ -99,6 +101,7 @@
     "k"  '(lsp-bridge-popup-documentation :wk "Find Document")
     "x" '(lsp-bridge-workspace-list-symbols :wk "Symbols & Jump to define")
     "?"  '(lsp-bridge-find-references :wk "Find References")
+    "p" '(lsp-bridge-peek :wk "Peek")
     "r" '(lsp-bridge-rename :wk "Rename")
     "ld" '(lsp-bridge-toggle-sdcv-helper :wk "Toggle Dictionary")
     "lr" '(lsp-workspace-restart :wk "Restart"))
