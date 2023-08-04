@@ -31,7 +31,7 @@
   (setq flycheck-posframe-warning-prefix "\u26a0 ")
   (setq flycheck-posframe-error-prefix "\u26a0 ")
   (setq flycheck-posframe-broder-width 5)
-  (setq flycheck-posframe-position 'frame-top-right-corner)
+  (setq flycheck-posframe-position 'point-top-left-corner)
 
   (set-face-attribute 'flycheck-posframe-error-face
                       nil
