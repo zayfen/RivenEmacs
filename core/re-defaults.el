@@ -466,7 +466,10 @@ or file path may exist now."
   (desktop-save-mode 1)
 
   ;; Global SubWord mode
-  (global-subword-mode 1))
+  (global-subword-mode 1)
+
+  ;; display current function in mode line
+  (which-function-mode 1))                                     ;
 
 
 (provide 're-defaults)
