@@ -1,5 +1,9 @@
-;; modules/langs/re-python.el -*- lexical-binding: t; -*-
+;;; modules/langs/re-python.el --- python development config -*- lexical-binding: t; -*-
 
+;;; Commentary:
+;; python development config
+
+;;;Code:
 (use-package python
   :ensure t
   :mode (("\\.py\\'" . python-mode)
@@ -40,7 +44,7 @@
   :straight t
   :after python
   :init
-  (+map-local! :keymaps 'python-ts-mode-map
+  (+map-local! :keymaps 'python-mode-map
     "i"  '(nil :wk "imports")
     "ii" #'pyimport-insert-missing
     "iR" #'pyimport-remove-unused
@@ -51,7 +55,7 @@
   :straight t
   :defer t
   :init
-  (+map-local! :keymaps 'python-ts-mode-map
+  (+map-local! :keymaps 'python-mode-map
     "is" '(py-isort-buffer :wk "Sort imports")
     "ir" '(py-isort-region :wk "Sort region")))
 
@@ -78,7 +82,7 @@
   :straight t
   :commands python-pytest-dispatch
   :init
-  (+map-local! :keymaps 'python-ts-mode-map
+  (+map-local! :keymaps 'python-mode-map
     "t" '(nil :wk "test")
     "ta" #'python-pytest
     "tf" #'python-pytest-file-dwim
@@ -119,7 +123,7 @@ See URL `http://pypi.python.org/pypi/ruff'."
                   (setq-local flycheck-checkers '(python-ruff))
                   )))))
 
-(setq python-ts-mode-hook
+(setq python-mode-hook
       (list (defun my-python-hook ()
               (unless (bound-and-true-p org-src-mode)
                 (when (buffer-file-name)
@@ -127,6 +131,6 @@ See URL `http://pypi.python.org/pypi/ruff'."
                   )))))
 
 (add-hook 'python-mode-hook  #'electric-pair-mode)
-(add-hook 'python-ts-mode-hook  #'electric-pair-mode)
+(add-hook 'python-mode-hook  #'electric-pair-mode)
 
 (provide 're-python)
