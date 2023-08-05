@@ -1,4 +1,4 @@
-;; modules/langs/re-cmake.el -*- lexical-binding: t; -*-
+;; modules/langs/re-cmake.el  -*- lexical-binding: t; -*-
 
 (use-package cmake-mode
   :straight (:host github :repo "emacsmirror/cmake-mode" :files (:defaults "*"))

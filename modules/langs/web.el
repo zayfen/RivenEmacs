@@ -1,3 +1,9 @@
+;;; web.el --- config for web development -*- lexical-binding: t; -*-
+
+;;; Commentary:
+;; config for web development
+
+;;; Code:
 (use-package apheleia
   :straight t
   :commands apheleia-mode
@@ -85,29 +91,31 @@ snippet, or `emmet-expand-yas'/`emmet-expand-line', depending on whether
   :straight t
   :custom (scss-indent-offset 2))
 
-(use-package json-ts-mode
+(use-package js-json-mode
   :straight (:type built-in)
-  :mode (("\\.json\\'" . json-ts-mode))
-;;  :hook (json-ts-mode . smartparens-mode)
   :hook (json-ts-mode . +javascript-add-npm-path-h)
-  :hook (json-ts-mode . electric-pair-mode))
-;;  :hook (json-ts-mode . apheleia-mode)
+  :hook (json-ts-mode . electric-pair-mode)
+  :hook (json-ts-mode . apheleia-mode))
 
-(use-package js-ts-mode
+(use-package js-mode
   :straight (:type built-in)
-  :mode ("\\.js\\'" . js-ts-mode)
-  :hook (js-ts-mode . +javascript-add-npm-path-h)
-;;  :hook (js-ts-mode . smartparens-mode)
-  :hook (js-ts-mode . apheleia-mode)
-  :hook (js-ts-mode . electric-pair-mode)
+  :hook (js-mode . +javascript-add-npm-path-h)
+  :hook (js-mode . apheleia-mode)
+  :hook (js-mode . electric-pair-mode)
+  :custom (js-indent-level 2))
+
+(use-package js-jsx-mode
+  :straight (:type built-in)
+  :hook (js-jsx-mode . +javascript-add-npm-path-h)
+  :hook (js-jsx-mode . apheleia-mode)
+  :hook (js-jsx-mode . electric-pair-mode)
   :custom (js-indent-level 2))
 
 (use-package typescript-ts-mode
   :straight (:type built-in)
   :mode (("\\.ts\\'" . typescript-ts-mode))
   :hook ((typescript-ts-mode . +javascript-add-npm-path-h)
-        (typescript-ts-mode . apheleia-mode)
-;;         (typescript-ts-mode . smartparens-mode)
+         (typescript-ts-mode . apheleia-mode)
          (typescript-ts-mode . electric-pair-mode))
   :init
   (after! flycheck
@@ -122,8 +130,7 @@ snippet, or `emmet-expand-yas'/`emmet-expand-line', depending on whether
   :straight (:type built-in)
   :mode ("\\.tsx\\'" . tsx-ts-mode)
   :hook ((tsx-ts-mode . +javascript-add-npm-path-h)
-                 (tsx-ts-mode . apheleia-mode)
-  ;;       (tsx-ts-mode . smartparens-mode)
+         (tsx-ts-mode . apheleia-mode)
          (tsx-ts-mode . electric-pair-mode))
   :init
   (after! flycheck
