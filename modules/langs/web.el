@@ -138,5 +138,8 @@ snippet, or `emmet-expand-yas'/`emmet-expand-line', depending on whether
     (flycheck-add-mode 'typescript-tslint 'tsx-ts-mode))
   :custom (typescript-ts-mode-indent-offset 2)
   :config
-  (set-electric! 'typescript-ts-mode :chars '(?\} ?\)) :words '("||" "&&"))
-  )
+  (set-electric! 'typescript-ts-mode :chars '(?\} ?\)) :words '("||" "&&")))
+
+(use-package jsdoc
+  :ensure t
+  :straight (:host github :repo "isamert/jsdoc.el"))
