@@ -308,6 +308,7 @@ If INITIAL is non-nil, use as initial input."
 
 
 (use-package blink-search
+  :ensure t
   :straight (blink-search
              :type git
              :host github
@@ -325,6 +326,7 @@ If INITIAL is non-nil, use as initial input."
 
 
 (use-package color-rg
+  :ensure t
   :straight (color-rg
              :type git
              :host github
@@ -334,10 +336,10 @@ If INITIAL is non-nil, use as initial input."
   :commands (color-rg-search-input-in-project color-rg-search-symbol-in-project color-rg-search-input-in-current-file color-rg-search-symbol-in-current-file)
   :init
   (+map! :infix "s"
-    "p" '(color-rg-search-symbol-in-project :wk "Search project at point")
-    "P" '(color-rg-search-input-in-project :wk "Search project")
-    "b" '(color-rg-search-symbol-in-current-file :wk "Search buffer at point")
-    "B" '(color-rg-search-input-in-current-file :wk "Search buffer")))
+    "p" '(color-rg-search-symbol-in-project :wk "Color-rg project at point")
+    "P" '(color-rg-search-input-in-project :wk "Color-rg project")
+    "b" '(color-rg-search-symbol-in-current-file :wk "Color-rg buffer at point")
+    "B" '(color-rg-search-input-in-current-file :wk "Color-rg buffer")))
 
 
 (use-package find-file-in-project
