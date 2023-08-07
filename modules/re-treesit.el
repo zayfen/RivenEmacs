@@ -17,7 +17,8 @@
   (global-treesit-auto-mode))
 
 (setq major-mode-remap-alist
-      '((c-mode          . c-ts-mode)
+      '((bash-mode       . bash-ts-mode)
+        (c-mode          . c-ts-mode)
         (c++-mode        . c++-ts-mode)
         (cmake-mode      . cmake-ts-mode)
         (conf-toml-mode  . toml-ts-mode)
@@ -28,6 +29,10 @@
         (sh-mode         . bash-ts-mode)
         (typescript-mode . typescript-ts-mode)
         (rust-mode       . rust-ts-mode)
+        (go-mode         . go-ts-mode)
+        (java-mode       . java-ts-mode)
+        (yaml-mode       . yaml-ts-mode)
+        (toml-mode       . toml-ts-mode)
         ))
 
 (add-hook 'markdown-mode-hook #'(lambda () (treesit-parser-create 'markdown)))
@@ -37,7 +42,6 @@
                                (when file-name
                                  (treesit-parser-create
                                   (pcase (file-name-extension file-name)
-                                    ;;("vue" 'vue)
                                     ("html" 'html))))
                                )))
 
