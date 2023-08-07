@@ -317,6 +317,7 @@ If INITIAL is non-nil, use as initial input."
              :build nil)
   :commands (blink-search)
   :init
+  (add-to-list 'load-path (straight--repos-dir "blink-search"))
   (setq blink-search-browser-function
         (if (display-graphic-p)
             #'xwidget-webkit-browse-url
@@ -335,6 +336,7 @@ If INITIAL is non-nil, use as initial input."
              :build nil)
   :commands (color-rg-search-input-in-project color-rg-search-symbol-in-project color-rg-search-input-in-current-file color-rg-search-symbol-in-current-file)
   :init
+  (add-to-list 'load-path (straight--repos-dir "color-rg"))
   (+map! :infix "s"
     "p" '(color-rg-search-symbol-in-project :wk "Color-rg project at point")
     "P" '(color-rg-search-input-in-project :wk "Color-rg project")
