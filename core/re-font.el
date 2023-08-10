@@ -15,45 +15,18 @@
     )))
 
 ;; set font for symbols
-(set-fontset-font
- t
- 'symbol
- (cond
-  ((string-equal system-type "windows-nt")
-   (cond
-    ((member "Segoe UI Symbol" (font-family-list)) "Segoe UI Symbol")))
-  ((string-equal system-type "darwin")
-   (cond
-    ((member "Apple Symbols" (font-family-list)) "Apple Symbols")))
-  ((string-equal system-type "gnu/linux")
-   (cond
-    ((member "Symbola" (font-family-list)) "Symbola")))))
-
-;; FIXME: blow code will crash emacs when meet someone unicode, crash in function face_for_font
-;; set font for chinese
-;;(dolist (charset '(kana han symbol cjk-misc bopomofo))
-;; (defun +set-chinese-font()
-;;   (interactive)
-;;   (set-fontset-font
-;;    t
-;;    'han
+;; (set-fontset-font
+;;  t
+;;  'symbol
+;;  (cond
+;;   ((string-equal system-type "windows-nt")
 ;;    (cond
-;;     ((string-equal system-type "windows-nt")
-;;      (cond
-;;       ((member "Microsoft YaHei" (font-family-list)) "Microsoft YaHei")
-;;       ((member "Microsoft JhengHei" (font-family-list)) "Microsoft JhengHei")
-;;       ((member "SimHei" (font-family-list)) "SimHei")))
-;;     ((string-equal system-type "darwin")
-;;      (cond
-;;       ((member "Hei" (font-family-list)) "Hei")
-;;       ((member "Heiti SC" (font-family-list)) "Heiti SC")
-;;       ((member "Heiti TC" (font-family-list)) "Heiti TC")))
-;;     ((string-equal system-type "gnu/linux")
-;;      (cond
-;;       ((member "WenQuanYi Micro Hei" (font-family-list)) "WenQuanYi Micro Hei"))))))
+;;     ((member "Segoe UI Symbol" (font-family-list)) "Segoe UI Symbol")))
+;;   ((string-equal system-type "darwin")
+;;    (cond
+;;     ((member "Apple Symbols" (font-family-list)) "Apple Symbols")))
+;;   ((string-equal system-type "gnu/linux")
+;;    (cond
+;;     ((member "Symbola" (font-family-list)) "Symbola")))))
 
-;; (add-hook 'buffer-list-update-hook '+set-chinese-font)
-
-;; (custom-set-faces '(fixed-pitch ((t (:family "Ligalex Mono" :height 105))))
-;;                   '(variable-pitch ((t (:family "Ligalex Mono" :height 140)))))
 (provide 're-font)
