@@ -18,8 +18,8 @@
                        (menu-bar-lines . 0)
                        (vertical-scroll-bars)
                        (mouse-color . "blue")
-                       (left-fringe . 4)
-                       (right-fringe . 4)
+                       (left-fringe . 2)
+                       (right-fringe . 2)
                        (fullscreen . maximized))
  ;; Explicitly set modes disabled in `default-frame-alist' to nil
  tool-bar-mode nil
@@ -41,11 +41,7 @@
     (push (cons 'alpha-background (if (or (zerop alpha) (> alpha 100)) 93 alpha))
           default-frame-alist)))
 
-;; HACK: In `lsp-mode' (see the `re-lsp' module), the user can define the
-;; "$LSP_USE_PLISTS=true" to improve `lsp-mode' performances. We set this
-;; environment variable here so we don't need to add it to the system's
-;; environment variables.
-(setenv "LSP_USE_PLISTS" "true")
+(setq native-comp-jit-compilation nil)
 
 ;; Load RivenEmacs variables from the `re-vars' core module.
 (load (expand-file-name "core/re-vars.el" (file-name-directory (file-truename load-file-name))) nil t)
