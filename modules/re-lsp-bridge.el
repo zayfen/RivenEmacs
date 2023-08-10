@@ -5,17 +5,18 @@
 ;; Author zayfen (zhangyunfeng0101@gmail.com)
 
 (use-package yasnippet
-  :diminish yas-minor-mode
+  :straight t
+  :ensure t
   :init
-  (use-package yasnippet-snippets :after yasnippet)
-  :hook ((prog-mode LaTeX-mode org-mode markdown-mode) . yas-minor-mode)
+  (setq yas-snippet-dir "~/.emacs.d/snippets")
+  :hook ((prog-mode LaTeX-mode org-mode markdown-mode) . yas-minor-mode-on)
   :bind
   (:map yas-minor-mode-map ("C-c C-n" . yas-expand-from-trigger-key))
   (:map yas-keymap
         (("TAB" . smarter-yas-expand-next-field)
          ([(tab)] . smarter-yas-expand-next-field)))
+
   :config
-  (add-to-list 'yas-snippet-dirs "~/.emacs.d/snippets")
   (yas-reload-all)
   (defun smarter-yas-expand-next-field ()
     "Try to `yas-expand' then `yas-next-field' at current cursor position."
@@ -30,8 +31,7 @@
 
 (use-package yasnippet-snippets
   :straight t
-  :ensure t
-  :after (yasnippet))
+  :ensure t)
 
 (use-package markdown-mode
   :ensure t
