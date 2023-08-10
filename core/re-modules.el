@@ -8,13 +8,15 @@
     re-defuns
     re-core-ui
     re-completion
-    re-font)
+    re-font
+    )
     "RivenEmacs enabled core modules."
   :group 'rivenemacs-core
   :type '(repeat symbol))
 
 (defcustom rivenemacs-modules
-  '(re-ui            ; User interface (focus, writeroom-mode, mixed-pitch, ...)
+  '(
+    re-ui            ; User interface (focus, writeroom-mode, mixed-pitch, ...)
     re-editor        ; Editing (yasnippet, smartparens, unicode-fonts, ligature, ...)
     re-daemon        ; Emacs daemon tweaks
     re-undo          ; Better undoing (undo-fu, undo-fu-session, vundo, ...)
