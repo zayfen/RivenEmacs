@@ -1,12 +1,13 @@
 ;;; re-jump.el --- Smart jump -*- lexical-binding: t; -*-
 
-(use-package better-jumper
-  :straight t
-  :hook (rivenemacs-after-startup . better-jumper-mode)
-  :config
-  ;; Map extra mouse buttons to jump forward/backward
-  (global-set-key [mouse-8] #'better-jumper-jump-backward)
-  (global-set-key [mouse-9] #'better-jumper-jump-forward))
+;; NOTE: comment disable better-jumper
+;; (use-package better-jumper
+;;   :straight t
+;;   :hook (rivenemacs-after-startup . better-jumper-mode)
+;;   :config
+;;   ;; Map extra mouse buttons to jump forward/backward
+;;   (global-set-key [mouse-8] #'better-jumper-jump-backward)
+;;   (global-set-key [mouse-9] #'better-jumper-jump-forward))
 
 (use-package dumb-jump
   :straight t

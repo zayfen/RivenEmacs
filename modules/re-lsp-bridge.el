@@ -77,7 +77,7 @@
   (setq acm-enable-tabnine nil)
   (setq acm-enable-codeium nil)
   (setq lsp-bridge-enable-diagnostics nil) ;; we use flycheck only
-  ;;(setq lsp-bridge-enable-hover-diagnostic t)
+  (setq lsp-bridge-enable-hover-diagnostic nil)
   (setq lsp-bridge-code-action-enable-popup-menu nil)
   (setq lsp-bridge-python-multi-lsp-server "pyright_ruff")
   (setq acm-enable-quick-access t)

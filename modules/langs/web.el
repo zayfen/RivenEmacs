@@ -119,8 +119,7 @@ snippet, or `emmet-expand-yas'/`emmet-expand-line', depending on whether
          (typescript-ts-mode . electric-pair-mode))
   :init
   (after! flycheck
-    (flycheck-add-mode 'javascript-eslint 'typescript-ts-mode)
-    (flycheck-add-mode 'typescript-tslint 'typescript-ts-mode))
+    (flycheck-add-mode 'javascript-eslint 'typescript-ts-mode))
   :custom (typescript-ts-mode-indent-offset 2)
   :config
   (set-electric! 'typescript-ts-mode :chars '(?\} ?\)) :words '("||" "&&")))
@@ -134,8 +133,7 @@ snippet, or `emmet-expand-yas'/`emmet-expand-line', depending on whether
          (tsx-ts-mode . electric-pair-mode))
   :init
   (after! flycheck
-    (flycheck-add-mode 'javascript-eslint 'tsx-ts-mode)
-    (flycheck-add-mode 'typescript-tslint 'tsx-ts-mode))
+    (flycheck-add-mode 'javascript-eslint 'tsx-ts-mode))
   :custom (typescript-ts-mode-indent-offset 2)
   :config
   (set-electric! 'typescript-ts-mode :chars '(?\} ?\)) :words '("||" "&&")))

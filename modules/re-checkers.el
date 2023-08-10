@@ -1,16 +1,9 @@
 ;;; re-checkers.el --- Syntax checking -*- lexical-binding: t; -*-
 
-
-;; (use-package flycheck-pos-tip
-;;   :after flycheck
-;;   :hook (global-flycheck-mode . flycheck-pos-tip-mode))
-
 (use-package flycheck
-  :ensure t
-  :if (version<= "24.4" emacs-version)
+  :init
   :commands flycheck-mode
   :hook (prog-mode . flycheck-mode)
-
   :config
   (setq-default flycheck-emacs-lisp-initialize-packages t
                 flycheck-highlighting-mode 'lines)
