@@ -54,7 +54,7 @@
   (add-to-list 'load-path (straight--repos-dir "lsp-bridge"))
   :hook ((prog-mode) . lsp-bridge-mode)
   :custom
-  (lsp-bridge-signature-function 'eldoc-message)
+  ;;(lsp-bridge-signature-function 'eldoc-message)
   (lsp-bridge-single-lang-server-extension-list '(("vue" . "volar")))
   (lsp-bridge-multi-lang-server-extension-list
    '(
