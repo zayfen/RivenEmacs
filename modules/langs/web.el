@@ -41,9 +41,8 @@ snippet, or `emmet-expand-yas'/`emmet-expand-line', depending on whether
     (add-hook 'emmet-mode-hook #'yas-minor-mode-on))
   (setq emmet-move-cursor-between-quotes t)
   (+map! :keymaps 'emmet-mode-keymap
-    "v TAB" #'emmet-wrap-with-markup
-    "TAB" #'+web/indent-or-yas-or-emmet-expand
-    "M-E" #'emmet-expand-line))
+    "E" #'emmet-wrap-with-markup
+    "e" #'+web/indent-or-yas-or-emmet-expand))
 
 (use-package web-mode
   :straight t
@@ -55,7 +54,9 @@ snippet, or `emmet-expand-yas'/`emmet-expand-line', depending on whether
          ("\\.html\\.tera\\'" . web-mode)
          ("\\.html\\.jinja\\'" . web-mode)
          ("\\.html\\.j2\\'" . web-mode)
-         ("\\.ejs\\'" . web-mode))
+         ("\\.ejs\\'" . web-mode)
+         ("\\.jsx\\'" . web-mode)
+         ("\\.tsx\\'" . web-mode))
 
   :custom
   (web-mode-markup-indent-offset 2)
@@ -65,7 +66,7 @@ snippet, or `emmet-expand-yas'/`emmet-expand-line', depending on whether
   (web-mode-enable-auto-pairing nil)
   (web-mode-enable-css-colorization t)
   (web-mode-enable-current-element-highlight t)
-  (web-mode-enable-current-column-highlight t)
+  (web-mode-enable-current-column-highlight nil)
   (web-mode-style-padding 0)
   (web-mode-script-padding 0)
   (web-mode-engines-alist '(("django" . "\\.html\\.tera\\'")
@@ -144,29 +145,3 @@ snippet, or `emmet-expand-yas'/`emmet-expand-line', depending on whether
 ;; for vue-mode
 (define-derived-mode vue-mode web-mode "Vue")
 (add-to-list 'auto-mode-alist '("\\.vue\\'" . vue-mode))
-
-;; (defun vue-eglot-init-options ()
-;;   (let ((tsdk-path (expand-file-name
-;;                     "lib"
-;;                     (shell-command-to-string "npm list --global --parseable typescript | head -n1 | tr -d \"\n\""))))
-;;     `(:typescript (:tsdk ,tsdk-path
-;;                    :languageFeatures (:completion
-;;                                       (:defaultTagNameCase "both"
-;;                                        :defaultAttrNameCase "kebabCase"
-;;                                        :getDocumentNameCasesRequest nil
-;;                                        :getDocumentSelectionRequest nil)
-;;                                       :diagnostics
-;;                                       (:getDocumentVersionRequest nil))
-;;                    :documentFeatures (:documentFormatting
-;;                                       (:defaultPrintWidth 100
-;;                                        :getDocumentPrintWidthRequest nil)
-;;                                       :documentSymbol t
-;;                                       :documentColor t)))))
-;; ;; Volar
-;; (add-to-list 'eglot-server-programs
-;;              `(vue-mode . ("vue-language-server" "--stdio" :initializationOptions ,(vue-eglot-init-options))))
-
-;; (use-package eglot
-;;   :ensure t
-;;   :defer t
-;;   :hook (vue-mode . eglot-ensure))
