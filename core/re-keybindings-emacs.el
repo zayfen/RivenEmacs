@@ -87,7 +87,8 @@
     ;; ====== Files ======
     "f"   '(nil :wk "file")
     "fS"  '(write-file :wk "Save as ...")
-    "fD"  #'+delete-this-file
+    "f DEL"  #'+delete-this-file
+    "fr" '(recentf-cleanup :wk "Cleanup Recent Files")
     "fR"  #'+move-this-file
     "ft"  #'recover-this-file
     "fy"  #'+yank-this-file-name
@@ -154,7 +155,7 @@
     "g"   '(nil :wk "git/vc")
 
     ;; ====== Workspaces ======
-    "TAB" '(nil :wk "workspace")
+    "TAB" '(hs-toggle-hiding :wk "Toggle Code Block")
 
     ;; ====== Toggle ======
     "t"   '(nil :wk "toggle")
@@ -166,7 +167,10 @@
 
     ;; ====== Code ======
     "c"   '(nil :wk "code")
-    "cf"  '(nil :wk "format buffer")
+    "c["  '(hs-hide-block :wk "Hide Code Block")
+    "c]"  '(hs-show-block :wk "Show Code Block")
+    "c{"  '(hs-hide-all :wk "Hide All Code Blocks")
+    "c}"  '(hs-show-all :wk "Show All Code Blocks")
 
     ;; ====== Workspaces ======
     "r"   '(nil :wk "workspace") ;; TODO: use tab-bar-mode and tab-line-mode

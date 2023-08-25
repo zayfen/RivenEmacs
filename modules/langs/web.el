@@ -62,7 +62,7 @@ snippet, or `emmet-expand-yas'/`emmet-expand-line', depending on whether
   (web-mode-css-indent-offset 2)
   (web-mode-code-indent-offset 2)
   (web-mode-enable-auto-indentation nil)
-  (web-mode-enable-auto-pairing t)
+  (web-mode-enable-auto-pairing nil)
   (web-mode-enable-css-colorization t)
   (web-mode-enable-current-element-highlight t)
   (web-mode-enable-current-column-highlight t)
