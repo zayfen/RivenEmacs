@@ -26,9 +26,6 @@
  auto-save-list-file-prefix (+directory-ensure rivenemacs-local-dir "auto-save/")
  abbrev-file-name (concat rivenemacs-local-dir "abbrev.el")
  project-list-file (concat rivenemacs-local-dir "project-list.el")
- tramp-backup-directory-alist backup-directory-alist
- tramp-auto-save-directory (concat rivenemacs-local-dir "tramp/auto-save/")
- tramp-persistency-file-name (concat rivenemacs-local-dir "tramp/persistency.el")
  url-configuration-directory (+directory-ensure rivenemacs-local-dir "url/")
  url-cookie-file (concat rivenemacs-local-dir "url/cookie.el")
  url-history-file (concat rivenemacs-local-dir "url/history.el")
@@ -40,13 +37,10 @@
  org-publish-timestamp-directory (+directory-ensure rivenemacs-cache-dir "org/publish/timestamps/")
  org-preview-latex-image-directory (+directory-ensure rivenemacs-cache-dir "org/preview/latex-image/")
  recentf-save-file (concat rivenemacs-local-dir "recentf-save.el")
- shared-game-score-directory (+directory-ensure rivenemacs-local-dir "shared-game-score/")
  type-break-file-name (concat rivenemacs-local-dir "type-break.el")
  bookmark-default-file (concat rivenemacs-local-dir "bookmark.el")
  ede-project-placeholder-cache-file (concat rivenemacs-local-dir "ede-projects.el")
  kkc-init-file-name (concat rivenemacs-local-dir "kkc-init-file.el")
- erc-dcc-get-default-directory (+directory-ensure rivenemacs-local-dir "erc/dcc/")
- erc-log-channels-directory (+directory-ensure rivenemacs-local-dir "erc/log-channels/")
  eshell-directory-name (+directory-ensure rivenemacs-local-dir "eshell/")
  eshell-history-file-name (concat rivenemacs-local-dir "eshell/history.el")
  eshell-last-dir-ring-file-name (concat rivenemacs-local-dir "eshell/last-dir-ring.el")
@@ -470,6 +464,10 @@ or file path may exist now."
 
   ;; display current function in mode line
   (which-function-mode t))
+
+(use-package better-defaults
+  :straight t
+  :ensure t)
 
 
 (provide 're-defaults)

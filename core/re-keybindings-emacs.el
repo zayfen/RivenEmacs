@@ -213,7 +213,7 @@
 ;; Global keybindings
 (global-set-key (kbd "C-m") 'newline-and-indent)
 (global-set-key (kbd "M-g f") 'forward-whitespace)
-
+(global-set-key (kbd "M-/") 'hippie-expand)
 
 (provide 're-emacs-keybindings)
 
