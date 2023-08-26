@@ -465,9 +465,4 @@ or file path may exist now."
   ;; display current function in mode line
   (which-function-mode t))
 
-(use-package better-defaults
-  :straight t
-  :ensure t)
-
-
 (provide 're-defaults)
