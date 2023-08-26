@@ -342,6 +342,14 @@
 (use-package toc-org
   :hook (org-mode . toc-org-mode))
 
+(use-package grip-mode
+  :ensure t
+  :hook ((markdown-mode org-mode) . grip-mode))
+
+(use-package valign
+  :ensure t
+  :hook ((markdown-mode  org-mode) . valign-mode))
+
 (provide 're-org)
 
 ;;; re-org.el ends here
