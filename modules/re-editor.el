@@ -162,5 +162,10 @@
   (+map! :keymaps '(prog-mode-map conf-mode-map text-mode-map)
     "tR" #'rainbow-mode))
 
+(use-package zzz-to-char
+  :straight t
+  :ensure t
+  :config
+  (global-set-key (kbd "M-z") #'zzz-to-char))
 
 (provide 're-editor)
