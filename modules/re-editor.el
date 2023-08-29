@@ -165,7 +165,7 @@
 (use-package zzz-to-char
   :straight t
   :ensure t
-  :config
+  :init
   (global-set-key (kbd "M-z") #'zzz-to-char))
 
 (provide 're-editor)
