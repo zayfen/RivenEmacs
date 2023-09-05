@@ -79,19 +79,19 @@
   :hook (prog-mode . highlight-numbers-mode))
 
 ;; Use puni-mode globally and disable it for term-mode.
-(use-package puni
-  :straight (:host github :repo "zayfen/puni" :files ("*" (:exclude ".git")))
-  :defer t
-  :commands (puni-splice puni-wrap-round puni-transpose)
-  :init
-  ;; The autoloads of Puni are set up so you can enable `puni-mode` or
-  ;; `puni-global-mode` before `puni` is actually loaded. Only after you press
-  ;; any key that calls Puni commands, it's loaded.
-  (puni-global-mode)
-  (add-hook 'term-mode-hook #'puni-disable-puni-mode)
-  (global-set-key (kbd "M-s -") #'puni-splice)
-  (global-set-key (kbd "M-s +") #'puni-wrap-round)
-  (global-set-key (kbd "M-s =") #'puni-transpose))
+;; (use-package puni
+;;   :straight (:host github :repo "zayfen/puni" :files ("*" (:exclude ".git")))
+;;   :defer t
+;;   :commands (puni-splice puni-wrap-round puni-transpose)
+;;   :init
+;;   ;; The autoloads of Puni are set up so you can enable `puni-mode` or
+;;   ;; `puni-global-mode` before `puni` is actually loaded. Only after you press
+;;   ;; any key that calls Puni commands, it's loaded.
+;;   (puni-global-mode)
+;;   (add-hook 'term-mode-hook #'puni-disable-puni-mode)
+;;   (global-set-key (kbd "M-s -") #'puni-splice)
+;;   (global-set-key (kbd "M-s +") #'puni-wrap-round)
+;;   (global-set-key (kbd "M-s =") #'puni-transpose))
 
 ;; (use-package smartparens
 ;;   :straight t
@@ -167,5 +167,6 @@
   :ensure t
   :init
   (global-set-key (kbd "M-z") #'zzz-to-char))
+
 
 (provide 're-editor)
