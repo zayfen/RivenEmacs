@@ -344,7 +344,8 @@
 
 (use-package grip-mode
   :ensure t
-  :hook ((markdown-mode org-mode) . grip-mode))
+  :config
+  (setq grip-preview-use-webkit nil))
 
 (use-package valign
   :ensure t

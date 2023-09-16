@@ -14,9 +14,9 @@
 (use-package hideif
   :straight (:type built-in)
   :init
-  (unless (memq 're-lsp rivenemacs-modules)
-    (dolist (h '(c++-mode-hook c++-ts-mode-hook c-mode-hook c-ts-mode-hook cuda-mode-hook))
-      (add-hook h #'hide-ifdef-mode)))
+  (dolist (h '(c++-mode-hook c++-ts-mode-hook c-mode-hook c-ts-mode-hook cuda-mode-hook))
+      (add-hook h #'hide-ifdef-mode))
+
   :custom
   (hide-ifdef-shadow t)
   (hide-ifdef-initially t))
