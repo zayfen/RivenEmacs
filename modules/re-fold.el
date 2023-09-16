@@ -3,8 +3,9 @@
 ;; code fold
 (use-package ts-fold
   :straight (ts-fold :type git :host github :repo "emacs-tree-sitter/ts-fold")
+  :commands (ts-fold-toggle)
   :init
-  (+map! "@ TAB" #'ts-fold-toggle))
+  (global-set-key (kbd "M-I") #'ts-fold-toggle))
 
 (use-package ts-fold-indicators
   :straight (ts-fold-indicators :type git :host github :repo "emacs-tree-sitter/ts-fold")
