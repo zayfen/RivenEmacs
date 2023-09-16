@@ -69,12 +69,13 @@
   :config
   (use-package lsp-bridge-jdtls)
   (setq acm-enable-icon t)
-  (setq acm-enable-yas t)
-  (setq acm-enable-doc t)
+  (setq acm-enable-yas nil)
+  (setq acm-enable-doc nil)
   (setq acm-enable-doc-markdown-render t)
   (setq acm-enable-path t)
   (setq acm-backend-yas-match-by-trigger-keyword t)
   (setq acm-enable-tabnine nil)
+  (setq acm-enable-preview t)
   (setq acm-enable-codeium nil)
   (setq lsp-bridge-enable-diagnostics nil) ;; we use flycheck only
   (setq lsp-bridge-enable-hover-diagnostic nil)

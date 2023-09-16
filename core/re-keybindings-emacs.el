@@ -155,7 +155,6 @@
     "g"   '(nil :wk "git/vc")
 
     ;; ====== Workspaces ======
-    "TAB" '(hs-toggle-hiding :wk "Toggle Code Block")
 
     ;; ====== Toggle ======
     "t"   '(nil :wk "toggle")
@@ -213,7 +212,7 @@
 ;; Global keybindings
 (global-set-key (kbd "C-m") 'newline-and-indent)
 (global-set-key (kbd "M-g f") 'forward-whitespace)
-(global-set-key (kbd "M-/") 'hippie-expand)
+(global-set-key (kbd "M-i") 'hs-toggle-hiding)
 
 (provide 're-emacs-keybindings)
 
