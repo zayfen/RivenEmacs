@@ -124,7 +124,7 @@ Compiled from the `system-configuration-features'.")
   :group 'rivenemacs-keybinding
   :type 'string)
 
-(defcustom rivenemacs-theme 'dracula
+(defcustom rivenemacs-theme 'modus-vivendi-theme
   "The theme of RivenEmacs."
   :group 'rivenemacs-ui
   :type 'symbol)

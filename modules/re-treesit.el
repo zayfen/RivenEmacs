@@ -6,7 +6,7 @@
 ;;   :custom
 ;;   (treesit-font-lock-level 3))
 
-(require 'treesit)
+;; (require 'treesit)
 
 (use-package treesit-auto
   :straight (:host github :repo "renzmann/treesit-auto")
