@@ -25,7 +25,8 @@
     re-project       ; Project management (project, projectile, consult-projectile, treemacs-projectile, ...)
     re-checkers      ; Static checkers (flymake, flymake-easy, ...)
     re-debug         ; Debugging tools (gdb-mi, realgud, disaster, ...)
-    re-lsp-bridge    ; Lsp bridge mode
+    ;; re-lsp-bridge    ; Lsp bridge mode
+    re-eglot-corfu   ; eglot
     re-lisp          ; Lisps development (parinfer-rust, sly, macrostep, geiser, elisp, helpful, eros, ...)
     re-data          ; Data file formats (csv, yaml, toml, json, plantuml-mode, ...)
     re-org           ; Org-mode for life (org, org-contrib, org-modern, org-appear, ...)
@@ -51,6 +52,7 @@
     langs/web        ; web (js, jsx, ts, tsx)
     langs/rust       ; rust
     langs/re-python  ;python
+
 )
 
   "RivenEmacs enabled modules."

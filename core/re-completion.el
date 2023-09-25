@@ -270,7 +270,10 @@ If INITIAL is non-nil, use as initial input."
   :custom
   (completion-styles '(orderless basic))
   (completion-category-defaults nil)
-  (completion-category-overrides '((file (styles partial-completion)))))
+  (completion-category-overrides '(
+                                   (file (styles partial-completion))
+                                   (eglot (styles . (orderless flex)))
+                                   )))
 
 (use-package vertico
   :straight t

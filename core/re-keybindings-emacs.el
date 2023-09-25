@@ -166,10 +166,6 @@
 
     ;; ====== Code ======
     "c"   '(nil :wk "code")
-    "c["  '(hs-hide-block :wk "Hide Code Block")
-    "c]"  '(hs-show-block :wk "Show Code Block")
-    "c{"  '(hs-hide-all :wk "Hide All Code Blocks")
-    "c}"  '(hs-show-all :wk "Show All Code Blocks")
 
     ;; ====== Workspaces ======
     "r"   '(nil :wk "workspace") ;; TODO: use tab-bar-mode and tab-line-mode
