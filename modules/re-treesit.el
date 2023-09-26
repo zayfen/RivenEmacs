@@ -64,6 +64,7 @@
         (python-mode     . python-ts-mode)
         (sh-mode         . bash-ts-mode)
         (typescript-mode . typescript-ts-mode)
+        (typescriptreact-mode . tsx-ts-mode)
         (rust-mode       . rust-ts-mode)
         (go-mode         . go-ts-mode)
         (java-mode       . java-ts-mode)

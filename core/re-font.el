@@ -12,7 +12,7 @@
   (when (member "DejaVu Sans Mono" (font-family-list))
     ;;(set-frame-font "Ligalex Mono 12" t t)
     ;; (set-frame-font "IntelOneMono 12" t t)
-    (set-frame-font "Iosevka SS15 14" t t)
+    (set-frame-font "Iosevka SS14 13" t t)
     ;; (set-frame-font "CascadiaMono 12" t t)
     ;; (set-frame-font "FiraCode 12" t t)
     )))

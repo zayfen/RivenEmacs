@@ -4,6 +4,8 @@
 
 ;; Author zayfen (zhangyunfeng0101@gmail.com)
 
+;;; Code
+
 (use-package yasnippet
   :straight t
   :ensure t

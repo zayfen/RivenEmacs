@@ -1,7 +1,7 @@
 ;;; re-checkers.el --- Syntax checking -*- lexical-binding: t; -*-
 
 (use-package flycheck
-  :init
+  :ensure t
   :commands flycheck-mode
   :hook (prog-mode . flycheck-mode)
   :config

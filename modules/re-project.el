@@ -2,8 +2,7 @@
 
 ;; Copyright (C) 2022-2023  Abdelhak Bougouffa
 
-;; Author: Abdelhak Bougouffa (concat "abougouffa" "@" "fedora" "project" "." "org")
-
+;;; Code
 
 (use-package project
   :straight (:type built-in)
@@ -13,21 +12,20 @@
   (project-list-file (concat rivenemacs-local-dir "project-list.el"))
   (project-vc-extra-root-markers '(".projectile.el" ".project.el" ".project"))
   :init
-  (+map! ":"  #'project-find-file)
   (+map!
     ;; project
     :infix "p"
-    "p"  #'project-switch-project
+
+    "a"  #'+project-add-project
+    "b"  #'project-switch-to-buffer
     "c"  #'project-compile
     "d"  #'project-find-dir
+    "D"  #'+dir-locals-open-or-create
     "f"  #'project-find-file
     "k"  #'project-kill-buffers
-    "b"  #'project-switch-to-buffer
-    "a"  #'+project-add-project
-    "D"  #'+dir-locals-open-or-create
+    "p"  #'project-switch-project
     "-"  #'project-dired
     ;; compile/test
-    "c" #'project-compile
     ;; run
     "r"  '(nil :wk "run")
     "re" #'project-eshell
