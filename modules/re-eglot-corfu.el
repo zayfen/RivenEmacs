@@ -76,7 +76,18 @@
   :hook ((prog-mode) . eglot-ensure)
   :config
   (setq read-process-output-max (* 1024 1024))
-  (push :documentHighlightProvider eglot-ignored-server-capabilities))
+  (push :documentHighlightProvider eglot-ignored-server-capabilities)
+
+  (+map! :keymaps 'eglot-mode-map
+    :infix "c"
+    "a" '(eglot-code-actions :wk "Code actions")
+    "e" '(eglot--diagnostics :wk "Diagnostics")
+    "f" '(eglot-format-buffer :wk "Format code")
+    "F" '(eglot-code-action-quickfix :wk "Quick fix")
+    "i" '(eglot-find-implementation :wk "Find implementation")
+    "o" '(eglot-code-action-organize-imports :wk "Organize imports")
+    "r" '(eglot-rename :wk "Rename")
+    "t" '(eglot-find-typeDefinition :wk "Find the typeDefinition")))
 
 
 (provide 're-eglot-corfu)
