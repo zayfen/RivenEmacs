@@ -1,10 +1,10 @@
 ;;; re-treesit.el --- Config for treesit   -*- lexical-binding: t; -*-
 
 ;; Use built-in `treesit' when available
-;; (use-package treesit
-;;   :straight (:type built-in)
-;;   :custom
-;;   (treesit-font-lock-level 3))
+(use-package treesit
+  :straight (:type built-in)
+  :custom
+  (treesit-font-lock-level 4))
 
 ;; (require 'treesit)
 

@@ -463,6 +463,8 @@ or file path may exist now."
   (global-subword-mode 1)
 
   ;; display current function in mode line
-  (which-function-mode t))
+  ;; (which-function-mode t)
+  (breadcrumb-mode t)
+  )
 
 (provide 're-defaults)

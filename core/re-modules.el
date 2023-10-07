@@ -9,6 +9,7 @@
     re-core-ui
     re-completion
     re-font
+    breadcrumb
     )
     "RivenEmacs enabled core modules."
   :group 'rivenemacs-core

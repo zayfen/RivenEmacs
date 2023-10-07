@@ -153,4 +153,18 @@
   (global-set-key (kbd "M-z") #'zzz-to-char))
 
 
+;; (use-package breadcrumb
+;;   :straight (breadcrumb
+;;              :type git
+;;              :host github
+;;              :repo "joaotavora/breadcrumb"
+;;              :files ("*" (:exclude ".git"))
+;;              :build nil)
+;;   :ensure t
+;;   :config
+;;   (add-to-list 'load-path (straight--repos-dir "breadcrumb"))
+;;   (load "breadcrumb")
+;;   (require 'breadcrumb))
+
+
 (provide 're-editor)
