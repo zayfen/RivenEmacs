@@ -71,8 +71,7 @@
   :straight (:host github :repo "lorniu/go-translate")
   :commands +gts-yank-translated-region +gts-translate-with
   :init
-  (+map-local! :keymaps '(org-mode-map text-mode-map markdown-mode-map
-                          tex-mode-map TeX-mode-map latex-mode-map LaTeX-mode-map)
+  (+map-local! :keymaps '(org-mode-map text-mode-map markdown-mode-map prog-mode-map latex-mode-map)
     "T" '(nil :wk "Translate")
     "Tb" `(,(+cmdfy! (+gts-translate-with 'bing)) :wk "Translate with Bing")
     "Td" `(,(+cmdfy! (+gts-translate-with 'deepl)) :wk "Translate with DeepL")

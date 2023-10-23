@@ -1,8 +1,12 @@
 ;; -*- lexical-binding: t; -*-
 
+;;; Commentary:
 
 ;; Should be configured in per-project basis, good documentation at:
 ;; github.com/cjohansson/emacs-ssh-deploy#deployment-configuration-examples
+
+;; Code:
+
 (use-package ssh-deploy
   :straight t
   :hook ((after-save . ssh-deploy-after-save)
@@ -15,16 +19,13 @@
 (use-package tldr
   :straight t
   :init
-  (+map! "ht" #'tldr)
+  (+map! "hM" #'tldr)
   :custom
   (tldr-enabled-categories '("common" "linux" "osx")))
 
 (use-package vterm
   :straight t
   :init
-  (+map!
-    "ot" '(nil :wk "vterm")
-    "otT" #'vterm)
   ;; Hide vterm install window
   (add-to-list
    'display-buffer-alist
@@ -42,9 +43,8 @@
   :straight t
   :init
   (+map!
-    "ott" #'multi-vterm
-    "otd" #'multi-vterm-dedicated-toggle
-    "otp" #'multi-vterm-project)
+    "ot" #'multi-vterm
+    "oT" #'multi-vterm-project)
   ;; Show at buttom
   (add-to-list
    'display-buffer-alist
@@ -55,14 +55,7 @@
      (reusable-frames . visible)
      (window-height . 0.3)))
   :custom
-  (multi-vterm-dedicated-window-height-percent 30)
-  :config
-  (+nvmap!
-    :keymaps 'vterm-mode-map
-    ",c" #'multi-vterm
-    ",n" #'multi-vterm-next
-    ",p" #'multi-vterm-prev
-    "<return>" #'evil-insert-resume))
+  (multi-vterm-dedicated-window-height-percent 30))
 
 (use-package docker
   :straight t
@@ -72,13 +65,12 @@
 (use-package docker-compose-mode
   :straight t)
 
-(if (+emacs-features-p 'tree-sitter)
-    ;; Emacs 29 comes with `dockerfile-ts-mode'
-    (use-package dockerfile-ts-mode
-      :straight (:type built-in)
-      :mode "/Dockerfile\\'")
-  (use-package dockerfile-mode
-    :straight t))
+;; Emacs 29 comes with `dockerfile-ts-mode'
+(use-package dockerfile-ts-mode
+  :straight (:type built-in)
+  :mode "/Dockerfile\\'")
+(use-package dockerfile-mode
+  :straight t)
 
 (use-package systemd
   :straight t)
@@ -127,7 +119,10 @@
 (use-package quickrun
   :ensure t
   :commands (quickrun)
-  :bind ("<f5>" . quickrun))
+  :bind ("<f5>" . quickrun)
+  :init
+  (+map! :infix "o"
+    "q" '(quickrun :wk "Quick run")))
 
 
 (provide 're-tools)

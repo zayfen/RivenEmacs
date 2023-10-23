@@ -86,10 +86,10 @@
 
     ;; ====== Files ======
     "f"   '(nil :wk "file")
+    "fm"  #'+move-this-file
     "fS"  '(write-file :wk "Save as ...")
     "f DEL"  #'+delete-this-file
     "fr" '(recentf-cleanup :wk "Cleanup Recent Files")
-    "fR"  #'+move-this-file
     "ft"  #'recover-this-file
     "fy"  #'+yank-this-file-name
     "fE"  `(,(+cmdfy! (dired (or rivenemacs-config-dir rivenemacs-root-dir)))
@@ -97,23 +97,15 @@
 
     ;; ====== Buffers ======
     "b"   '(nil :wk "buffer")
-    "bI"  #'ibuffer
-    "bS"  #'save-some-buffers
-    "bs"  #'scratch-buffer
+    "bi"  #'ibuffer
+    "bs"  #'save-some-buffers
     "bM"  #'view-echo-area-messages
-    "bA"  #'+kill-some-buffers
+    "bK"  #'+kill-some-buffers
     "bk"  `(,(+cmdfy! (kill-buffer (current-buffer)))
             :wk "Kill this buffer")
-    "bK"  `(,(+cmdfy! (+kill-buffer-and-its-windows (current-buffer)))
-            :wk "Kill this buffer and its windows")
-    "br"  '(revert-buffer :wk "Revert")
-    "bR"  '(rename-buffer :wk "Rename")
+    "br"  '(rename-buffer :wk "Rename")
 
 
-    ;; Bookmarks
-    "bm"  '(nil :wk "bookmark")
-    "bmm"  #'bookmark-set
-    "bmd"  #'bookmark-delete
     ;; Files / Local variables
     "bv"  '(nil :wk "locals")
     "bvv" '(add-file-local-variable :wk "Add")
@@ -148,9 +140,6 @@
     "s"   '(nil :wk "search")
     "sw"  '+webjump
 
-    ;; ======  Mode specific a.k.a. "local leader" ======
-    "m"   '(nil :wk "mode-specific")
-
     ;; ====== VC ======
     "g"   '(nil :wk "git/vc")
 
@@ -169,6 +158,12 @@
 
     ;; ====== Workspaces ======
     "r"   '(nil :wk "workspace") ;; TODO: use tab-bar-mode and tab-line-mode
+
+    ;; Bookmarks
+    "m"  '(nil :wk "bookmark")
+    "mm"  #'bookmark-set
+    "md"  #'bookmark-delete
+    "ml"  #'consult-bookmark
 
     ;; ====== Notes ======
     "n"   '(nil :wk "notes")
@@ -191,6 +186,7 @@
     "hdc" #'describe-command
     "hdf" #'describe-function
     "hdp" #'describe-package
+    "hm" #'consult-man
 
     ;; ====== Project ======
     "p"   '(nil :wk "project")

@@ -123,16 +123,16 @@ If INITIAL is non-nil, use as initial input."
     [remap switch-to-buffer-other-frame]  #'consult-buffer-other-frame
     [remap yank-pop]                      #'consult-yank-pop)
 
+  :bind (("C-s" . consult-line)
+         ("M-s m" . consult-man))
   :init
   (define-key minibuffer-local-map (kbd "C-r") #'consult-history)
   (define-key minibuffer-local-map (kbd "S-C-v") #'consult-yank-pop)
-  (global-set-key (kbd "C-s") #'consult-line)
   (+map!
     ;; buffer
     "bl"  #'consult-line
-    "bb"  #'consult-buffer
-    "bmM" #'consult-bookmark
     "bO"  #'consult-outline
+
     ;; file
     "fe"  '(consult-recent-file :wk "Recent files")
     "fl"  #'consult-locate
@@ -141,11 +141,7 @@ If INITIAL is non-nil, use as initial input."
     ;; git/vc
     "gG"  #'consult-git-grep
     ;; search
-    "s."  #'consult-ripgrep
-    "si"  #'consult-imenu
-    "sm"  #'consult-man
     "sh"  #'consult-history
-    "sa"  #'consult-org-agenda
 
     ;; project
     "pl"  #'consult-line-multi
@@ -319,14 +315,13 @@ If INITIAL is non-nil, use as initial input."
              :files ("*" (:exclude ".git"))
              :build nil)
   :commands (blink-search)
+  :bind (("M-s s" . blink-search))
   :init
   (add-to-list 'load-path (straight--repos-dir "blink-search"))
   (setq blink-search-browser-function
         (if (display-graphic-p)
             #'xwidget-webkit-browse-url
-          #'eww))
-  (+map! :infix "s"
-    "s" '(blink-search :wk "Blink Search")))
+          #'eww)))
 
 
 (use-package color-rg
@@ -338,13 +333,12 @@ If INITIAL is non-nil, use as initial input."
              :files ("*" (:exclude ".git"))
              :build nil)
   :commands (color-rg-search-input-in-project color-rg-search-symbol-in-project color-rg-search-input-in-current-file color-rg-search-symbol-in-current-file)
+  :bind (("M-s b" . color-rg-search-symbol-in-current-file)
+         ("M-s B" . color-rg-search-input-in-current-file)
+         ("M-s p" . color-rg-search-symbol-in-project)
+         ("M-s P" . color-rg-search-input-in-project))
   :init
-  (add-to-list 'load-path (straight--repos-dir "color-rg"))
-  (+map! :infix "s"
-    "p" '(color-rg-search-symbol-in-project :wk "Color-rg project at point")
-    "P" '(color-rg-search-input-in-project :wk "Color-rg project")
-    "b" '(color-rg-search-symbol-in-current-file :wk "Color-rg buffer at point")
-    "B" '(color-rg-search-input-in-current-file :wk "Color-rg buffer")))
+  (add-to-list 'load-path (straight--repos-dir "color-rg")))
 
 
 (use-package find-file-in-project
