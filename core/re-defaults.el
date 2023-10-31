@@ -446,6 +446,7 @@ or file path may exist now."
 
   ;; Auto load files changed on disk
   (global-auto-revert-mode 1)
+  (auto-revert-use-notify nil)
 
   ;; Show line number in mode-line
   (line-number-mode 1)
