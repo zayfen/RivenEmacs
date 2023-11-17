@@ -77,8 +77,8 @@
   (setq acm-enable-path t)
   (setq acm-backend-yas-match-by-trigger-keyword t)
   (setq acm-enable-tabnine nil)
+  (setq acm-enable-codeium t)
   (setq acm-enable-preview t)
-  (setq acm-enable-codeium nil)
   (setq acm-backend-search-file-words-enable-fuzzy-match t)
   (setq acm-quick-access-use-number-select nil)
   (setq lsp-bridge-enable-diagnostics nil) ;; we use flycheck only
@@ -96,13 +96,14 @@
     "a"  '(lsp-bridge-code-action :wk "Code actions")
     "e"  '(lsp-bridge-diagnostic-list :wk "Diagnostic list")
     "f" '(lsp-bridge-code-format :wk "Format code")
-    "F" '(lsp-bridge-code-action--fix :wk "Quick fix")
+
     "i"  '(lsp-bridge-find-impl :wk "Find implementation")
     "k"  '(lsp-bridge-popup-documentation :wk "Find Document")
     "p"  '(lsp-bridge-peek :wk "Peek")
-    "r" '(lsp-bridge-rename :wk "Rename")
-    "t"  '(lsp-bridge-find-type-def :wk "Find type definition"))
-  )
+    "r" '(lsp-bridge-find-references :wk "Find References")
+    "t"  '(lsp-bridge-find-type-def :wk "Find type definition")
+    "F" '(lsp-bridge-code-action--fix :wk "Quick fix")
+    "R" '(lsp-bridge-rename :wk "Rename")))
 
 
 (provide 're-lsp-bridge)
