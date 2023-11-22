@@ -19,13 +19,15 @@
 (use-package tldr
   :straight t
   :init
-  (+map! "hM" #'tldr)
+  (+map! "h?" #'tldr)
   :custom
   (tldr-enabled-categories '("common" "linux" "osx")))
 
 (use-package vterm
   :straight t
   :init
+  (+map!
+    "ot" #'vterm)
   ;; Hide vterm install window
   (add-to-list
    'display-buffer-alist
@@ -43,7 +45,6 @@
   :straight t
   :init
   (+map!
-    "ot" #'multi-vterm
     "oT" #'multi-vterm-project)
   ;; Show at buttom
   (add-to-list
@@ -95,26 +96,10 @@
     "K" #'journalctl-previous-chunk))
 
 (use-package logview
-  :straight t)
-
-(use-package bitwarden
-  :straight (:host github :repo "seanfarley/emacs-bitwarden")
-  :preface
-  (defconst +bitwarden-available-p (executable-find "bw"))
-  :when +bitwarden-available-p
-  :custom
-  (bitwarden-automatic-unlock
-   (lambda ()
-     (require 'auth-source)
-     (if-let* ((matches (auth-source-search :host "bitwarden.com" :max 1))
-               (entry (nth 0 matches))
-               (email (plist-get entry :user))
-               (pass (plist-get entry :secret)))
-         (progn
-           (setq bitwarden-user email)
-           (if (functionp pass) (funcall pass) pass))
-       ""))))
-
+  :straight t
+  :init
+  (+map! :infix "t"
+    "l" '(log-view-mode :wk "+logview-mode")))
 
 (use-package quickrun
   :ensure t
@@ -123,6 +108,22 @@
   :init
   (+map! :infix "o"
     "q" '(quickrun :wk "Quick run")))
+
+(use-package devdocs
+  :ensure t
+  :commands (devdoc-lookup)
+  :config
+  (add-hook 'python-mode-hook
+          (lambda () (setq-local devdocs-current-docs '("python~3.12"))))
+  (add-hook 'typescript-mode-hook
+          (lambda () (setq-local devdocs-current-docs '("javascript"))))
+  (add-hook 'c-mode-hook
+            (lambda () (setq-local devdocs-current-docs '("c"))))
+  (add-hook 'c++-mode-hook
+            (lambda () (setq-local devdocs-current-docs '("c"))))
+  (add-hook 'rust-mode-hook
+            (lambda () (setq-local devdocs-current-docs '("rust"))))
+  )
 
 
 (provide 're-tools)
