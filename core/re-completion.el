@@ -221,10 +221,13 @@ If INITIAL is non-nil, use as initial input."
 
 (use-package embark
   :straight t
+  :bind
+  (("C-," . embark-act)         ;; pick some comfortable binding
+   ("C-." . embark-dwim))        ;; good alternative: M-.
   :init
   (global-set-key [remap describe-bindings] #'embark-bindings)
   (setq prefix-help-command #'embark-prefix-help-command)
-  (+map! "." #'embark-act))
+  )
 
 (use-package embark-consult
   :straight t
