@@ -111,7 +111,7 @@
 
 (use-package devdocs
   :ensure t
-  :commands (devdoc-lookup)
+  :commands (devdocs-lookup)
   :config
   (add-hook 'python-mode-hook
           (lambda () (setq-local devdocs-current-docs '("python~3.12"))))

@@ -170,7 +170,7 @@
 
     ;; ====== Help ======
     "h"   '(nil :wk "help")
-    "hd"  #'devdoc-lookup
+    "hd"  #'devdocs-lookup
     "hi"  #'info
     "hs"  #'+screenshot-svg
     "hm" #'consult-man
