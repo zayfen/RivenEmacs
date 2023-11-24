@@ -18,6 +18,8 @@
   :preface
   ;; Set to nil so we can detect user changes (in config.el)
   (setq org-directory nil)
+  ;; Set agenda directory
+  (setq org-agenda-files (directory-files-recursively "~/Dropbox/Agenda/" "\\.org$"))
   :custom
   (org-tags-column 0)
   (org-auto-align-tags nil)
@@ -337,9 +339,12 @@
   ;; Eventually suppress previewing for certain functions
   (consult-customize consult-org-roam-forward-links :preview-key (kbd "M-.")))
 
-(use-package ox-gfm :defer t)
+(use-package ox-gfm
+  :defer t
+  :ensure t)
 
 (use-package toc-org
+  :ensure t
   :hook (org-mode . toc-org-mode))
 
 (use-package grip-mode
@@ -350,6 +355,21 @@
 (use-package valign
   :ensure t
   :hook ((markdown-mode  org-mode) . valign-mode))
+
+;; config agenda
+
+(use-package org-alert
+  :ensure t
+  :custom
+  ((org-alert-notification-title "Org Agenda"))
+  :init
+  (require 'org-alert)
+  (org-alert-enable))
+
+(use-package org-super-agenda
+  :ensure t
+  :straight t
+  )
 
 (provide 're-org)
 
