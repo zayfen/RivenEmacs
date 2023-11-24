@@ -18,9 +18,6 @@
 (use-package pyvenv
   :straight t
   :after python
-  :init
-  (add-hook 'pyvenv-post-activate-hooks #'+modeline-update-env-in-all-windows-h)
-  (add-hook 'pyvenv-pre-activate-hooks #'+modeline-update-env-in-all-windows-h)
   :config
   (add-hook 'python-mode-local-vars-hook #'pyvenv-track-virtualenv)
   (add-to-list 'global-mode-string
