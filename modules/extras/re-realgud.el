@@ -10,30 +10,28 @@
 ;;;###autoload(autoload '+realgud:start "../modules/extras/re-realgud" "Start the RealGUD debugger suitable for the current mode." t)
 (defun +realgud:start (&optional path)
   "Start the RealGUD debugger suitable for the current mode."
-  (interactive "<f>")
+  (interactive "p")
   (let ((default-directory
-         (or (projectile-project-root)
-             (and (project-current) (project-root (project-current)))
+         (or (and (project-current) (project-root (project-current)))
+             (and (fboundp 'projectile-project-root) (projectile-project-root))
+             (vc-root-dir)
              default-directory)))
     (pcase major-mode
-      ((or 'c-mode 'c++-mode 'c-ts-mode 'c++-ts-mode)
+      ((or 'c-mode 'c++-mode 'c-ts-mode 'c++-ts-mode
+           'objc-mode 'fortran-mode 'ada-mode 'modula-2-mode
+           'd-mode 'opencl-mode 'go-mode 'go-ts-mode)
        (realgud:gdb (if path (concat "gdb " path))))
       ((or 'rust-mode 'rust-ts-mode)
-       (realgud--lldb (if path (concat "gdb " path))))
-      ((or 'js-mode 'js2-mode 'js3-mode 'typescript-mode 'js-ts-mode 'typescript-ts-mode 'tsx-ts-mode)
+       (lldb (if path (concat "lldb " path))))
+      ((or 'js-mode 'js2-mode 'js3-mode 'typescript-mode 'js-ts-mode 'typescript-ts-mode)
        (realgud:trepanjs))
-      ((or 'python-mode 'python-ts-mode)
-       (realgud:pdb))
       ((or 'sh-mode 'bash-ts-mode)
-       (let ((shell sh-shell))
-         (when (string= shell "sh")
-           (setq shell "bash"))
-         (pcase shell
-           ("bash"
-            (realgud:bashdb (if path (concat "bashdb " path))))
-           ("zsh"
-            (realgud:zshdb (if path (concat "zshdb " path))))
-           (_ (user-error "No shell debugger for %s" shell)))))
+       (pcase sh-shell
+         ((or "bash" "sh")
+          (realgud:bashdb (if path (concat "bashdb " path))))
+         ("zsh"
+          (realgud:zshdb (if path (concat "zshdb " path))))
+         (_ (user-error "No shell debugger for %s" sh-shell))))
       (_ (user-error "No debugger for %s" major-mode)))))
 
 ;;;###autoload(autoload '+realgud:toggle-breakpoint "../modules/extras/re-realgud" "Toggle break point." t)
