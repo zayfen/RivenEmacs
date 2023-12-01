@@ -37,24 +37,24 @@ Useful for keeping track of the enabled theme."
    "Disable previously enabled themes before enabling the new one."
    (mapc #'disable-theme custom-enabled-themes)))
 
-(use-package modus-themes
-  :straight (:host github :repo "protesilaos/modus-themes")
-  :config
-  ;; In all of the following, WEIGHT is a symbol such as `semibold',
-  ;; `light', `bold', or anything mentioned in `modus-themes-weights'.
-  (setq modus-themes-italic-constructs t
-        modus-themes-bold-constructs t
-        modus-themes-mixed-fonts t
-        modus-themes-variable-pitch-ui nil
-        modus-themes-custom-auto-reload t
-        modus-themes-headings
-        '(
-          (agenda-date      . (1.2))
-          (agenda-structure . (light 1.5))
-          (underline-link border)
-          (underline-link-visited border)
-          (underline-link-symbolic border)))
-  )
+;; (use-package modus-themes
+;;   :straight (:host github :repo "protesilaos/modus-themes")
+;;   :config
+;;   ;; In all of the following, WEIGHT is a symbol such as `semibold',
+;;   ;; `light', `bold', or anything mentioned in `modus-themes-weights'.
+;;   (setq modus-themes-italic-constructs t
+;;         modus-themes-bold-constructs t
+;;         modus-themes-mixed-fonts t
+;;         modus-themes-variable-pitch-ui nil
+;;         modus-themes-custom-auto-reload t
+;;         modus-themes-headings
+;;         '(
+;;           (agenda-date      . (1.2))
+;;           (agenda-structure . (light 1.5))
+;;           (underline-link border)
+;;           (underline-link-visited border)
+;;           (underline-link-symbolic border)))
+;;   )
 
 (use-package all-the-icons
   :straight t
@@ -96,7 +96,7 @@ Useful for keeping track of the enabled theme."
   (doom-modeline-unicode-fallback t)
   (doom-modeline-icon nil)
   ;; Don’t compact font caches during GC.
-  (inhibit-compacting-font-caches t))  
+  (inhibit-compacting-font-caches t))
 
 
 (provide 're-core-ui)

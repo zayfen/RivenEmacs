@@ -202,4 +202,10 @@
       :render (gts-buffer-render)))))
 
 
+(use-package restclient
+  :ensure t
+  :mode (("\\.http\\'" . restclient-mode)))
+
+
+
 (provide 're-tools)
