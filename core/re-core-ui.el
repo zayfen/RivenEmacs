@@ -5,22 +5,22 @@
 ;; Author: Abdelhak Bougouffa (concat "abougouffa" "@" "fedora" "project" "." "org")
 
 
-(defun +theme--tweaks-h (&optional _)
-  "Use smaller font (75% of the default) for line numbers in graphic mode."
-  (when (display-graphic-p)
-    (set-face-attribute
-     'line-number nil
-     :background (face-attribute 'default :background)
-     :height (truncate (* 0.95 (face-attribute 'default :height)))
-     :weight 'semibold)
-    (set-face-attribute
-     'line-number-current-line nil
-     :height (truncate (* 0.95 (face-attribute 'default :height)))
-     :weight 'bold)))
+;; (defun +theme--tweaks-h (&optional _)
+;;   "Use smaller font (75% of the default) for line numbers in graphic mode."
+;;   (when (display-graphic-p)
+;;     (set-face-attribute
+;;      'line-number nil
+;;      :background (face-attribute 'default :background)
+;;      :height (truncate (* 0.95 (face-attribute 'default :height)))
+;;      :weight 'semibold)
+;;     (set-face-attribute
+;;      'line-number-current-line nil
+;;      :height (truncate (* 0.95 (face-attribute 'default :height)))
+;;      :weight 'bold)))
 
 ;; Apply tweaks
-(add-hook 'after-init-hook #'+theme--tweaks-h)
-(add-hook 'enable-theme-functions #'+theme--tweaks-h)
+;; (add-hook 'after-init-hook #'+theme--tweaks-h)
+;; (add-hook 'enable-theme-functions #'+theme--tweaks-h)
 
 ;; Save enabled theme
 (add-hook
