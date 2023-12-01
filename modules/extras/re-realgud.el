@@ -16,7 +16,7 @@
              (and (project-current) (project-root (project-current)))
              default-directory)))
     (pcase major-mode
-      ((or 'c-mode 'c++-mode 'c-ts-mode c++-ts-mode)
+      ((or 'c-mode 'c++-mode 'c-ts-mode 'c++-ts-mode)
        (realgud:gdb (if path (concat "gdb " path))))
       ((or 'rust-mode 'rust-ts-mode)
        (realgud--lldb (if path (concat "gdb " path))))

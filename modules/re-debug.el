@@ -61,7 +61,7 @@
   (defconst +objdump-available-p (executable-find "objdump"))
   :when +objdump-available-p
   :init
-  (+map-local! :keymaps '(c-mode-map c++-mode-map fortran-mode-map)
+  (+map-local! :keymaps '(c-mode-map c-ts-mode-map c++-ts-mode-map c++-mode-map fortran-mode-map)
     "D" #'disaster))
 
 
