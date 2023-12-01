@@ -20,6 +20,8 @@
   :straight t
   :init
   (+map! "tm" #'mixed-pitch-mode)
+  :hook ((text-mode . mixed-pitch-mode)
+         (org-mode . mixed-pitch-mode))
   :custom
   (mixed-pitch-variable-pitch-cursor 'box)
   :config
@@ -58,7 +60,8 @@
                    org-todo
                    org-done
                    font-lock-comment-face
-                   font-lock-comment-delimiter-face)))))
+                   font-lock-comment-delimiter-face))))
+  )
 
 (use-package re-writing-mode
   :init
