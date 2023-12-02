@@ -21,7 +21,8 @@
   :init
   (+map! "tm" #'mixed-pitch-mode)
   :hook ((text-mode . mixed-pitch-mode)
-         (org-mode . mixed-pitch-mode))
+         (org-mode . mixed-pitch-mode)
+         (markdown-mode . mixed-pitch-mode))
   :custom
   (mixed-pitch-variable-pitch-cursor 'box)
   :config
