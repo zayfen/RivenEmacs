@@ -23,11 +23,19 @@
   :custom
   (tldr-enabled-categories '("common" "linux" "osx")))
 
+
+(defun toggle-vterm ()
+  (interactive)
+  (if (get-buffer "*vterm*")
+      (let ((kill-buffer-query-functions nil))
+        (kill-buffer "*vterm*"))
+    (vterm)))
+
 (use-package vterm
   :straight t
   :init
   (+map!
-    "ot" #'vterm)
+    "ot" #'toggle-vterm)
   ;; Hide vterm install window
   (add-to-list
    'display-buffer-alist
@@ -39,24 +47,34 @@
   (vterm-max-scrollback 5000)
   (vterm-tramp-shells '(("docker" "/bin/bash")))
   :config
-  (define-key vterm-mode-map [return] #'vterm-send-return))
+  (define-key vterm-mode-map [return] #'vterm-send-return)
+  ;; Once vterm is dead, the vterm buffer is useless. Why keep it around? We can
+  ;; spawn another if want one.
+  (setq vterm-kill-buffer-on-exit t)
+  ;; 5000 lines of scrollback, instead of 1000
+  (setq vterm-max-scrollback 5000)
+  (setq-hook! 'vterm-mode-hook
+    ;; Don't prompt about dying processes when killing vterm
+    confirm-kill-processes nil
+    ;; Prevent premature horizontal scrolling
+    hscroll-margin 0))
 
-(use-package multi-vterm
-  :straight t
-  :init
-  (+map!
-    "oT" #'multi-vterm-project)
-  ;; Show at buttom
-  (add-to-list
-   'display-buffer-alist
-   `("\\*vterminal - .*\\*" ;; multi-vterm-project / dedicated
-     (display-buffer-reuse-window display-buffer-in-direction)
-     (direction . bottom)
-     (dedicated . t)
-     (reusable-frames . visible)
-     (window-height . 0.3)))
-  :custom
-  (multi-vterm-dedicated-window-height-percent 30))
+;; (use-package multi-vterm
+;;   :straight t
+;;   :init
+;;   (+map!
+;;     "oT" #'multi-vterm-project)
+;;   ;; Show at buttom
+;;   (add-to-list
+;;    'display-buffer-alist
+;;    `("\\*vterminal - .*\\*" ;; multi-vterm-project / dedicated
+;;      (display-buffer-reuse-window display-buffer-in-direction)
+;;      (direction . bottom)
+;;      (dedicated . t)
+;;      (reusable-frames . visible)
+;;      (window-height . 0.3)))
+;;   :custom
+;;   (multi-vterm-dedicated-window-height-percent 30))
 
 (use-package docker
   :straight t
