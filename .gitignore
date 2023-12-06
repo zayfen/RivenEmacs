@@ -1,6 +1,7 @@
 # Project specific
 /private/
-/local/
+/local/*
+!/local/debug-adapters
 /eln-cache/
 .directory
 /test/
