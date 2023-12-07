@@ -49,8 +49,6 @@ Useful for keeping track of the enabled theme."
         modus-themes-custom-auto-reload t
         modus-themes-headings
         '(
-          (agenda-date      . (1.2))
-          (agenda-structure . (light 1.5))
           (underline-link border)
           (underline-link-visited border)
           (underline-link-symbolic border))))
