@@ -10,8 +10,10 @@
     (set-frame-font "Menlo" t t)))
  ((string-equal system-type "gnu/linux") ; linux
   (when (member "DejaVu Sans Mono" (font-family-list))
+    (set-face-attribute 'default nil :font "IntelOneMono" :height 130)
+    (set-face-attribute 'fixed-pitch nil :font "DejaVu Sans Mono")
+    (set-face-attribute 'variable-pitch nil :font "DejaVu Sans")
     ;;(set-frame-font "Ligalex Mono 12" t t)
-    (set-frame-font "IntelOneMono 13" t t)
     ;;(set-frame-font "Iosevka SS14 13" t t)
     ;; (set-frame-font "CascadiaMono 12" t t)
     ;; (set-frame-font "FiraCode 12" t t)

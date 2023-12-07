@@ -9,15 +9,17 @@
   :mode (("\\.py\\'" . python-mode)
          ("[./]flake8\\'" . conf-mode)
          ("/Pipfile\\'" . conf-mode))
+  :interpreter ("python" . python-mode)
   )
 
 
 (use-package pip-requirements
-  :straight t)
+  :straight t
+  :mode ("\\.py\\'" . pip-requirements-mode))
 
 (use-package pyvenv
   :straight t
-  :after python
+  :mode ("\\.py\\'" . pyvenv-mode)
   :config
   (add-hook 'python-mode-local-vars-hook #'pyvenv-track-virtualenv)
   (add-to-list 'global-mode-string
@@ -26,7 +28,7 @@
 
 (use-package poetry
   :straight t
-  :after python
+  :commands (poetry)
   :init
   (setq poetry-tracking-strategy 'switch-buffer))
 
@@ -39,7 +41,6 @@
 
 (use-package pyimport
   :straight t
-  :after python
   :init
   (+map-local! :keymaps 'python-mode-map
     "i"  '(nil :wk "imports")
@@ -106,6 +107,6 @@
                   )))))
 
 (add-hook 'python-mode-hook  #'electric-pair-mode)
-(add-hook 'python-ts-mode-hook  #'electric-pair-mode)
+(add-hook 'python-mode-hook  #'electric-pair-mode)
 
 (provide 're-python)

@@ -99,15 +99,6 @@
   "List of symbols representing Emacs' enabled features.
 Compiled from the `system-configuration-features'.")
 
-(defcustom rivenemacs-fonts nil
-  "Fonts to use within RivenEmacs."
-  :group 'rivenemacs-ui
-  :type '(plist
-          (:font-family string)
-          (:font-size natnum)
-          (:unicode-font-family string)
-          (:variable-pitch-font-family string)
-          (:variable-pitch-font-size natnum)))
 
 (defcustom rivenemacs-leader-key "C-c"
   "RivenEmacs leader key."
@@ -124,7 +115,7 @@ Compiled from the `system-configuration-features'.")
   :group 'rivenemacs-keybinding
   :type 'string)
 
-(defcustom rivenemacs-theme 'dichromacy
+(defcustom rivenemacs-theme 'modus-vivendi-tinted
   "The theme of RivenEmacs."
   :group 'rivenemacs-ui
   :type 'symbol)
