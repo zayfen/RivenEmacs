@@ -222,8 +222,19 @@
 
 (use-package restclient
   :ensure t
+  :defer t
   :mode (("\\.http\\'" . restclient-mode)))
 
+
+(use-package elfeed
+  :ensure t
+  :defer t
+  :commands (elfeed)
+  :config
+  (setq elfeed-feeds
+      '(("http://nullprogram.com/feed/" blog emacs)
+        "http://www.50ply.com/atom.xml"  ; no autotagging
+        ("http://nedroid.com/feed/" webcomic))))
 
 
 (provide 're-tools)

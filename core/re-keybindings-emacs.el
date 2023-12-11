@@ -135,6 +135,7 @@
     "o"   '(nil   :wk "app/open")
     "o-"  '(dired :wk "Dired") ;; Will be overwritten if dirvish is used
     "oe"  #'eshell
+    "of" #'elfeed
 
     ;; ====== Search ======
     "s"   '(nil :wk "search")
