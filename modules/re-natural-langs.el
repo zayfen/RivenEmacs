@@ -24,32 +24,7 @@
           markdown-plain-url-face
           markdown-reference-face
           markdown-url-face))
-      (org-mode
-       . (org-block
-          org-block-begin-line
-          org-block-end-line
-          org-cite
-          org-cite-key
-          org-code
-          org-date
-          org-footnote
-          org-formula
-          org-inline-src-block
-          org-latex-and-related
-          org-link
-          org-meta-line
-          org-property-value
-          org-ref-cite-face
-          org-special-keyword
-          org-tag
-          org-todo
-          org-todo-keyword-done
-          org-todo-keyword-habt
-          org-todo-keyword-kill
-          org-todo-keyword-outd
-          org-todo-keyword-todo
-          org-todo-keyword-wait
-          org-verbatim))
+
       (latex-mode
        . (font-latex-math-face
           font-latex-sedate-face

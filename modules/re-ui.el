@@ -29,7 +29,8 @@
   (setq mixed-pitch-fixed-pitch-faces
         (delete-dups
          (append mixed-pitch-fixed-pitch-faces
-                 '(org-date
+                 '(
+                   org-date
                    org-footnote
                    org-drawer
                    org-special-keyword

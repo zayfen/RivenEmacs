@@ -17,6 +17,7 @@
 
 (defcustom rivenemacs-modules
   '(
+    re-extra         ; Extra features (better-jumper, crux, ...)
     re-ui            ; User interface (focus, writeroom-mode, mixed-pitch, ...)
     re-editor        ; Editing (yasnippet, smartparens, unicode-fonts, ligature, ...)
     re-daemon        ; Emacs daemon tweaks
@@ -30,8 +31,8 @@
     ;; re-eglot-corfu   ; eglot
     re-lisp          ; Lisps development (parinfer-rust, sly, macrostep, geiser, elisp, helpful, eros, ...)
     re-data          ; Data file formats (csv, yaml, toml, json, plantuml-mode, ...)
-    re-org           ; Org-mode for life (org, org-contrib, org-modern, org-appear, ...)
-    re-extra         ; Extra features (better-jumper, crux, ...)
+    ;; re-org           ; Org-mode for life (org, org-contrib, org-modern, org-appear, ...)
+    re-org-pro
     re-docs          ; Documents (pdf-tools, nov, ...)
     re-latex         ; LaTeX (auctex, auctex-latexmk, reftex, bibtex, ...)
     re-natural-langs ; Natural language stuff (spell-fu, go-translate, eglot-ltex, ...)
