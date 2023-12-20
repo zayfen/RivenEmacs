@@ -68,8 +68,8 @@
 (use-package avy
   :ensure t
   :bind (("C-:" . avy-goto-char)
-         ("M-g f" . avy-goto-char-2-below)
-         ("M-g b" . avy-goto-char-2-above)))
+         ("M-g f" . avy-goto-word-1-below)
+         ("M-g b" . avy-goto-word-1-above)))
 
 
 (provide 're-jump)
