@@ -26,9 +26,10 @@
 
 (defun toggle-vterm ()
   (interactive)
-  (if (get-buffer "*vterm*")
-      (let ((kill-buffer-query-functions nil))
-        (kill-buffer "*vterm*"))
+  (if (get-buffer-window "*vterm*")
+      ;; (let ((kill-buffer-query-functions nil))
+      ;;   (kill-buffer "*vterm*"))
+      (delete-window (get-buffer-window "*vterm*"))
     (vterm)))
 
 (use-package vterm
