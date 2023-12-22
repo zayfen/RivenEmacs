@@ -77,7 +77,7 @@
   (setq acm-enable-path t)
   (setq acm-backend-yas-match-by-trigger-keyword t)
   (setq acm-enable-tabnine nil)
-  (setq acm-enable-codeium t)
+  (setq acm-enable-codeium nil)
   (setq acm-enable-preview t)
   (setq acm-backend-search-file-words-enable-fuzzy-match t)
   (setq acm-quick-access-use-number-select nil)

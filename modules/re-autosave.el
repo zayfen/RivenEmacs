@@ -1,3 +1,11 @@
+;;; modules/re-autosave.el -*- lexical-binding: t; -*-
+
+;; Copyright (C) 2023 zayfen
+
+;; Author zayfen (zhangyunfeng0101@gmail.com)
+
+;;; Code
+
 (use-package auto-save
   :ensure t
   :straight (auto-save
