@@ -56,12 +56,13 @@
   (add-to-list 'load-path (straight--repos-dir "lsp-bridge"))
   :hook ((prog-mode) . lsp-bridge-mode)
   :custom
-  ;;(lsp-bridge-signature-function 'eldoc-message)
   (lsp-bridge-single-lang-server-extension-list '(("vue" . "volar")))
+  (lsp-bridge-python-lsp-server "ruff")
+  (lsp-bridge-python-multi-lsp-server "pyright_ruff")
   (lsp-bridge-multi-lang-server-extension-list
    '(
      (("ts" "tsx") . "typescript_eslint")
-     (("scss" "sass" "less") . "css_emmet")
+     (("css" "scss" "sass" "less") . "css_emmet")
 ;;     ("vue" . "volar_emmet")
      ))
   :bind (:map lsp-bridge-mode-map
@@ -71,8 +72,8 @@
   :config
   (use-package lsp-bridge-jdtls)
   (setq acm-enable-icon t)
-  (setq acm-enable-yas nil)
-  (setq acm-enable-doc nil)
+  (setq acm-enable-yas t)
+  (setq acm-enable-doc t)
   (setq acm-enable-doc-markdown-render t)
   (setq acm-enable-path t)
   (setq acm-backend-yas-match-by-trigger-keyword t)
@@ -84,25 +85,23 @@
   (setq lsp-bridge-enable-diagnostics nil) ;; we use flycheck only
   (setq lsp-bridge-enable-hover-diagnostic nil)
   (setq lsp-bridge-code-action-enable-popup-menu nil)
-  (setq lsp-bridge-python-multi-lsp-server "pyright_ruff")
   (setq acm-enable-quick-access t)
   (setq lsp-bridge-find-def-fallback #'dumb-jump-go)
   (setq lsp-bridge-find-ref-fallback #'xref-find-references)
   ;; (setq lsp-bridge-symbols-enable-which-func t)
-  (setq lsp-bridge-signature-show-function t)
+  ;; (setq lsp-bridge-signature-show-function t)
 
   (+map! :keymaps 'lsp-bridge-mode-map
     :infix "c"
     "a"  '(lsp-bridge-code-action :wk "Code actions")
     "e"  '(lsp-bridge-diagnostic-list :wk "Diagnostic list")
     "f" '(lsp-bridge-code-format :wk "Format code")
-
     "i"  '(lsp-bridge-find-impl :wk "Find implementation")
     "k"  '(lsp-bridge-popup-documentation :wk "Find Document")
     "p"  '(lsp-bridge-peek :wk "Peek")
+    "q" '(lsp-bridge-code-action--fix :wk "Quick fix")
     "r" '(lsp-bridge-find-references :wk "Find References")
     "t"  '(lsp-bridge-find-type-def :wk "Find type definition")
-    "F" '(lsp-bridge-code-action--fix :wk "Quick fix")
     "R" '(lsp-bridge-rename :wk "Rename")))
 
 
