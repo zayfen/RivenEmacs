@@ -36,13 +36,14 @@ snippet, or `emmet-expand-yas'/`emmet-expand-line', depending on whether
   :straight t
   :preface (defvar emmet-mode-keymap (make-sparse-keymap))
   :hook ((css-mode web-mode html-mode haml-mode nxml-mode rjsx-mode tsx-ts-mode reason-mode) . emmet-mode)
+  :bind ("M-RET" . +web/indent-or-yas-or-emmet-expand)
   :config
   (when (require 'yasnippet nil t)
     (add-hook 'emmet-mode-hook #'yas-minor-mode-on))
   (setq emmet-move-cursor-between-quotes t)
   (+map! :keymaps 'emmet-mode-keymap
-    "E" #'emmet-wrap-with-markup
-    "e" #'+web/indent-or-yas-or-emmet-expand))
+    "e" #'emmet-wrap-with-markup
+    ))
 
 (use-package web-mode
   :straight t
