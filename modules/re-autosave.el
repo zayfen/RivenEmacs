@@ -17,7 +17,6 @@
   :init
   (add-to-list 'load-path (straight--repos-dir "auto-save"))
   :config
-  (auto-save-enable)
   (setq auto-save-silent t)
   (setq auto-save-delete-trailing-whitespace t)
   (setq auto-save-disable-predicates
@@ -25,3 +24,6 @@
       (string-suffix-p
       "gpg"
       (file-name-extension (buffer-name)) t)))))
+
+(require 'auto-save)
+(auto-save-enable)
