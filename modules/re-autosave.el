@@ -18,7 +18,7 @@
   (add-to-list 'load-path (straight--repos-dir "auto-save"))
   :config
   (setq auto-save-silent t)
-  (setq auto-save-delete-trailing-whitespace t)
+  (setq auto-save-delete-trailing-whitespace nil)
   (setq auto-save-disable-predicates
       '((lambda ()
       (string-suffix-p
