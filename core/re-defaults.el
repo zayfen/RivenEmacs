@@ -466,4 +466,6 @@ or file path may exist now."
   ;; (which-function-mode t)
   (breadcrumb-mode t))
 
+(setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit)
+
 (provide 're-defaults)
