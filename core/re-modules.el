@@ -50,11 +50,11 @@
     re-fold
     re-indent
     re-popup
+    re-autosave
     langs/re-lua
     langs/web        ; web (js, jsx, ts, tsx)
     langs/rust       ; rust
     langs/re-python  ;python
-
 )
 
   "RivenEmacs enabled modules."

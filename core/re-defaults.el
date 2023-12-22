@@ -464,26 +464,6 @@ or file path may exist now."
 
   ;; display current function in mode line
   ;; (which-function-mode t)
-  (breadcrumb-mode t)
-  )
-
-;; Enable autosave
-(when (>= emacs-major-version 26)
-  ;; real auto save
-  (auto-save-visited-mode 1)
-  (setq auto-save-visited-interval 10))
-
-(defun xah-save-all-unsaved ()
-  "Save all unsaved files. no ask.
-Version 2019-11-05"
-  (interactive)
-  (save-some-buffers t ))
-
-(if (version< emacs-version "27.1")
-    (add-hook 'focus-out-hook 'xah-save-all-unsaved)
-  (setq after-focus-change-function 'xah-save-all-unsaved))
-;; to undo this, run
-;; (setq after-focus-change-function 'ignore)
-
+  (breadcrumb-mode t))
 
 (provide 're-defaults)
