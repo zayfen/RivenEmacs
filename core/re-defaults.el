@@ -346,20 +346,20 @@
 ;; Update time stamp (if available) before saving a file.
 (add-hook 'before-save-hook 'time-stamp)
 
-(defcustom +whitespace-auto-cleanup-modes
-  '(prog-mode conf-mode org-mode markdown-mode
-    latex-mode tex-mode bibtex-mode)
-  "Enable auto white space cleanup before saving for these derived modes."
-  :group 'rivenemacs-edit
-  :type '(repeat symbol))
+;; (defcustom +whitespace-auto-cleanup-modes
+;;   '(prog-mode conf-mode org-mode markdown-mode
+;;     latex-mode tex-mode bibtex-mode)
+;;   "Enable auto white space cleanup before saving for these derived modes."
+;;   :group 'rivenemacs-edit
+;;   :type '(repeat symbol))
 
-;; Auto-remove trailing white spaces before saving for modes defined in
-;; `+whitespace-auto-cleanup-modes'.
-(add-hook
- 'before-save-hook
- (defun +save--whitespace-cleanup-h ()
-   (when (cl-some #'derived-mode-p +whitespace-auto-cleanup-modes)
-     (whitespace-cleanup))))
+;; ;; Auto-remove trailing white spaces before saving for modes defined in
+;; ;; `+whitespace-auto-cleanup-modes'.
+;; (add-hook
+;;  'before-save-hook
+;;  (defun +save--whitespace-cleanup-h ()
+;;    (when (cl-some #'derived-mode-p +whitespace-auto-cleanup-modes)
+;;      (whitespace-cleanup))))
 
 ;; Guess the major mode after saving a file in `fundamental-mode' (adapted
 ;; from Doom Emacs).
