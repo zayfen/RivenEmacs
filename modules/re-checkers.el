@@ -83,4 +83,10 @@ See URL `http://pypi.python.org/pypi/ruff'."
                   (setq-local flycheck-checkers '(python-ruff))
                   (flycheck-mode))))))
 
+
+;; javascript use oxlint instead of eslint
+(when (executable-find "oxlint")
+  (setq flycheck-javascript-eslint-executable "oxlint"))
+
+
 (provide 're-checkers)
