@@ -113,7 +113,7 @@
 If a fixnum, it's a absolute number of characters.  If a float, a
 percentage of `window-width'."
   :type '(choice (natnum :tag "Number of characters")
-                 (float  :tag "Percent of window's width")))
+          (float  :tag "Percent of window's width")))
 
 (defcustom bc-project-crumb-separator "/"
   "Separator for `breadcrumb-project-crumbs'." :type 'string)
@@ -123,7 +123,7 @@ percentage of `window-width'."
 If a fixnum, it's a absolute number of characters.  If a float, a
 percentage of `window-width'."
   :type '(choice (natnum :tag "Number of characters")
-                 (float  :tag "Percent of window's width")))
+          (float  :tag "Percent of window's width")))
 
 (defcustom bc-imenu-crumb-separator " > "
   "Separator for `breadcrumb-project-crumbs'." :type 'string)
@@ -156,12 +156,12 @@ If X already in A, the resulting index is the leftmost such
 index, unless FROM-END is t.  KEY is as usual in other CL land."
   (cl-macrolet ((search (from-end key)
                   `(cl-loop while (< from to)
-                            for mid = (/ (+ from to) 2)
-                            for p1 = (elt a mid)
-                            for p2 = ,(if key `(funcall key p1) `p1)
-                            if (,(if from-end '< '<=) x p2)
-                            do (setq to mid) else do (setq from (1+ mid))
-                            finally return from)))
+                    for mid = (/ (+ from to) 2)
+                    for p1 = (elt a mid)
+                    for p2 = ,(if key `(funcall key p1) `p1)
+                    if (,(if from-end '< '<=) x p2)
+                    do (setq to mid) else do (setq from (1+ mid))
+                    finally return from)))
     (if from-end (if key (search t key) (search t nil))
       (if key (search nil key) (search nil nil)))))
 
@@ -193,6 +193,12 @@ These structures don't have a `breadcrumb-region' property on."
                 (setq ipath (cons (car n) ipath))
                 (if (consp (cdr n))
                     (mapc (lambda (n2) (dfs n2 ipath (cdr n))) (cdr n))
+                  ;; FIXME: we convert markers to points via the `+'
+                  ;; down there.  But for siblings, no such conversion
+                  ;; happens, they might still point to invalid
+                  ;; markers.  Not worth doing another tree traversal
+                  ;; for that IMO, and siblings seems to be unused
+                  ;; anyway (github#22)
                   (put-text-property 0 1 'breadcrumb-siblings (cdr siblings) (car ipath))
                   (setq bc--ipath-plain-cache
                         (vconcat bc--ipath-plain-cache
@@ -201,9 +207,9 @@ These structures don't have a `breadcrumb-region' property on."
                                      ;; `imenu--index-alist' for the
                                      ;; "overlay" edge case.
                                      (cl-etypecase (cdr n)
-                                       (number (cdr n))
-                                       (marker (cdr n))
-                                       (overlay (overlay-start (cdr n))))
+                                      (number (cdr n))
+                                      (marker (+ (cdr n) 0))
+                                      (overlay (overlay-start (cdr n))))
                                      ipath)])))))
     (unless bc--ipath-plain-cache
       (mapc (lambda (i) (dfs i nil index-alist)) index-alist)
@@ -354,7 +360,7 @@ propertized crumbs."
    finally
    (cl-return
     (if root
-        (cons (propertize (file-name-base (directory-file-name root))
+        (cons (propertize (file-name-nondirectory (directory-file-name root))
                           'bc-dont-shorten t
                           'face 'bc-project-base-face)
               retval)
@@ -430,8 +436,11 @@ propertized crumbs."
       (bc--goto (selected-window) choice))))
 
 (provide 'breadcrumb)
-;;; breadcrumb.el ends here
+;;;###autoload (register-definition-prefixes "breadcrumb" '("breadcrumb-"))
 
 ;; Local Variables:
 ;; read-symbol-shorthands: (("bc-" . "breadcrumb-"))
+;; autoload-compute-prefixes: nil
 ;; End:
+
+;;; breadcrumb.el ends here
