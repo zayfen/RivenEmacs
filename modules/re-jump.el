@@ -1,5 +1,6 @@
 ;;; re-jump.el --- Smart jump -*- lexical-binding: t; -*-
 
+;;; Commentary:
 ;; NOTE: comment disable better-jumper
 ;; (use-package better-jumper
 ;;   :straight t
@@ -8,6 +9,8 @@
 ;;   ;; Map extra mouse buttons to jump forward/backward
 ;;   (global-set-key [mouse-8] #'better-jumper-jump-backward)
 ;;   (global-set-key [mouse-9] #'better-jumper-jump-forward))
+
+;;; Code:
 
 (use-package dumb-jump
   :straight t
@@ -46,7 +49,7 @@
          ("M-?" . smart-jump-references))
   :config
   ;;(smart-jump-setup-default-registers)
-)
+  )
 
 (smart-jump-register :modes 'prog-mode
                      :jump-fn 'dumb-jump-go
@@ -62,7 +65,7 @@
   :init
   (global-set-key (kbd "C-<") 'goto-last-change)
   :commands goto-last-change
-)
+  )
 
 ;; avy-goto-char
 (use-package avy
@@ -73,3 +76,5 @@
 
 
 (provide 're-jump)
+
+;;; re-jump.el ends here

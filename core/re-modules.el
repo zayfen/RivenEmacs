@@ -11,7 +11,7 @@
     re-font
     breadcrumb
     )
-    "RivenEmacs enabled core modules."
+  "RivenEmacs enabled core modules."
   :group 'rivenemacs-core
   :type '(repeat symbol))
 
@@ -51,11 +51,12 @@
     re-indent
     re-popup
     re-autosave
+    re-tabs
     langs/re-lua
     langs/web        ; web (js, jsx, ts, tsx)
     langs/rust       ; rust
     langs/re-python  ;python
-)
+    )
 
   "RivenEmacs enabled modules."
   :group 'rivenemacs-core
