@@ -236,7 +236,10 @@ If INITIAL is non-nil, use as initial input."
 
 (use-package marginalia
   :straight t
-  :hook (rivenemacs-after-startup . marginalia-mode))
+  :after vertico
+  :init (marginalia-mode)
+  :custom
+  (marginalia-annotators '(marginalia-annotators-heavy marginalia-annotators-light nil)))
 
 (use-package all-the-icons-completion
   :straight t
@@ -267,16 +270,15 @@ If INITIAL is non-nil, use as initial input."
   :after rivenemacs-loaded
   :demand t
   :custom
-  (completion-styles '(orderless basic))
+  (completion-styles '(orderless))
   (completion-category-defaults nil)
   (completion-category-overrides '(
-                                   (file (styles partial-completion))
-                                   (eglot (styles . (orderless flex)))
-                                   )))
+                                   (file (styles partial-completion)))))
 
 (use-package vertico
   :straight t
   :hook (rivenemacs-after-startup . vertico-mode)
+  :bind (:map vertico-map ("C-<backspace>" . vertico-directory-up))
   :custom
   (vertico-cycle t)
   (vertico-resize nil)
