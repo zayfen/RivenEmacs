@@ -9,36 +9,63 @@
   (when (member "Menlo" (font-family-list))
     (set-frame-font "Menlo" t t)))
  ((string-equal system-type "gnu/linux") ; linux
-  (when (member "DejaVu Sans Mono" (font-family-list))
-    ;; (set-frame-font "Iosevka SS09 13" t t)
+  (when (member "Intel One Mono" (font-family-list))
     (set-face-attribute 'default nil :font "IntelOneMono" :height 120)
-    ;; (set-face-attribute 'fixed-pitch nil :font "DejaVu Sans Mono")
-    ;; (set-face-attribute 'variable-pitch nil :font "DejaVu Sans")
-
     (set-face-attribute 'fixed-pitch nil :font "Iosevka SS15")
     (set-face-attribute 'variable-pitch nil :font "Iosevka SS15")
-    
-    ;; (set-face-attribute 'fixed-pitch nil :font "MonaspaceRadon")
-    ;; (set-face-attribute 'variable-pitch nil :font "MonaspaceRadon")
-    ;;(set-frame-font "Ligalex Mono 12" t t)
-    ;;(set-frame-font "Iosevka SS14 13" t t)
-    ;; (set-frame-font "CascadiaMono 12" t t)
-    ;; (set-frame-font "FiraCode 12" t t)
     )))
 
-;; set font for symbols
-;; (set-fontset-font
-;;  t
-;;  'symbol
-;;  (cond
-;;   ((string-equal system-type "windows-nt")
-;;    (cond
-;;     ((member "Segoe UI Symbol" (font-family-list)) "Segoe UI Symbol")))
-;;   ((string-equal system-type "darwin")
-;;    (cond
-;;     ((member "Apple Symbols" (font-family-list)) "Apple Symbols")))
-;;   ((string-equal system-type "gnu/linux")
-;;    (cond
-;;     ((member "Symbola" (font-family-list)) "Symbola")))))
+(set-fontset-font
+ t
+ (if (version< emacs-version "28.1")
+     '(#x1f300 . #x1fad0)
+   'emoji)
+ (cond
+  ((member "Noto Emoji" (font-family-list)) "Noto Emoji")
+  ((member "Symbola" (font-family-list)) "Symbola")
+  ((member "Apple Color Emoji" (font-family-list)) "Apple Color Emoji")
+  ((member "Noto Color Emoji" (font-family-list)) "Noto Color Emoji")
+  ((member "Segoe UI Emoji" (font-family-list)) "Segoe UI Emoji")
+  ))
 
+;; set Chinese font
+(dolist (charset '(kana han symbol cjk-misc bopomofo))
+  (set-fontset-font
+   (frame-parameter nil 'font)
+   charset
+   (font-spec :family
+              (cond
+               ((eq system-type 'darwin)
+                (cond
+                 ((member "Sarasa Term SC Nerd" (font-family-list)) "Sarasa Term SC Nerd")
+                 ((member "PingFang SC" (font-family-list)) "PingFang SC")
+                 ((member "WenQuanYi Zen Hei" (font-family-list)) "WenQuanYi Zen Hei")
+                 ((member "Microsoft YaHei" (font-family-list)) "Microsoft YaHei")
+                 ))
+               ((eq system-type 'gnu/linux)
+                (cond
+                 ((member "Sarasa Term SC Nerd" (font-family-list)) "Sarasa Term SC Nerd")
+                 ((member "WenQuanYi Micro Hei" (font-family-list)) "WenQuanYi Micro Hei")
+                 ((member "WenQuanYi Zen Hei" (font-family-list)) "WenQuanYi Zen Hei")
+                 ((member "Microsoft YaHei" (font-family-list)) "Microsoft YaHei")
+                 ))
+               (t
+                (cond
+                 ((member "Sarasa Term SC Nerd" (font-family-list)) "Sarasa Term SC Nerd")
+                 ((member "Microsoft YaHei" (font-family-list)) "Microsoft YaHei")
+                 )))
+              )))
+
+;; set Chinese font scale
+(setq face-font-rescale-alist `(
+                                ("Symbola"             . 1.3)
+                                ("Microsoft YaHei"     . 1.2)
+                                ("WenQuanYi Zen Hei"   . 1.2)
+                                ("Sarasa Term SC Nerd" . 1.2)
+                                ("PingFang SC"         . 1.16)
+                                ("Lantinghei SC"       . 1.16)
+                                ("Kaiti SC"            . 1.16)
+                                ("Yuanti SC"           . 1.16)
+                                ("Apple Color Emoji"   . 0.91)
+                                ))
 (provide 're-font)

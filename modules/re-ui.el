@@ -85,4 +85,15 @@
   (solaire-global-mode +1))
 
 
+(use-package transwin
+  :ensure t
+  :custom
+  (transwin-delta-alpha 5)
+  (transwin-parameter-alpha 'alpha-background)
+  :bind
+  ("C-M-=" . transwin-inc)
+  ("C-M--" . transwin-dec)
+  ("C-M-0" . transwin-toggle))
+
+
 (provide 're-ui)
