@@ -35,25 +35,25 @@
 
 (defconst rivenemacs-config-dir
   (file-name-as-directory
-   (or (getenv "MINEMACS_DIR")
-       (getenv "MINEMACSDIR")
+   (or (getenv "RIVENEMACS_DIR")
+       (getenv "RIVENEMACSDIR")
        "~/.rivenemacs.d/"))
   "RivenEmacs user customization directory.")
 
 (defconst rivenemacs-debug
-  (and (or (getenv "MINEMACS_DEBUG") init-file-debug) t)
+  (and (or (getenv "RIVENEMACS_DEBUG") init-file-debug) t)
   "RivenEmacs is started in debug mode.")
 
 (defconst rivenemacs-verbose
-  (and (or (getenv "MINEMACS_VERBOSE") rivenemacs-debug) t)
+  (and (or (getenv "RIVENEMACS_VERBOSE") rivenemacs-debug) t)
   "RivenEmacs is started in verbose mode.")
 
 (defconst rivenemacs-not-lazy
-  (or (daemonp) (and (getenv "MINEMACS_NOT_LAZY") t))
+  (or (daemonp) (and (getenv "RIVENEMACS_NOT_LAZY") t))
   "Load lazy packages (rivenemacs-lazy-hook) immediately.")
 
 (defcustom rivenemacs-msg-level
-  (let ((level (string-to-number (or (getenv "MINEMACS_MSG_LEVEL") ""))))
+  (let ((level (string-to-number (or (getenv "RIVENEMACS_MSG_LEVEL") ""))))
     (cond (rivenemacs-verbose 4)
           ((> level 0) level)
           (t 1)))

@@ -27,26 +27,13 @@
  scroll-bar-mode nil
  )
 
-;; NOTE: In Emacs29+, frames can have a transparent background via the
-;; `alpha-background' parameter. For a better experience, this value should be
-;; set early before any frame gets created (i.e. in "early-init.el"). RivenEmacs
-;; uses the "$MINEMACS_ALPHA" environment variable that can be set to an integer
-;; value in the [1-100] range (the alpha percentage). When this variable is not
-;; set, Emacs will load the default GUI (without background alpha), and when it
-;; is set but the value is not valid, RivenEmacs will fallback to the default
-;; alpha of 93%.
-(when (>= emacs-major-version 29)
-  (when-let* ((alpha (getenv "MINEMACS_ALPHA"))
-              (alpha (string-to-number alpha)))
-    (push (cons 'alpha-background (if (or (zerop alpha) (> alpha 100)) 93 alpha))
-          default-frame-alist)))
 
 (setq native-comp-jit-compilation nil)
 
 ;; Load RivenEmacs variables from the `re-vars' core module.
 (load (expand-file-name "core/re-vars.el" (file-name-directory (file-truename load-file-name))) nil t)
 
-;; Load the user early configuration file from "$MINEMACSDIR/early-config.el"
+;; Load the user early configuration file from "$RIVENEMACSDIR/early-config.el"
 ;; if it exists.
 (let ((early-config-path (concat rivenemacs-config-dir "early-config.el")))
   (when (file-exists-p early-config-path)

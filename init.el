@@ -5,12 +5,12 @@
 ;; Author: Abdelhak Bougouffa (concat "abougouffa" "@" "fedora" "project" "." "org")
 
 ;; Check if Emacs version is supported. You can define the
-;; $MINEMACS_IGNORE_VERSION_CHECK environment variable to ignore this check.
+;; $RIVENEMACS_IGNORE_VERSION_CHECK environment variable to ignore this check.
 ;; This can be useful if you are stuck with an old Emacs version and you've
 ;; incrementally implemented the new Emacs routines RivenEmacs needs in your
 ;; "init-tweaks.el".
 (let ((min-ver "28.0"))
-  (when (and (version< emacs-version min-ver) (not (getenv "MINEMACS_IGNORE_VERSION_CHECK")))
+  (when (and (version< emacs-version min-ver) (not (getenv "RIVENEMACS_IGNORE_VERSION_CHECK")))
     (error "Emacs v%s is not supported, RivenEmacs requires v%s or higher" emacs-version min-ver)))
 
 ;; PERF: Setting `file-name-handler-alist' to nil should boost startup time.
@@ -69,7 +69,7 @@
 
 (setq
  ;; Enable debugging on error when Emacs is launched with the "--debug-init"
- ;; option or when the environment variable "$MINEMACS_DEBUG" is defined (see
+ ;; option or when the environment variable "$RIVENEMACS_DEBUG" is defined (see
  ;; `re-vars').
  debug-on-error rivenemacs-debug
  ;; Decrese the warning type to `:error', unless we are running in verbose mode
@@ -118,7 +118,7 @@
 ;; Then we load the loaddefs file
 (+load rivenemacs-loaddefs-file)
 
-;; Load user init tweaks from "$MINEMACSDIR/init-tweaks.el" when available
+;; Load user init tweaks from "$RIVENEMACSDIR/init-tweaks.el" when available
 (let ((user-init-tweaks (concat rivenemacs-config-dir "init-tweaks.el")))
   (when (file-exists-p user-init-tweaks)
     (+load user-init-tweaks)))
@@ -233,7 +233,7 @@
 (when (file-exists-p custom-file)
   (+load custom-file))
 
-;; Load user configuration from "$MINEMACSDIR/config.el" when available
+;; Load user configuration from "$RIVENEMACSDIR/config.el" when available
 (let ((user-config (concat rivenemacs-config-dir "config.el")))
   (when (file-exists-p user-config)
     (+load user-config)))

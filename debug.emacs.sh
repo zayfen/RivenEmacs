@@ -1,1 +1,1 @@
-export MINEMACS_DEBUG="true" && emacs
+export RIVENEMACS_DEBUG="true" && emacs
