@@ -42,7 +42,7 @@
     ("b" dumb-jump-back "Back")))
 
 (use-package smart-jump
-  :ensure t
+  :straight t
   :commands (smart-jump-go smart-jump-back smart-jump-references)
   :bind (("M-." . smart-jump-go)
          ("M-," . smart-jump-back)
@@ -61,7 +61,7 @@
                      :order 1)
 
 (use-package goto-last-change
-  :ensure t
+  :straight t
   :init
   (global-set-key (kbd "C-<") 'goto-last-change)
   :commands goto-last-change
@@ -69,7 +69,7 @@
 
 ;; avy-goto-char
 (use-package avy
-  :ensure t
+  :straight t
   :bind (("C-:" . avy-goto-char)
          ("M-g f" . avy-goto-word-1-below)
          ("M-g b" . avy-goto-word-1-above)))

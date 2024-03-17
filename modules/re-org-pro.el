@@ -1,5 +1,5 @@
-(setq org-directory "~/Qsync/Org/")
-(setq org-agenda-files (list "~/Qsync/Org/GTD/todo.org" "~/Qsync/Org/GTD/done.org"))
+;;(setq org-directory "~/Qsync/Org/")
+;;(setq org-agenda-files (list "~/Qsync/Org/GTD/todo.org" "~/Qsync/Org/GTD/done.org"))
 
 ;; Improve org mode looks
 (setq-default org-startup-indented t

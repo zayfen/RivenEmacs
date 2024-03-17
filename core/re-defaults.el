@@ -464,8 +464,15 @@ or file path may exist now."
 
   ;; display current function in mode line
   ;; (which-function-mode t)
-  (breadcrumb-mode t))
+  ;;(breadcrumb-mode t)
+  )
 
 (setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit)
+
+;;; I prefer cmd key for meta
+(setq mac-option-key-is-meta nil
+      mac-command-key-is-meta t
+      mac-command-modifier 'meta
+      mac-option-modifier 'none)
 
 (provide 're-defaults)

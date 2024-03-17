@@ -40,9 +40,12 @@
     (load early-config-path nil (not rivenemacs-verbose))))
 
 
-(setq package-archives '(("gnu-elpa"   . "http://1.15.88.122/gnu/")
-                         ("nongun-elpa" . "http://1.15.88.122/nongnu/")
-                         ("melpa" . "http://1.15.88.122/melpa/")
-                         ("melpa-stable" . "http://1.15.88.122/stable-melpa/")
-                         ("org" . "http://1.15.88.122/org/")))
+;; (setq package-archives '(("gnu-elpa"   . "http://1.15.88.122/gnu/")
+;;                          ("nongun-elpa" . "http://1.15.88.122/nongnu/")
+;;                          ("melpa" . "http://1.15.88.122/melpa/")
+;;                          ("melpa-stable" . "http://1.15.88.122/stable-melpa/")
+;;                          ("org" . "http://1.15.88.122/org/")))
+
+(setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
+
 (package-initialize)

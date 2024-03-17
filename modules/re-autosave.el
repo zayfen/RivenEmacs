@@ -34,7 +34,7 @@
 
 
 (use-package super-save
-  :ensure t
+  :straight t
   :hook ((prog-mode . super-save-mode)
          (text-mode . super-save-mode))
   :custom

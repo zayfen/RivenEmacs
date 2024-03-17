@@ -121,7 +121,7 @@
     "l" '(log-view-mode :wk "+logview-mode")))
 
 (use-package quickrun
-  :ensure t
+  :straight t
   :commands (quickrun)
   :bind ("<f5>" . quickrun)
   :init
@@ -129,7 +129,7 @@
     "q" '(quickrun :wk "Quick run")))
 
 (use-package devdocs
-  :ensure t
+  :straight t
   :commands (devdocs-lookup)
   :config
   (add-hook 'python-mode-hook
@@ -222,13 +222,13 @@
 
 
 (use-package restclient
-  :ensure t
+  :straight t
   :defer t
   :mode (("\\.http\\'" . restclient-mode)))
 
 
 (use-package elfeed
-  :ensure t
+  :straight t
   :defer t
   :commands (elfeed)
   :config

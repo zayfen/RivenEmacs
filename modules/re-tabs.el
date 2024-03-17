@@ -6,7 +6,7 @@
 ;;; Code:
 
 (use-package centaur-tabs
-  :ensure
+  :straight t
   :demand
   :custom
   (centaur-tabs-set-icons t)
