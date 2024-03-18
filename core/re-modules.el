@@ -52,6 +52,7 @@
     re-popup
     re-autosave
     re-tabs
+    re-env
     langs/re-lua
     langs/web        ; web (js, jsx, ts, tsx)
     langs/rust       ; rust

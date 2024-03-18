@@ -133,9 +133,9 @@
   :commands (devdocs-lookup)
   :config
   (add-hook 'python-mode-hook
-          (lambda () (setq-local devdocs-current-docs '("python~3.12"))))
+            (lambda () (setq-local devdocs-current-docs '("python~3.12"))))
   (add-hook 'typescript-mode-hook
-          (lambda () (setq-local devdocs-current-docs '("javascript"))))
+            (lambda () (setq-local devdocs-current-docs '("javascript"))))
   (add-hook 'c-mode-hook
             (lambda () (setq-local devdocs-current-docs '("c"))))
   (add-hook 'c++-mode-hook
@@ -151,7 +151,7 @@
   :init
   (+map! :infix "o"
     "x" `(,(+cmdfy! (+gts-translate-with)) :wk "Translate with Google")
-    "X" #'gts-do-translate)
+    "X" '(+gts-yank-translated-region :wk "Translate and Yank in background"))
   :custom
   ;; Your languages pairs
   (gts-translate-list '(("en" "zh")
@@ -233,9 +233,9 @@
   :commands (elfeed)
   :config
   (setq elfeed-feeds
-      '(("http://nullprogram.com/feed/" blog emacs)
-        "http://www.50ply.com/atom.xml"  ; no autotagging
-        ("http://nedroid.com/feed/" webcomic))))
+        '(("http://nullprogram.com/feed/" blog emacs)
+          "http://www.50ply.com/atom.xml"  ; no autotagging
+          ("http://nedroid.com/feed/" webcomic))))
 
 
 (provide 're-tools)
