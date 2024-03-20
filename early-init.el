@@ -27,7 +27,6 @@
  scroll-bar-mode nil
  )
 
-
 (setq native-comp-jit-compilation nil)
 
 ;; Load RivenEmacs variables from the `re-vars' core module.

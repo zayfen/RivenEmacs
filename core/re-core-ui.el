@@ -86,7 +86,7 @@ Useful for keeping track of the enabled theme."
   :straight t
   :hook (rivenemacs-after-startup . doom-modeline-mode)
   :custom
-  (doom-modeline-height 35)
+  (doom-modeline-height 28)
   (doom-modeline-bar-width 8)
   (doom-modeline-time-icon nil)
   (doom-modeline-buffer-encoding t)

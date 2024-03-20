@@ -80,13 +80,13 @@
 
 
 (use-package solaire-mode
-  :ensure t
+  :straight t
   :config
   (solaire-global-mode +1))
 
 
 (use-package transwin
-  :ensure t
+  :straight t
   :custom
   (transwin-delta-alpha 5)
   (transwin-parameter-alpha 'alpha-background)
