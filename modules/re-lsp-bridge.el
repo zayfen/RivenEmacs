@@ -68,7 +68,12 @@
   :bind (:map lsp-bridge-mode-map
               ("M-." . lsp-bridge-find-def)
               ("M-," . lsp-bridge-find-def-return)
-              ("M-?" . lsp-bridge-find-references))
+              ("M-?" . lsp-bridge-find-references)
+              ("M-<down>" . lsp-bridge-popup-documentation-scroll-down)
+              ("M-<up>" . lsp-bridge-popup-documentation-scroll-up))
+  :bind (:map acm-mode-map
+              ("M-n" . acm-doc-scroll-down)
+              ("M-p" . acm-doc-scroll-up))
   :config
   (use-package lsp-bridge-jdtls)
   (setq acm-enable-icon t)
@@ -81,7 +86,7 @@
   (setq acm-enable-codeium nil)
   (setq acm-enable-preview t)
   (setq acm-backend-search-file-words-enable-fuzzy-match t)
-  (setq acm-quick-access-use-number-select nil)
+  (setq acm-quick-access-use-number-select t)
   (setq lsp-bridge-enable-diagnostics nil) ;; we use flycheck only
   (setq lsp-bridge-enable-hover-diagnostic nil)
   (setq lsp-bridge-code-action-enable-popup-menu nil)
@@ -100,9 +105,9 @@
     "k"  '(lsp-bridge-popup-documentation :wk "Find Document")
     "p"  '(lsp-bridge-peek :wk "Peek")
     "q" '(lsp-bridge-code-action--fix :wk "Quick fix")
-    "r" '(lsp-bridge-find-references :wk "Find References")
+    "r" '(lsp-bridge-rename :wk "Rename")
     "t"  '(lsp-bridge-find-type-def :wk "Find type definition")
-    "R" '(lsp-bridge-rename :wk "Rename")))
+    "?" '(lsp-bridge-find-references :wk "Find References")))
 
 
 (provide 're-lsp-bridge)
