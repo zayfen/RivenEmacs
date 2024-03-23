@@ -5,9 +5,8 @@
 
 
 (use-package direnv
-  :ensure t
-  :config
-  (direnv-mode))
+  :straight t
+  :hook ((prog-mode . direnv-mode)))
 
 
 (provide 're-env)

@@ -4,9 +4,10 @@
 
 ;; Author: Abdelhak Bougouffa (concat "abougouffa" "@" "fedora" "project" "." "org")
 
+;;; Code:
 
 (use-package transient
-  :straight (:type built-in)
+  :straight t
   :config
   ;; Map ESC and q to quit transient
   (define-key transient-map [escape]  #'transient-quit-one)
