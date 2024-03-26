@@ -8,18 +8,14 @@
   (when (member "Consolas" (font-family-list))
     (set-frame-font "Consolas" t t)))
  ((string-equal system-type "darwin") ; macOS
-
   (when (member "Menlo" (font-family-list))
     (set-face-attribute 'default nil :font "Menlo" :height 180)
-    (set-face-attribute 'fixed-pitch nil :font "Iosevka SS15")
-    (set-face-attribute 'variable-pitch nil :font "Iosevka SS15")
     )
   )
  ((string-equal system-type "gnu/linux") ; linux
   (when (member "Fira Code" (font-family-list))
-    (set-face-attribute 'default nil :font "Fira Code" :height 130)
-    (set-face-attribute 'fixed-pitch nil :font "Iosevka SS15")
-    (set-face-attribute 'variable-pitch nil :font "Iosevka SS15")
+    ;; (set-face-attribute 'default nil :font "IntelOneMono" :height 120)
+    (set-face-attribute 'default nil :font "Fira Code" :height 120)
     )))
 
 (set-fontset-font
@@ -75,4 +71,8 @@
                                 ("Yuanti SC"           . 1.16)
                                 ("Apple Color Emoji"   . 0.91)
                                 ))
+
+(set-face-attribute 'fixed-pitch nil :font "Iosevka SS15")
+(set-face-attribute 'variable-pitch nil :font "Iosevka SS15")
+
 (provide 're-font)

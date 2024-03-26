@@ -93,8 +93,6 @@
   (setq acm-enable-quick-access t)
   (setq lsp-bridge-find-def-fallback #'dumb-jump-go)
   (setq lsp-bridge-find-ref-fallback #'xref-find-references)
-  ;; (setq lsp-bridge-symbols-enable-which-func t)
-  ;; (setq lsp-bridge-signature-show-function t)
 
   (+map! :keymaps 'lsp-bridge-mode-map
     :infix "c"

@@ -467,7 +467,7 @@ or file path may exist now."
   ;;(breadcrumb-mode t)
   )
 
-;;(setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit)
+(setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit)
 
 ;;; I prefer cmd key for meta
 (setq mac-option-key-is-meta nil
