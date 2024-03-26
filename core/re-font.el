@@ -16,9 +16,8 @@
     )
   )
  ((string-equal system-type "gnu/linux") ; linux
-  (when (member "Intel One Mono" (font-family-list))
-    ;; (set-face-attribute 'default nil :font "IntelOneMono" :height 120)
-    (set-face-attribute 'default nil :font "LigalexMono" :height 130)
+  (when (member "Fira Code" (font-family-list))
+    (set-face-attribute 'default nil :font "Fira Code" :height 130)
     (set-face-attribute 'fixed-pitch nil :font "Iosevka SS15")
     (set-face-attribute 'variable-pitch nil :font "Iosevka SS15")
     )))
