@@ -3,76 +3,61 @@
 ;;; Commentary:
 ;; set default font
 
-(cond
- ((string-equal system-type "windows-nt") ; Microsoft Windows
-  (when (member "Consolas" (font-family-list))
-    (set-frame-font "Consolas" t t)))
- ((string-equal system-type "darwin") ; macOS
-  (when (member "Menlo" (font-family-list))
-    (set-face-attribute 'default nil :font "Menlo" :height 180)
-    )
-  )
- ((string-equal system-type "gnu/linux") ; linux
-  (when (member "Fira Code" (font-family-list))
-    ;; (set-face-attribute 'default nil :font "IntelOneMono" :height 120)
-    (set-face-attribute 'default nil :font "Fira Code" :height 120)
-    )))
+;;; Code:
 
-(set-fontset-font
- t
- (if (version< emacs-version "28.1")
-     '(#x1f300 . #x1fad0)
-   'emoji)
- (cond
-  ((member "Noto Emoji" (font-family-list)) "Noto Emoji")
-  ((member "Symbola" (font-family-list)) "Symbola")
-  ((member "Apple Color Emoji" (font-family-list)) "Apple Color Emoji")
-  ((member "Noto Color Emoji" (font-family-list)) "Noto Color Emoji")
-  ((member "Segoe UI Emoji" (font-family-list)) "Segoe UI Emoji")
-  ))
-
-;; set Chinese font
-(dolist (charset '(kana han symbol cjk-misc bopomofo))
-  (set-fontset-font
-   (frame-parameter nil 'font)
-   charset
-   (font-spec :family
-              (cond
-               ((eq system-type 'darwin)
-                (cond
-                 ((member "Sarasa Term SC Nerd" (font-family-list)) "Sarasa Term SC Nerd")
-                 ((member "PingFang SC" (font-family-list)) "PingFang SC")
-                 ((member "WenQuanYi Zen Hei" (font-family-list)) "WenQuanYi Zen Hei")
-                 ((member "Microsoft YaHei" (font-family-list)) "Microsoft YaHei")
-                 ))
-               ((eq system-type 'gnu/linux)
-                (cond
-                 ((member "Sarasa Term SC Nerd" (font-family-list)) "Sarasa Term SC Nerd")
-                 ((member "WenQuanYi Micro Hei" (font-family-list)) "WenQuanYi Micro Hei")
-                 ((member "WenQuanYi Zen Hei" (font-family-list)) "WenQuanYi Zen Hei")
-                 ((member "Microsoft YaHei" (font-family-list)) "Microsoft YaHei")
-                 ))
-               (t
-                (cond
-                 ((member "Sarasa Term SC Nerd" (font-family-list)) "Sarasa Term SC Nerd")
-                 ((member "Microsoft YaHei" (font-family-list)) "Microsoft YaHei")
-                 )))
-              )))
-
-;; set Chinese font scale
-(setq face-font-rescale-alist `(
-                                ("Symbola"             . 1.3)
-                                ("Microsoft YaHei"     . 1.2)
-                                ("WenQuanYi Zen Hei"   . 1.2)
-                                ("Sarasa Term SC Nerd" . 1.2)
-                                ("PingFang SC"         . 1.16)
-                                ("Lantinghei SC"       . 1.16)
-                                ("Kaiti SC"            . 1.16)
-                                ("Yuanti SC"           . 1.16)
-                                ("Apple Color Emoji"   . 0.91)
-                                ))
 
 (set-face-attribute 'fixed-pitch nil :font "Iosevka SS15")
 (set-face-attribute 'variable-pitch nil :font "Iosevka SS15")
 
-(provide 're-font)
+(defun font-installed-p (font-name)
+  "Check if font with FONT-NAME is available."
+  (find-font (font-spec :name font-name)))
+
+(when (display-graphic-p)
+  (cl-loop for font in '("Menlo" "SF Mono" "Fira Code" "Cascadia Code" "Source Code Pro"
+                         "Monaco" "Dejavu Sans Mono"
+                         "Lucida Console" "Consolas" "SAS Monospace")
+           when (font-installed-p font)
+           return (set-face-attribute
+                   'default nil
+                   :font (font-spec :family font
+                                    :weight 'normal
+                                    :slant 'normal
+                                    :size (cond ((eq system-type 'gnu/linux) 12.5)
+                                                ((eq system-type 'windows-nt) 12.5)
+                                                ((eq system-type 'darwin) 18))))
+
+           (cl-loop for font in '("OpenSansEmoji" "Noto Color Emoji" "Segoe UI Emoji"
+                                  "EmojiOne Color" "Apple Color Emoji" "Symbola" "Symbol")
+                    when (font-installed-p font)
+                    return (set-fontset-font t 'unicode
+                                             (font-spec :family font
+                                                        :size (cond ((eq system-type 'gnu/linux) 16.5)
+                                                                    ((eq system-type 'windows-nt) 15.0)
+                                                                    ((eq system-type 'darwin) 18.0)))
+                                             nil 'prepend))
+           (cl-loop for font in '("思源黑体 CN" "思源宋体 CN" "微软雅黑 CN"
+                                  "Source Han Sans CN" "Source Han Serif CN"
+                                  "WenQuanYi Micro Hei" "文泉驿等宽微米黑"
+                                  "Microsoft Yahei UI" "Microsoft Yahei")
+                    when (font-installed-p font)
+                    return (set-fontset-font t '(#x4e00 . #x9fff)
+                                             (font-spec :name font
+                                                        :weight 'normal
+                                                        :slant 'normal
+                                                        :size (cond ((eq system-type 'gnu/linux) 12.8)
+                                                                    ((eq system-type 'windows-nt) 15.0)
+                                                                    ((eq system-type 'darwin) 18.0)
+                                                                    ))))
+           (cl-loop for font in '("HanaMinB" "SimSun-ExtB")
+                    when (font-installed-p font)
+                    return (set-fontset-font t '(#x20000 . #x2A6DF)
+                                             (font-spec :name font
+                                                        :weight 'normal
+                                                        :slant 'normal
+                                                        :size (cond ((eq system-type 'gnu/linux) 16.5)
+                                                                    ((eq system-type 'windows-nt) 15.0)
+                                                                    ((eq system-type 'darwin) 15.0))))))
+
+
+  (provide 're-font)
