@@ -69,11 +69,11 @@
               ("M-." . lsp-bridge-find-def)
               ("M-," . lsp-bridge-find-def-return)
               ("M-?" . lsp-bridge-find-references)
-              ("M-<down>" . lsp-bridge-popup-documentation-scroll-down)
-              ("M-<up>" . lsp-bridge-popup-documentation-scroll-up))
+              ("M-<up>" . lsp-bridge-popup-documentation-scroll-down)
+              ("M-<down>" . lsp-bridge-popup-documentation-scroll-up))
   :bind (:map acm-mode-map
-              ("M-n" . acm-doc-scroll-down)
-              ("M-p" . acm-doc-scroll-up))
+              ("M-p" . acm-doc-scroll-down)
+              ("M-n" . acm-doc-scroll-up))
   :config
   (use-package lsp-bridge-jdtls)
   (setq acm-enable-icon t)
