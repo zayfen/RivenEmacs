@@ -377,7 +377,7 @@ or file path may exist now."
 
 ;; ====== Modes enabled locally, mainly for `prog-mode', `conf-mode' and `text-mode' ======
 ;; Show line numbers
-;; (add-hook 'prog-mode-hook #'display-line-numbers-mode)
+(add-hook 'prog-mode-hook #'display-line-numbers-mode)
 (add-hook 'conf-mode-hook #'display-line-numbers-mode)
 (add-hook 'text-mode-hook #'display-line-numbers-mode)
 

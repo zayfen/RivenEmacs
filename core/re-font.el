@@ -25,7 +25,7 @@
                                     :slant 'normal
                                     :size (cond ((eq system-type 'gnu/linux) 12.5)
                                                 ((eq system-type 'windows-nt) 12.5)
-                                                ((eq system-type 'darwin) 18))))
+                                                ((eq system-type 'darwin) 18)))))
 
            (cl-loop for font in '("OpenSansEmoji" "Noto Color Emoji" "Segoe UI Emoji"
                                   "EmojiOne Color" "Apple Color Emoji" "Symbola" "Symbol")
