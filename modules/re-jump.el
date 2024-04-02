@@ -70,7 +70,7 @@
 ;; avy-goto-char
 (use-package avy
   :straight t
-  :bind (("C-:" . avy-goto-char)
+  :bind (("M-g c" . avy-goto-char)
          ("M-g f" . avy-goto-word-1-below)
          ("M-g b" . avy-goto-word-1-above)))
 
