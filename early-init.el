@@ -28,6 +28,7 @@
  )
 
 (setq native-comp-jit-compilation nil)
+(add-to-list 'default-frame-alist '(undecorated-round . t))
 
 ;; Load RivenEmacs variables from the `re-vars' core module.
 (load (expand-file-name "core/re-vars.el" (file-name-directory (file-truename load-file-name))) nil t)

@@ -20,11 +20,13 @@
   :ensure t
   :after flycheck
   :hook (flycheck-mode . flycheck-posframe-mode)
-  :config
+  :init
+  (setq flycheck-posframe-position 'window-bottom-right-corner)
   (setq flycheck-posframe-warning-prefix "\u26a0 ")
   (setq flycheck-posframe-error-prefix "\u26a0 ")
   (flycheck-posframe-configure-pretty-defaults)
-  (setq flycheck-posframe-position 'frame-top-right-corner)
+  (setq flycheck-posframe-border-width 4)
+
 
   (set-face-attribute 'flycheck-posframe-error-face
                       nil
@@ -33,15 +35,19 @@
 
   (set-face-attribute 'flycheck-posframe-warning-face
                       nil
-                      :foreground "orange")
+                      :foreground "yellow")
 
   (set-face-attribute 'flycheck-posframe-info-face
                       nil
-                      :foreground "blue")
+                      :foreground "green")
+
+  (set-face-attribute 'flycheck-posframe-background-face
+                      nil
+                      :background "#00246B")
 
   (set-face-attribute 'flycheck-posframe-border-face
                       nil
-                      :foreground "#dc752f")
+                      :foreground "#CADCFC")
 
   )
 
