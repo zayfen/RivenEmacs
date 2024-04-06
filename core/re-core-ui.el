@@ -86,10 +86,10 @@ Useful for keeping track of the enabled theme."
   :custom
   (doom-modeline-height 28)
   (doom-modeline-bar-width 8)
-  (doom-modeline-time-icon nil)
+  (doom-modeline-time-icon t)
   (doom-modeline-buffer-encoding t)
   (doom-modeline-unicode-fallback t)
-  (doom-modeline-icon nil)
+  (doom-modeline-icon t)
   ;; Don’t compact font caches during GC.
   (inhibit-compacting-font-caches t))
 
