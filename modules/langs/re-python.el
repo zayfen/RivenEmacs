@@ -106,7 +106,4 @@
                   (setq-local flycheck-checkers '(python-ruff))
                   )))))
 
-(add-hook 'python-mode-hook  #'electric-pair-mode)
-(add-hook 'python-ts-mode-hook  #'electric-pair-mode)
-
 (provide 're-python)

@@ -1,8 +1,6 @@
 (use-package rust-mode
   :straight t
   :mode ("\\.rs\\'" . rust-mode)
-  :hook (rust-mode . electric-pair-mode)
-  :hook (rust-ts-mode . electric-pair-mode)
   :commands
   rust-compile rust-compile-release
   rust-check rust-test

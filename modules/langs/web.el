@@ -41,7 +41,6 @@ snippet, or `emmet-expand-yas'/`emmet-expand-line', depending on whether
 (use-package web-mode
   :straight t
   :hook (web-mode . +javascript-add-npm-path-h)
-  :hook (web-mode . electric-pair-mode)
   :mode (("\\.html\\'" . web-mode)
          ("\\.html\\.eex\\'" . web-mode)
          ("\\.html\\.heex\\'" . web-mode)
@@ -88,21 +87,18 @@ snippet, or `emmet-expand-yas'/`emmet-expand-line', depending on whether
 (use-package js-json-mode
   :straight (:type built-in)
   :hook (json-ts-mode . +javascript-add-npm-path-h)
-  :hook (json-ts-mode . electric-pair-mode)
   :hook (json-ts-mode . apheleia-mode))
 
 (use-package js-mode
   :straight (:type built-in)
   :hook (js-mode . +javascript-add-npm-path-h)
   :hook (js-mode . apheleia-mode)
-  :hook (js-mode . electric-pair-mode)
   :custom (js-indent-level 2))
 
 (use-package js-jsx-mode
   :straight (:type built-in)
   :hook (js-jsx-mode . +javascript-add-npm-path-h)
   :hook (js-jsx-mode . apheleia-mode)
-  :hook (js-jsx-mode . electric-pair-mode)
   :custom (js-indent-level 2))
 
 (use-package typescript-ts-mode
@@ -110,7 +106,7 @@ snippet, or `emmet-expand-yas'/`emmet-expand-line', depending on whether
   :mode (("\\.ts\\'" . typescript-ts-mode))
   :hook ((typescript-ts-mode . +javascript-add-npm-path-h)
          (typescript-ts-mode . apheleia-mode)
-         (typescript-ts-mode . electric-pair-mode))
+         )
   :init
   (after! flycheck
     (flycheck-add-mode 'javascript-eslint 'typescript-ts-mode))
@@ -124,7 +120,7 @@ snippet, or `emmet-expand-yas'/`emmet-expand-line', depending on whether
   :mode ("\\.tsx\\'" . tsx-ts-mode)
   :hook ((tsx-ts-mode . +javascript-add-npm-path-h)
          (tsx-ts-mode . apheleia-mode)
-         (tsx-ts-mode . electric-pair-mode))
+         )
   :init
   (after! flycheck
     (flycheck-add-mode 'javascript-eslint 'tsx-ts-mode))
