@@ -112,7 +112,7 @@ snippet, or `emmet-expand-yas'/`emmet-expand-line', depending on whether
     (flycheck-add-mode 'javascript-eslint 'typescript-ts-mode))
   :custom (typescript-ts-mode-indent-offset 2)
   :config
-  (set-electric! 'typescript-ts-mode :chars '(?\} ?\)) :words '("||" "&&")))
+  )
 
 
 (use-package tsx-ts-mode
@@ -126,7 +126,7 @@ snippet, or `emmet-expand-yas'/`emmet-expand-line', depending on whether
     (flycheck-add-mode 'javascript-eslint 'tsx-ts-mode))
   :custom (typescript-ts-mode-indent-offset 2)
   :config
-  (set-electric! 'typescript-ts-mode :chars '(?\} ?\)) :words '("||" "&&")))
+  )
 
 (use-package jsdoc
   :ensure t

@@ -461,13 +461,11 @@ or file path may exist now."
 
   ;; Global SubWord mode
   (global-subword-mode 1)
-
-  ;; display current function in mode line
-  ;; (which-function-mode t)
-  ;;(breadcrumb-mode t)
   )
 
 (setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit)
+
+(add-hook 'prog-mode-hook (lambda () (electric-pair-mode 0)))
 
 ;;; I prefer cmd key for meta
 (setq mac-option-key-is-meta nil

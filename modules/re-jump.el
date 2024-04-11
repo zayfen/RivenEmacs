@@ -70,9 +70,7 @@
 ;; avy-goto-char
 (use-package avy
   :straight t
-  :bind (("M-g c" . avy-goto-char-timer)
-         ("M-g f" . avy-goto-word-1-below)
-         ("M-g b" . avy-goto-word-1-above)))
+  :bind (("M-g c" . avy-goto-char-timer)))
 
 
 (provide 're-jump)

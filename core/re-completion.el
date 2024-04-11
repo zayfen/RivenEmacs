@@ -123,8 +123,7 @@ If INITIAL is non-nil, use as initial input."
     [remap switch-to-buffer-other-frame]  #'consult-buffer-other-frame
     [remap yank-pop]                      #'consult-yank-pop)
 
-  :bind (("C-s" . consult-line)
-         ("M-s m" . consult-man))
+  :bind (("C-s" . consult-line))
   :init
   (define-key minibuffer-local-map (kbd "C-r") #'consult-history)
   (define-key minibuffer-local-map (kbd "S-C-v") #'consult-yank-pop)
