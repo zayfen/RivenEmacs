@@ -77,15 +77,6 @@
   :straight t
   :hook (prog-mode . highlight-numbers-mode))
 
-;; (use-package smartparens
-;;   :straight t
-;;   :hook (prog-mode . smartparens-mode))
-
-;; Default `smartparens' configuration (for example, do not complete a single
-;; quote)
-;; (use-package smartparens-config
-;;   :after smartparens
-;;   :demand t)
 
 (use-package expand-region
   :straight t
@@ -153,50 +144,8 @@
   (global-set-key (kbd "M-z") #'zzz-to-char))
 
 
-
-(defun +sp/wrap-with-double-quote ()
-  "Wrap sexp with double quote."
-  (interactive)
-  (sp-wrap-with-pair "\""))
-
-(defun +sp/wrap-with-single-quote ()
-  "Wrap sexp with single quote."
-  (interactive)
-  (sp-wrap-with-pair "'"))
-
-(defun +sp/wrap-with-brace ()
-  "Wrap sexp with brace."
-  (interactive)
-  (sp-wrap-with-pair "("))
-
-(defun +sp/wrap-with-square ()
-  "Wrap sexp with square."
-  (interactive)
-  (sp-wrap-with-pair "["))
-
-(defun +sp/wrap-with-curly ()
-  "Wrap sexp with curly."
-  (interactive)
-  (sp-wrap-with-pair "{"))
-
-(use-package smartparens
-  :straight t
-  :hook (prog-mode text-mode markdown-mode) ;; add `smartparens-mode` to these hooks
-  :custom
-  (sp-wrap-show-possible-pairs t)
-  (sp-show-pair-from-inside t)
-  :bind (("M-[ -" . #'sp-splice-sexp)
-         ("M-[ =" . #'sp-rewrap-sexp)
-         ("M-[ (" . +sp/wrap-with-brace)
-         ("M-[ [" . +sp/wrap-with-square)
-         ("M-[ {" . +sp/wrap-with-curly)
-         ("M-[ \"" . +sp/wrap-with-double-quote)
-         ("M-[ '" . +sp/wrap-with-single-quote))
-
-  :config
-  (electric-pair-mode nil)
-  (require 'smartparens-config))
-
+(setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit)
+(add-hook 'prog-mode-hook (lambda () (electric-pair-mode 1)))
 
 
 (provide 're-editor)

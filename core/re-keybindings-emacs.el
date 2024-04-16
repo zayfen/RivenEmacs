@@ -60,14 +60,14 @@
     :prefix rivenemacs-localleader-key)
 
   (general-create-definer +rivenemacs--executor-map!
-   :keymaps 'override
-   :prefix rivenemacs-executor-key)
+    :keymaps 'override
+    :prefix rivenemacs-executor-key)
 
   (+rivenemacs--executor-map!
-   ">"   '(switch-to-next-buffer :wk "Next buffer")
-   "<"   '(switch-to-prev-buffer :wk "Previous buffer")
-   ";"   '(pp-eval-expression :wk "Eval expression")
-   "tF" '(toggle-frame-fullscreen :wk "Toggle Fullscreen"))
+    ">"   '(switch-to-next-buffer :wk "Next buffer")
+    "<"   '(switch-to-prev-buffer :wk "Previous buffer")
+    ";"   '(pp-eval-expression :wk "Eval expression")
+    "tF" '(toggle-frame-fullscreen :wk "Toggle Fullscreen"))
 
   ;; Define the built-in global keybindings
   (+rivenemacs--internal-map!

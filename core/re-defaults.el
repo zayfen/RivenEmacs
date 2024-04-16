@@ -463,9 +463,6 @@ or file path may exist now."
   (global-subword-mode 1)
   )
 
-(setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit)
-
-(add-hook 'prog-mode-hook (lambda () (electric-pair-mode 0)))
 
 ;;; I prefer cmd key for meta
 (setq mac-option-key-is-meta nil
