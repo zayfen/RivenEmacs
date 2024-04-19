@@ -133,9 +133,7 @@
 
 (use-package rainbow-mode
   :straight t
-  :init
-  (+map! :keymaps '(prog-mode-map conf-mode-map text-mode-map)
-    "tR" #'rainbow-mode))
+  :hook (prog-mode . rainbow-mode))
 
 (use-package zzz-to-char
   :straight t
