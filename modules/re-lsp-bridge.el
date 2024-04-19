@@ -59,6 +59,8 @@
   (lsp-bridge-single-lang-server-extension-list '(("vue" . "volar")))
   (lsp-bridge-python-lsp-server "ruff")
   (lsp-bridge-python-multi-lsp-server "pyright_ruff")
+  (lsp-bridge-completion-obey-trigger-characters-p nil)
+  (lsp-bridge-completion-hide-characters '(":" ";" "(" ")" "[" "]" "{" "}" ", " "\"" "?" ","))
   (lsp-bridge-multi-lang-server-extension-list
    '(
      (("ts" "tsx") . "typescript_eslint")
