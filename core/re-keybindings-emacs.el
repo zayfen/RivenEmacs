@@ -189,8 +189,6 @@
 (use-package hydra
   :straight t)
 
-;; Global keybindings
-(global-set-key (kbd "C-m") 'newline-and-indent)
 ;; (global-set-key (kbd "M-g f") 'forward-whitespace)
 (global-set-key (kbd "M-i") 'hs-toggle-hiding)
 
