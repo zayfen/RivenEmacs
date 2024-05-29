@@ -63,7 +63,7 @@ snippet, or `emmet-expand-yas'/`emmet-expand-line', depending on whether
   (web-mode-style-padding 0)
   (web-mode-script-padding 0)
   (web-mode-engines-alist '(("django" . "\\.html\\.tera\\'")
-                            ("mustache" . "\\.vue\\")))
+                            ("mustache" . "\\.vue\\'")))
 
   :config
   (add-hook 'web-mode-hook

@@ -56,7 +56,6 @@
   (add-to-list 'load-path (straight--repos-dir "lsp-bridge"))
   :hook ((prog-mode) . lsp-bridge-mode)
   :custom
-  (lsp-bridge-single-lang-server-extension-list '(("vue" . "volar")))
   (lsp-bridge-python-lsp-server "ruff")
   (lsp-bridge-python-multi-lsp-server "pyright_ruff")
   (lsp-bridge-completion-obey-trigger-characters-p nil)

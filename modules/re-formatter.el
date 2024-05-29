@@ -6,7 +6,7 @@
 (use-package apheleia
   :straight t
   :ensure t
-  :hook (prog-mode . apheleia-mode))
+  )
 
 (use-package apheleia-formatters
   :config

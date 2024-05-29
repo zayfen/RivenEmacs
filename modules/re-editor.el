@@ -146,20 +146,4 @@
 (add-hook 'prog-mode-hook (lambda () (electric-pair-mode 1)))
 
 
-
-(defun my-fancy-newline ()
-  "Add two newlines and put the cursor at the right indentation
-between them if a newline is attempted when the cursor is between
-two curly braces, otherwise do a regular newline and indent"
-  (interactive)
-  (if (and (equal (char-before) 123) ; {
-           (equal (char-after) 125)) ; }
-      (progn (split-line)
-             (newline-and-indent))
-    (newline-and-indent)))
-
-;; I set mine to C-j, you do you, don't let me tell you how to live your life.
-(global-set-key (kbd "C-m") 'my-fancy-newline)
-(global-set-key (kbd "C-j") 'my-fancy-newline)
-
 (provide 're-editor)
