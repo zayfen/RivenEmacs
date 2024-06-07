@@ -43,6 +43,7 @@ Useful for keeping track of the enabled theme."
   ;; In all of the following, WEIGHT is a symbol such as `semibold',
   ;; `light', `bold', or anything mentioned in `modus-themes-weights'.
   (setq modus-themes-italic-constructs t
+
         modus-themes-bold-constructs t
         modus-themes-mixed-fonts t
         modus-themes-variable-pitch-ui t
@@ -84,7 +85,7 @@ Useful for keeping track of the enabled theme."
   :straight t
   :hook (rivenemacs-after-startup . doom-modeline-mode)
   :custom
-  (doom-modeline-height 28)
+  (doom-modeline-height 32)
   (doom-modeline-bar-width 8)
   (doom-modeline-time-icon t)
   (doom-modeline-buffer-encoding t)

@@ -303,7 +303,7 @@
  ;; Never mix, use only spaces
  indent-tabs-mode nil
  ;; Width for line numbers
- display-line-numbers-width 3
+ display-line-numbers-width 4
  ;; Small tab is enough!
  tab-width 2
  ;; Save buffer status

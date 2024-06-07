@@ -145,5 +145,4 @@
 (setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit)
 (add-hook 'prog-mode-hook (lambda () (electric-pair-mode 1)))
 
-
 (provide 're-editor)

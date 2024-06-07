@@ -64,7 +64,6 @@
    '(
      (("ts" "tsx") . "typescript_eslint")
      (("css" "scss" "sass" "less") . "css_emmet")
-     ;;     ("vue" . "volar_emmet")
      ))
   :bind (:map lsp-bridge-mode-map
               ("M-." . lsp-bridge-find-def)

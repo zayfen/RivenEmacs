@@ -20,6 +20,7 @@
                        (mouse-color . "blue")
                        (left-fringe . 2)
                        (right-fringe . 2)
+                       (undecorated . t) ; round corner
                        (fullscreen . maximized))
  ;; Explicitly set modes disabled in `default-frame-alist' to nil
  tool-bar-mode nil

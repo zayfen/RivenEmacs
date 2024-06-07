@@ -1,7 +1,7 @@
 ;;; re-checkers.el --- Syntax checking -*- lexical-binding: t; -*-
 
 (use-package flycheck
-  :ensure t
+  :straight t
   :commands flycheck-mode
   :hook (prog-mode . flycheck-mode)
   :config
@@ -17,7 +17,7 @@
 
 
 (use-package flycheck-posframe
-  :ensure t
+  :straight t
   :after flycheck
   :hook (flycheck-mode . flycheck-posframe-mode)
   :init
@@ -52,7 +52,7 @@
   )
 
 (use-package flycheck-rust
-  :ensure t
+  :straight t
   :after flycheck
   :commands flycheck-rust-setup
   :hook ((rust-mode . flycheck-rust-setup)

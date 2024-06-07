@@ -14,12 +14,12 @@
   :after rivenemacs-loaded)
 
 (use-package org-appear
-  :ensure t
+  :straight t
   :hook
   (org-mode . org-appear-mode))
 
 (use-package org-modern
-  :ensure t
+  :straight t
   :hook
   (org-mode . global-org-modern-mode)
   :custom
@@ -29,7 +29,7 @@
 
 ;; LaTeX previews
 (use-package org-fragtog
-  :ensure t
+  :straight t
   :custom
   (org-startup-with-latex-preview t)
   :hook
@@ -53,7 +53,7 @@
       (text-scale-set 0))))
 
 (use-package olivetti
-  :ensure t
+  :straight t
   :demand t
   :bind
   (("<f9>" . ews-distraction-free)))
@@ -93,24 +93,24 @@
   (consult-customize consult-org-roam-forward-links :preview-key (kbd "M-.")))
 
 (use-package ox-gfm
-  :defer t
-  :ensure t)
+  :straight t
+  :defer t)
 
 (use-package toc-org
-  :ensure t
+  :straight t
   :hook (org-mode . toc-org-mode))
 
 (use-package grip-mode
-  :ensure t
+  :straight t
   :config
   (setq grip-preview-use-webkit nil))
 
 (use-package valign
-  :ensure t
+  :straight t
   :hook ((markdown-mode  org-mode) . valign-mode))
 
 (use-package org-alert
-  :ensure t
+  :straight t
   :custom
   ((org-alert-notification-title "Org Agenda"))
   :init
@@ -118,7 +118,6 @@
   (org-alert-enable))
 
 (use-package org-super-agenda
-  :ensure t
   :straight t
   )
 
