@@ -461,7 +461,11 @@ or file path may exist now."
 
   ;; Global SubWord mode
   (global-subword-mode 1)
-  )
+
+  ;; fringe-mode
+  (fringe-mode 10))
+
+(set-face-attribute 'fringe nil :background "#000000")
 
 
 ;;; I prefer cmd key for meta

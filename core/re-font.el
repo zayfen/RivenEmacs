@@ -7,11 +7,11 @@
 
 
 (set-face-attribute 'fixed-pitch nil :font (font-spec :family "Iosevka SS15"
-                                                      :size (cond ((eq system-type 'gnu/linux) 12.5)
+                                                      :size (cond ((eq system-type 'gnu/linux) 20)
                                                                   ((eq system-type 'windows-nt) 12.5)
                                                                   ((eq system-type 'darwin) 15))))
 (set-face-attribute 'variable-pitch nil :font (font-spec :family "Iosevka SS15"
-                                                         :size (cond ((eq system-type 'gnu/linux) 12.5)
+                                                         :size (cond ((eq system-type 'gnu/linux) 20)
                                                                      ((eq system-type 'windows-nt) 12.5)
                                                                      ((eq system-type 'darwin) 15))))
 
@@ -29,7 +29,7 @@
                    :font (font-spec :family font
                                     :weight 'normal
                                     :slant 'normal
-                                    :size (cond ((eq system-type 'gnu/linux) 12.5)
+                                    :size (cond ((eq system-type 'gnu/linux) 20)
                                                 ((eq system-type 'windows-nt) 12.5)
                                                 ((eq system-type 'darwin) 15)))))
 
@@ -38,7 +38,7 @@
            when (font-installed-p font)
            return (set-fontset-font t 'unicode
                                     (font-spec :family font
-                                               :size (cond ((eq system-type 'gnu/linux) 16.5)
+                                               :size (cond ((eq system-type 'gnu/linux) 18)
                                                            ((eq system-type 'windows-nt) 15.0)
                                                            ((eq system-type 'darwin) 15.0)))
                                     nil 'prepend))
@@ -52,7 +52,7 @@
                                     (font-spec :name font
                                                :weight 'normal
                                                :slant 'normal
-                                               :size (cond ((eq system-type 'gnu/linux) 12.8)
+                                               :size (cond ((eq system-type 'gnu/linux) 16)
                                                            ((eq system-type 'windows-nt) 15.0)
                                                            ((eq system-type 'darwin) 14.0)
                                                            ))))
@@ -62,7 +62,7 @@
                                     (font-spec :name font
                                                :weight 'normal
                                                :slant 'normal
-                                               :size (cond ((eq system-type 'gnu/linux) 16.5)
+                                               :size (cond ((eq system-type 'gnu/linux) 16)
                                                            ((eq system-type 'windows-nt) 15.0)
                                                            ((eq system-type 'darwin) 14.0))))))
 

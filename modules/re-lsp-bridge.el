@@ -44,6 +44,17 @@
   :straight t)
 
 
+(defun find-definitions-with-lsp-bridge ()
+  (interactive)
+  (if lsp-bridge-mode (lsp-bridge-find-def)
+    (call-interactively 'xref-find-definitions)))
+
+(advice-add #'lsp-bridge-find-def :around (lambda (&rest args) (xref--push-markers) (apply args)))
+(advice-add #'lsp-bridge-find-impl :around (lambda (&rest args) (xref--push-markers) (apply args)))
+(advice-add #'lsp-bridge-find-type-def :around (lambda (&rest args) (xref--push-markers) (apply args)))
+
+
+
 (use-package lsp-bridge
   :ensure t
   :straight (lsp-bridge
@@ -66,8 +77,8 @@
      (("css" "scss" "sass" "less") . "css_emmet")
      ))
   :bind (:map lsp-bridge-mode-map
-              ("M-." . lsp-bridge-find-def)
-              ("M-," . lsp-bridge-find-def-return)
+              ("M-." . find-definitions-with-lsp-bridge)
+              ;; ("M-," . lsp-bridge-find-def-return)
               ("M-?" . lsp-bridge-find-references)
               ("M-<up>" . lsp-bridge-popup-documentation-scroll-down)
               ("M-<down>" . lsp-bridge-popup-documentation-scroll-up))
@@ -92,6 +103,7 @@
   (setq acm-enable-quick-access t)
   (setq lsp-bridge-find-def-fallback #'dumb-jump-go)
   (setq lsp-bridge-find-ref-fallback #'xref-find-references)
+
 
   (+map! :keymaps 'lsp-bridge-mode-map
     :infix "c"

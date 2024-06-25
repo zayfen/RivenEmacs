@@ -257,3 +257,5 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(line-number ((t (:inherit (fixed-pitch default) :background "black" :foreground "#989898")))))
+
+(set-face-attribute 'fringe nil :background "#000000")

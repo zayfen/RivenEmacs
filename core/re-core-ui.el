@@ -91,6 +91,10 @@ Useful for keeping track of the enabled theme."
   (doom-modeline-buffer-encoding t)
   (doom-modeline-unicode-fallback t)
   (doom-modeline-icon t)
+  (doom-modeline-vcs-max-length 36)
+  (doom-modeline-env-version t)
+  (doom-modeline-persp-name t)
+  (doom-modeline-persp-icon t)
   ;; Don’t compact font caches during GC.
   (inhibit-compacting-font-caches t))
 
