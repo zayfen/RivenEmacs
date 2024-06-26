@@ -4,9 +4,7 @@
 ;;; Code:
 
 (use-package apheleia
-  :straight t
-  :ensure t
-  )
+  :straight t)
 
 (use-package apheleia-formatters
   :config

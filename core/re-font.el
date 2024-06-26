@@ -6,11 +6,11 @@
 ;;; Code:
 
 
-(set-face-attribute 'fixed-pitch nil :font (font-spec :family "Iosevka SS15"
+(set-face-attribute 'fixed-pitch nil :font (font-spec :family "Iosevka SS04"
                                                       :size (cond ((eq system-type 'gnu/linux) 20)
                                                                   ((eq system-type 'windows-nt) 12.5)
                                                                   ((eq system-type 'darwin) 15))))
-(set-face-attribute 'variable-pitch nil :font (font-spec :family "Iosevka SS15"
+(set-face-attribute 'variable-pitch nil :font (font-spec :family "Iosevka SS04"
                                                          :size (cond ((eq system-type 'gnu/linux) 20)
                                                                      ((eq system-type 'windows-nt) 12.5)
                                                                      ((eq system-type 'darwin) 15))))
