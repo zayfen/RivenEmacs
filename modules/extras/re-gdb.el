@@ -1,8 +1,6 @@
 ;;; re-gdb.el --- Extra tweaks for GDB, and opt-in emacs-gdb integration -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2022-2023  Abdelhak Bougouffa
 
-;; Author: Abdelhak Bougouffa (concat "abougouffa" "@" "fedora" "project" "." "org")
 
 (defun +gdb--set-layout (&optional c-buffer)
   ;; from stackoverflow.com/q/39762833/846686

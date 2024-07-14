@@ -1,8 +1,6 @@
 ;;; re-evil-mc-evil-escape.el --- Hackish integration of `evil-mc' with `evil-escape' -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2022-2023  Abdelhak Bougouffa
 
-;; Author: Abdelhak Bougouffa (concat "abougouffa" "@" "fedora" "project" "." "org")
 
 
 ;; HACK: Fix the integration with `evil-escape' when in insert state. By

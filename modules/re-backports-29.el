@@ -1,8 +1,6 @@
 ;;; re-backports-29.el --- Some Emacs 29 functionalities ported back to Emacs 28 -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2022-2023  Abdelhak Bougouffa
 
-;; Author: Abdelhak Bougouffa (concat "abougouffa" "@" "fedora" "project" "." "org")
 
 ;; RivenEmacs is distributed under the MIT license. However, this file is mostly a
 ;; copy-and-paste from Emacs 29 with some adaptations, hence, it is licensed

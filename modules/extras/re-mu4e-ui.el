@@ -1,8 +1,6 @@
 ;;; re-mu4e-ui.el --- Better UI for mu4e -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2022-2023  Abdelhak Bougouffa
 
-;; Author: Abdelhak Bougouffa (concat "abougouffa" "@" "fedora" "project" "." "org")
 
 ;; Most of this has been inspired by Doom Emacs
 

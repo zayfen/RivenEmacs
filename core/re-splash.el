@@ -1,8 +1,6 @@
 ;; re-splash.el --- RivenEmacs -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2022-2023  Abdelhak Bougouffa
 
-;; Author: Abdelhak Bougouffa (concat "abougouffa" "@" "fedora" "project" "." "org")
 
 
 ;; Adapted from: github.com/rougier/emacs-splash

@@ -1,8 +1,6 @@
 ;;; re-binary.el --- Stuff to work with binary files -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2022-2023  Abdelhak Bougouffa
 
-;; Author: Abdelhak Bougouffa (concat "abougouffa" "@" "fedora" "project" "." "org")
 
 
 ;; +binary-* are autoloaded

@@ -1,8 +1,6 @@
 ;;; re-window.el --- Windows and frames -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2022-2023  Abdelhak Bougouffa
 
-;; Author: Abdelhak Bougouffa (concat "abougouffa" "@" "fedora" "project" "." "org")
 
 
 ;; Window configuration for special windows.

@@ -1,8 +1,6 @@
 ;; re-defaults.el --- RivenEmacs defaults for Emacs -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2022-2023  Abdelhak Bougouffa
 
-;; Author: Abdelhak Bougouffa (concat "abougouffa" "@" "fedora" "project" "." "org")
 
 ;; Inhibit startup message in echo area the brutal way!
 ;; The `inhibit-startup-echo-area-message' variable is very restrictive, there

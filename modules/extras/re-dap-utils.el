@@ -1,8 +1,6 @@
 ;;; re-dap-utils.el --- Utility functions for DAP mode -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2022-2023  Abdelhak Bougouffa
 
-;; Author: Abdelhak Bougouffa <abougouffa@fedoraproject.org>
 
 
 ;;;###autoload

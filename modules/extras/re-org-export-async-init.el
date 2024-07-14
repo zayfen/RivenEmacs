@@ -1,8 +1,6 @@
 ;;; re-org-export-async-init.el --- An init file for exporting Org documents asynchronously -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2022-2023  Abdelhak Bougouffa
 
-;; Author: Abdelhak Bougouffa (concat "abougouffa" "@" "fedora" "project" "." "org")
 
 ;; This file will be used as `user-init-file' when exporting Org documents
 ;; asynchronously. This will set the modules list to the minimal required to

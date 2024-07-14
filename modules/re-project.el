@@ -1,7 +1,7 @@
 ;;; re-project.el --- Projects stuff -*- lexical-binding: t; -*-
 
 ;;; Commentary:
-;; Copyright (C) 2022-2023  Abdelhak Bougouffa
+
 
 ;;; Code
 

@@ -1,8 +1,6 @@
 ;;; re-mu4e-extras.el --- Extra tweaks and utilities for mu4e -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2022-2023  Abdelhak Bougouffa
 
-;; Author: Abdelhak Bougouffa (concat "abougouffa" "@" "fedora" "project" "." "org")
 
 (defcustom +mu4e-account-aliases nil
   "Per-account alias list."

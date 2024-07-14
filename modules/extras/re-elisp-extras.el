@@ -1,8 +1,5 @@
 ;;; re-elisp-extras.el --- Extra font locks and enhancements for Elisp -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2022-2023  Abdelhak Bougouffa
-
-;; Author: Abdelhak Bougouffa (concat "abougouffa" "@" "fedora" "project" "." "org")
 
 
 (defvar +emacs-lisp--face nil)

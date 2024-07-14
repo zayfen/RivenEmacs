@@ -1,8 +1,6 @@
 ;;; completion.el --- Completion packages -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2022-2023  Abdelhak Bougouffa
 
-;; Author: Abdelhak Bougouffa (concat "abougouffa" "@" "fedora" "project" "." "org")
 
 ;;;###autoload
 (defun +vertico/embark-export-write ()

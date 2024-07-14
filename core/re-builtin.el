@@ -1,8 +1,6 @@
 ;;; re-builtin.el --- Customization of some of Emacs' builtin libraries -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2022-2023  Abdelhak Bougouffa
 
-;; Author: Abdelhak Bougouffa (concat "abougouffa" "@" "fedora" "project" "." "org")
 
 ;;; Code:
 

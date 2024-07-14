@@ -1,8 +1,5 @@
 ;;; re-debug.el --- Debugging stuff -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2022-2023  Abdelhak Bougouffa
-
-;; Author: Abdelhak Bougouffa (concat "abougouffa" "@" "fedora" "project" "." "org")
 
 
 (use-package gdb-mi

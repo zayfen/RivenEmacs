@@ -1,8 +1,6 @@
 ;;; re-org-extras.el --- Extra tweaks Org mode -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2022-2023  Abdelhak Bougouffa
 
-;; Author: Abdelhak Bougouffa (concat "abougouffa" "@" "fedora" "project" "." "org")
 
 (defcustom +org-responsive-image-percentage 0.4
   "Maximum image width as a percentage of the window width."

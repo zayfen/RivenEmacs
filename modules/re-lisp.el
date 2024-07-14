@@ -1,8 +1,6 @@
 ;;; lisp.el --- Lisp, Scheme, Elisp -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2022-2023  Abdelhak Bougouffa
 
-;; Author: Abdelhak Bougouffa (concat "abougouffa" "@" "fedora" "project" "." "org")
 
 ;; disabled parinfer-rust-mode
 ;; (when (+emacs-features-p 'modules)

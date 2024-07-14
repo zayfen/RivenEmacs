@@ -1,8 +1,5 @@
 ;; re-vars.el --- RivenEmacs -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2022-2023  Abdelhak Bougouffa
-
-;; Author: Abdelhak Bougouffa (concat "abougouffa" "@" "fedora" "project" "." "org")
 
 ;;; RivenEmacs directories
 

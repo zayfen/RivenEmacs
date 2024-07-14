@@ -103,6 +103,7 @@
   (setq acm-enable-quick-access t)
   (setq lsp-bridge-find-def-fallback #'dumb-jump-go)
   (setq lsp-bridge-find-ref-fallback #'xref-find-references)
+  (setq lsp-bridge-inlay-hint t)
 
 
   (+map! :keymaps 'lsp-bridge-mode-map

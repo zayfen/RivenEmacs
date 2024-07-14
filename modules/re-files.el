@@ -1,8 +1,7 @@
 ;;; re-files.el --- File management -*- lexical-binding: t; -*-
 
 ;;; Commentary:
-;;Copyright (C) 2022-2023  Abdelhak Bougouffa
-;;Author: Abdelhak Bougouffa (concat "abougouffa" "@" "fedora" "project" "." "org")
+
 
 
 ;; Code:

@@ -1,8 +1,6 @@
 ;;; re-realgud.el --- Extra commands for RealGUD with better evil integration -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2022-2023  Abdelhak Bougouffa
 
-;; Author: Abdelhak Bougouffa (concat "abougouffa" "@" "fedora" "project" "." "org")
 
 ;; Evil integraion has been adopted from Doom Emacs
 ;; github.com/doomemacs/doomemacs/blob/master/modules/tools/debugger/autoload/evil.el

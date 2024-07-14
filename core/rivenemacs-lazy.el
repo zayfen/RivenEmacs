@@ -1,8 +1,6 @@
 ;; rivenemacs-lazy.el -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2022-2023  Abdelhak Bougouffa
 
-;; Author: Abdelhak Bougouffa (concat "abougouffa" "@" "fedora" "project" "." "org")
 
 ;; Virtual module loaded when idle after `rivenemacs-loaded'.
 ;; Used to synchronize loading some other stuff after loading Emacs.

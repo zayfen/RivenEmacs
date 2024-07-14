@@ -1,8 +1,5 @@
 ;; re-core-ui.el --- RivenEmacs -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2022-2023  Abdelhak Bougouffa
-
-;; Author: Abdelhak Bougouffa (concat "abougouffa" "@" "fedora" "project" "." "org")
 
 
 ;; (defun +theme--tweaks-h (&optional _)

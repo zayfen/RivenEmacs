@@ -1,8 +1,6 @@
 ;; init.el --- RivenEmacs core initialization file -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2022-2023  Abdelhak Bougouffa
 
-;; Author: Abdelhak Bougouffa (concat "abougouffa" "@" "fedora" "project" "." "org")
 
 ;; Check if Emacs version is supported. You can define the
 ;; $RIVENEMACS_IGNORE_VERSION_CHECK environment variable to ignore this check.

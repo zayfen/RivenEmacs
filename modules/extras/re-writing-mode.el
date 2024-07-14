@@ -1,8 +1,6 @@
 ;;; re-write-mode.el --- Simple writing-centered mode -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2022-2023  Abdelhak Bougouffa
 
-;; Author: Abdelhak Bougouffa (concat "abougouffa" "@" "fedora" "project" "." "org")
 
 (require 'visual-fill-column)
 (require 'mixed-pitch nil t)

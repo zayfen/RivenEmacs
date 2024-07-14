@@ -1,6 +1,6 @@
 ;;; re-modules.el -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2022 Abdelhak Bougouffa
+
 
 (defcustom rivenemacs-core-modules
   '(re-splash
