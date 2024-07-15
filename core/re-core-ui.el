@@ -1,21 +1,21 @@
 ;; re-core-ui.el --- RivenEmacs -*- lexical-binding: t; -*-
 
-(defun +theme--tweaks-h (&optional _)
-  "Use smaller font (75% of the default) for line numbers in graphic mode."
-  (when (display-graphic-p)
+;; (defun +theme--tweaks-h (&optional _)
+;;   "Use smaller font (75% of the default) for line numbers in graphic mode."
+;;   (when (display-graphic-p)
 
-    (set-face-attribute
-     'line-number nil
-     :background (face-attribute 'default :background)
-     :height (truncate (* 0.95 (face-attribute 'default :height)))
-     :weight 'semibold)
-    (set-face-attribute
-     'line-number-current-line nil
-     :height (truncate (* 0.95 (face-attribute 'default :height)))
-     :weight 'bold)
+;;     (set-face-attribute
+;;      'line-number nil
+;;      :background (face-attribute 'default :background)
+;;      :height (truncate (* 0.95 (face-attribute 'default :height)))
+;;      :weight 'semibold)
+;;     (set-face-attribute
+;;      'line-number-current-line nil
+;;      :height (truncate (* 0.95 (face-attribute 'default :height)))
+;;      :weight 'bold)
 
 
-    ))
+;;     ))
 
 
 (add-hook 'prog-mode-hook (lambda ()
@@ -25,7 +25,7 @@
                             (set-face-attribute 'font-lock-function-name-face nil :slant 'italic)))
 
 ;; Apply tweaks
-(add-hook 'after-init-hook #'+theme--tweaks-h)
+;; (add-hook 'after-init-hook #'+theme--tweaks-h)
 ;; (add-hook 'enable-theme-functions #'+theme--tweaks-h)
 
 

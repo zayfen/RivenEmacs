@@ -473,8 +473,5 @@ or file path may exist now."
       mac-option-modifier 'none)
 
 (set-face-attribute 'fringe nil :background "#000000")
-(set-face-attribute 'font-lock-comment-face nil :slant 'italic)
-(set-face-attribute 'font-lock-keyword-face nil :slant 'italic)
-(set-face-attribute 'font-lock-function-name-face nil :slant 'italic)
 
 (provide 're-defaults)
