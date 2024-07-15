@@ -1,23 +1,33 @@
 ;; re-core-ui.el --- RivenEmacs -*- lexical-binding: t; -*-
 
+(defun +theme--tweaks-h (&optional _)
+  "Use smaller font (75% of the default) for line numbers in graphic mode."
+  (when (display-graphic-p)
+
+    (set-face-attribute
+     'line-number nil
+     :background (face-attribute 'default :background)
+     :height (truncate (* 0.95 (face-attribute 'default :height)))
+     :weight 'semibold)
+    (set-face-attribute
+     'line-number-current-line nil
+     :height (truncate (* 0.95 (face-attribute 'default :height)))
+     :weight 'bold)
 
 
-;; (defun +theme--tweaks-h (&optional _)
-;;   "Use smaller font (75% of the default) for line numbers in graphic mode."
-;;   (when (display-graphic-p)
-;;     (set-face-attribute
-;;      'line-number nil
-;;      :background (face-attribute 'default :background)
-;;      :height (truncate (* 0.95 (face-attribute 'default :height)))
-;;      :weight 'semibold)
-;;     (set-face-attribute
-;;      'line-number-current-line nil
-;;      :height (truncate (* 0.95 (face-attribute 'default :height)))
-;;      :weight 'bold)))
+    ))
+
+
+(add-hook 'prog-mode-hook (lambda ()
+                            (set-face-attribute 'fringe nil :background "#000000")
+                            (set-face-attribute 'font-lock-comment-face nil :slant 'italic)
+                            (set-face-attribute 'font-lock-keyword-face nil :slant 'italic)
+                            (set-face-attribute 'font-lock-function-name-face nil :slant 'italic)))
 
 ;; Apply tweaks
-;; (add-hook 'after-init-hook #'+theme--tweaks-h)
+(add-hook 'after-init-hook #'+theme--tweaks-h)
 ;; (add-hook 'enable-theme-functions #'+theme--tweaks-h)
+
 
 ;; Save enabled theme
 (add-hook
@@ -40,7 +50,6 @@ Useful for keeping track of the enabled theme."
   ;; In all of the following, WEIGHT is a symbol such as `semibold',
   ;; `light', `bold', or anything mentioned in `modus-themes-weights'.
   (setq modus-themes-italic-constructs t
-
         modus-themes-bold-constructs t
         modus-themes-mixed-fonts t
         modus-themes-variable-pitch-ui t
@@ -50,6 +59,7 @@ Useful for keeping track of the enabled theme."
           (underline-link border)
           (underline-link-visited border)
           (underline-link-symbolic border))))
+
 
 (use-package all-the-icons
   :straight t
