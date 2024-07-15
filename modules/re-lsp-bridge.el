@@ -98,7 +98,7 @@
   (setq acm-enable-preview t)
   (setq acm-backend-search-file-words-enable-fuzzy-match t)
   (setq lsp-bridge-enable-diagnostics nil) ;; we use flycheck only
-  (setq lsp-bridge-enable-hover-diagnostic nil)
+  (setq lsp-bridge-enable-hover-diagnostic t)
   (setq lsp-bridge-code-action-enable-popup-menu nil)
   (setq acm-enable-quick-access t)
   (setq lsp-bridge-find-def-fallback #'dumb-jump-go)

@@ -54,7 +54,7 @@
                                                :slant 'normal
                                                :size (cond ((eq system-type 'gnu/linux) 16)
                                                            ((eq system-type 'windows-nt) 15.0)
-                                                           ((eq system-type 'darwin) 14.0)
+                                                           ((eq system-type 'darwin) 12.0)
                                                            ))))
   (cl-loop for font in '("HanaMinB" "SimSun-ExtB")
            when (font-installed-p font)
@@ -64,7 +64,7 @@
                                                :slant 'normal
                                                :size (cond ((eq system-type 'gnu/linux) 16)
                                                            ((eq system-type 'windows-nt) 15.0)
-                                                           ((eq system-type 'darwin) 14.0))))))
+                                                           ((eq system-type 'darwin) 12.0))))))
 
 
 (provide 're-font)
