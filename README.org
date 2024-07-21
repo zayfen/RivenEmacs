@@ -1,7 +1,0 @@
-* RivenEmacs keybindings
-
-** Project operations
-
-*** File search and operations
-
-*** Directory find and operations
