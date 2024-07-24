@@ -1,7 +1,4 @@
 
-
-
-
 ;; install expand-region
 
 (use-package expand-region
@@ -13,9 +10,15 @@
 
 (use-package avy
   :vc (:fetcher github :repo abo-abo/avy)
+  :bind ("C-'" . avy-goto-char-2)
   :config
   (avy-setup-default)
   (global-set-key (kbd "C-c C-j") 'avy-resume))
   
+(use-package link-hint
+  :ensure t
+  :bind
+  ("C-|" . link-hint-open-link))
+
 
 (provide 'init-editor)
