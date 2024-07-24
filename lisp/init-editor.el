@@ -1,3 +1,4 @@
+;; -*- coding: utf-8; lexical-binding: t -*-
 
 ;; install expand-region
 
@@ -14,11 +15,16 @@
   :config
   (avy-setup-default)
   (global-set-key (kbd "C-c C-j") 'avy-resume))
-  
+
 (use-package link-hint
   :ensure t
   :bind
   ("C-|" . link-hint-open-link))
+
+(use-package sudo-edit)
+
+(use-package visual-regexp
+  :bind (("C-c r" . #'vr/replace)))
 
 
 (provide 'init-editor)

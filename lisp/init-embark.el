@@ -1,4 +1,5 @@
-;;; init-embark.el --- embark config  -*- lexical-binding: t; -*-
+;;; -*- coding: utf-8; lexical-binding: t -*-
+;;; init-embark.el --- embark config  
 
 ;;; Commentary:
 ;; install consult

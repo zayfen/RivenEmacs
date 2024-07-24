@@ -1,4 +1,6 @@
 
+;; -*- coding: utf-8; lexical-binding: t -*-
+
 
 (use-package general
   :vc (:fetcher github :repo noctuid/general.el)

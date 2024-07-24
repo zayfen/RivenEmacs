@@ -1,4 +1,5 @@
-;;; init-vertico.el --- vertico config  -*- lexical-binding: t; -*-
+;;; -*- coding: utf-8; lexical-binding: t -*-
+;;; init-vertico.el --- vertico config
 
 ;;; Commentary:
 ;; install consult
@@ -56,7 +57,7 @@
 
 ;; Enable rich annotations using the Marginalia package
 (use-package marginalia
-  :vc (:fetcher github :repo minad/marginalia)  
+  :vc (:fetcher github :repo minad/marginalia)
   ;; Bind `marginalia-cycle' locally in the minibuffer.  To make the binding
   ;; available in the *Completions* buffer, add it to the
   ;; `completion-list-mode-map'.
@@ -70,5 +71,9 @@
   ;; the mode gets enabled right away. Note that this forces loading the
   ;; package.
   (marginalia-mode))
+
+
+(use-package prescient
+  :config (prescient-persist-mode))
 
 (provide 'init-vertico)

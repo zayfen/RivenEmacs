@@ -1,5 +1,5 @@
-
-;;; init-font.el --- font settings -*- lexical-binding: t; -*-
+;; -*- coding: utf-8; lexical-binding: t -*-
+;;; init-font.el --- font settings 
 
 ;;; Commentary:
 ;; set default font

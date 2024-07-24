@@ -1,3 +1,11 @@
+;; -*- coding: utf-8; lexical-binding: t -*-
+
+(setq
+ ;; Set `use-package' to verbose when RivenEmacs is started in verbose mode
+ use-package-verbose 1
+ ;; Defer loading packages by default, use `:demand' to force loading a package
+ use-package-always-defer t)
+
 (use-package emacs
   :init
   (setq use-package-always-ensure t)

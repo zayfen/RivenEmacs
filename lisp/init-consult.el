@@ -1,4 +1,6 @@
-;;; init-consult.el --- consult config  -*- lexical-binding: t; -*-
+;; -*- coding: utf-8; lexical-binding: t -*-
+
+;;; init-consult.el --- consult config
 
 ;;; Commentary:
 ;; install consult
