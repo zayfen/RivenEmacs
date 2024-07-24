@@ -15,8 +15,8 @@
                        (menu-bar-lines . 0)
                        (vertical-scroll-bars)
                        (mouse-color . "blue")
-                       (left-fringe . 10)
-                       (right-fringe . 10)
+                       (left-fringe . 8)
+                       (right-fringe . 8)
                        (undecorated . t) ; round corner
                        (fullscreen . maximized))
  ;; Explicitly set modes disabled in `default-frame-alist' to nil

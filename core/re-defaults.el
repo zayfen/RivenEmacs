@@ -1,7 +1,5 @@
 ;; re-defaults.el --- RivenEmacs defaults for Emacs -*- lexical-binding: t; -*-
 
-
-
 ;; Inhibit startup message in echo area the brutal way!
 ;; The `inhibit-startup-echo-area-message' variable is very restrictive, there
 ;; is only one unique way of setting it right!
@@ -307,7 +305,8 @@
  ;; Save buffer status
  desktop-save-buffer t
  ;; set line-height
- line-spacing 0.15)
+ line-spacing 0.15
+ )
 
 ;; ====== Misc hooks and advices ======
 ;; Advice `emacs-session-filename' to ensure creating "session.ID" files in
@@ -461,9 +460,7 @@ or file path may exist now."
   (global-subword-mode 1)
 
   ;; fringe-mode
-  (fringe-mode 10))
-
-
+  (fringe-mode 8))
 
 
 ;;; I prefer cmd key for meta
@@ -473,5 +470,6 @@ or file path may exist now."
       mac-option-modifier 'none)
 
 (set-face-attribute 'fringe nil :background "#000000")
+
 
 (provide 're-defaults)

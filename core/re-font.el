@@ -7,11 +7,14 @@
 
 
 (set-face-attribute 'fixed-pitch nil :font (font-spec :family "Iosevka SS04"
-                                                      :size (cond ((eq system-type 'gnu/linux) 20)
+                                                      :slant 'italic
+                                                      :size (cond ((eq system-type 'gnu/linux) 22)
                                                                   ((eq system-type 'windows-nt) 12.5)
                                                                   ((eq system-type 'darwin) 15))))
-(set-face-attribute 'variable-pitch nil :font (font-spec :family "Iosevka SS04"
-                                                         :size (cond ((eq system-type 'gnu/linux) 20)
+(set-face-attribute 'variable-pitch nil :font (font-spec :family "Cascadia Code NF"
+                                                         :weight 'bold
+                                                         :slant 'italic
+                                                         :size (cond ((eq system-type 'gnu/linux) 22)
                                                                      ((eq system-type 'windows-nt) 12.5)
                                                                      ((eq system-type 'darwin) 15))))
 
@@ -20,7 +23,7 @@
   (find-font (font-spec :name font-name)))
 
 (when (display-graphic-p)
-  (cl-loop for font in '("IntelOne Mono" "JetBrains Mono NL" "FiraCode Nerd Font" "FiraCode" "Monaco" "SF Mono" "Menlo"  "Cascadia Code" "Source Code Pro"
+  (cl-loop for font in '("Cascadia Code NF" "IntelOne Mono" "JetBrains Mono NL" "FiraCode Nerd Font" "FiraCode" "Monaco" "SF Mono" "Menlo"  "Source Code Pro"
                          "Dejavu Sans Mono"
                          "Lucida Console" "Consolas" "SAS Monospace")
            when (font-installed-p font)
@@ -29,7 +32,7 @@
                    :font (font-spec :family font
                                     :weight 'normal
                                     :slant 'normal
-                                    :size (cond ((eq system-type 'gnu/linux) 20)
+                                    :size (cond ((eq system-type 'gnu/linux) 22)
                                                 ((eq system-type 'windows-nt) 12.5)
                                                 ((eq system-type 'darwin) 15)))))
 
