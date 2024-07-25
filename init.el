@@ -44,8 +44,9 @@
 (require 'init-crux)
 (require 'init-embark)
 (require 'init-editor)
-(require 'init-format)                  ;TODO
+(require 'init-format)
 (require 'init-jump)
+(require 'init-editorconfig)
 
 ;; important: tree-sitter
 (require 'init-treesit)
@@ -56,11 +57,19 @@
 
 ;; Languages ;TODO
 
+
+
+
+;; keybindings
+(require 'init-keybindings)
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   '(format-all yasnippet-snippets which-key vundo visual-regexp vertico vc-use-package undo-fu-session undo-fu super-save sudo-edit repo rainbow-delimiters prescient orderless mood-line marginalia magit-todos lsp-bridge link-hint iedit git-timemachine git-modes general forge expand-region exec-path-from-shell embark-consult diff-hl dashboard crux centered-window aggressive-indent-mode ace-window))
  '(package-vc-selected-packages
    '((aggressive-indent-mode :vc-backend Git :url "https://github.com/Malabarba/aggressive-indent-mode"))))
 (custom-set-faces

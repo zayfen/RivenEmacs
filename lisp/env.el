@@ -6,6 +6,8 @@
 
 (defconst lisp-dir (concat root-dir "lisp/"))
 (defconst local-dir (concat root-dir "local/"))
+(defconst cache-dir (concat local-dir "cache/"))
+(defconst repo-dir (concat root-dir "elpa/"))
 
 (defconst os/linux (and (memq system-type '(gnu gnu/linux)) t))
 (defconst os/bsd (and (memq system-type '(darwin berkeley-unix gnu/kfreebsd)) t))

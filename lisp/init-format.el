@@ -20,7 +20,17 @@
    'aggressive-indent-dont-indent-if
    '(and (derived-mode-p 'c++-mode 'c-mode 'csharp-mode 'c++-ts-mode 'c-ts-mode 'csharp-ts-mode)
      (null (string-match "\\([;{}]\\|\\b\\(if\\|for\\|while\\)\\b\\)"
-            (thing-at-point 'line))))))
+                         (thing-at-point 'line))))))
+
+
+(use-package format-all
+  :vc (:fetcher github :repo lassik/emacs-format-all-the-code)
+  :commands format-all-mode
+  :hook (prog-mode . format-all-mode)
+  :config
+  (setq-default format-all-formatters
+                '(("C"     (astyle "--mode=c"))
+                  ("Shell" (shfmt "-i" "4" "-ci")))))
 
 
 

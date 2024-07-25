@@ -41,6 +41,13 @@
 
 (load-theme 'modus-vivendi t)
 
+(add-hook 'prog-mode-hook (lambda ()
+                            (set-face-attribute 'fringe nil :background "#000000")
+                            (set-face-attribute 'font-lock-comment-face nil :slant 'italic)
+                            (set-face-attribute 'font-lock-keyword-face nil :slant 'italic)
+                            (set-face-attribute 'font-lock-function-name-face nil :slant 'italic)))
+
+
 (use-package rainbow-delimiters
   :hook ((prog-mode . rainbow-delimiters-mode)))
 

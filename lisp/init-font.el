@@ -1,5 +1,5 @@
 ;; -*- coding: utf-8; lexical-binding: t -*-
-;;; init-font.el --- font settings 
+;;; init-font.el --- font settings
 
 ;;; Commentary:
 ;; set default font
@@ -8,10 +8,13 @@
 
 
 (set-face-attribute 'fixed-pitch nil :font (font-spec :family "Cascadia Code NF"
+                                                      :slant 'italic
                                                       :size (cond ((eq system-type 'gnu/linux) 20)
                                                                   ((eq system-type 'windows-nt) 12.5)
                                                                   ((eq system-type 'darwin) 15))))
 (set-face-attribute 'variable-pitch nil :font (font-spec :family "Cascadia Code NF"
+                                                         :weight 'bold
+                                                         :slant 'italic
                                                          :size (cond ((eq system-type 'gnu/linux) 20)
                                                                      ((eq system-type 'windows-nt) 12.5)
                                                                      ((eq system-type 'darwin) 15))))
