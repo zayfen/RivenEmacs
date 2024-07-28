@@ -15,6 +15,13 @@
 
 
 
+(use-package goto-last-change
+  :init
+  :bind ("M-g [" . goto-last-change)
+  :commands goto-last-change
+  )
+
+
+
 
 (provide 'init-jump)
-

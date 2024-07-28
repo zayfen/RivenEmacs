@@ -4,7 +4,6 @@
 (use-package aggressive-indent-mode
   :vc (:fetcher github :repo Malabarba/aggressive-indent-mode)
   :hook ((typescript-ts-mode . aggressive-indent-mode)
-         (tsx-ts-mode . aggressive-indent-mode)
          (json-ts-mode . aggressive-indent-mode)
          (css-ts-mode . aggressive-indent-mode)
          (find-file . (lambda ()

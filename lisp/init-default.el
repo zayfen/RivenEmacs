@@ -221,10 +221,6 @@ that directory."
 (desktop-save-mode 1)
 (global-subword-mode 1)
 
-(use-package hl-todo
-  :vc (:fetcher github :repo tarsius/hl-todo)
-  :config
-  (hl-todo-mode))
 
 
 (provide 'init-default)

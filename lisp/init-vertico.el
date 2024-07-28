@@ -8,8 +8,47 @@
 
 (use-package vertico
   :vc (:fetcher github :repo minad/vertico)
+  :custom
+  (vertico-cycle t)
+  (vertico-resize nil)
   :init
-  (vertico-mode))
+  (add-to-list
+   'load-path (concat repo-dir "vertico/extensions"))
+  (vertico-mode)
+  )
+
+(use-package vertico-multiform
+  :after vertico
+  :ensure nil
+  :config
+  ;; Enable vertico-multiform
+  (vertico-multiform-mode)
+
+  ;; Configure the display per command.
+  ;; Use a buffer with indices for imenu
+  ;; and a flat (Ido-like) menu for M-x.
+  (setq vertico-multiform-commands
+        '((consult-imenu buffer indexed)
+          (execute-extended-command unobtrusive)))
+
+  ;; Configure the display per completion category.
+  ;; Use the grid display for files and a buffer
+  ;; for the consult-grep commands.
+  (setq vertico-multiform-categories
+        '((file grid)
+          (consult-grep buffer))))
+
+;; Configure directory extension.
+(use-package vertico-directory
+  :after vertico
+  :ensure nil
+  ;; More convenient directory navigation commands
+  :bind (:map vertico-map
+              ("RET" . vertico-directory-enter)
+              ("DEL" . vertico-directory-delete-char)
+              ("M-DEL" . vertico-directory-delete-word))
+  ;; Tidy shadowed file names
+  :hook (rfn-eshadow-update-overlay . vertico-directory-tidy))
 
 
 ;; Persist history over Emacs restarts. Vertico sorts by history position.
@@ -62,7 +101,7 @@
   ;; available in the *Completions* buffer, add it to the
   ;; `completion-list-mode-map'.
   :bind (:map minibuffer-local-map
-         ("M-A" . marginalia-cycle))
+              ("M-A" . marginalia-cycle))
 
   ;; The :init section is always executed.
   :init

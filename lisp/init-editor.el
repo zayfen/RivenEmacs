@@ -28,6 +28,7 @@
 
 
 (use-package color-rg
+  :no-require
   :vc (:fetcher github :repo manateelazycat/color-rg)
   :init
   (add-to-list 'load-path (concat repo-dir "color-rg"))
@@ -35,6 +36,7 @@
   )
 
 (use-package blink-search
+  :no-require
   :vc (:fetcher github :repo manateelazycat/blink-search))
 
 
@@ -57,6 +59,13 @@
   (global-set-key (kbd "M-n") 'symbol-overlay-jump-next)
   (global-set-key (kbd "M-p") 'symbol-overlay-jump-prev)
   :hook ((prog-mode text-mode) . symbol-overlay-mode))
+
+
+(use-package hl-todo
+  :vc (:fetcher github :repo tarsius/hl-todo)
+  :config
+  (hl-todo-mode))
+
 
 
 (provide 'init-editor)
