@@ -151,7 +151,7 @@
 (add-hook 'markdown-mode-hook #'(lambda () (treesit-parser-create 'markdown)))
 (add-hook 'zig-mode-hook #'(lambda () (treesit-parser-create 'zig)))
 (add-hook 'mojo-mode-hook #'(lambda () (treesit-parser-create 'mojo)))
-(add-hook 'emacs-lisp-mode-hook #'(lambda () (treesit-parser-create 'elisp)))
+;;(add-hook 'emacs-lisp-mode-hook #'(lambda () (treesit-parser-create 'elisp)))
 (add-hook 'ielm-mode-hook #'(lambda () (treesit-parser-create 'elisp)))
 (add-hook 'json-mode-hook #'(lambda () (treesit-parser-create 'json)))
 (add-hook 'go-mode-hook #'(lambda () (treesit-parser-create 'go)))
