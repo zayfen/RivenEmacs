@@ -9,8 +9,8 @@
 
 (use-package consult
   :vc (:fetcher github :repo minad/consult)
-
   :bind (;; C-c bindings in `mode-specific-map'
+         ("C-s" . consult-line)
          ("C-c M-x" . consult-mode-command)
          ("C-c h" . consult-history)
          ("C-c k" . consult-kmacro)
@@ -62,7 +62,7 @@
          :map minibuffer-local-map
          ("M-s" . consult-history)                 ;; orig. next-matching-history-element
          ("M-r" . consult-history))
-  
+
   :hook (completion-list-mode . consult-preview-at-point-mode)
   :init
   (setq register-preview-delay 0.5
@@ -72,7 +72,7 @@
 
   (setq xref-show-xrefs-function #'consult-xref
         xref-show-definitions-function #'consult-xref))
-  
+
 
 
 (provide 'init-consult)

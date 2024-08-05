@@ -9,10 +9,11 @@
   "p" '(project-switch-project :wk "Switch project")
   "s" '(consult-ripgrep :wk "Search symbol")
   "b" '(consult-project-buffer :wk "Buffers in project")
-  "/" '(consult-git-grep :wk "Git grep"))
+  "/" '(consult-git-grep :wk "Git grep")
+  "r" '(color-rg-search-symbol-in-project :wk "Search/Replace"))
 
 (defun +consult-fd-in-home ()
-  (interactive)
+  (interactive "P")
   "Find any file from home directory"
   (consult-fd "~/"))
 
@@ -22,7 +23,7 @@
   "f" '(consult-fd :wk "Find file in directory")
   "l" '(+consult-fd-in-home :wk "Locate file")
   "r" '(consult-recent-file :wk "Recent files")
-  )
+  "s" '(blink-search :wk "Search files"))
 
 
 

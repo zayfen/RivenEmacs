@@ -7,7 +7,17 @@
   :bind ("C-=" . er/expand-region))
 
 (use-package iedit
-  :vc (:fetcher github :repo victorhge/iedit))
+  :demand t
+  :vc (:fetcher github :repo victorhge/iedit)
+  :config
+  ;; Define a new face for iedit occurrence highlighting
+  (defface iedit-occurrence
+    '((t (:background "#1A8899" :foreground "black")))
+    "Face for iedit occurrence highlighting.")
+  (add-hook 'iedit-mode-hook
+            (lambda ()
+              (set-face-attribute 'iedit-occurrence nil :background "#1A8899" :foreground "black")))
+  )
 
 (use-package avy
   :vc (:fetcher github :repo abo-abo/avy)
@@ -36,8 +46,12 @@
   )
 
 (use-package blink-search
-  :no-require
-  :vc (:fetcher github :repo manateelazycat/blink-search))
+  :vc (:fetcher github :repo manateelazycat/blink-search)
+  :init
+  (setq blink-search-browser-function
+        (if (display-graphic-p)
+            #'xwidget-webkit-browse-url
+          #'eww)))
 
 
 (use-package symbol-overlay
@@ -66,6 +80,15 @@
   :config
   (hl-todo-mode))
 
-
+(use-package dirvish
+  :ensure t
+  :custom
+  (dirvish-attributes '(subtree-state all-the-icons file-size vc-state git-msg))
+  (dirvish-mode-line-format '(:left (sort file-time symlink) :right (omit yank index)))
+  (dirvish-side-width 30)
+  (dirvish-fd-default-dir "~/")
+  (dirvish-use-header-line t) ; 'global make header line span all panes
+  (dirvish-use-mode-line t)
+)
 
 (provide 'init-editor)

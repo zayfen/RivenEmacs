@@ -2,7 +2,6 @@
 
 (defun +directory-ensure (&rest path-parts)
   "Concatenate PATH-PARTS to construct a path and return it.
-
 Ensure the path exists, if not create it. The exact behavior is to create the
 parent directory if the path is a file, and if the path is a directory, create
 that directory."
@@ -16,8 +15,6 @@ that directory."
 
 (setq
  gc-cons-threshold 100000000
- max-specpdl-size 5000
-
  make-backup-files nil
  auto-save-default nil
  create-lockfiles nil

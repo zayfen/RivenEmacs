@@ -8,8 +8,8 @@
                        (menu-bar-lines . 0)
                        (vertical-scroll-bars)
                        (mouse-color . "blue")
-                       (left-fringe . 8)
-                       (right-fringe . 8)
+                       (left-fringe . 4)
+                       (right-fringe . 4)
                        (undecorated-round . t) ; round corner
                        (fullscreen . maximized))
  tool-bar-mode nil
