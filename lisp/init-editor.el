@@ -81,7 +81,7 @@
   (hl-todo-mode))
 
 ;; issuse on MacOs
-;; brew install coreutils
+;; NOTE: brew install coreutils
 (use-package dirvish
   :ensure t
   :init
@@ -101,8 +101,7 @@
         "-l --almost-all --human-readable --group-directories-first --no-group")
   (setq dired-mouse-drag-files t)
   (setq mouse-drag-and-drop-region-cross-program t)
-  (if os/mac (
-                (setq insert-directory-program "gls"))
+  (if os/mac (setq insert-directory-program "gls"))
   :bind
   (:map dirvish-mode-map ; Dirvish inherits `dired-mode-map'
    ("a"   . dirvish-quick-access)
