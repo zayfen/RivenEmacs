@@ -41,6 +41,7 @@
 
 (load-theme 'modus-vivendi t)
 
+
 (add-hook 'prog-mode-hook (lambda ()
                             (set-face-attribute 'fringe nil :background "#000000")
                             (set-face-attribute 'font-lock-comment-face nil :slant 'italic)
@@ -75,6 +76,11 @@
   (advice-add 'mood-line-segment-buffer-name :around #'pt/mood-line-segment-project-advice)
   (mood-line-mode))
 
+
+(use-package doom-modeline
+  :ensure t
+  :vc (:fetcher github :repo seagle0128/doom-modeline)
+  :hook (after-init . doom-modeline-mode))
 
 
 (provide 'init-theme)
