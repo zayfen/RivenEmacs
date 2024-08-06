@@ -2,7 +2,7 @@
 
 (use-package vundo
   :commands (vundo)
-  :bind ("C-M-u" . vundo)
+  :bind ("M-_" . vundo)
   :config
   (setq vundo-compact-display t))
 
