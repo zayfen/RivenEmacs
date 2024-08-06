@@ -24,7 +24,20 @@
   (dashboard-setup-startup-hook))
 
 (dashboard-open)
+
+
+;; load theme and config
 (load-theme 'modus-vivendi t)
+(setq modus-themes-italic-constructs t
+        modus-themes-bold-constructs t
+        modus-themes-mixed-fonts t
+        modus-themes-variable-pitch-ui t
+        modus-themes-custom-auto-reload t
+        modus-themes-headings
+        '(
+          (underline-link border)
+          (underline-link-visited border)
+          (underline-link-symbolic border)))
 
 (add-hook 'prog-mode-hook (lambda ()
                             (set-face-attribute 'fringe nil :background "#000000")
