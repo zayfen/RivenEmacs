@@ -13,7 +13,7 @@
   "r" '(color-rg-search-symbol-in-project :wk "Search/Replace"))
 
 (defun +consult-fd-in-home ()
-  (interactive "P")
+  (interactive)
   "Find any file from home directory"
   (consult-fd "~/"))
 
