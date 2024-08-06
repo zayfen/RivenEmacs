@@ -18,6 +18,7 @@ that directory."
  make-backup-files nil
  auto-save-default nil
  create-lockfiles nil
+ warning-minimum-level :error
 
  ;; No need to see GNU agitprop.
  inhibit-startup-screen t
@@ -132,6 +133,9 @@ that directory."
  desktop-dirname (+directory-ensure local-dir "desktop/")
  desktop-path (list desktop-dirname))
 
+(add-to-list 'warning-suppress-log-types '(unlock-file))
+(add-to-list 'warning-suppress-types '(unlock-file))
+
 ;; Never mix tabs and spaces. Never use tabs, period.
 ;; We need the setq-default here because this becomes
 ;; a buffer-local variable when set.
@@ -162,24 +166,6 @@ that directory."
 ;; Hide/show code blocks, a.k.a. code folding
 (add-hook 'prog-mode-hook #'hs-minor-mode)
 (add-hook 'conf-mode-hook #'hs-minor-mode)
-
-
-;; (defun zyf/unbind-bad-keybindings ()
-;;   "Remove unhelpful keybindings."
-;;   (map (lambda (x) (unbind-key x)) '("C-x C-f" ;; find-file-read-only
-;;                                       "C-x C-d" ;; list-directory
-;;                                       "C-z" ;; suspend-frame
-;;                                       "C-x C-z" ;; again
-;;                                       "<mouse-2>" ;; pasting with mouse-wheel click
-;;                                       "<C-wheel-down>" ;; text scale adjust
-;;                                       "<C-wheel-up>" ;; ditto
-;;                                       "s-n" ;; make-frame
-;;                                       "s-t" ;; ns-popup-font-panel
-;;                                       "s-p" ;; ns-print-buffer
-;;                                       "C-x C-q" ;; read-only-mode
-;;                                       )))
-
-;; (zyf/unbind-bad-keybindings)
 
 (bind-key "s-<up>" #'ff-find-related-file)
 (bind-key "C-c a f" #'ff-find-related-file)
