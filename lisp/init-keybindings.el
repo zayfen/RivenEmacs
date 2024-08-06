@@ -1,5 +1,14 @@
 ;; -*- coding: utf-8; lexical-binding: t -*-
 
+(defun get-project-root ()
+  (when (fboundp 'projectile-project-root)
+    (projectile-project-root)))
+
+;; Ripgrep the current word from project root
+(defun consult-ripgrep-at-point ()
+  (interactive)
+  (consult-ripgrep (get-project-root)(thing-at-point 'symbol)))
+
 
 ;; config project keybindings
 (leader-def
@@ -10,7 +19,8 @@
   "s" '(consult-ripgrep :wk "Search symbol")
   "b" '(consult-project-buffer :wk "Buffers in project")
   "/" '(consult-git-grep :wk "Git grep")
-  "r" '(color-rg-search-symbol-in-project :wk "Search/Replace"))
+  "r" '(color-rg-search-symbol-in-project :wk "Search/Replace")
+  "." '(consult-ripgrep-at-point :wk "Search symbol at point"))
 
 (defun +consult-fd-in-home ()
   (interactive)
