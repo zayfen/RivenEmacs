@@ -47,6 +47,9 @@
   :config
   (setq-default flycheck-emacs-lisp-initialize-packages t
                 flycheck-highlighting-mode 'lines)
+
+  (flycheck-add-mode 'javascript-eslint 'jtsx-tsx-mode)
+  (flycheck-add-mode 'javascript-eslint 'jtsx-typescript-mode)
   (define-key flycheck-mode-map [remap next-error] #'flycheck-next-error)
   (define-key flycheck-mode-map [remap previous-error] #'flycheck-previous-error)
 

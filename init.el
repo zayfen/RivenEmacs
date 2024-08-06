@@ -83,4 +83,5 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(font-lock-keyword-face ((t (:inherit modus-themes-bold :foreground "#b6a0ff" :slant italic :weight semi-bold))))
  '(line-number ((t (:inherit default :background "#000000" :foreground "#a8a8a8" :slant italic :weight semi-light)))))
