@@ -20,6 +20,14 @@
 ;; load env
 (load (expand-file-name "lisp/env.el" (file-name-directory (file-truename (or load-file-name (buffer-file-name))))) nil t)
 
+(setq user-emacs-directory local-dir)
+(setq load-path (append (list lisp-dir) load-path))
+
+
+(setq custom-file (concat root-dir "custom.el"))
+(when (file-exists-p custom-file)
+  (load custom-file))
+
 
 ;; use <command> key as <meta>
 (setq mac-option-key-is-meta nil
@@ -33,5 +41,18 @@
 (setq package-archives '(("gnu"    . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
                          ("nongnu" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/")
                          ("melpa"  . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")))
+
+(when (featurep 'native-compile)
+  (setq
+   native-comp-async-report-warnings-errors 'silent
+   native-comp-verbose 1 		; can be 0 if config no error
+   native-comp-debug 1 			; can be 0 if config no error
+   ;; Make native compilation happens asynchronously.
+   native-comp-jit-compilation t)
+
+  ;; Set the right directory to store the native compilation cache to avoid
+  ;; messing with "~/.emacs.d/".
+  (startup-redirect-eln-cache (concat local-dir "eln/")))
+
 
 (package-initialize)
