@@ -77,8 +77,7 @@
 
 (use-package hl-todo
   :vc (:fetcher github :repo tarsius/hl-todo)
-  :config
-  (hl-todo-mode))
+  :hook (prog-mode . hl-todo-mode))
 
 ;; issuse on MacOs
 ;; NOTE: brew install coreutils
