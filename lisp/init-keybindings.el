@@ -7,7 +7,12 @@
 ;; Ripgrep the current word from project root
 (defun consult-ripgrep-at-point ()
   (interactive)
-  (consult-ripgrep (get-project-root)(thing-at-point 'symbol)))
+  (consult-ripgrep (get-project-root) (thing-at-point 'symbol)))
+
+;; Ripgrep the selected region from project root
+(defun consult-ripgrep-region ()
+  (interactive)
+  (consult-ripgrep (get-project-root) (buffer-substring-no-properties (region-beginning) (region-end))))
 
 
 ;; config project keybindings
@@ -17,6 +22,7 @@
   "f" '(project-find-file :wk "Find file in project")
   "p" '(project-switch-project :wk "Switch project")
   "s" '(consult-ripgrep :wk "Search symbol")
+  "S" '(consult-ripgrep-region :wk "Search region")
   "b" '(consult-project-buffer :wk "Buffers in project")
   "/" '(consult-git-grep :wk "Git grep")
   "r" '(color-rg-search-symbol-in-project :wk "Search/Replace")
