@@ -17,8 +17,6 @@ that directory."
  gc-cons-threshold 100000000
  make-backup-files nil
  auto-save-default nil
- create-lockfiles nil
- warning-minimum-level :error
 
  ;; No need to see GNU agitprop.
  inhibit-startup-screen t
@@ -132,9 +130,6 @@ that directory."
  semanticdb-default-system-save-directory (concat local-dir "semantic/")
  desktop-dirname (+directory-ensure local-dir "desktop/")
  desktop-path (list desktop-dirname))
-
-(add-to-list 'warning-suppress-log-types '(unlock-file))
-(add-to-list 'warning-suppress-types '(unlock-file))
 
 ;; Never mix tabs and spaces. Never use tabs, period.
 ;; We need the setq-default here because this becomes

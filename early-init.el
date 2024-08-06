@@ -15,7 +15,14 @@
  tool-bar-mode nil
  menu-bar-mode nil
  scroll-bar-mode nil
+ create-lockfiles nil
+ warning-minimum-level :error
  )
+
+(if (boundp 'warning-suppress-log-types)
+    (add-to-list 'warning-suppress-log-types '(unlock-file)))
+(if (boundp 'warning-suppress-types)
+    (add-to-list 'warning-suppress-types '(unlock-file)))
 
 ;; load env
 (load (expand-file-name "lisp/env.el" (file-name-directory (file-truename (or load-file-name (buffer-file-name))))) nil t)
