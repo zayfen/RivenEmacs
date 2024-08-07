@@ -10,7 +10,7 @@
     (indent-according-to-mode)
     (forward-line -1)
     (indent-according-to-mode))
-  (sp-local-pair 'tsx-ts-mode "{" nil :post-handlers '((create-newline-and-enter-sexp "RET")))
+  (sp-local-pair 'prog-mode "{" nil :post-handlers '((create-newline-and-enter-sexp "RET")))
 
   (require 'smartparens-config))
 
