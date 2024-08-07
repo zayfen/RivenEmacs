@@ -14,6 +14,13 @@
   (interactive)
   (consult-ripgrep (get-project-root) (buffer-substring-no-properties (region-beginning) (region-end))))
 
+;; enhance ripgrep
+(defun consult-ripgrep-ex ()
+  (interactive)
+  (if (use-region-p)
+      (consult-ripgrep-region)
+    (consult-ripgrep-at-point)))
+
 
 ;; config project keybindings
 (leader-def
@@ -21,12 +28,10 @@
   "c" '(project-forget-zombie-projects :wk "Forget zombie projects")
   "f" '(project-find-file :wk "Find file in project")
   "p" '(project-switch-project :wk "Switch project")
-  "s" '(consult-ripgrep :wk "Search symbol")
-  "S" '(consult-ripgrep-region :wk "Search region")
+  "s" '(consult-ripgrep-ex :wk "Search symbol")
   "b" '(consult-project-buffer :wk "Buffers in project")
   "/" '(consult-git-grep :wk "Git grep")
-  "r" '(color-rg-search-symbol-in-project :wk "Search/Replace")
-  "." '(consult-ripgrep-at-point :wk "Search symbol at point"))
+  "r" '(color-rg-search-symbol-in-project :wk "Search/Replace"))
 
 (defun +consult-fd-in-home ()
   (interactive)

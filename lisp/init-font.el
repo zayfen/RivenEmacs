@@ -42,7 +42,7 @@
            when (font-installed-p font)
            return (set-fontset-font t 'unicode
                                     (font-spec :family font
-                                               :size (cond ((eq system-type 'gnu/linux) 18)
+                                               :size (cond ((eq system-type 'gnu/linux) 14)
                                                            ((eq system-type 'windows-nt) 15.0)
                                                            ((eq system-type 'darwin) 16.0)))
                                     nil 'prepend))
@@ -56,7 +56,7 @@
                                     (font-spec :name font
                                                :weight 'normal
                                                :slant 'normal
-                                               :size (cond ((eq system-type 'gnu/linux) 16)
+                                               :size (cond ((eq system-type 'gnu/linux) 12)
                                                            ((eq system-type 'windows-nt) 15.0)
                                                            ((eq system-type 'darwin) 12.0)
                                                            ))))
@@ -66,7 +66,7 @@
                                     (font-spec :name font
                                                :weight 'normal
                                                :slant 'normal
-                                               :size (cond ((eq system-type 'gnu/linux) 16)
+                                               :size (cond ((eq system-type 'gnu/linux) 14)
                                                            ((eq system-type 'windows-nt) 15.0)
                                                            ((eq system-type 'darwin) 12.0))))))
 
