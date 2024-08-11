@@ -32,6 +32,7 @@
 (require 'init-crux)
 (require 'init-embark)
 (require 'init-editor)
+(require 'init-dired)
 (require 'init-format)
 (require 'init-jump)
 (require 'init-editorconfig)
