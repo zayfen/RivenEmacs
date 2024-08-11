@@ -44,9 +44,7 @@
 
 
 (use-package lsp-bridge
-  :no-require t
   :vc (:fetcher github :repo "manateelazycat/lsp-bridge")
-  :init
   :hook ((prog-mode) . lsp-bridge-mode)
   :custom
   (lsp-bridge-python-lsp-server "ruff")
@@ -103,5 +101,5 @@
     "t"  '(lsp-bridge-find-type-def :wk "Find type definition")
     "?" '(lsp-bridge-find-references :wk "Find References")))
 
-     
+
 (provide 'init-lsp-bridge)

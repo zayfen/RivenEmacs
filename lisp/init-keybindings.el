@@ -47,5 +47,9 @@
   "s" '(blink-search :wk "Search files"))
 
 
+(leader-def
+  "e" '(dirvish-side :wk "Explorer"))
+
+
 
 (provide 'init-keybindings)

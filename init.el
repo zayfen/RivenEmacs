@@ -1,6 +1,12 @@
 ;; -*- coding: utf-8; lexical-binding: t -*-
 
 
+(use-package benchmark-init
+  :ensure t
+  :config
+  ;; To disable collection of benchmark data after init is done.
+  (add-hook 'after-init-hook 'benchmark-init/deactivate))
+
 ;; load env from exec-path-from-shell
 (use-package exec-path-from-shell
   :if (memq window-system '(mac ns x))
