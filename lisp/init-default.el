@@ -197,8 +197,10 @@ that directory."
 ;; (desktop-save-mode 1)
 (global-subword-mode 1)
 
-(add-hook 'after-init-hook (lambda () 
-(desktop-save-mode 1)))
+(add-hook 'after-init-hook
+          (
+           lambda ()
+                  (desktop-save-mode 1)))
 
 
 (provide 'init-default)

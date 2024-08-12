@@ -1,7 +1,11 @@
 ;;; early-init.el --- early initialization tweaks -*- lexical-binding: t; -*-
 
 (setq
- package-enable-at-startup nil
+ package-enable-at-startup t            ;; set to true, so need not to call package-initialize any more.
+ use-package-verbose 1
+ ;; Defer loading packages by default, use `:demand' to force loading a package
+ use-package-always-defer t
+ use-package-always-ensure t
  gc-cons-threshold most-positive-fixnum
  load-prefer-newer noninteractive
  default-frame-alist '((tool-bar-lines . 0)
@@ -29,6 +33,7 @@
 
 (setq user-emacs-directory local-dir)
 (setq load-path (append (list lisp-dir) load-path))
+(setq load-path (append (list repo-dir) load-path))
 
 
 (setq custom-file (concat root-dir "custom.el"))
@@ -62,4 +67,5 @@
   (startup-redirect-eln-cache (concat local-dir "eln/")))
 
 ;;dont need (package-initialize) on emacs27+
-(package-initialize)
+(when (< emacs-major-version 27)
+  (package-initialize))
