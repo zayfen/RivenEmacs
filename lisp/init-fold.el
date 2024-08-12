@@ -17,10 +17,17 @@
   :init
   (dolist (h '(c++-mode-hook c++-ts-mode-hook c-mode-hook c-ts-mode-hook cuda-mode-hook))
       (add-hook h #'hide-ifdef-mode))
-
   :custom
   (hide-ifdef-shadow t)
   (hide-ifdef-initially t))
+
+
+(use-package hideshow
+  :ensure nil
+  :bind (:map hs-minor-mode-map
+              ("M-i" . hs-toggle-hiding)
+              ("M-[" . hs-hide-all)
+              ("M-]" . hs-show-all)))
 
 
 
@@ -29,9 +36,9 @@
   :bind ("M-i" . treesitter-context-fold-toggle)
   :config
   (add-hook 'typescript-ts-mode-hook #'treesitter-context-mode)
-  (add-hook 'tsx-ts-mode-hook #'treesitter-context-mode))
-
-
+  (add-hook 'typescript-ts-mode-hook #'treesitter-context-focus-mode)
+  (add-hook 'tsx-ts-mode-hook #'treesitter-context-mode)
+  (add-hook 'tsx-ts-mode-hook #'treesitter-context-focus-mode))
 
 
 (provide 'init-fold)
