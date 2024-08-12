@@ -61,5 +61,5 @@
   ;; messing with "~/.emacs.d/".
   (startup-redirect-eln-cache (concat local-dir "eln/")))
 
-
+;;dont need (package-initialize) on emacs27+
 (package-initialize)

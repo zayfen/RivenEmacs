@@ -44,8 +44,6 @@ that directory."
  default-directory "~/Github/"
  ;; eke out a little more scrolling performance
  fast-but-imprecise-scrolling t
- ;; prefer newer elisp files
- load-prefer-newer t
  ;; when I say to quit, I mean quit
  confirm-kill-processes nil
  ;; if native-comp is having trouble, there's not very much I can do
@@ -196,9 +194,11 @@ that directory."
 (minibuffer-depth-indicate-mode)
 
 (recentf-mode 1)
-(desktop-save-mode 1)
+;; (desktop-save-mode 1)
 (global-subword-mode 1)
 
+(add-hook 'after-init-hook (lambda () 
+(desktop-save-mode 1)))
 
 
 (provide 'init-default)

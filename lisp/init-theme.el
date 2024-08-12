@@ -4,6 +4,7 @@
 ;; use-package with package.el:
 (use-package dashboard
   :vc (:fetcher github :repo emacs-dashboard/emacs-dashboard)
+  :commands (dashboard-open)
   :config
   (setq dashboard-banner-logo-title "Welcome to Emacs Dashboard")
   ;; Set the banner
@@ -23,7 +24,7 @@
 
   (dashboard-setup-startup-hook))
 
-(dashboard-open)
+(add-hook 'after-init-hook (lambda () (dashboard-open)))
 
 
 ;; load theme and config

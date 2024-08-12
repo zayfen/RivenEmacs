@@ -50,6 +50,7 @@
 
   (flycheck-add-mode 'javascript-eslint 'jtsx-tsx-mode)
   (flycheck-add-mode 'javascript-eslint 'jtsx-typescript-mode)
+  (flycheck-add-mode 'javascript-eslint 'jtsx-jsx-mode)
   (define-key flycheck-mode-map [remap next-error] #'flycheck-next-error)
   (define-key flycheck-mode-map [remap previous-error] #'flycheck-previous-error)
 
