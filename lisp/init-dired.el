@@ -30,7 +30,9 @@
   (setq mouse-drag-and-drop-region-cross-program t)
   (if os/mac (setq insert-directory-program "gls"))
   :bind
-  (("C-x D" . dirvish-fd)
+  ("M-<return>" . dirvish-side)
+  :bind
+  (
    :map dirvish-mode-map ; Dirvish inherits `dired-mode-map'
    ("a"   . dirvish-quick-access)
    ("f"   . dirvish-file-info-menu)
