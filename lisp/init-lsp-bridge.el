@@ -7,8 +7,8 @@
 
 (use-package yasnippet
   :ensure t
-  :init
-  (setq yas-snippet-dir "~/.emacs.d/snippets")
+  :custom
+  (yas-snippet-dir "~/.emacs.d/snippets")
   :hook ((prog-mode LaTeX-mode org-mode markdown-mode) . yas-minor-mode-on)
   :bind
   (:map yas-minor-mode-map ("C-c C-n" . yas-expand-from-trigger-key))
@@ -17,7 +17,6 @@
          ([(tab)] . smarter-yas-expand-next-field)))
 
   :config
-  (yas-reload-all)
   (defun smarter-yas-expand-next-field ()
     "Try to `yas-expand' then `yas-next-field' at current cursor position."
     (interactive)

@@ -31,6 +31,7 @@
 (require 'init-editorconfig)
 (require 'init-checker)
 (require 'init-pair)
+(require 'init-fold)
 
 ;; important: tree-sitter
 (require 'init-treesit)
