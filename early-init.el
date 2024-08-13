@@ -21,7 +21,10 @@
  scroll-bar-mode nil
  create-lockfiles nil
  warning-minimum-level :error
+ read-process-output-max (* 1024 1024)
  )
+
+(add-hook 'after-init-hook #'(lambda () (setq gc-cons-threshold 800000)))
 
 (if (boundp 'warning-suppress-log-types)
     (add-to-list 'warning-suppress-log-types '(unlock-file)))

@@ -14,8 +14,6 @@ that directory."
     path))
 
 (setq
- gc-cons-threshold 100000000
- read-process-output-max (* 1024 1024)
  make-backup-files nil
  auto-save-default nil
 
