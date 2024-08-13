@@ -1,0 +1,3 @@
+[submodule "debug-adapters"]
+	path = debug-adapters
+	url = git@github.com:zayfen/debug-adapters.git
