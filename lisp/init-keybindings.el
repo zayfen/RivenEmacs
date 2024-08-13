@@ -25,6 +25,8 @@
   "r" '(consult-recent-file :wk "Recent files")
   "s" '(blink-search :wk "Search files"))
 
+(leader-def
+  "l" '(devdocs-lookup :wk "Lookup DevDocs"))
 
 
 

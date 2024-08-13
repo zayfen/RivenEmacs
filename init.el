@@ -40,6 +40,9 @@
 (require 'init-vc)
 (require 'init-debugger)
 
+;; init devdocs
+(require 'init-devdocs)
+
 ;; Languages ;TODO
 (require 'init-web)
 
