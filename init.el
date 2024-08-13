@@ -2,12 +2,14 @@
 
 ;; load env from exec-path-from-shell
 (use-package exec-path-from-shell
+  :demand t
   :if (memq window-system '(mac ns x))
   :config
   (exec-path-from-shell-initialize))
 
 (require 'init-use-package)
 (require 'init-default)
+(require 'init-helper)
 (require 'init-theme)
 (require 'init-font)
 (require 'init-undo)
@@ -36,6 +38,7 @@
 
 ;; init git
 (require 'init-vc)
+(require 'init-debugger)
 
 ;; Languages ;TODO
 (require 'init-web)
