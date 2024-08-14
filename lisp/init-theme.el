@@ -48,35 +48,37 @@
 (use-package rainbow-delimiters
   :hook ((prog-mode . rainbow-delimiters-mode)))
 
-
-(defun pt/project-relative-file-name (include-prefix)
-  "Return the project-relative filename, or the full path if INCLUDE-PREFIX is t."
-  (letrec
-      ((fullname (if (equal major-mode 'dired-mode) default-directory (buffer-file-name)))
-       (root (project-root (project-current)))
-       (relname (if fullname (file-relative-name fullname root) fullname))
-       (should-strip (and root (not include-prefix))))
-    (if should-strip relname fullname)))
-
-(use-package mood-line
-  :config
-  (defun pt/mood-line-segment-project-advice (oldfun)
-    "Advice to use project-relative file names where possible."
-    (let
-        ((project-relative (ignore-errors (pt/project-relative-file-name nil))))
-         (if
-             (and (project-current) (not org-src-mode) project-relative)
-             (propertize (format "%s  " project-relative) 'face 'mood-line-buffer-name)
-           (funcall oldfun))))
-
-  (advice-add 'mood-line-segment-buffer-name :around #'pt/mood-line-segment-project-advice)
-  (mood-line-mode))
-
-
 (use-package doom-modeline
-  :ensure t
   :vc (:fetcher github :repo seagle0128/doom-modeline)
   :hook (after-init . doom-modeline-mode))
+
+
+;; This assumes you've installed the package via MELPA.
+(use-package ligature
+  :vc (:fetcher github :repo mickeynp/ligature.el)
+  :config
+  ;; Enable the "www" ligature in every possible major mode
+  (ligature-set-ligatures 't '("www"))
+  ;; Enable traditional ligature support in eww-mode, if the
+  ;; `variable-pitch' face supports it
+  (ligature-set-ligatures 'eww-mode '("ff" "fi" "ffi"))
+  ;; Enable all Cascadia Code ligatures in programming modes
+  (ligature-set-ligatures 'prog-mode '("|||>" "<|||" "<==>" "<!--" "####" "~~>" "***" "||=" "||>"
+                                       ":::" "::=" "=:=" "===" "==>" "=!=" "=>>" "=<<" "=/=" "!=="
+                                       "!!." ">=>" ">>=" ">>>" ">>-" ">->" "->>" "-->" "---" "-<<"
+                                       "<~~" "<~>" "<*>" "<||" "<|>" "<$>" "<==" "<=>" "<=<" "<->"
+                                       "<--" "<-<" "<<=" "<<-" "<<<" "<+>" "</>" "###" "#_(" "..<"
+                                       "..." "+++" "/==" "///" "_|_" "www" "&&" "^=" "~~" "~@" "~="
+                                       "~>" "~-" "**" "*>" "*/" "||" "|}" "|]" "|=" "|>" "|-" "{|"
+                                       "[|" "]#" "::" ":=" ":>" ":<" "$>" "==" "=>" "!=" "!!" ">:"
+                                       ">=" ">>" ">-" "-~" "-|" "->" "--" "-<" "<~" "<*" "<|" "<:"
+                                       "<$" "<=" "<>" "<-" "<<" "<+" "</" "#{" "#[" "#:" "#=" "#!"
+                                       "##" "#(" "#?" "#_" "%%" ".=" ".-" ".." ".?" "+>" "++" "?:"
+                                       "?=" "?." "??" ";;" "/*" "/=" "/>" "//" "__" "~~" "(*" "*)"
+                                       "\\\\" "://"))
+  ;; Enables ligature checks globally in all buffers. You can also do it
+  ;; per mode with `ligature-mode'.
+  (global-ligature-mode t))
 
 
 (provide 'init-theme)
