@@ -5,7 +5,6 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(line-spacing 0.2)
  '(package-selected-packages
    '(devdocs dape package-vc-install git-commit magit vscode-icon benchmark-init smartparens dirvish jtsx flycheck doom-modeline treesitter-context ts-fold-indicators ts-fold format-all yasnippet-snippets which-key vundo visual-regexp vertico vc-use-package undo-fu-session undo-fu super-save sudo-edit repo rainbow-delimiters prescient orderless mood-line marginalia magit-todos lsp-bridge link-hint iedit git-timemachine git-modes general forge expand-region exec-path-from-shell embark-consult diff-hl dashboard crux centered-window aggressive-indent-mode ace-window))
  '(package-vc-selected-packages

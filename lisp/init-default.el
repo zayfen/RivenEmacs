@@ -66,7 +66,7 @@ that directory."
  ;; don't keep duplicate entries in kill ring
  kill-do-not-save-duplicates t
  desktop-save-buffer t
- line-spacing 0.2
+ line-spacing 0.25
 
  ;; ====== Recent files ======
  ;; Increase the maximum number of saved items

@@ -47,7 +47,7 @@
                                                            ((eq system-type 'darwin) 16.0)))
                                     nil 'prepend))
 
-  (cl-loop for font in '("文泉驿等宽微米黑" "思源黑体 CN" "思源宋体 CN" "微软雅黑 CN"
+  (cl-loop for font in '("Sarasa Term SC Nerd" "文泉驿等宽微米黑" "思源黑体 CN" "思源宋体 CN" "微软雅黑 CN"
                          "Source Han Sans CN" "Source Han Serif CN"
                          "WenQuanYi Micro Hei"
                          "Microsoft Yahei UI" "Microsoft Yahei")
@@ -56,7 +56,7 @@
                                     (font-spec :name font
                                                :weight 'normal
                                                :slant 'normal
-                                               :size (cond ((eq system-type 'gnu/linux) 12)
+                                               :size (cond ((eq system-type 'gnu/linux) 18)
                                                            ((eq system-type 'windows-nt) 15.0)
                                                            ((eq system-type 'darwin) 12.0)
                                                            ))))
@@ -66,7 +66,7 @@
                                     (font-spec :name font
                                                :weight 'normal
                                                :slant 'normal
-                                               :size (cond ((eq system-type 'gnu/linux) 14)
+                                               :size (cond ((eq system-type 'gnu/linux) 18)
                                                            ((eq system-type 'windows-nt) 15.0)
                                                            ((eq system-type 'darwin) 12.0))))))
 
