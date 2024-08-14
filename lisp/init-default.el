@@ -66,7 +66,6 @@ that directory."
  ;; don't keep duplicate entries in kill ring
  kill-do-not-save-duplicates t
  desktop-save-buffer t
- line-spacing 0.25
 
  ;; ====== Recent files ======
  ;; Increase the maximum number of saved items
@@ -136,7 +135,9 @@ that directory."
  truncate-lines nil
  fill-column 120
  display-line-numbers-width 4
- tab-width 2)
+ tab-width 2
+ line-spacing 0.25
+ )
 
 (set-charset-priority 'unicode)
 (prefer-coding-system 'utf-8-unix)
