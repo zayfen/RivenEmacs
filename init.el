@@ -43,6 +43,7 @@
 
 ;; init devdocs
 (require 'init-devdocs)
+(require 'init-gpt)
 
 ;; Languages ;TODO
 (require 'init-web)
