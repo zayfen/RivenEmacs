@@ -109,8 +109,8 @@
         (org . ("https://github.com/milisims/tree-sitter-org"))
         (python . ("https://github.com/tree-sitter/tree-sitter-python"))
         (php . ("https://github.com/tree-sitter/tree-sitter-php"))
-        (typescript . ("https://github.com/tree-sitter/tree-sitter-typescript" "v0.20.3" "typescript/src"))
-        (tsx . ("https://github.com/tree-sitter/tree-sitter-typescript" "v0.20.3" "tsx/src"))
+        (typescript . ("https://github.com/tree-sitter/tree-sitter-typescript" "v0.20.3" "typescript/src")) ; v0.20.3 for jtsx mode
+        (tsx . ("https://github.com/tree-sitter/tree-sitter-typescript" "v0.20.3" "tsx/src"))               ; v0.20.3 for jtsx mode
         (ruby . ("https://github.com/tree-sitter/tree-sitter-ruby"))
         (rust . ("https://github.com/tree-sitter/tree-sitter-rust"))
         (sql . ("https://github.com/m-novikov/tree-sitter-sql"))
