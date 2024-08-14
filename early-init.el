@@ -22,6 +22,7 @@
  create-lockfiles nil
  warning-minimum-level :error
  read-process-output-max (* 1024 1024)
+ inhibit-compacting-font-caches t
  )
 
 (add-hook 'after-init-hook #'(lambda () (setq gc-cons-threshold 800000)))
