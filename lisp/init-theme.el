@@ -6,7 +6,8 @@
   :vc (:fetcher github :repo emacs-dashboard/emacs-dashboard)
   :commands (dashboard-open)
   :config
-  (setq dashboard-banner-logo-title "Welcome to Emacs Dashboard")
+  (dashboard-setup-startup-hook)
+  (setq dashboard-banner-logo-title "Welcome to RivenEmacs")
   ;; Set the banner
   (setq dashboard-startup-banner 'official)
   ;; Content is not centered by default. To center, set
@@ -15,14 +16,11 @@
   (setq dashboard-vertically-center-content t)
   ;; To disable shortcut "jump" indicators for each section, set
   (setq dashboard-show-shortcuts nil)
-
   (setq dashboard-items '((recents   . 5)
                         (bookmarks . 5)
                         (projects  . 5)
                         (agenda    . 5)
-                        (registers . 5)))
-
-  (dashboard-setup-startup-hook))
+                        (registers . 5))))
 
 (add-hook 'after-init-hook (lambda () (dashboard-open)))
 

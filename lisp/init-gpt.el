@@ -3,6 +3,7 @@
 
 (use-package gptel
   :vc (:fetcher github :repo karthink/gptel)
+  :bind (("C-x g" . 'gptel))
   :config
   ;; OPTIONAL configuration
   (setq gptel-model   "llama-3.1-70b-versatile"
