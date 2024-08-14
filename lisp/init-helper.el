@@ -41,4 +41,16 @@
     (consult-fd (get-project-root) file-path)
     ))
 
+
+(defun +remove-invalidate-buffers ()
+  "Remove invalidate buffers"
+  (interactive)
+  (mapc (lambda (buf)
+       (with-current-buffer buf
+         (if (and (buffer-file-name buf)
+                  (not (file-exists-p (buffer-file-name buf)))
+                  (not (buffer-modified-p buf)))
+                  (kill-buffer buf))))
+     (buffer-list)))
+
 (provide 'init-helper)

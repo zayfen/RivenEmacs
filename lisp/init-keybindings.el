@@ -11,7 +11,8 @@
   (progn
        (leader-def
          :infix "p"
-         "c" '(project-forget-zombie-projects :wk "Forget zombie projects")
+         "c" '(+remove-invalidate-buffers :wk "Clean invalidate buffers")
+         "C" '(project-forget-zombie-projects :wk "Forget zombie projects")
          "f" '(project-find-file :wk "Find file in project")
          "g" '(+goto-file-at-point :wk "Goto file at point")
          "p" '(project-switch-project :wk "Switch project")
