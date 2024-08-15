@@ -56,6 +56,8 @@
 ;; This assumes you've installed the package via MELPA.
 (use-package ligature
   :vc (:fetcher github :repo mickeynp/ligature.el)
+  :init (global-ligature-mode t)
+  :hook ((prog-mode . ligature-mode))
   :config
   ;; Enable the "www" ligature in every possible major mode
   (ligature-set-ligatures 't '("www"))
@@ -76,9 +78,13 @@
                                        "##" "#(" "#?" "#_" "%%" ".=" ".-" ".." ".?" "+>" "++" "?:"
                                        "?=" "?." "??" ";;" "/*" "/=" "/>" "//" "__" "~~" "(*" "*)"
                                        "\\\\" "://"))
-  ;; Enables ligature checks globally in all buffers. You can also do it
-  ;; per mode with `ligature-mode'.
-  (global-ligature-mode t))
+  )
+
+(use-package composite
+  :ensure nil
+  :defer t
+  :hook (prog-mode . auto-composition-mode)
+  :init (global-auto-composition-mode -1))
 
 
 (provide 'init-theme)

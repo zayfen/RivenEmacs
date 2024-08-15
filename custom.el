@@ -6,7 +6,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(ligature devdocs dape package-vc-install git-commit magit vscode-icon benchmark-init smartparens dirvish jtsx flycheck doom-modeline treesitter-context ts-fold-indicators ts-fold format-all yasnippet-snippets which-key vundo visual-regexp vertico vc-use-package undo-fu-session undo-fu super-save sudo-edit repo rainbow-delimiters prescient orderless mood-line marginalia magit-todos lsp-bridge link-hint iedit git-timemachine git-modes general forge expand-region exec-path-from-shell embark-consult diff-hl dashboard crux centered-window aggressive-indent-mode ace-window))
+   '(composite ligature devdocs dape package-vc-install git-commit magit vscode-icon benchmark-init smartparens dirvish jtsx flycheck doom-modeline treesitter-context ts-fold-indicators ts-fold format-all yasnippet-snippets which-key vundo visual-regexp vertico vc-use-package undo-fu-session undo-fu super-save sudo-edit repo rainbow-delimiters prescient orderless mood-line marginalia magit-todos lsp-bridge link-hint iedit git-timemachine git-modes general forge expand-region exec-path-from-shell embark-consult diff-hl dashboard crux centered-window aggressive-indent-mode ace-window))
  '(package-vc-selected-packages
    '((ligature :vc-backend Git :url "https://github.com/mickeynp/ligature.el")
      (devdocs :vc-backend Git :url "https://github.com/astoff/devdocs.el")
