@@ -56,10 +56,11 @@
                                     (font-spec :name font
                                                :weight 'normal
                                                :slant 'normal
-                                               :size (cond ((eq system-type 'gnu/linux) 18)
-                                                           ((eq system-type 'windows-nt) 15.0)
-                                                           ((eq system-type 'darwin) 12.0)
-                                                           ))))
+                                               :scale (cond ((eq system-type 'gnu/linux) 1.25)
+                                                           ((eq system-type 'windows-nt) 1.25)
+                                                           ((eq system-type 'darwin) 0.75)
+                                                           )
+                                               )))
   (cl-loop for font in '("HanaMinB" "SimSun-ExtB")
            when (font-installed-p font)
            return (set-fontset-font t '(#x20000 . #x2A6DF)
