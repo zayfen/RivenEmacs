@@ -9,7 +9,6 @@
     (add-to-list 'exec-path-from-shell-variables var))
   (exec-path-from-shell-initialize))
 
-
 (require 'init-use-package)
 (require 'init-default)
 (require 'init-helper)
@@ -21,7 +20,7 @@
 ;; init thirdparty packages
 (require 'init-which-key)
 (require 'init-general)
-
+(require 'init-hydra)
 
 (require 'init-consult)
 (require 'init-vertico)
