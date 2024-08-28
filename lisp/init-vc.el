@@ -125,7 +125,6 @@
 (use-package smerge-mode
   :ensure nil
   :init
-  (require 'hydra)
   (setq smerge-command-prefix "")
 
   :config
@@ -159,7 +158,8 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
     ("k" smerge-kill-current)
     ("q" nil "cancel" :color blue))
 
-  :bind (("C-c c" . hydra/smerge/body))
+  :bind (:map smerge-mode-map
+              ("C-c c" . hydra/smerge/body))
   )
 
 (setq ediff-window-setup-function 'ediff-setup-windows-plain)
