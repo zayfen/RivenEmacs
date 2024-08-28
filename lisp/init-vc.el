@@ -159,7 +159,7 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
     ("q" nil "cancel" :color blue))
 
   :bind (:map smerge-mode-map
-              ("C-c c" . hydra/smerge/body))
+              ("C-c m" . hydra/smerge/body))
   )
 
 (setq ediff-window-setup-function 'ediff-setup-windows-plain)
