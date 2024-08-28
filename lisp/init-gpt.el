@@ -21,7 +21,9 @@
                                      "gemma-7b-it"))))
 
 
-
+(use-package gpt-extensions.el
+  :vc (:fetcher github :repo kamushadenes/gptel-extensions.el)
+  :bind (("C-x =" . 'gptel-extensions-refactor)))
 
 
 

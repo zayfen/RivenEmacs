@@ -32,7 +32,9 @@
        (global-unset-key (kbd "C-x l"))
        (lookup-leader-def
          "d" '(devdocs-lookup :wk "Lookup DevDocs")
-         "g" '(gptel-send :wk "GPT send"))
+         "g" '(gptel-send :wk "GPT send")
+         "b" '(gptel-extensions-send-whole-buffer :wk "GPT send buffer")
+         "w" '(gptel-extensions-ask-document :wk "GPT ask document"))
        ))
 
 

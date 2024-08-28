@@ -2,3 +2,5 @@
 ;;; init-hydra.el --- hydra
 
 (use-package hydra)
+
+(provide 'init-hydra)

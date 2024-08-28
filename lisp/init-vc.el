@@ -125,7 +125,7 @@
 (use-package smerge-mode
   :ensure nil
   :init
-  (setq smerge-command-prefix "")
+;;rr  (setq smerge-command-prefix "")
 
   :config
   ;; https://github.com/alphapapa/unpackaged.el#smerge-mode
