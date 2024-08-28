@@ -80,6 +80,7 @@
 (advice-add #'lsp-bridge-find-def :around (lambda (&rest args) (xref--push-markers) (apply args)))
 (advice-add #'lsp-bridge-find-impl :around (lambda (&rest args) (xref--push-markers) (apply args)))
 (advice-add #'lsp-bridge-find-type-def :around (lambda (&rest args) (xref--push-markers) (apply args)))
+(advice-add #'lsp-bridge-peek-jump :around (lambda (&rest args) (xref--push-markers) (apply args)))
 
 
 
@@ -107,7 +108,8 @@
               ("M-n" . acm-doc-scroll-up))
   :bind (:map lsp-bridge-peek-keymap
               ("M-p" . lsp-bridge-peek-list-prev-line)
-              ("M-n" . lsp-bridge-peek-list-next-line))
+              ("M-n" . lsp-bridge-peek-list-next-line)
+              ("M-j" . lsp-bridge-peek-jump))
   :config
   (setq acm-enable-icon t)
   (setq acm-enable-yas t)
