@@ -105,6 +105,9 @@
   :bind (:map acm-mode-map
               ("M-p" . acm-doc-scroll-down)
               ("M-n" . acm-doc-scroll-up))
+  :bind (:map lsp-bridge-peek-keymap
+              ("M-p" . lsp-bridge-peek-list-prev-line)
+              ("M-n" . lsp-bridge-peek-list-next-line))
   :config
   (setq acm-enable-icon t)
   (setq acm-enable-yas t)
