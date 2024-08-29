@@ -5,7 +5,6 @@
 
 (use-package dockerfile-mode)
 
-(use-package docker
-  :bind ("C-c o d" . docker))
+(use-package docker)
 
-(provide 'init-dockerfile)
+(provide 'init-docker)

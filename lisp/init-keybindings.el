@@ -29,6 +29,12 @@
          "r" '(consult-recent-file :wk "Recent files")
          "s" '(blink-search :wk "Search files"))
 
+       (leader-def
+         :infix "o"
+         :wk "Open Toolbox"
+         "d" '(docker :wk "Docker")
+         "g" '(gptel :wk "GPT"))
+
        (global-unset-key (kbd "C-x l"))
        (lookup-leader-def
          "d" '(devdocs-lookup :wk "Lookup DevDocs")
