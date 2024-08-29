@@ -32,7 +32,8 @@
        (open-leader-def
          "d" '(docker :wk "Docker")
          "g" '(gptel :wk "GPT")
-         "q" '(quickrun :wk "Quickrun"))
+         "q" '(quickrun :wk "Quickrun")
+         "n" '(elfeed :wk "News"))
 
        (global-unset-key (kbd "C-x l"))
        (lookup-leader-def

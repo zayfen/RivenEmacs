@@ -53,6 +53,7 @@
 ;; Tools
 (require 'init-docker)
 (require 'init-quickrun)
+(require 'init-feed)
 
 ;; keybindings
 (require 'init-keybindings)
