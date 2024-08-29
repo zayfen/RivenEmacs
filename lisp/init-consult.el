@@ -10,9 +10,7 @@
 (use-package consult
   :vc (:fetcher github :repo minad/consult)
   :bind (;; C-c bindings in `mode-specific-map'
-         ("C-s" . consult-line)
-         ("C-c M-x" . consult-mode-command)
-         ("C-c h" . consult-history)
+         ("C-s" . consult-line-ex)
          ([remap Info-search] . consult-info)
          ;; C-x bindings in `ctl-x-map'
          ("C-x M-:" . consult-complex-command)     ;; orig. repeat-complex-command
@@ -28,7 +26,6 @@
          ("M-g e" . consult-compile-error)
          ("M-g f" . consult-flymake)               ;; Alternative: consult-flycheck
          ("M-g g" . consult-goto-line)             ;; orig. goto-line
-         ("M-g M-g" . consult-goto-line)           ;; orig. goto-line
          ("M-g o" . consult-outline)               ;; Alternative: consult-org-heading
          ("M-g m" . consult-mark)
          ("M-g k" . consult-global-mark)

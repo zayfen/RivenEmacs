@@ -54,6 +54,7 @@
 (require 'init-docker)
 (require 'init-quickrun)
 (require 'init-feed)
+(require 'init-powerthesaurus)
 
 ;; keybindings
 (require 'init-keybindings)

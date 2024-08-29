@@ -1,9 +1,12 @@
+;;; init-gpt.el --- config gpt
 ;;; -*- coding: utf-8; lexical-binding: t -*-
 
+;;; Commentary:
+;;; gpt config
 
+;;; Code:
 (use-package gptel
   :vc (:fetcher github :repo karthink/gptel)
-  :bind (("C-x g" . 'gptel))
   :config
   ;; OPTIONAL configuration
   (setq gptel-model   "llama-3.1-70b-versatile"
@@ -29,3 +32,5 @@
 
 
 (provide 'init-gpt)
+
+;;; init-gpt.el ends here

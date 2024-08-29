@@ -5,6 +5,7 @@
 (use-package magit
   :init
   (leader-def :infix "g"
+    "" '(:ignore t :wk "Git")
     "g" #'magit-status
     "C" #'magit-clone
     "b" #'magit-blame
@@ -29,8 +30,9 @@
   :preface
   (setq forge-add-default-bindings nil)
   :init
-  (leader-def :infix "g"
-    "f" '(nil :wk "forge")
+  (leader-def
+    :infix "g"
+    "f" '(:ignore t :wk "Forge")
     "ff" #'forge-dispatch
     "fc" #'forge-create-post
     "fe" #'forge-edit-post

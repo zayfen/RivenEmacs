@@ -135,6 +135,7 @@
 
   (leader-def :keymaps 'lsp-bridge-mode-map
     :infix "c"
+    "" '(:ignore t :wk "Code")
     "a"  '(lsp-bridge-code-action :wk "Code actions")
     "e"  '(lsp-bridge-diagnostic-list :wk "Diagnostic list")
     "f" '(lsp-bridge-code-format :wk "Format code")

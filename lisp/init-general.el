@@ -15,7 +15,10 @@
     :prefix "C-c l")
 
   (general-create-definer lookup-leader-def
-    :prefix "C-x l")
+    :prefix "C-c C-l")
+
+  (general-create-definer gpt-leader-def
+    :prefix "C-c C-g")
 
   (general-create-definer open-leader-def
     :prefix "C-c o"))

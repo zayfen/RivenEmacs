@@ -51,6 +51,13 @@
                   (not (file-exists-p (buffer-file-name buf)))
                   (not (buffer-modified-p buf)))
                   (kill-buffer buf))))
-     (buffer-list)))
+        (buffer-list)))
+
+
+(defun consult-line-ex ()
+  (interactive)
+  (if (use-region-p)
+      (consult-line (buffer-substring-no-properties (region-beginning) (region-end)))
+    (consult-line)))
 
 (provide 'init-helper)

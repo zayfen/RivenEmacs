@@ -45,10 +45,10 @@
 
   ;; Projectile users
   (setq dape-cwd-fn 'get-project-root)
+  (leader-def
+    :infix "d"
+    "" '(:ignore t :wk "Debugger"))
   )
-
-
-
 
 
 

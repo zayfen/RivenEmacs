@@ -11,6 +11,7 @@
   (progn
        (leader-def
          :infix "p"
+         "" '(:ignore t :wk "Project")
          "c" '(+remove-invalidate-buffers :wk "Clean invalidate buffers")
          "C" '(project-forget-zombie-projects :wk "Forget zombie projects")
          "f" '(project-find-file :wk "Find file in project")
@@ -23,6 +24,7 @@
 
        (leader-def
          :infix "f"
+         "" '(:ignore t :wk "Find")
          "d" '(crux-recentf-find-directory :wk "Find recent directory")
          "f" '(consult-fd :wk "Find file in directory")
          "l" '(+consult-fd-in-home :wk "Locate file")
@@ -30,17 +32,28 @@
          "s" '(blink-search :wk "Search files"))
 
        (open-leader-def
+         "" '(:ignore t :wk "Open Tool")
          "d" '(docker :wk "Docker")
-         "g" '(gptel :wk "GPT")
          "q" '(quickrun :wk "Quickrun")
          "n" '(elfeed :wk "News"))
 
-       (global-unset-key (kbd "C-x l"))
        (lookup-leader-def
+         "" '(:ignore t :wk "Lookup")
          "d" '(devdocs-lookup :wk "Lookup DevDocs")
-         "g" '(gptel-send :wk "GPT send")
-         "b" '(gptel-extensions-send-whole-buffer :wk "GPT send buffer")
-         "w" '(gptel-extensions-ask-document :wk "GPT ask document"))
+         "p" '(powerthesaurus-lookup-dwim :wk "Lookup PowerThesaurus"))
+
+       (gpt-leader-def
+        "" '(:ignore t :wk "GPT")
+        "g" '(gptel :wk "GPT")
+        "s" '(gptel-send :wk "GPT send")
+        "b" '(gptel-extensions-send-whole-buffer :wk "GPT send buffer")
+        "w" '(gptel-extensions-ask-document :wk "GPT ask document"))
+
+       ;; define prefix lable
+       (leader-def
+         "\!" '(:ignore t :wk "Checker(Flycheck)")
+         "&" '(:ignore t :wk "Yasnippet")
+         "@" '(:ignore t :wk "Hideshow"))
        ))
 
 
