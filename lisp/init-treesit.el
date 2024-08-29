@@ -170,7 +170,7 @@
   :preface
   ;; You can customize Combobulate's key prefix here.
   ;; Note that you may have to restart Emacs for this to take effect!
-  (setq combobulate-key-prefix "C-c o")
+  (setq combobulate-key-prefix "C-c C-o")
 
   ;; Optional, but recommended.
   ;;

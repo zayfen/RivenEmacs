@@ -15,7 +15,10 @@
     :prefix "C-c l")
 
   (general-create-definer lookup-leader-def
-    :prefix "C-x l"))
+    :prefix "C-x l")
+
+  (general-create-definer open-leader-def
+    :prefix "C-c o"))
 
 
 (provide 'init-general)

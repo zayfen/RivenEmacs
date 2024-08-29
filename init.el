@@ -52,6 +52,7 @@
 
 ;; Tools
 (require 'init-docker)
+(require 'init-quickrun)
 
 ;; keybindings
 (require 'init-keybindings)
