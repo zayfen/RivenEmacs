@@ -50,7 +50,8 @@
 ;; Languages ;TODO
 (require 'init-web)
 
-
+;; Tools
+(require 'init-docker)
 
 ;; keybindings
 (require 'init-keybindings)
