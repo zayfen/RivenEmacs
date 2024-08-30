@@ -4,8 +4,8 @@
 
 
 ;;; Code:
-(use-package emacs-powerthesaurus
-  :vc (:fetcher github :repo SavchenkoValeriy/emacs-powerthesaurus))
+(use-package powerthesaurus
+  :ensure t)
 
 
 (provide 'init-powerthesaurus)
