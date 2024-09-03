@@ -203,4 +203,15 @@ that directory."
                   (desktop-save-mode 1)))
 
 
+
+;;improve performance of long file
+(setq-default bidi-display-reordering nil)
+(setq bidi-inhibit-bpa t
+      long-line-threshold 1000
+      large-hscroll-threshold 1000
+      syntax-wholeline-max 1000)
+
+;; or same as DoomEmacs
+;; (setq-default bidi-paragraph-direction 'left-to-right)
+
 (provide 'init-default)
