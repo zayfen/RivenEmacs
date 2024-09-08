@@ -6,23 +6,42 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(powerthesaurus emacs-powerthesaurus elfeed-goodies elfeed quickrun docker dockerfile-mode gpt-extensions.el hydra composite ligature devdocs dape package-vc-install git-commit magit vscode-icon benchmark-init smartparens dirvish jtsx flycheck doom-modeline treesitter-context ts-fold-indicators ts-fold format-all yasnippet-snippets which-key vundo visual-regexp vertico vc-use-package undo-fu-session undo-fu super-save sudo-edit repo rainbow-delimiters prescient orderless mood-line marginalia magit-todos lsp-bridge link-hint iedit git-timemachine git-modes general forge expand-region exec-path-from-shell embark-consult diff-hl dashboard crux centered-window aggressive-indent-mode ace-window))
+   '(ace-window aggressive-indent-mode blink-search color-rg combobulate crux dape dashboard devdocs diff-hl dirvish docker
+                dockerfile-mode doom-modeline elfeed-goodies embark-consult expand-region flycheck format-all general
+                git-modes git-timemachine goto-last-change gpt-extensions.el hl-todo hydra iedit jtsx ligature
+                lsp-bridge magit magit-todos marginalia orderless powerthesaurus prescient quickrun rainbow-delimiters
+                smartparens sudo-edit super-save symbol-overlay treesitter-context undo-fu undo-fu-session
+                vc-use-package vertico visual-regexp vscode-icon vundo web-mode yasnippet-snippets))
  '(package-vc-selected-packages
-   '((emacs-powerthesaurus :vc-backend Git :url "https://github.com/SavchenkoValeriy/emacs-powerthesaurus")
-     (elfeed-goodies :vc-backend Git :url "https://github.com/jeetelongname/elfeed-goodies")
+   '((elfeed-goodies :vc-backend Git :url "https://github.com/jeetelongname/elfeed-goodies")
      (elfeed :vc-backend Git :url "https://github.com/skeeto/elfeed")
      (quickrun :vc-backend Git :url "https://github.com/emacsorphanage/quickrun")
      (gpt-extensions.el :vc-backend Git :url "https://github.com/kamushadenes/gptel-extensions.el")
-     (ligature :vc-backend Git :url "https://github.com/mickeynp/ligature.el")
+     (gptel :vc-backend Git :url "https://github.com/karthink/gptel")
      (devdocs :vc-backend Git :url "https://github.com/astoff/devdocs.el")
      (dape :vc-backend Git :url "https://github.com/svaante/dape")
-     (vc-use-package :vc-backend Git :url "https://github.com/slotThe/vc-use-package")
+     (lsp-bridge :vc-backend Git :url "https://github.com/manateelazycat/lsp-bridge")
+     (combobulate :vc-backend Git :url "https://github.com/mickeynp/combobulate")
+     (treesitter-context :vc-backend Git :url "https://github.com/zbelial/treesitter-context.el")
+     (format-all :vc-backend Git :url "https://github.com/lassik/emacs-format-all-the-code")
+     (aggressive-indent-mode :vc-backend Git :url "https://github.com/Malabarba/aggressive-indent-mode")
+     (hl-todo :vc-backend Git :url "https://github.com/tarsius/hl-todo")
+     (blink-search :vc-backend Git :url "https://github.com/manateelazycat/blink-search")
+     (color-rg :vc-backend Git :url "https://github.com/manateelazycat/color-rg")
+     (iedit :vc-backend Git :url "https://github.com/victorhge/iedit")
+     (expand-region :vc-backend Git :url "https://github.com/magnars/expand-region.el")
+     (embark :vc-backend Git :url "https://github.com/oantolin/embark")
+     (marginalia :vc-backend Git :url "https://github.com/minad/marginalia")
+     (vertico :vc-backend Git :url "https://github.com/minad/vertico")
+     (consult :vc-backend Git :url "https://github.com/minad/consult")
+     (general :vc-backend Git :url "https://github.com/noctuid/general.el")
+     (ligature :vc-backend Git :url "https://github.com/mickeynp/ligature.el")
      (doom-modeline :vc-backend Git :url "https://github.com/seagle0128/doom-modeline")
      (dashboard :vc-backend Git :url "https://github.com/emacs-dashboard/emacs-dashboard")
-     (treesitter-context :vc-backend Git :url "https://github.com/zbelial/treesitter-context.el")
+     (vc-use-package :vc-backend Git :url "https://github.com/slotThe/vc-use-package")
+     (emacs-powerthesaurus :vc-backend Git :url "https://github.com/SavchenkoValeriy/emacs-powerthesaurus")
      (ts-fold-indicators :vc-backend Git :url "https://github.com/emacs-tree-sitter/ts-fold")
-     (ts-fold :vc-backend Git :url "https://github.com/emacs-tree-sitter/ts-fold")
-     (aggressive-indent-mode :vc-backend Git :url "https://github.com/Malabarba/aggressive-indent-mode"))))
+     (ts-fold :vc-backend Git :url "https://github.com/emacs-tree-sitter/ts-fold"))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

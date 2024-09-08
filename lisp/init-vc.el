@@ -1,7 +1,6 @@
 ;; -*- coding: utf-8; lexical-binding: t -*-
 ;;; init-vc.el --- Git and version control
 
-
 (use-package magit
   :init
   (leader-def :infix "g"
@@ -25,23 +24,24 @@
   :config
   (magit-todos-mode 1))
 
-(use-package forge
-  :after magit
-  :preface
-  (setq forge-add-default-bindings nil)
-  :init
-  (leader-def
-    :infix "g"
-    "f" '(:ignore t :wk "Forge")
-    "ff" #'forge-dispatch
-    "fc" #'forge-create-post
-    "fe" #'forge-edit-post
-    "ft" #'forge-edit-topic-title
-    "fs" #'forge-edit-topic-state
-    "fd" #'forge-edit-topic-draft)
-  :custom
-  (forge-database-connector 'sqlite-builtin)
-  (forge-database-file (concat local-dir "forge/database.sqlite")))
+;; (use-package forge
+;;   :if (version< emacs-version "30")
+;;   :after magit
+;;   :preface
+;;   (setq forge-add-default-bindings nil)
+;;   :init
+;;   (leader-def
+;;     :infix "g"
+;;     "f" '(:ignore t :wk "Forge")
+;;     "ff" #'forge-dispatch
+;;     "fc" #'forge-create-post
+;;     "fe" #'forge-edit-post
+;;     "ft" #'forge-edit-topic-title
+;;     "fs" #'forge-edit-topic-state
+;;     "fd" #'forge-edit-topic-draft)
+;;   :custom
+;;   (forge-database-connector 'sqlite-builtin)
+;;   (forge-database-file (concat local-dir "forge/database.sqlite")))
 
 
 (use-package diff-hl
@@ -63,28 +63,6 @@
   :custom
   (git-timemachine-show-minibuffer-details t))
 
-;; Enforce git commit conventions.
-;; See: chris.beams.io/posts/git-commit/
-(use-package git-commit
-  :after magit
-  :custom
-  (git-commit-summary-max-length 50)
-  (git-commit-style-convention-checks '(overlong-summary-line non-empty-second-line))
-  :config
-  (add-hook
-   'git-commit-mode-hook
-   (defun +git-gommit--set-fill-column-h ()
-     (setq-local fill-column 72)))
-  (add-hook
-   'git-commit-setup-hook
-   ;; Enter evil-insert-state for new commits
-   (defun +git-commit--enter-evil-insert-state-maybe-h ()
-     (when (and (bound-and-true-p evil-mode)
-                (not (evil-emacs-state-p))
-                (bobp)
-                (eolp))
-       (evil-insert-state))))
-  (global-git-commit-mode 1))
 
 (use-package git-modes
   :init
@@ -113,14 +91,6 @@
        (when (window-configuration-p +ediff--saved-window-config)
          (set-window-configuration +ediff--saved-window-config)))
      101)))
-
-
-(use-package repo
-  :preface
-  (defconst +repo-available-p (executable-find "repo"))
-  :when +repo-available-p
-  :init
-  (leader-def "gr" #'repo-status))
 
 
 ;; config smerge-mode
