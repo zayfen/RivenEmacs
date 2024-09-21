@@ -94,7 +94,8 @@
   (lsp-bridge-completion-hide-characters '(":" ";" "(" ")" "[" "]" "{" "}" ", " "\"" "?" ","))
   (lsp-bridge-multi-lang-server-extension-list
    '(
-     (("ts" "tsx") . "typescript_eslint")
+     (("ts") . "typescript_eslint")
+     (("tsx") . "typescriptreact_eslint")
      (("css" "scss" "sass" "less") . "css_emmet")
      ))
   :bind (:map lsp-bridge-mode-map
@@ -142,7 +143,6 @@
     "i"  '(lsp-bridge-find-impl :wk "Find implementation")
     "k"  '(lsp-bridge-popup-documentation :wk "Find Document")
     "p"  '(lsp-bridge-peek :wk "Peek")
-    "q" '(lsp-bridge-code-action--fix :wk "Quick fix")
     "r" '(lsp-bridge-rename :wk "Rename")
     "t"  '(lsp-bridge-find-type-def :wk "Find type definition")
     "?" '(lsp-bridge-find-references :wk "Find References")))

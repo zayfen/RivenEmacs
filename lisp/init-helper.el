@@ -26,7 +26,7 @@
   "grab text between double straight quotes on each side of cursor."
   (interactive)
   (let (p1 p2)
-    (skip-chars-backward "^[\"\']" (line-beginning-position))
+    (skip-chars-backward "^[~@\"\']" (line-beginning-position))
     (setq p1 (point))
     (skip-chars-forward "^[\"\']" (line-end-position))
     (setq p2 (point))
@@ -59,5 +59,8 @@
   (if (use-region-p)
       (consult-line (buffer-substring-no-properties (region-beginning) (region-end)))
     (consult-line)))
+
+(defun get-buffers-other-project (current-project-name)
+  ())
 
 (provide 'init-helper)
