@@ -43,6 +43,9 @@
 (require 'init-vc)
 (require 'init-debugger)
 
+;; init project
+(require 'init-project)
+
 ;; init devdocs
 (require 'init-devdocs)
 (require 'init-gpt)

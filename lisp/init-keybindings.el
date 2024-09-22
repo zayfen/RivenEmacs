@@ -16,7 +16,7 @@
          "C" '(project-forget-zombie-projects :wk "Forget zombie projects")
          "f" '(project-find-file :wk "Find file in project")
          "g" '(+goto-file-at-point :wk "Goto file at point")
-         "p" '(project-switch-project :wk "Switch project")
+         "p" '(project-switch-project-ex :wk "Switch project")
          "s" '(consult-ripgrep-ex :wk "Search symbol")
          "b" '(consult-project-buffer :wk "Buffers in project")
          "/" '(consult-git-grep :wk "Git grep")
