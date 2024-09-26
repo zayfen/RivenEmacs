@@ -35,7 +35,7 @@
 
 (setq mark-history '())
 
-(defun set-mark (type)
+(defun mark-power--set-mark (type)
   "push a mark to mark-history"
   (let ((mark-value (get-mark-value type)))
     (if (>= (length mark-history) HISTORY-MAX-SIZE)
@@ -45,8 +45,8 @@
 
       (setq mark-history (cons mark-value mark-history)))))
 
-(defun jump-back ()
-  "jump to back"
+(defun mark-power--jump-back ()
+  "jump back to last position"
   (interactive)
   (let ((mark-value (pop mark-history)))
     (call-mark-jump-back-handler (get-mark-key mark-value))))

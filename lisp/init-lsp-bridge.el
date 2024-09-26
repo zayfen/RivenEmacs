@@ -29,22 +29,22 @@
 (require 'mark-power)
 (defun find-definitions-with-lsp-bridge ()
   (interactive)
-  (set-mark "find-def")
+  (mark-power--set-mark "find-def")
   (lsp-bridge-find-def))
 
 (defun find-impl-with-lsp-bridge ()
   (interactive)
-  (set-mark "find-impl")
+  (mark-power--set-mark "find-impl")
   (lsp-bridge-find-impl))
 
 (defun find-peek-with-lsp-bridge ()
   (interactive)
-  (set-mark "find-peek")
+  (mark-power--set-mark "find-peek")
   (lsp-bridge-peek-jump))
 
 (defun find-typedef-with-lsp-bridge ()
   (interactive)
-  (set-mark "find-typedef")
+  (mark-power--set-mark "find-typedef")
   (lsp-bridge-find-type-def))
 
 (use-package lsp-bridge
@@ -63,7 +63,7 @@
      ))
   :bind (:map lsp-bridge-mode-map
               ("M-." . find-definitions-with-lsp-bridge)
-              ("M-," . jump-back)
+              ("M-," . mark-power--jump-back)
               ("M-?" . lsp-bridge-find-references)
               ("M-<up>" . lsp-bridge-popup-documentation-scroll-down)
               ("M-<down>" . lsp-bridge-popup-documentation-scroll-up))
