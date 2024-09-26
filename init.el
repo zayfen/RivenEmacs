@@ -34,6 +34,7 @@
 (require 'init-checker)
 (require 'init-pair)
 (require 'init-fold)
+(require 'init-markdown)
 
 ;; important: tree-sitter
 (require 'init-treesit)
