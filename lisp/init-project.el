@@ -24,7 +24,7 @@
 
 (defun project-switch-project-ex (dir)
   "Project switch project enhancer"
-  (interactive (list (funcall project-prompter)))
+  (interactive (list (project-prompt-project-dir)))
   (progn
     (project-switch-project dir)
     (delete-other-project-buffers)

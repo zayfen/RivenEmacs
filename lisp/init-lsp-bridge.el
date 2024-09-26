@@ -72,15 +72,54 @@
 (use-package yasnippet-snippets
   :ensure t)
 
-(defun find-definitions-with-lsp-bridge ()
-  (interactive)
-  (if lsp-bridge-mode (lsp-bridge-find-def)
+;; init-lsp-bridge-marker-flag : default: 0,lsp-bridge-find-def: 1, lsp-bridge-find-impl: 2, lsp-bridge-find-type-def: 3, lsp-bridge-peek-jump: 4
+(setq init-lsp-bridge-marker-flag '())
+
+
+(defun jump-wrapper (fn flag)
+  "wrapper before jumping"
+  (if lsp-bridge-mode
+      (progn
+        (funcall fn)
+        (push init-lsp-bridge-marker-flag flag))
     (call-interactively 'xref-find-definitions)))
 
-(advice-add #'lsp-bridge-find-def :around (lambda (&rest args) (xref--push-markers) (apply args)))
-(advice-add #'lsp-bridge-find-impl :around (lambda (&rest args) (xref--push-markers) (apply args)))
-(advice-add #'lsp-bridge-find-type-def :around (lambda (&rest args) (xref--push-markers) (apply args)))
-(advice-add #'lsp-bridge-peek-jump :around (lambda (&rest args) (xref--push-markers) (apply args)))
+(defun jump-back ()
+  "jump back to last position"
+  (interactive)
+  (if lsp-bridge-mode
+      (let (top-flag (pop init-lsp-bridge-marker-flag))
+        (cond ((eq top-flag 1) (lsp-bridge-find-def-return))
+            ((eq top-flag 2) (xref-go-back))
+            ((eq top-flag 3) (xref-go-back))
+            ((eq top-flag 4) (lsp-bridge-peek-jump-back))
+            (t (xref-go-back)))
+        )
+    (xref-go-back))
+  )
+
+(defun find-definitions-with-lsp-bridge ()
+  (interactive)
+  (jump-wrapper #'lsp-bridge-find-def 1))
+
+(defun find-impl-with-lsp-bridge ()
+  (interactive)
+  (xref--push-markers)
+  (jump-wrapper #'lsp-bridge-find-impl-other-window))
+
+(defun find-peek-with-lsp-bridge ()
+  (interactive)
+  (jump-wrapper #'lsp-bridge-peek-jump 4))
+
+(defun find-typedef-with-lsp-bridge ()
+  (interactive)
+  (xref--push-markers)
+  (jump-wrapper #'lsp-bridge-find-type-def 3))
+
+;; (advice-add #'lsp-bridge-find-def :around (lambda (&rest args) (xref--push-markers) (apply args)))
+;; (advice-add #'lsp-bridge-find-impl :around (lambda (&rest args) (xref--push-markers) (apply args)))
+;; (advice-add #'lsp-bridge-find-type-def :around (lambda (&rest args) (xref--push-markers) (apply args)))
+;; (advice-add #'lsp-bridge-peek-jump :around (lambda (&rest args) (xref--push-markers) (apply args)))
 
 
 
@@ -100,7 +139,7 @@
      ))
   :bind (:map lsp-bridge-mode-map
               ("M-." . find-definitions-with-lsp-bridge)
-              ;; ("M-," . lsp-bridge-find-def-return)
+              ("M-," . jump-back)
               ("M-?" . lsp-bridge-find-references)
               ("M-<up>" . lsp-bridge-popup-documentation-scroll-down)
               ("M-<down>" . lsp-bridge-popup-documentation-scroll-up))
@@ -110,7 +149,7 @@
   :bind (:map lsp-bridge-peek-keymap
               ("M-p" . lsp-bridge-peek-list-prev-line)
               ("M-n" . lsp-bridge-peek-list-next-line)
-              ("M-j" . lsp-bridge-peek-jump))
+              ("M-." . find-peek-with-lsp-bridge))
   :config
   (setq acm-enable-icon t)
   (setq acm-enable-yas t)
@@ -140,11 +179,11 @@
     "a"  '(lsp-bridge-code-action :wk "Code actions")
     "e"  '(lsp-bridge-diagnostic-list :wk "Diagnostic list")
     "f" '(lsp-bridge-code-format :wk "Format code")
-    "i"  '(lsp-bridge-find-impl :wk "Find implementation")
+    "i"  '(find-impl-with-lsp-bridge :wk "Find implementation")
     "k"  '(lsp-bridge-popup-documentation :wk "Find Document")
     "p"  '(lsp-bridge-peek :wk "Peek")
     "r" '(lsp-bridge-rename :wk "Rename")
-    "t"  '(lsp-bridge-find-type-def :wk "Find type definition")
+    "t"  '(find-typedef-with-lsp-bridge :wk "Find type definition")
     "?" '(lsp-bridge-find-references :wk "Find References")))
 
 

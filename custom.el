@@ -5,13 +5,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(ace-window aggressive-indent-mode blink-search color-rg combobulate crux dape dashboard devdocs diff-hl dirvish docker
-                dockerfile-mode doom-modeline elfeed-goodies embark-consult expand-region flycheck format-all general
-                git-modes git-timemachine goto-last-change gpt-extensions.el hl-todo hydra iedit jtsx ligature
-                lsp-bridge magit magit-todos marginalia orderless powerthesaurus prescient quickrun rainbow-delimiters
-                smartparens sudo-edit super-save symbol-overlay treesitter-context undo-fu undo-fu-session
-                vc-use-package vertico visual-regexp vscode-icon vundo web-mode yasnippet-snippets))
+ '(package-selected-packages nil)
  '(package-vc-selected-packages
    '((elfeed-goodies :vc-backend Git :url "https://github.com/jeetelongname/elfeed-goodies")
      (elfeed :vc-backend Git :url "https://github.com/skeeto/elfeed")
@@ -25,7 +19,6 @@
      (treesitter-context :vc-backend Git :url "https://github.com/zbelial/treesitter-context.el")
      (format-all :vc-backend Git :url "https://github.com/lassik/emacs-format-all-the-code")
      (aggressive-indent-mode :vc-backend Git :url "https://github.com/Malabarba/aggressive-indent-mode")
-     (hl-todo :vc-backend Git :url "https://github.com/tarsius/hl-todo")
      (blink-search :vc-backend Git :url "https://github.com/manateelazycat/blink-search")
      (color-rg :vc-backend Git :url "https://github.com/manateelazycat/color-rg")
      (iedit :vc-backend Git :url "https://github.com/victorhge/iedit")
@@ -39,6 +32,7 @@
      (doom-modeline :vc-backend Git :url "https://github.com/seagle0128/doom-modeline")
      (dashboard :vc-backend Git :url "https://github.com/emacs-dashboard/emacs-dashboard")
      (vc-use-package :vc-backend Git :url "https://github.com/slotThe/vc-use-package")
+     (hl-todo :vc-backend Git :url "https://github.com/tarsius/hl-todo")
      (emacs-powerthesaurus :vc-backend Git :url "https://github.com/SavchenkoValeriy/emacs-powerthesaurus")
      (ts-fold-indicators :vc-backend Git :url "https://github.com/emacs-tree-sitter/ts-fold")
      (ts-fold :vc-backend Git :url "https://github.com/emacs-tree-sitter/ts-fold"))))
