@@ -73,7 +73,7 @@
   :bind (:map lsp-bridge-peek-keymap
               ("M-p" . lsp-bridge-peek-list-prev-line)
               ("M-n" . lsp-bridge-peek-list-next-line)
-              ("M-." . find-peek-with-lsp-bridge))
+              ("M-<return>" . find-peek-with-lsp-bridge))
   :config
   (setq acm-enable-icon t)
   (setq acm-enable-yas t)
