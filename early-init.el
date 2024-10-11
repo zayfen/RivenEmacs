@@ -28,6 +28,7 @@
  )
 
 (add-hook 'after-init-hook #'(lambda () (setq gc-cons-threshold 800000)))
+(advice-add 'tool-bar-setup :override #'ignore)
 
 (if (boundp 'warning-suppress-log-types)
     (add-to-list 'warning-suppress-log-types '(unlock-file)))

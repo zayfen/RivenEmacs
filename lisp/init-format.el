@@ -3,14 +3,15 @@
 
 (use-package aggressive-indent-mode
   :vc (:fetcher github :repo Malabarba/aggressive-indent-mode)
-  :hook ((typescript-ts-mode . aggressive-indent-mode)
-         (json-ts-mode . aggressive-indent-mode)
+  :hook ((json-ts-mode . aggressive-indent-mode)
          (css-ts-mode . aggressive-indent-mode)
          (find-file . (lambda ()
                         (if (> (buffer-size) (* 3000 80))
                             (aggressive-indent-mode -1)))))
   :config
   (add-to-list 'aggressive-indent-excluded-modes 'html-mode)
+  (add-to-list 'aggressive-indent-excluded-modes 'jtsx-tsx-mode)
+  (add-to-list 'aggressive-indent-excluded-modes 'typescript-ts-mode)
 
   ;; The variable aggressive-indent-dont-indent-if lets you customize when you don't want indentation to happen.
   ;; For instance, if you think it's annoying that lines jump around in c++-mode because you haven't typed the ;

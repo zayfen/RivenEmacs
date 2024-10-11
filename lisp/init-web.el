@@ -42,7 +42,7 @@
   ;; (jtsx-switch-indent-offset 0)
   ;; (jtsx-indent-statement-block-regarding-standalone-parent nil)
   ;; (jtsx-jsx-element-move-allow-step-out t)
-  ;; (jtsx-enable-jsx-electric-closing-element t)
+  (jtsx-enable-jsx-electric-closing-element t)
   ;; (jtsx-enable-electric-open-newline-between-jsx-element-tags t)
   ;; (jtsx-enable-jsx-element-tags-auto-sync nil)
   (jtsx-enable-all-syntax-highlighting-features t)
