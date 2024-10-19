@@ -5,7 +5,9 @@
   :ensure t
   :mode ("\\.rs'" . rust-ts-mode)
   :init
-  (setq rust-mode-treesitter-derive t))
+  (setq rust-mode-treesitter-derive t)
+  :config
+  (setq rust-ts-mode-indent-offset 2))
 
 ;; (use-package rustic
 ;;   :ensure t
