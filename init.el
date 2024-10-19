@@ -43,6 +43,9 @@
 (require 'init-vc)
 (require 'init-debugger)
 
+;; init env
+(require 'init-envrc)
+
 ;; init project
 (require 'init-project)
 
@@ -53,6 +56,7 @@
 ;; Languages ;TODO
 (require 'init-web)
 (require 'init-rust)
+(require 'init-python)
 
 ;; Tools
 (require 'init-docker)
