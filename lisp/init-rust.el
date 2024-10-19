@@ -17,6 +17,12 @@
 ;;   (rustic-analyzer-command '("rustup" "run" "stable" "rust-analyzer")
 ;;   (rustic-cargo-use-last-stored-arguments t))
 
+(use-package cargo
+  :hook (rust-ts-mode . cargo-minor-mode))
+
+(use-package flycheck-rust
+  :after (flycheck-mode)
+  :config (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
 
 (provide 'init-rust)
 
