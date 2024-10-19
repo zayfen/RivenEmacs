@@ -10,7 +10,7 @@
                             (aggressive-indent-mode -1)))))
   :config
   (add-to-list 'aggressive-indent-excluded-modes 'html-mode)
-  (add-to-list 'aggressive-indent-excluded-modes 'jtsx-tsx-mode)
+  (add-to-list 'aggressive-indent-excluded-modes 'tsx-ts-mode)
   (add-to-list 'aggressive-indent-excluded-modes 'typescript-ts-mode)
 
   ;; The variable aggressive-indent-dont-indent-if lets you customize when you don't want indentation to happen.
