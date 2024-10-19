@@ -52,6 +52,7 @@
 
 ;; Languages ;TODO
 (require 'init-web)
+(require 'init-rust)
 
 ;; Tools
 (require 'init-docker)

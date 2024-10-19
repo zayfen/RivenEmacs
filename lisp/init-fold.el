@@ -22,12 +22,12 @@
   (hide-ifdef-initially t))
 
 
-(use-package hideshow
-  :ensure nil
-  :bind (:map hs-minor-mode-map
-              ("M-i" . hs-toggle-hiding)
-              ("M-[" . hs-hide-all)
-              ("M-]" . hs-show-all)))
+;; (use-package hideshow
+;;   :ensure nil
+;;   :bind (:map hs-minor-mode-map
+;;               ("M-i" . hs-toggle-hiding)
+;;               ("M-[" . hs-hide-all)
+;;               ("M-]" . hs-show-all)))
 
 
 
@@ -38,7 +38,11 @@
   (add-hook 'typescript-ts-mode-hook #'treesitter-context-mode)
   (add-hook 'typescript-ts-mode-hook #'treesitter-context-focus-mode)
   (add-hook 'tsx-ts-mode-hook #'treesitter-context-mode)
-  (add-hook 'tsx-ts-mode-hook #'treesitter-context-focus-mode))
+  (add-hook 'tsx-ts-mode-hook #'treesitter-context-focus-mode)
+  (add-hook 'rust-ts-mode-hook #'treesitter-context-mode)
+  (add-hook 'rust-ts-mode-hook #'treesitter-context-focus-mode)
+  (add-hook 'python-ts-mode-hook #'treesitter-context-mode)
+  (add-hook 'python-ts-mode-hook #'treesitter-context-focus-mode))
 
 
 (provide 'init-fold)
