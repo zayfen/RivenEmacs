@@ -2,16 +2,15 @@
 ;;; init-fold.el --- Config for code fold -*- lexical-binding: t; -*-
 
 ;; use treesitter-context instead
-;; (use-package ts-fold
-;;   :vc (:fetcher github :repo emacs-tree-sitter/ts-fold)
-;;   :commands (ts-fold-toggle)
-;;   :bind ("M-i" . ts-fold-toggle)
-;;   :init
-;;   )
+(use-package treesit-fold
+  :vc (:fetcher github :repo emacs-tree-sitter/treesit-fold)
+  :commands (treesit-fold-toggle)
+  :bind ("M-i" . treesit-fold-toggle)
+  :init
+  )
 
-;; (use-package ts-fold-indicators
-;;   :vc (:fetcher github :repo "emacs-tree-sitter/ts-fold")
-;;   :init (add-hook 'tree-sitter-after-on-hook #'ts-fold-indicators-mode))
+(use-package treesit-fold-indicators
+  :vc (:fetcher github :repo "emacs-tree-sitter/ts-fold"))
 
 (use-package hideif
   :init
@@ -31,18 +30,19 @@
 
 
 
-(use-package treesitter-context
-  :vc (:fetcher github :repo "zbelial/treesitter-context.el")
-  :bind ("M-i" . treesitter-context-fold-toggle)
-  :config
-  (add-hook 'typescript-ts-mode-hook #'treesitter-context-mode)
-  (add-hook 'typescript-ts-mode-hook #'treesitter-context-focus-mode)
-  (add-hook 'tsx-ts-mode-hook #'treesitter-context-mode)
-  (add-hook 'tsx-ts-mode-hook #'treesitter-context-focus-mode)
-  (add-hook 'rust-ts-mode-hook #'treesitter-context-mode)
-  (add-hook 'rust-ts-mode-hook #'treesitter-context-focus-mode)
-  (add-hook 'python-ts-mode-hook #'treesitter-context-mode)
-  (add-hook 'python-ts-mode-hook #'treesitter-context-focus-mode))
+;; (use-package treesitter-context
+;;   :vc (:fetcher github :repo "zbelial/treesitter-context.el")
+;;   :bind ("M-i" . treesitter-context-fold-toggle)
+;;   :config
+;;   (add-hook 'typescript-ts-mode-hook #'treesitter-context-mode)
+;;   (add-hook 'typescript-ts-mode-hook #'treesitter-context-focus-mode)
+;;   (add-hook 'tsx-ts-mode-hook #'treesitter-context-mode)
+;;   (add-hook 'tsx-ts-mode-hook #'treesitter-context-focus-mode)
+;;   (add-hook 'tsx-ts-mode-hook #'treesitter-context-fold-mode)
+;;   (add-hook 'rust-ts-mode-hook #'treesitter-context-mode)
+;;   (add-hook 'rust-ts-mode-hook #'treesitter-context-focus-mode)
+;;   (add-hook 'python-ts-mode-hook #'treesitter-context-mode)
+;;   (add-hook 'python-ts-mode-hook #'treesitter-context-focus-mode))
 
 
 (provide 'init-fold)
