@@ -2,44 +2,6 @@
 
 ;;; config checker
 
-;; (use-package flymake
-;;   :hook
-;;   (flymake-mode-hook . flymake-setup-next-error-function)
-;;   :commands
-;;   (flymake-show-diagnostic
-;;    flymake-goto-next-error)
-;;   :bind
-;;   ((:map flymake-mode-map
-;;          ("M-g n" . flymake-goto-next-error)
-;;          ("M-g p" . flymake-goto-prev-error))
-;;    (:repeat-map flymake-mode-repeat-map
-;;                ("e" . flymake-goto-next-error)
-;;                ("E" . flymake-goto-prev-error)))
-
-;;   :config
-;;   (defun flymake-setup-next-error-function ()
-;;     (setq next-error-function 'flymake-next-error-compat))
-
-;;   (defun flymake-next-error-compat (&optional n _)
-;;     (flymake-goto-next-error n))
-
-;;   (defun flymake-diagnostics-next-error ()
-;;     (interactive)
-;;     (forward-line)
-;;     (when (eobp) (forward-line -1))
-;;     (flymake-show-diagnostic (point)))
-
-;;   (defun flymake-diagnostics-prev-error ()
-;;     (interactive)
-;;     (forward-line -1)
-;;     (flymake-show-diagnostic (point))))
-
-;; (use-package flymake-proc
-;;   :after flymake
-;;   :config
-;;   (remove-hook 'flymake-diagnostic-functions 'flymake-proc-legacy-flymake))
-
-
 (use-package flycheck
   :ensure t
   :commands flycheck-mode
@@ -51,6 +13,7 @@
   (flycheck-add-mode 'javascript-eslint 'tsx-ts-mode)
   (flycheck-add-mode 'javascript-eslint 'typescript-ts-mode)
   (flycheck-add-mode 'javascript-eslint 'jsx-mode)
+  (flycheck-add-mode 'javascript-eslint 'web-mode)
   (define-key flycheck-mode-map [remap next-error] #'flycheck-next-error)
   (define-key flycheck-mode-map [remap previous-error] #'flycheck-previous-error)
 

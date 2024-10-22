@@ -20,7 +20,7 @@
   (hide-ifdef-shadow t)
   (hide-ifdef-initially t))
 
-
+;; @Deprecated
 ;; (use-package hideshow
 ;;   :ensure nil
 ;;   :bind (:map hs-minor-mode-map
@@ -29,7 +29,7 @@
 ;;               ("M-]" . hs-show-all)))
 
 
-
+;; @Deprecated
 ;; (use-package treesitter-context
 ;;   :vc (:fetcher github :repo "zbelial/treesitter-context.el")
 ;;   :bind ("M-i" . treesitter-context-fold-toggle)

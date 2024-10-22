@@ -6,10 +6,9 @@
 
 (use-package web-mode
   :ensure t
+  :mode ("\\.vue\\'" "\\.html\\'")
+  :commands web-mode
   :config
-  (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.vue?\\'" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.handlebars?\\'" . web-mode))
   (setq web-mode-enable-auto-closing t) ;)
   (setq web-mode-enable-auto-quoting t) ; this fixes the quote problem I mentioned
 
@@ -22,7 +21,6 @@
   (setq tab-width 2)
   (add-hook 'web-mode-hook  'emmet-mode))
 
-(add-to-list 'auto-mode-alist '("\\.vue$" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.ts$" . typescript-ts-mode))
 (add-to-list 'auto-mode-alist '("\\.tsx$" . tsx-ts-mode))
 (add-to-list 'auto-mode-alist '("\\.jsx$" . jsx-mode))

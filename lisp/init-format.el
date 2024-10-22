@@ -34,7 +34,15 @@
                   ("Shell" (shfmt "-i" "4" "-ci")))))
 
 
-
+;; 开启 ESLint 的自动修复模式：需要预先在全局安装 eslint_d 包
+;; (use-package reformatter
+;;   :config
+;;   (progn
+;;     (reformatter-define eslintd-fix
+;;       :program (executable-find "eslint_d")
+;;       :args (list "--fix-to-stdout" "--stdin" "--stdin-filename" (buffer-file-name))
+;;       :input-file (reformatter-temp-file-in-current-directory "js")
+;;       :exit-code-success-p (lambda (code) (or (eq code 1) (eq code 0))))))
 
 
 
