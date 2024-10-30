@@ -24,7 +24,7 @@
   (find-font (font-spec :name font-name)))
 
 (when (display-graphic-p)
-  (cl-loop for font in '("Cascadia Code NF" "JetBrains Mono NL" "FiraCode Nerd Font" "FiraCode" "Monaco" "SF Mono" "Menlo"  "Cascadia Code" "Source Code Pro"
+  (cl-loop for font in '("SF Mono" "Cascadia Code NF" "JetBrains Mono NL" "FiraCode Nerd Font" "FiraCode" "Monaco" "Menlo"  "Cascadia Code" "Source Code Pro"
                          "Dejavu Sans Mono"
                          "Lucida Console" "Consolas" "SAS Monospace")
            when (font-installed-p font)
