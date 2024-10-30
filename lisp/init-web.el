@@ -24,7 +24,7 @@
 (add-to-list 'auto-mode-alist '("\\.ts$" . typescript-ts-mode))
 (add-to-list 'auto-mode-alist '("\\.tsx$" . tsx-ts-mode))
 (add-to-list 'auto-mode-alist '("\\.jsx$" . jsx-mode))
-(add-to-list 'auto-mode-alist '("\\.js$" . js-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.js$" . js-mode))
 
 (setq js-indent-level 2)
 (setq typescript-ts-mode-indent-offset 2)
@@ -37,6 +37,8 @@
 
 ;; config css-mode
 (setq css-indent-offset 2)
+(setq js-indent-level 2)
+(setq js-switch-indent-offset 2)
 
 
 (provide 'init-web)

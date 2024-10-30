@@ -40,7 +40,9 @@
        (lookup-leader-def
          "" '(:ignore t :wk "Lookup")
          "d" '(devdocs-lookup :wk "Lookup DevDocs")
-         "p" '(powerthesaurus-lookup-dwim :wk "Lookup PowerThesaurus"))
+         "p" '(powerthesaurus-lookup-dwim :wk "Lookup PowerThesaurus")
+         "." '(fanyi-dwim :wk "Dictionary")
+         "t" '(gt-do-translate :wk "Translate Sentence/Buffer"))
 
        (gpt-leader-def
         "" '(:ignore t :wk "GPT")

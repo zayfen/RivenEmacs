@@ -8,12 +8,14 @@
  '(package-selected-packages
    '(ace-window aggressive-indent-mode blink-search color-rg combobulate crux dape dashboard devdocs diff-hl dirvish docker
                 dockerfile-mode doom-modeline elfeed-goodies embark-consult esup exec-path-from-shell expand-region
-                flycheck format-all general git-modes git-timemachine goto-last-change gpt-extensions.el hydra iedit
-                jtsx ligature lsp-bridge magit-todos marginalia orderless powerthesaurus prescient quickrun
-                rainbow-delimiters smartparens sudo-edit super-save symbol-overlay treesitter-context undo-fu
-                undo-fu-session vc-use-package vertico visual-regexp vscode-icon vundo web-mode yasnippet-snippets))
+                fanyi flycheck format-all general git-modes git-timemachine go-translate goto-last-change
+                gpt-extensions.el hydra iedit jtsx ligature lsp-bridge magit-todos marginalia orderless plz
+                powerthesaurus prescient quickrun rainbow-delimiters smartparens sudo-edit super-save symbol-overlay
+                treesitter-context undo-fu undo-fu-session vc-use-package vertico visual-regexp vscode-icon vundo
+                web-mode yasnippet-snippets))
  '(package-vc-selected-packages
-   '((elfeed-goodies :vc-backend Git :url "https://github.com/jeetelongname/elfeed-goodies")
+   '((go-translate :vc-backend Git :url "https://github.com/lorniu/go-translate")
+     (elfeed-goodies :vc-backend Git :url "https://github.com/jeetelongname/elfeed-goodies")
      (elfeed :vc-backend Git :url "https://github.com/skeeto/elfeed")
      (quickrun :vc-backend Git :url "https://github.com/emacsorphanage/quickrun")
      (gpt-extensions.el :vc-backend Git :url "https://github.com/kamushadenes/gptel-extensions.el")

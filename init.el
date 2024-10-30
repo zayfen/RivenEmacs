@@ -49,8 +49,7 @@
 ;; init project
 (require 'init-project)
 
-;; init devdocs
-(require 'init-devdocs)
+;; init gpt
 (require 'init-gpt)
 
 ;; Languages ;TODO
@@ -62,7 +61,7 @@
 (require 'init-docker)
 (require 'init-quickrun)
 (require 'init-feed)
-(require 'init-powerthesaurus)
+(require 'init-lookup)
 
 ;; keybindings
 (require 'init-keybindings)
