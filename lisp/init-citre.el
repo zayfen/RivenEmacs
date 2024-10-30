@@ -34,6 +34,6 @@
    citre-edit-ctags-options-manually nil
    ;; If you only want the auto enabling citre-mode behavior to work for
    ;; certain modes (like `prog-mode'), set it like this.
-   citre-auto-enable-citre-mode-modes '(prog-mode)))
+   citre-auto-enable-citre-mode-modes '(rust-ts-mode go-ts-mode c-mode c-ts-mode c++-mode c++-ts-mode python-mode python-ts-mode)))
 
 (provide 'init-citre)

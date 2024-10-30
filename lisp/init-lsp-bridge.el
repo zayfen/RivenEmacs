@@ -54,7 +54,7 @@
   (lsp-bridge-python-lsp-server "ruff")
   (lsp-bridge-python-multi-lsp-server "pyright_ruff")
   (lsp-bridge-completion-obey-trigger-characters-p nil)
-  (lsp-bridge-completion-hide-characters '(":" ";" "(" ")" "[" "]" "{" "}" ", " "\"" "?" ","))
+  ;; (lsp-bridge-completion-hide-characters '(":" ";" "(" ")" "[" "]" "{" "}" ", " "\"" "?" ","))
   (lsp-bridge-multi-lang-server-extension-list
    '(
      (("ts") . "typescript_eslint")
@@ -79,6 +79,7 @@
   (setq acm-enable-icon t)
   (setq acm-enable-yas t)
   (setq acm-enable-doc t)
+  (setq acm-enable-citre t)
   (setq acm-enable-doc-markdown-render t)
   (setq lsp-bridge-signature-show-function 'lsp-bridge-signature-show-with-frame)
   (setq acm-enable-path t)
