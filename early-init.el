@@ -7,6 +7,7 @@
  use-package-always-defer t
  use-package-always-ensure t
  gc-cons-threshold most-positive-fixnum
+ gc-cons-percentage 0.6
  load-prefer-newer noninteractive
  default-frame-alist '((tool-bar-lines . 0)
                        (menu-bar-lines . 0)
@@ -27,7 +28,28 @@
  inhibit-automatic-native-compilation t
  )
 
-(add-hook 'after-init-hook #'(lambda () (setq gc-cons-threshold 800000)))
+;; do some GC stuff
+(defvar config:file-name-handler-alist-cache file-name-handler-alist)
+(setq file-name-handler-alist nil)
+(defun config:restore-post-init-settings ()
+  (setq gc-cons-threshold 16777216 ; 16mb
+        gc-cons-percentage 0.1)
+  (setq file-name-handler-alist config:file-name-handler-alist-cache))
+(add-hook 'emacs-startup-hook #'config:restore-post-init-settings)
+;;(add-hook 'after-init-hook #'(lambda () (setq gc-cons-threshold 800000)))
+
+(defun config:defer-gc ()
+  (setq gc-cons-threshold most-positive-fixnum))
+(defun config:-do-restore-gc ()
+  (setq gc-cons-threshold 16777216))
+(defun config:restore-gc ()
+  (run-at-time 1 nil #'config:-do-restore-gc))
+
+(add-hook 'minibuffer-setup #'config:defer-gc)
+(add-hook 'minibuffer-exit #'config:restore-gc)
+;; END  do some GC stuff
+
+
 (advice-add 'tool-bar-setup :override #'ignore)
 
 (if (boundp 'warning-suppress-log-types)
