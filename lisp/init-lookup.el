@@ -33,7 +33,7 @@
 
 
 (use-package go-translate
-  :vc (:fetcher github :repo )
+  :vc (:fetcher github :repo lorniu/go-translate)
   :commands (gt-do-translate)
   :config
   (setq gt-preset-translators
