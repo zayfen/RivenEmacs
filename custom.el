@@ -6,9 +6,9 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(ace-window aggressive-indent-mode blink-search color-rg combobulate crux dape dashboard devdocs diff-hl dirvish docker
-                dockerfile-mode doom-modeline elfeed-goodies embark-consult esup exec-path-from-shell expand-region
-                fanyi flycheck format-all general git-modes git-timemachine go-translate goto-last-change
+   '(ace-window aggressive-indent-mode blink-search citre color-rg combobulate crux dape dashboard devdocs diff-hl dirvish
+                docker dockerfile-mode doom-modeline elfeed-goodies embark-consult esup exec-path-from-shell
+                expand-region fanyi flycheck format-all general git-modes git-timemachine go-translate goto-last-change
                 gpt-extensions.el hydra iedit jtsx ligature lsp-bridge magit-todos marginalia orderless plz
                 powerthesaurus prescient quickrun rainbow-delimiters smartparens sudo-edit super-save symbol-overlay
                 treesitter-context undo-fu undo-fu-session vc-use-package vertico visual-regexp vscode-icon vundo

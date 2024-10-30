@@ -37,7 +37,10 @@
 
 ;; important: tree-sitter
 (require 'init-treesit)
+
+;; IDE
 (require 'init-lsp-bridge)
+(require 'init-citre)
 
 ;; init git
 (require 'init-vc)
