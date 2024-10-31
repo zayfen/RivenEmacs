@@ -41,8 +41,8 @@
 (add-hook 'prog-mode-hook (lambda ()
                             (set-face-attribute 'fringe nil :background "#000000")
                             (set-face-attribute 'font-lock-comment-face nil :slant 'italic)
-                            (set-face-attribute 'font-lock-keyword-face nil :slant 'italic)
-                            (set-face-attribute 'font-lock-function-name-face nil :slant 'italic)))
+                            (set-face-attribute 'font-lock-keyword-face nil :weight 'bold :slant 'italic)
+                            (set-face-attribute 'font-lock-function-name-face nil :weight 'bold :slant 'italic)))
 
 
 (use-package rainbow-delimiters

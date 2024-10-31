@@ -14,7 +14,7 @@
                                                                   ((eq system-type 'darwin) 14))))
 (set-face-attribute 'variable-pitch nil :font (font-spec :family "Cascadia Code NF"
                                                          :weight 'bold
-                                                         :slant 'italic
+                                                         :slant 'normal
                                                          :size (cond ((eq system-type 'gnu/linux) 20)
                                                                      ((eq system-type 'windows-nt) 12.5)
                                                                      ((eq system-type 'darwin) 14))))
@@ -32,7 +32,6 @@
                    'default nil
                    :font (font-spec :family font
                                     :weight 'normal
-                                    :slant 'normal
                                     :size (cond ((eq system-type 'gnu/linux) 20)
                                                 ((eq system-type 'windows-nt) 12.5)
                                                 ((eq system-type 'darwin) 16)))))
