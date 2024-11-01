@@ -26,9 +26,9 @@
   "grab text between double straight quotes on each side of cursor."
   (interactive)
   (let (p1 p2)
-    (skip-chars-backward "^[~@\"\']" (line-beginning-position))
+    (skip-chars-backward "^([~@\"\'])" (line-beginning-position))
     (setq p1 (point))
-    (skip-chars-forward "^[\"\']" (line-end-position))
+    (skip-chars-forward "^([\"\'])" (line-end-position))
     (setq p2 (point))
     (buffer-substring-no-properties p1 p2)))
 
