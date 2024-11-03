@@ -50,18 +50,6 @@
 (use-package lsp-bridge
   :vc (:fetcher github :repo "manateelazycat/lsp-bridge")
   :hook ((prog-mode) . lsp-bridge-mode)
-  :custom
-  (lsp-bridge-python-lsp-server "ruff")
-  (lsp-bridge-python-multi-lsp-server "pyright_ruff")
-  (lsp-bridge-completion-obey-trigger-characters-p nil)
-  ;; (lsp-bridge-completion-hide-characters '(":" ";" "(" ")" "[" "]" "{" "}" ", " "\"" "?" ","))
-  (lsp-bridge-multi-lang-server-extension-list
-   '(
-     (("ts") . "typescript_eslint")
-     (("tsx") . "typescriptreact_eslint")
-     (("css" "scss" "sass" "less") . "css_emmet")
-     (("vue") . "volar_emmet")
-     ))
   :bind (:map lsp-bridge-mode-map
               ("M-." . find-definitions-with-lsp-bridge)
               ("M-," . mark-power--jump-back)
@@ -75,27 +63,40 @@
               ("M-p" . lsp-bridge-peek-list-prev-line)
               ("M-n" . lsp-bridge-peek-list-next-line)
               ("M-<return>" . find-peek-with-lsp-bridge))
-  :config
-  (setq acm-enable-icon t)
-  (setq acm-enable-yas t)
-  (setq acm-enable-doc t)
-  (setq acm-enable-citre t)
-  (setq acm-enable-doc-markdown-render t)
-  (setq lsp-bridge-signature-show-function 'lsp-bridge-signature-show-with-frame)
-  (setq acm-enable-path t)
-  (setq acm-backend-yas-match-by-trigger-keyword t)
-  (setq acm-enable-tabnine nil)
-  (setq acm-enable-codeium nil)
-  (setq acm-enable-preview t)
-  (setq acm-enable-capf t)
-  (setq acm-backend-search-file-words-enable-fuzzy-match t)
-  (setq lsp-bridge-enable-diagnostics nil) ;; we use flycheck only
-  (setq lsp-bridge-enable-hover-diagnostic t)
-  (setq lsp-bridge-code-action-enable-popup-menu nil)
-  (setq acm-enable-quick-access t)
-  (setq lsp-bridge-find-ref-fallback #'xref-find-references)
-  (setq lsp-bridge-inlay-hint t)
+  :custom
+  (acm-enable-icon t)
+  (acm-enable-yas t)
+  (acm-enable-doc t)
+  (acm-enable-citre t)
+  (acm-enable-doc-markdown-render t)
+  (acm-enable-path t)
+  (acm-backend-yas-match-by-trigger-keyword t)
+  (acm-enable-tabnine nil)
+  (acm-enable-codeium nil)
+  (acm-enable-preview t)
+  (acm-enable-capf t)
+  (acm-backend-search-file-words-enable-fuzzy-match t)
+  (acm-enable-lsp-workspace-symbol t)
+  (acm-enable-quick-access t)
 
+  (lsp-bridge-enable-log t)
+  (lsp-bridge-enable-diagnostics nil) ;; we use flycheck only
+  (lsp-bridge-enable-hover-diagnostic t)
+  (lsp-bridge-code-action-enable-popup-menu nil)
+  (lsp-bridge-find-ref-fallback #'xref-find-references)
+  (lsp-bridge-inlay-hint t)
+  (lsp-bridge-signature-show-function 'lsp-bridge-signature-show-with-frame)
+  (lsp-bridge-python-lsp-server "ruff")
+  (lsp-bridge-python-multi-lsp-server "pyright_ruff")
+  (lsp-bridge-multi-lang-server-extension-list
+   '(
+     (("ts") . "typescript_eslint")
+     (("tsx") . "typescriptreact_eslint")
+     (("css" "scss" "sass" "less") . "css_emmet")
+     (("vue") . "volar_emmet")
+     ))
+
+  :config
   (add-to-list 'lsp-bridge-multi-lang-server-extension-list '(("html") . "html_tailwindcss"))
   (add-to-list 'lsp-bridge-multi-lang-server-extension-list '(("css") . "css_tailwindcss"))
 
