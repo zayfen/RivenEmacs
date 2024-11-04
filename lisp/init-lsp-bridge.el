@@ -79,7 +79,7 @@
   (acm-enable-lsp-workspace-symbol t)
   (acm-enable-quick-access t)
 
-  (lsp-bridge-enable-log t)
+  (lsp-bridge-enable-log nil)
   (lsp-bridge-enable-diagnostics nil) ;; we use flycheck only
   (lsp-bridge-enable-hover-diagnostic t)
   (lsp-bridge-code-action-enable-popup-menu nil)
