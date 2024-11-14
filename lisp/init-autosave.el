@@ -14,7 +14,7 @@
          (text-mode . super-save-mode))
   :custom
   (super-save-auto-save-when-idle t)
-  (super-save-idle-duration 2)
+  (super-save-idle-duration 1)
   (super-save-silent t)
   (super-save-delete-trailing-whitespace 'except-current-line)
   (super-save-exclude '(".gpg"))

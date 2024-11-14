@@ -61,6 +61,10 @@
 (require 'init-rust)
 (require 'init-python)
 
+;; Writing
+(require 'ews)
+(require 'init-org)
+
 ;; Tools
 (require 'init-docker)
 (require 'init-quickrun)
