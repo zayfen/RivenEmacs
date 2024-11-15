@@ -42,8 +42,6 @@
   (scroll-error-top-bottom t)
   (save-interprogram-paste-before-kill t))
 
-;; Check spelling with flyspell and hunspell
-
 ;;; Ricing Org mode
 
 (use-package org
@@ -98,16 +96,10 @@
   (org-modern-progress nil))
 
 
-;; INSPIRATION
-
-;; Doc-View
-
 (use-package doc-view
   :custom
   (doc-view-resolution 300)
   (large-file-warning-threshold (* 50 (expt 2 20))))
-
-;; Read ePub files
 
 (use-package nov
   :init
@@ -141,6 +133,7 @@
 ;; Biblio package for adding BibTeX records
 
 (use-package biblio
+  :defer t
   :bind
   (("C-c w b b" . ews-bibtex-biblio-lookup)))
 
@@ -152,10 +145,6 @@
   (citar-bibliography ews-bibtex-files)
   :bind
   (("C-c w b o" . citar-open)))
-
-(use-package org-web-tools
-  :bind
-  (("C-c w w" . org-web-tools-insert-link-for-url)))
 
 
 ;; Fleeting notes
@@ -219,10 +208,9 @@
 ;; Citar-Denote to manage literature notes
 
 (use-package citar-denote
+  :hook (org-mode . citar-denote-mode)
   :custom
   (citar-open-always-create-notes t)
-  :init
-  (citar-denote-mode)
   :bind
   (("C-c w b c" . citar-create-note)
    ("C-c w b n" . citar-denote-open-note)
@@ -236,6 +224,7 @@
 ;; Explore and manage your Denote collection
 
 (use-package denote-explore
+  :after denote
   :bind
   (;; Statistics
    ("C-c w x c" . denote-explore-count-notes)
@@ -267,10 +256,9 @@
         ("C-c w p" . ews-org-insert-screenshot)
         ("C-c w c" . ews-org-count-words)))
 
-;; Distraction-free writing
 
 (use-package olivetti
-  :demand t
+  :defer t
   :bind
   (("C-c w o" . ews-olivetti)))
 
@@ -296,12 +284,12 @@
 
 ;; Titlecasing
 
-(use-package titlecase
-  :custom
-  (titlecase-style 'apa)
-  :bind
-  (("C-c w s t" . titlecase-dwim)
-   ("C-c w s c" . ews-org-headings-titlecase)))
+;; (use-package titlecase
+;;   :custom
+;;   (titlecase-style 'apa)
+;;   :bind
+;;   (("C-c w s t" . titlecase-dwim)
+;;    ("C-c w s c" . ews-org-headings-titlecase)))
 
 ;; Abbreviations
 
@@ -319,7 +307,7 @@
   (("C-c w s i" . lorem-ipsum-insert-paragraphs)))
 
 
-(use-package fountain-mode)
+;; (use-package fountain-mode)
 
 ;; Generic Org Export Settings
 
@@ -335,7 +323,6 @@
 ;; epub export
 
 (use-package ox-epub
-  :demand t
   :init
   (require 'ox-org))
 
@@ -343,7 +330,6 @@
 
 (use-package ox-latex
   :ensure nil
-  :demand t
   :custom
   ;; Multiple LaTeX passes for bibliographies
   (org-latex-pdf-process
