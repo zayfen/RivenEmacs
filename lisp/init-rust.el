@@ -3,7 +3,7 @@
 
 (use-package rust-ts-mode
   :ensure t
-  :mode ("\\.rs'" . rust-ts-mode)
+  :mode ("\\.rs$\'" . rust-ts-mode)
   :init
   (setq rust-mode-treesitter-derive t)
   :config
