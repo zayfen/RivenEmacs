@@ -86,5 +86,10 @@
   :hook (prog-mode . auto-composition-mode)
   :init (global-auto-composition-mode -1))
 
+(use-package spacious-padding
+  :custom
+  (line-spacing 3)
+  :init
+  (spacious-padding-mode 1))
 
 (provide 'init-theme)

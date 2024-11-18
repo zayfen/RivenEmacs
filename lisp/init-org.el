@@ -17,11 +17,6 @@
 
 ;; Spacious padding
 
-(use-package spacious-padding
-  :custom
-  (line-spacing 3)
-  :init
-  (spacious-padding-mode 1))
 
 ;; Mixed-pich mode
 
@@ -256,11 +251,6 @@
         ("C-c w p" . ews-org-insert-screenshot)
         ("C-c w c" . ews-org-count-words)))
 
-
-(use-package olivetti
-  :defer t
-  :bind
-  (("C-c w o" . ews-olivetti)))
 
 ;; Export citations with Org Mode
 
