@@ -13,11 +13,6 @@
 ;; - mpg321, ogg123 (vorbis-tools), mplayer, mpv, vlc: Media players
 ;; - git: Version control
 
-;; Short answers only please
-
-;; Spacious padding
-
-
 ;; Mixed-pich mode
 
 (use-package mixed-pitch
@@ -272,15 +267,6 @@
   :hook
   (text-mode . writegood-mode))
 
-;; Titlecasing
-
-;; (use-package titlecase
-;;   :custom
-;;   (titlecase-style 'apa)
-;;   :bind
-;;   (("C-c w s t" . titlecase-dwim)
-;;    ("C-c w s c" . ews-org-headings-titlecase)))
-
 ;; Abbreviations
 
 (add-hook 'text-mode-hook 'abbrev-mode)
@@ -296,8 +282,6 @@
   :bind
   (("C-c w s i" . lorem-ipsum-insert-paragraphs)))
 
-
-;; (use-package fountain-mode)
 
 ;; Generic Org Export Settings
 
