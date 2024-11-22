@@ -215,3 +215,4 @@ that directory."
 ;; (setq-default bidi-paragraph-direction 'left-to-right)
 
 (provide 'init-default)
+;;; init-default.el ends here
