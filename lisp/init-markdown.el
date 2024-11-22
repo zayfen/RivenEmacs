@@ -23,7 +23,7 @@
 
   (defun nb/refontify-on-linemove ()
     "Post-command-hook"
-    (let* ((start (line-beginning-position))
+    (let* ((start (line-beginnin:g-position))
            (end (line-beginning-position 2))
            (needs-update (not (equal start (car nb/current-line)))))
       (setq nb/current-line (cons start end))
