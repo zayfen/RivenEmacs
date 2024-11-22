@@ -141,8 +141,8 @@
 
 (use-package org
   :bind
-  (("C-c c" . org-capture)
-   ("C-c l" . org-store-link))
+  (("C-c w c" . org-capture)
+   ("C-c w l" . org-store-link))
   :custom
   (org-goto-interface 'outline-path-completion)
   (org-capture-templates
@@ -243,8 +243,7 @@
   :bind
   (:map org-mode-map
         ("C-c w n" . ews-org-insert-notes-drawer)
-        ("C-c w p" . ews-org-insert-screenshot)
-        ("C-c w c" . ews-org-count-words)))
+        ("C-c w p" . ews-org-insert-screenshot)))
 
 
 ;; Export citations with Org Mode
