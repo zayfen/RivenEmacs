@@ -40,5 +40,4 @@
 (add-hook 'flycheck-mode-hook #'my/use-eslint-from-node-modules)
 
 
-
 (provide 'init-checker)

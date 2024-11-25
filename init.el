@@ -73,3 +73,4 @@
 
 ;; keybindings
 (require 'init-keybindings)
+(put 'narrow-to-region 'disabled nil)

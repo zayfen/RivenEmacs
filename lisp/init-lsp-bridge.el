@@ -76,7 +76,7 @@
   (acm-enable-preview t)
   (acm-enable-capf t)
   (acm-backend-search-file-words-enable-fuzzy-match t)
-  (acm-enable-lsp-workspace-symbol t)
+  (acm-enable-lsp-workspace-symbol nil) ;dont show workspace symbol
   (acm-enable-quick-access t)
 
   (lsp-bridge-enable-log nil)
