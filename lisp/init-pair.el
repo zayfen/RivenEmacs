@@ -11,6 +11,8 @@
     (forward-line -1)
     (indent-according-to-mode))
   (sp-local-pair 'prog-mode "{" nil :post-handlers '((create-newline-and-enter-sexp "RET")))
+  (sp-local-pair 'jtsx-tsx-mode "<" nil :actions nil)
+  (sp-local-pair 'jtsx-jsx-mode "<" nil :actions nil)
 
   (require 'smartparens-config))
 

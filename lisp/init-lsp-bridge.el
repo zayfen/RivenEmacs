@@ -82,7 +82,7 @@
   (lsp-bridge-enable-log nil)
   (lsp-bridge-enable-diagnostics nil) ;; we use flycheck only
   (lsp-bridge-enable-hover-diagnostic t)
-  (lsp-bridge-code-action-enable-popup-menu nil)
+  (lsp-bridge-code-action-enable-popup-menu t)
   (lsp-bridge-find-ref-fallback #'xref-find-references)
   (lsp-bridge-inlay-hint t)
   (lsp-bridge-signature-show-function 'lsp-bridge-signature-show-with-frame)

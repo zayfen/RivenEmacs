@@ -31,6 +31,12 @@
          "r" '(consult-recent-file :wk "Recent files")
          "s" '(blink-search :wk "Search files"))
 
+       (leader-def
+         :infix "k"
+         "" '(:ignore t :wk "Kill")
+         "k" '(sp-splice-sexp :wk "Delete pair")
+         "s" '(sp-delete-sexp :wk "Delete Sexp"))
+
        (open-leader-def
          "" '(:ignore t :wk "Open Tool")
          "d" '(docker :wk "Docker")
