@@ -160,11 +160,11 @@ that directory."
 (add-hook 'prog-mode-hook #'hs-minor-mode)
 (add-hook 'conf-mode-hook #'hs-minor-mode)
 
-(bind-key "s-<up>" #'ff-find-related-file)
-(bind-key "C-c a f" #'ff-find-related-file)
+;; (bind-key "s-<up>" #'ff-find-related-file)
+;; (bind-key "C-c a f" #'ff-find-related-file)
 (bind-key "C-s" #'isearch-forward-regexp)
 
-(add-hook 'before-save-hook #'delete-trailing-whitespace)
+;; (add-hook 'before-save-hook #'delete-trailing-whitespace)
 (setq require-final-newline t)
 
 
@@ -175,7 +175,6 @@ that directory."
   (dabbrev-case-replace nil))
 
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
-
 
 (when (window-system)
   (tool-bar-mode -1)
@@ -194,13 +193,13 @@ that directory."
 (minibuffer-depth-indicate-mode)
 
 (recentf-mode 1)
-;; (desktop-save-mode 1)
+(desktop-save-mode 1)
 (global-subword-mode 1)
 
-(add-hook 'after-init-hook
-          (
-           lambda ()
-                  (desktop-save-mode 1)))
+;; (add-hook 'after-init-hook
+;;           (
+;;            lambda ()
+;;                   (desktop-save-mode 1)))
 
 
 

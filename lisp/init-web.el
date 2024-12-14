@@ -1,7 +1,9 @@
 ;; -*- coding: utf-8; lexical-binding: t -*-
 ;;; init-web.el --- web config
 
-
+(use-package emmet-mode
+  :ensure t
+  :defer t)
 
 
 (use-package web-mode
