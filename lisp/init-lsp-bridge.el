@@ -50,6 +50,7 @@
 (use-package lsp-bridge
   :vc (:fetcher github :repo "manateelazycat/lsp-bridge")
   :hook ((prog-mode) . lsp-bridge-mode)
+  :hook ((prog-mode) . lsp-bridge-semantic-tokens-mode)
   :bind (:map lsp-bridge-mode-map
               ("M-." . find-definitions-with-lsp-bridge)
               ("M-," . mark-power--jump-back)

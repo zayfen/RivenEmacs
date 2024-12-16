@@ -48,9 +48,9 @@
 (use-package rainbow-delimiters
   :hook ((prog-mode . rainbow-delimiters-mode)))
 
-(use-package doom-modeline
-  :vc (:fetcher github :repo seagle0128/doom-modeline)
-  :hook (after-init . doom-modeline-mode))
+;; (use-package doom-modeline
+;;   :vc (:fetcher github :repo seagle0128/doom-modeline)
+;;   :hook (after-init . doom-modeline-mode))
 
 
 ;; This assumes you've installed the package via MELPA.
