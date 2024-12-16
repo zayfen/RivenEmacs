@@ -115,4 +115,10 @@
     "?" '(lsp-bridge-find-references :wk "Find References")))
 
 
+(add-hook 'web-mode-hook (lambda ()
+                            (setq lsp-bridge-completion-obey-trigger-characters-p nil)
+                            (setq lsp-bridge-completion-hide-characters '(":" ";" "(" ")" "[" "]" "{" "}" "," "\"" ">" "()" "{}"))
+                            ))
+
+
 (provide 'init-lsp-bridge)
