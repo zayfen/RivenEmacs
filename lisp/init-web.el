@@ -22,7 +22,11 @@
     (setq web-mode-css-indent-offset 2))
   (add-hook 'web-mode-hook  'my-web-mode-hook)
   (setq tab-width 2)
-  (add-hook 'web-mode-hook  'emmet-mode))
+  (add-hook 'web-mode-hook  'emmet-mode)
+  ;; C-l C-l is lookup function
+  (add-hook 'web-mode-hook
+          (lambda()
+            (local-unset-key (kbd "C-c C-l")))))
 
 (add-to-list 'auto-mode-alist '("\\.ts$" . typescript-ts-mode))
 (add-to-list 'auto-mode-alist '("\\.tsx$" . tsx-ts-mode))
