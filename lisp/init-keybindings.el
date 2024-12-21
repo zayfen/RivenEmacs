@@ -55,6 +55,7 @@
         "g" '(gptel :wk "GPT")
         "s" '(gptel-send :wk "GPT send")
         "b" '(gptel-extensions-send-whole-buffer :wk "GPT send buffer")
+        "t" '(gptel-translate-to-langs :wk "Translate to many languages")
         "w" '(gptel-extensions-ask-document :wk "GPT ask document"))
 
        ;; define prefix lable
