@@ -4,6 +4,13 @@
 
 (use-package flycheck
   :ensure t
+  :init
+  (with-eval-after-load 'flycheck
+    (require 'flycheck-posframe)
+    (setq flycheck-posframe-border-width 2)
+    (add-hook 'flycheck-mode-hook #'flycheck-posframe-mode)
+    (flycheck-posframe-configure-pretty-defaults))
+
   :commands flycheck-mode
   :hook (prog-mode . flycheck-mode)
   :config
@@ -21,6 +28,7 @@
   (flycheck-indication-mode 'left-fringe)
   (flycheck-emacs-lisp-load-path 'inherit)
   (flycheck-check-syntax-automatically '(save idle-change mode-enabled)))
+
 
 
 (when (executable-find "oxlint")
