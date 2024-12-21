@@ -1,16 +1,20 @@
 ;;; -*- coding: utf-8; lexical-binding: t -*-
 ;;; init-fold.el --- Config for code fold -*- lexical-binding: t; -*-
+;;; Code: fold feature
 
-;; use treesitter-context instead
 (use-package treesit-fold
   :vc (:fetcher github :repo emacs-tree-sitter/treesit-fold)
   :commands (treesit-fold-toggle)
   :bind ("M-i" . treesit-fold-toggle)
-  :init
-  )
+  :config
+  (defun my-enable-hs-if-treesit-unavailable ()
+    (unless (car (treesit-parser-list))
+      (hs-minor-mode)
+      (define-key hs-minor-mode-map (kbd "M-i") 'hs-toggle-hiding)))
+  (add-hook 'prog-mode-hook #'my-enable-hs-if-treesit-unavailable))
 
-(use-package treesit-fold-indicators
-  :vc (:fetcher github :repo "emacs-tree-sitter/ts-fold"))
+;; (use-package treesit-fold-indicators
+;;   :vc (:fetcher github :repo "emacs-tree-sitter/ts-fold"))
 
 (use-package hideif
   :init
@@ -19,30 +23,5 @@
   :custom
   (hide-ifdef-shadow t)
   (hide-ifdef-initially t))
-
-;; @Deprecated
-;; (use-package hideshow
-;;   :ensure nil
-;;   :bind (:map hs-minor-mode-map
-;;               ("M-i" . hs-toggle-hiding)
-;;               ("M-[" . hs-hide-all)
-;;               ("M-]" . hs-show-all)))
-
-
-;; @Deprecated
-;; (use-package treesitter-context
-;;   :vc (:fetcher github :repo "zbelial/treesitter-context.el")
-;;   :bind ("M-i" . treesitter-context-fold-toggle)
-;;   :config
-;;   (add-hook 'typescript-ts-mode-hook #'treesitter-context-mode)
-;;   (add-hook 'typescript-ts-mode-hook #'treesitter-context-focus-mode)
-;;   (add-hook 'tsx-ts-mode-hook #'treesitter-context-mode)
-;;   (add-hook 'tsx-ts-mode-hook #'treesitter-context-focus-mode)
-;;   (add-hook 'tsx-ts-mode-hook #'treesitter-context-fold-mode)
-;;   (add-hook 'rust-ts-mode-hook #'treesitter-context-mode)
-;;   (add-hook 'rust-ts-mode-hook #'treesitter-context-focus-mode)
-;;   (add-hook 'python-ts-mode-hook #'treesitter-context-mode)
-;;   (add-hook 'python-ts-mode-hook #'treesitter-context-focus-mode))
-
 
 (provide 'init-fold)

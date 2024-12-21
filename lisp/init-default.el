@@ -157,7 +157,6 @@ that directory."
 
 
 ;; Hide/show code blocks, a.k.a. code folding
-(add-hook 'prog-mode-hook #'hs-minor-mode)
 (add-hook 'conf-mode-hook #'hs-minor-mode)
 
 ;; (bind-key "s-<up>" #'ff-find-related-file)

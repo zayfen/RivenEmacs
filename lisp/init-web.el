@@ -13,7 +13,7 @@
   :bind (("M-i" . hs-toggle-hiding))
   :config
   (setq web-mode-enable-auto-closing t) ;)
-  (setq web-mode-enable-auto-quoting t) ; this fixes the quote problem I mentioned
+  (setq web-mode-enable-auto-quoting nil) ; this fixes the quote problem I mentioned
 
   (defun my-web-mode-hook ()
     "Hooks for Web mode."
@@ -82,7 +82,7 @@
     (define-key mode-map (kbd "C-c e u") 'jtsx-unwrap-jsx)
     (define-key mode-map (kbd "C-c e d") 'jtsx-delete-jsx-node)
     (define-key mode-map (kbd "C-c e t") 'jtsx-toggle-jsx-attributes-orientation)
-    (define-key mode-map (kbd "M-i") 'hs-toggle-hiding)
+    ;;(define-key mode-map (kbd "M-i") 'hs-toggle-hiding)
     ;; (define-key mode-map (kbd "C-c e h") 'jtsx-rearrange-jsx-attributes-horizontally)
     ;; (define-key mode-map (kbd "C-c e v") 'jtsx-rearrange-jsx-attributes-vertically)
     )

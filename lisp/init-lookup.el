@@ -12,8 +12,9 @@
   :vc (:fetcher github :repo astoff/devdocs.el)
   :commands (devdocs-lookup devdocs-install devdocs-delete devdocs-update-all)
   :config
-  (add-hook 'typescript-ts-mode-hook (lambda () (setq-local devdocs-current-docs '("javascript"))))
-  (add-hook 'js-ts-mode-hook (lambda () (setq-local devdocs-current-docs '("javascript"))))
+  (add-hook 'typescript-ts-mode-hook (lambda () (setq-local devdocs-current-docs '("typescript" "javascript" "html" "css" "node~18_lts"))))
+  (add-hook 'tsx-ts-mode-hook (lambda () (setq-local devdocs-current-docs '("react" "typescript" "javascript" "html" "css" "node~18_lts"))))
+  (add-hook 'js-ts-mode-hook (lambda () (setq-local devdocs-current-docs '("javascript" "html" "css" "node" "node~18_lts"))))
   (add-hook 'rust-ts-mode-hook (lambda () (setq-local devdocs-current-docs '("rust"))))
   (add-hook 'python-ts-mode-hook (lambda () (setq-local devdocs-current-docs '("python~3.12"))))
   )

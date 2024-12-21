@@ -9,6 +9,15 @@
     (add-to-list 'exec-path-from-shell-variables var))
   (exec-path-from-shell-initialize))
 
+(defun setup-proxy ()
+  "Setup my network proxy."
+  (interactive)
+  (setq url-proxy-services
+      '(("http" . "127.0.0.1:7890")
+        ("https" . "127.0.0.1:7890"))))
+
+;; export https_proxy=http://127.0.0.1:7890 http_proxy=http://127.0.0.1:7890 all_proxy=socks5://127.0.0.1:7890
+
 (require 'init-use-package)
 (require 'init-default)
 (require 'init-helper)
@@ -63,7 +72,7 @@
 
 ;; Writing
 (require 'ews)
-(require 'init-org)
+(add-hook 'org-mode-hook (lambda () (require 'init-org)))
 
 ;; Tools
 (require 'init-docker)
