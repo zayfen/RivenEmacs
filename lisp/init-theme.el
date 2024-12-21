@@ -26,7 +26,9 @@
 
 
 ;; load theme and config
-(load-theme 'modus-vivendi t)
+;; (load-theme 'modus-vivendi t)
+(load-theme 'modus-operandi-tritanopia t)
+
 (setq modus-themes-italic-constructs t
         modus-themes-bold-constructs t
         modus-themes-mixed-fonts t
@@ -39,7 +41,7 @@
           (underline-link-symbolic border)))
 
 (add-hook 'prog-mode-hook (lambda ()
-                            (set-face-attribute 'fringe nil :background "#000000")
+                            ;; (set-face-attribute 'fringe nil :background "#000000") ;; setting for modus-vivendi theme
                             (set-face-attribute 'font-lock-comment-face nil :slant 'italic)
                             (set-face-attribute 'font-lock-keyword-face nil :weight 'bold :slant 'italic)
                             (set-face-attribute 'font-lock-function-name-face nil :weight 'bold :slant 'italic)))
@@ -91,4 +93,3 @@
   (spacious-padding-mode 1))
 
 (provide 'init-theme)
-
