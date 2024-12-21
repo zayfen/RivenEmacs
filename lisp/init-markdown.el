@@ -1,5 +1,6 @@
 ;;; -*- coding: utf-8; lexical-binding: t -*-
 
+(setq markdown-fontify-code-blocks-natively t)
 
 (use-package markdown-mode
   :mode ("README\\.md\\'" . gfm-mode)
