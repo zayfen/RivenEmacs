@@ -27,7 +27,8 @@
 
 ;; load theme and config
 ;; (load-theme 'modus-vivendi t)
-(load-theme 'modus-operandi-tritanopia t)
+;; (load-theme 'modus-operandi-tritanopia t)
+(load-theme 'modus-vivendi-tritanopia t)
 
 (setq modus-themes-italic-constructs t
         modus-themes-bold-constructs t
