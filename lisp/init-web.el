@@ -10,7 +10,6 @@
   :ensure t
   :mode ("\\.vue\\'" "\\.html\\'")
   :commands web-mode
-  :bind (("M-i" . hs-toggle-hiding))
   :config
   (setq web-mode-enable-auto-closing t) ;)
   (setq web-mode-enable-auto-quoting nil) ; this fixes the quote problem I mentioned
