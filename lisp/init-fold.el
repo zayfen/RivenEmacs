@@ -11,7 +11,13 @@
     (unless (car (treesit-parser-list))
       (hs-minor-mode)
       (define-key hs-minor-mode-map (kbd "M-i") 'hs-toggle-hiding)))
-  (add-hook 'prog-mode-hook #'my-enable-hs-if-treesit-unavailable))
+  (add-hook 'prog-mode-hook #'my-enable-hs-if-treesit-unavailable)
+  ;; add others mode
+  (add-to-list 'treesit-fold-range-alist
+               '(jtsx-typescript-mode . ,(treesit-fold-parsers-typescript)))
+  )
+
+
 
 ;; (use-package treesit-fold-indicators
 ;;   :vc (:fetcher github :repo "emacs-tree-sitter/ts-fold"))

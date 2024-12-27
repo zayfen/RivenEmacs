@@ -93,7 +93,10 @@
       (jtsx-bind-keys-to-mode-map jtsx-tsx-mode-map))
 
   (add-hook 'jtsx-jsx-mode-hook 'jtsx-bind-keys-to-jtsx-jsx-mode-map)
-  (add-hook 'jtsx-tsx-mode-hook 'jtsx-bind-keys-to-jtsx-tsx-mode-map))
+  (add-hook 'jtsx-tsx-mode-hook 'jtsx-bind-keys-to-jtsx-tsx-mode-map)
+  ;; add this mode to treesit-fold-range-alist
+  (add-to-list 'treesit-fold-range-alist
+               '(jtsx-tsx-mode . ,(treesit-fold-parsers-typescript))))
 
 ;; config css-mode
 (setq css-indent-offset 2)
