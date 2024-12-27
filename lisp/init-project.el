@@ -31,6 +31,12 @@
     )
   )
 
+;; show project name on modeline
+(setq-default mode-line-format
+              (cons '(:eval (when-let ((project-root (project-root (project-current))))
+                              (format " [%s]" (file-name-nondirectory (directory-file-name project-root)))))
+                    mode-line-format))
+
 ;; (use-package otpp
 ;;   :vc (:fetcher github :repo "abougouffa/one-tab-per-project")
 ;;   :after project

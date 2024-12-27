@@ -68,7 +68,7 @@
   (acm-enable-icon t)
   (acm-enable-yas t)
   (acm-enable-doc t)
-  (acm-enable-citre t)
+  (acm-enable-citre nil)
   (acm-enable-doc-markdown-render t)
   (acm-enable-path t)
   (acm-backend-yas-match-by-trigger-keyword t)
