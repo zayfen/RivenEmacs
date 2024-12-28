@@ -41,6 +41,17 @@
           (underline-link-visited border)
           (underline-link-symbolic border)))
 
+(defun custom-buffer-name ()
+  "Return the buffer name, prepending the directory name if the file is named 'index' (ignoring extension)."
+  (let ((name (buffer-name))
+        (filename (file-name-nondirectory (buffer-file-name))))
+    (if (string= (file-name-base filename) "index")
+        (concat (file-name-nondirectory (directory-file-name (file-name-directory (buffer-file-name)))) "/" name)
+      name)))
+
+(setq-default mode-line-buffer-identification
+              '(:eval (custom-buffer-name)))
+
 (add-hook 'prog-mode-hook (lambda ()
                             ;; (set-face-attribute 'fringe nil :background "#000000") ;; setting for modus-vivendi theme
                             (set-face-attribute 'font-lock-comment-face nil :slant 'italic)
