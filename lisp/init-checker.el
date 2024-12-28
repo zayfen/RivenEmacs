@@ -8,6 +8,7 @@
   (with-eval-after-load 'flycheck
     (require 'flycheck-posframe)
     (setq flycheck-posframe-border-width 2)
+    (setq flycheck-posframe-position 'window-top-right-corner)
     (add-hook 'flycheck-mode-hook #'flycheck-posframe-mode)
     (flycheck-posframe-configure-pretty-defaults))
 

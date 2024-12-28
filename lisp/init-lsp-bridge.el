@@ -26,34 +26,13 @@
 (use-package yasnippet-snippets
   :ensure t)
 
-(require 'mark-power)
-(defun find-definitions-with-lsp-bridge ()
-  (interactive)
-  (mark-power--set-mark "find-def")
-  (lsp-bridge-find-def))
-
-(defun find-impl-with-lsp-bridge ()
-  (interactive)
-  (mark-power--set-mark "find-impl")
-  (lsp-bridge-find-impl))
-
-(defun find-peek-with-lsp-bridge ()
-  (interactive)
-  (mark-power--set-mark "find-peek")
-  (lsp-bridge-peek-jump))
-
-(defun find-typedef-with-lsp-bridge ()
-  (interactive)
-  (mark-power--set-mark "find-typedef")
-  (lsp-bridge-find-type-def))
-
 (use-package lsp-bridge
   :vc (:fetcher github :repo "manateelazycat/lsp-bridge")
   :hook ((prog-mode) . lsp-bridge-mode)
   :hook ((prog-mode) . lsp-bridge-semantic-tokens-mode)
   :bind (:map lsp-bridge-mode-map
-              ("M-." . find-definitions-with-lsp-bridge)
-              ("M-," . mark-power--jump-back)
+              ;; ("M-." . find-definitions-with-lsp-bridge)
+              ;; ("M-," . mark-power--jump-back)
               ("M-?" . lsp-bridge-find-references)
               ("M-<up>" . lsp-bridge-popup-documentation-scroll-down)
               ("M-<down>" . lsp-bridge-popup-documentation-scroll-up))
@@ -63,7 +42,7 @@
   :bind (:map lsp-bridge-peek-keymap
               ("M-p" . lsp-bridge-peek-list-prev-line)
               ("M-n" . lsp-bridge-peek-list-next-line)
-              ("M-<return>" . find-peek-with-lsp-bridge))
+              ("<return>" . lsp-bridge-peek-jump))
   :custom
   (acm-enable-icon t)
   (acm-enable-yas t)
@@ -107,18 +86,17 @@
     "a"  '(lsp-bridge-code-action :wk "Code actions")
     "e"  '(lsp-bridge-diagnostic-list :wk "Diagnostic list")
     "f" '(lsp-bridge-code-format :wk "Format code")
-    "i"  '(find-impl-with-lsp-bridge :wk "Find implementation")
+    "i"  '(lsp-bridge-find-impl :wk "Find implementation")
     "k"  '(lsp-bridge-popup-documentation :wk "Find Document")
     "p"  '(lsp-bridge-peek :wk "Peek")
     "r" '(lsp-bridge-rename :wk "Rename")
-    "t"  '(find-typedef-with-lsp-bridge :wk "Find type definition")
+    "t"  '(lsp-bridge-find-type-def :wk "Find type definition")
     "?" '(lsp-bridge-find-references :wk "Find References")))
 
 
 (add-hook 'web-mode-hook (lambda ()
-                            (setq lsp-bridge-completion-obey-trigger-characters-p nil)
-                            (setq lsp-bridge-completion-hide-characters '(":" ";" "(" ")" "[" "]" "{" "}" "," "\"" ">" "()" "{}"))
-                            ))
+                           (setq lsp-bridge-completion-obey-trigger-characters-p nil)
+                           (setq lsp-bridge-completion-hide-characters '(":" ";" "(" ")" "[" "]" "{" "}" "," "\"" ">" "()" "{}"))))
 
 
 (provide 'init-lsp-bridge)
