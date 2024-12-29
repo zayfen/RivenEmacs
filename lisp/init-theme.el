@@ -93,11 +93,6 @@
                                        "?=" "?." "??" ";;" "/*" "/=" "/>" "//" "__" "~~" "(*" "*)"
                                        "\\\\" "://")))
 
-;; (use-package composite
-;;   :ensure nil
-;;   :defer t
-;;   :hook (prog-mode . auto-composition-mode)
-;;   :init (global-auto-composition-mode -1))
 
 (use-package minions
   :vc (:fetcher github :repo tarsius/minions)
@@ -105,6 +100,7 @@
   (setq minions-mode-line-lighter "👋")
   (add-to-list 'minions-prominent-modes 'flycheck-mode)
   (minions-mode 1))
+(add-hook 'after-init-hook 'minions-mode)
 
 (use-package spacious-padding
   :init
