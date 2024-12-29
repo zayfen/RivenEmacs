@@ -5,6 +5,7 @@
 
 ;;; Code:
 (use-package citre
+  :vc (:fetcher github :repo universal-ctags/citre)
   :defer t
   :init
   ;; This is needed in `:init' block for lazy load to work.
@@ -15,6 +16,9 @@
   (global-set-key (kbd "C-x c J") 'citre-jump-back)
   (global-set-key (kbd "C-x c p") 'citre-ace-peek)
   (global-set-key (kbd "C-x c u") 'citre-update-this-tags-file)
+  :bind (:map citre-mode-map
+              ("M-." . 'citre-jump)
+              ("M-," . 'citre-jump-back))
   :config
   (setq
    ;; Set these if readtags/ctags is not in your PATH.
@@ -34,6 +38,6 @@
    citre-edit-ctags-options-manually nil
    ;; If you only want the auto enabling citre-mode behavior to work for
    ;; certain modes (like `prog-mode'), set it like this.
-   citre-auto-enable-citre-mode-modes '(rust-ts-mode go-ts-mode c-mode c-ts-mode c++-mode c++-ts-mode python-mode python-ts-mode)))
+   citre-auto-enable-citre-mode-modes '(typescript-ts-mode)))
 
 (provide 'init-citre)
