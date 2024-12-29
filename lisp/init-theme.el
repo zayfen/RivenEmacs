@@ -70,7 +70,6 @@
 ;; This assumes you've installed the package via MELPA.
 (use-package ligature
   :vc (:fetcher github :repo mickeynp/ligature.el)
-  :init (global-ligature-mode t)
   :hook ((prog-mode . ligature-mode))
   :config
   ;; Enable the "www" ligature in every possible major mode
@@ -78,6 +77,7 @@
   ;; Enable traditional ligature support in eww-mode, if the
   ;; `variable-pitch' face supports it
   (ligature-set-ligatures 'eww-mode '("ff" "fi" "ffi"))
+  (global-ligature-mode t)
   ;; Enable all Cascadia Code ligatures in programming modes
   (ligature-set-ligatures 'prog-mode '("|||>" "<|||" "<==>" "<!--" "####" "~~>" "***" "||=" "||>"
                                        ":::" "::=" "=:=" "===" "==>" "=!=" "=>>" "=<<" "=/=" "!=="
@@ -91,14 +91,20 @@
                                        "<$" "<=" "<>" "<-" "<<" "<+" "</" "#{" "#[" "#:" "#=" "#!"
                                        "##" "#(" "#?" "#_" "%%" ".=" ".-" ".." ".?" "+>" "++" "?:"
                                        "?=" "?." "??" ";;" "/*" "/=" "/>" "//" "__" "~~" "(*" "*)"
-                                       "\\\\" "://"))
-  )
+                                       "\\\\" "://")))
 
-(use-package composite
-  :ensure nil
-  :defer t
-  :hook (prog-mode . auto-composition-mode)
-  :init (global-auto-composition-mode -1))
+;; (use-package composite
+;;   :ensure nil
+;;   :defer t
+;;   :hook (prog-mode . auto-composition-mode)
+;;   :init (global-auto-composition-mode -1))
+
+(use-package minions
+  :vc (:fetcher github :repo tarsius/minions)
+  :config
+  (setq minions-mode-line-lighter "👋")
+  (add-to-list 'minions-prominent-modes 'flycheck-mode)
+  (minions-mode 1))
 
 (use-package spacious-padding
   :init
