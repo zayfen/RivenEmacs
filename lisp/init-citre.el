@@ -14,7 +14,7 @@
   ;; in `citre-mode-map' so you can only use them when `citre-mode' is enabled.
   (global-set-key (kbd "C-x c j") 'citre-jump)
   (global-set-key (kbd "C-x c J") 'citre-jump-back)
-  (global-set-key (kbd "C-x c p") 'citre-ace-peek)
+  (global-set-key (kbd "C-x c p") 'citre-peek)
   (global-set-key (kbd "C-x c u") 'citre-update-this-tags-file)
   :bind (:map citre-mode-map
               ("M-." . 'citre-jump)
