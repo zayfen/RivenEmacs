@@ -18,13 +18,12 @@
                                                          :size (cond ((eq system-type 'gnu/linux) 20)
                                                                      ((eq system-type 'windows-nt) 12.5)
                                                                      ((eq system-type 'darwin) 14))))
-
 (defun font-installed-p (font-name)
   "Check if font with FONT-NAME is available."
   (find-font (font-spec :name font-name)))
 
 (when (display-graphic-p)
-  (cl-loop for font in '("IBM Plex Mono" "SF Mono" "Cascadia Code NF" "JetBrains Mono NL" "FiraCode Nerd Font" "FiraCode" "Monaco" "Menlo"  "Cascadia Code" "Source Code Pro"
+  (cl-loop for font in '("Liga SFMono Nerd Font" "IBM Plex Mono" "SF Mono" "Cascadia Code NF" "JetBrains Mono NL" "FiraCode Nerd Font" "FiraCode" "Monaco" "Menlo"  "Cascadia Code" "Source Code Pro"
                          "Dejavu Sans Mono"
                          "Lucida Console" "Consolas" "SAS Monospace")
            when (font-installed-p font)
