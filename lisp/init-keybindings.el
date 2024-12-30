@@ -35,7 +35,8 @@
          :infix "k"
          "" '(:ignore t :wk "Kill")
          "k" '(sp-splice-sexp :wk "Delete pair")
-         "s" '(sp-delete-sexp :wk "Delete Sexp"))
+         "s" '(sp-delete-sexp :wk "Delete Sexp")
+         "r" '(sp-rewrap-sexp :wk "Delete pair And Rewrap"))
 
        (open-leader-def
          "" '(:ignore t :wk "Open Tool")
