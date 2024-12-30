@@ -5,10 +5,9 @@
   :ensure t
   :defer t)
 
-
 (use-package web-mode
   :ensure t
-  :mode ("\\.vue\\'" "\\.html\\'")
+  :mode ("\\.vue\\'" "\\.html\\'" "\\.ejs\\'")
   :commands web-mode
   :config
   (setq web-mode-enable-auto-closing t) ;)

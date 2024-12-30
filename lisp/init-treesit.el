@@ -60,15 +60,15 @@
         ))
 
 
-(add-hook 'web-mode-hook #'(lambda ()
-                             (let ((file-name (buffer-file-name)))
-                               (when file-name
-                                 (treesit-parser-create
-                                  (pcase (file-name-extension file-name)
-                                    ("vue" 'vue)
-                                    ("html" 'html)
-                                    ("php" 'php))))
-                               )))
+;; (add-hook 'web-mode-hook #'(lambda ()
+;;                              (let ((file-name (buffer-file-name)))
+;;                                (when file-name
+;;                                  (treesit-parser-create
+;;                                   (pcase (file-name-extension file-name)
+;;                                     ("vue" 'vue)
+;;                                     ("html" 'html)
+;;                                     ("php" 'php))))
+;;                                )))
 
 (add-hook 'markdown-mode-hook #'(lambda () (treesit-parser-create 'markdown)))
 (add-hook 'zig-mode-hook #'(lambda () (treesit-parser-create 'zig)))
