@@ -15,6 +15,8 @@
   ;; add others mode
   (add-to-list 'treesit-fold-range-alist
                '(jtsx-typescript-mode . ,(treesit-fold-parsers-typescript)))
+  (add-to-list 'treesit-fold-range-alist
+               '(jtsx-tsx-mode . ,(treesit-fold-parsers-typescript)))
   )
 
 
