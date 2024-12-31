@@ -15,8 +15,8 @@
   ;; vertically center content
   (setq dashboard-vertically-center-content t)
   ;; To disable shortcut "jump" indicators for each section, set
-  (setq dashboard-show-shortcuts nil)
-  (setq dashboard-items '((recents   . 5)
+  (setq dashboard-show-shortcuts t)
+  (setq dashboard-items '((recents   . 6)
                           (bookmarks . 5)
                           (projects  . 5)
                           (agenda    . 5)
