@@ -20,7 +20,7 @@
   :commands goto-last-change)
 
 (use-package dogears
-  :init (dogears-mode)
+  :hook (prog-mode . dogears-mode)
   :bind (:map global-map
               ("M-g d" . dogears-go)
               ("M-g M-b" . dogears-back)
@@ -28,13 +28,8 @@
               ("M-g M-d" . dogears-list)
               ("M-g M-D" . dogears-sidebar))
   :config
-  (setq dogears-functions '(find-file
-                            other-window switch-to-buffer
-                            aw-select
-                            toggle-window-split
-                            windmove-do-window-select
-                            pager-page-down pager-page-up
-                            tab-bar-select-tab
+  (setq dogears-functions '(windmove-do-window-select
+                            +goto-file-at-point
                             pop-to-mark-command
                             pop-global-mark
                             goto-last-change
