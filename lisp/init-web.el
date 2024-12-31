@@ -23,8 +23,8 @@
   (add-hook 'web-mode-hook  'emmet-mode)
   ;; C-l C-l is lookup function
   (add-hook 'web-mode-hook
-          (lambda()
-            (local-unset-key (kbd "C-c C-l")))))
+            (lambda()
+              (local-unset-key (kbd "C-c C-l")))))
 
 (add-to-list 'auto-mode-alist '("\\.ts$" . typescript-ts-mode))
 (add-to-list 'auto-mode-alist '("\\.tsx$" . tsx-ts-mode))
@@ -86,14 +86,15 @@
     )
 
   (defun jtsx-bind-keys-to-jtsx-jsx-mode-map ()
-      (jtsx-bind-keys-to-mode-map jtsx-jsx-mode-map))
+    (jtsx-bind-keys-to-mode-map jtsx-jsx-mode-map))
 
   (defun jtsx-bind-keys-to-jtsx-tsx-mode-map ()
-      (jtsx-bind-keys-to-mode-map jtsx-tsx-mode-map))
+    (jtsx-bind-keys-to-mode-map jtsx-tsx-mode-map))
 
   (add-hook 'jtsx-jsx-mode-hook 'jtsx-bind-keys-to-jtsx-jsx-mode-map)
   (add-hook 'jtsx-tsx-mode-hook 'jtsx-bind-keys-to-jtsx-tsx-mode-map)
   ;; add this mode to treesit-fold-range-alist
+  (require 'treesit-fold)
   (add-to-list 'treesit-fold-range-alist
                '(jtsx-tsx-mode . ,(treesit-fold-parsers-typescript))))
 

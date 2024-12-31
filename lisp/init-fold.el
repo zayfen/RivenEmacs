@@ -15,8 +15,6 @@
   ;; add others mode
   (add-to-list 'treesit-fold-range-alist
                '(jtsx-typescript-mode . ,(treesit-fold-parsers-typescript)))
-  (add-to-list 'treesit-fold-range-alist
-               '(jtsx-tsx-mode . ,(treesit-fold-parsers-typescript)))
   )
 
 
@@ -29,7 +27,7 @@
   (dolist (h '(c++-mode-hook c++-ts-mode-hook c-mode-hook c-ts-mode-hook cuda-mode-hook))
       (add-hook h #'hide-ifdef-mode))
   :custom
-  (hide-ifdef-shadow t)
+  (hide-ifdef-shadow t) 
   (hide-ifdef-initially t))
 
 (provide 'init-fold)
