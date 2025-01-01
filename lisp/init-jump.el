@@ -35,12 +35,12 @@
                             goto-last-change
                             xref-go-back
                             xref-find-definitions
+                            embark-dwim
                             xref-find-references
                             lsp-bridge-find-def
                             lsp-bridge-find-type-def
                             lsp-bridge-find-impl
-                            lsp-bridge-find-references))
-  )
+                            lsp-bridge-find-references)))
 
 
 (provide 'init-jump)
