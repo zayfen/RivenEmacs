@@ -13,12 +13,9 @@
   ;; Bind your frequently used commands.  Alternatively, you can define them
   ;; in `citre-mode-map' so you can only use them when `citre-mode' is enabled.
   (global-set-key (kbd "C-x c j") 'citre-jump)
-  (global-set-key (kbd "C-x c J") 'citre-jump-back)
+  (global-set-key (kbd "C-x c b") 'citre-jump-back)
   (global-set-key (kbd "C-x c p") 'citre-peek)
   (global-set-key (kbd "C-x c u") 'citre-update-this-tags-file)
-  :bind (:map citre-mode-map
-              ("M-." . 'citre-jump)
-              ("M-," . 'citre-jump-back))
   :config
   (setq
    ;; Set these if readtags/ctags is not in your PATH.
@@ -38,6 +35,6 @@
    citre-edit-ctags-options-manually nil
    ;; If you only want the auto enabling citre-mode behavior to work for
    ;; certain modes (like `prog-mode'), set it like this.
-   citre-auto-enable-citre-mode-modes '(typescript-ts-mode)))
+   citre-auto-enable-citre-mode-modes '(typescript-ts-mode c-mode c-ts-mode c++-mode c++-ts-mode python-mode python-ts-mode rust-ts-mode)))
 
 (provide 'init-citre)

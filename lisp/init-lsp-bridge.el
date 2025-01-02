@@ -80,12 +80,20 @@
   (add-to-list 'lsp-bridge-multi-lang-server-extension-list '(("html") . "html_tailwindcss"))
   (add-to-list 'lsp-bridge-multi-lang-server-extension-list '(("css") . "css_tailwindcss"))
 
+  (defun +lsp-bridge-find-def ()
+    (interactive "*")
+    (require 'embark)
+    (embark--xref-push-marker)
+    (lsp-bridge-find-def))
+
+  (define-key lsp-bridge-mode-map [remap embark-dwim] #'+lsp-bridge-find-def)
+
   (leader-def :keymaps 'lsp-bridge-mode-map
     :infix "c"
     "" '(:ignore t :wk "Code")
     "a"  '(lsp-bridge-code-action :wk "Code actions")
     "e"  '(lsp-bridge-diagnostic-list :wk "Diagnostic list")
-    "d" '(lsp-bridge-find-def :wk "Find define")
+    "d" '(+lsp-bridge-find-def :wk "Find define")
     "f" '(lsp-bridge-code-format :wk "Format code")
     "i"  '(lsp-bridge-find-impl :wk "Find implementation")
     "k"  '(lsp-bridge-popup-documentation :wk "Find Document")
@@ -101,5 +109,3 @@
 
 
 (provide 'init-lsp-bridge)
-
-
