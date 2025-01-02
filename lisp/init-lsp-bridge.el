@@ -22,7 +22,6 @@
                  (eq old-tick (buffer-chars-modified-tick)))
         (ignore-errors (yas-next-field))))))
 
-
 (use-package yasnippet-snippets
   :ensure t)
 
@@ -31,8 +30,6 @@
   :hook ((prog-mode) . lsp-bridge-mode)
   :hook ((prog-mode) . lsp-bridge-semantic-tokens-mode)
   :bind (:map lsp-bridge-mode-map
-              ;; ("M-." . find-definitions-with-lsp-bridge)
-              ;; ("M-," . mark-power--jump-back)
               ("M-?" . lsp-bridge-find-references)
               ("M-P" . lsp-bridge-popup-documentation-scroll-down)
               ("M-N" . lsp-bridge-popup-documentation-scroll-up))
@@ -86,7 +83,11 @@
     (embark--xref-push-marker)
     (lsp-bridge-find-def))
 
-  (define-key lsp-bridge-mode-map [remap embark-dwim] #'+lsp-bridge-find-def)
+  (with-eval-after-load 'embark
+    (define-key embark-function-map (kbd "RET") #'+lsp-bridge-find-def)
+    (define-key embark-identifier-map (kbd "RET") #'+lsp-bridge-find-def))
+
+  ;; (define-key lsp-bridge-mode-map [remap embark-dwim] #'+lsp-bridge-find-def)
 
   (leader-def :keymaps 'lsp-bridge-mode-map
     :infix "c"
