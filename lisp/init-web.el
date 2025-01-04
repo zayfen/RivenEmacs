@@ -27,8 +27,8 @@
               (local-unset-key (kbd "C-c C-l")))))
 
 (add-to-list 'auto-mode-alist '("\\.ts$" . typescript-ts-mode))
-(add-to-list 'auto-mode-alist '("\\.tsx$" . tsx-ts-mode))
-(add-to-list 'auto-mode-alist '("\\.jsx$" . js-jsx-mode))
+;; (add-to-list 'auto-mode-alist '("\\.tsx$" . tsx-ts-mode))
+;; (add-to-list 'auto-mode-alist '("\\.jsx$" . js-jsx-mode))
 (add-to-list 'auto-mode-alist '("\\.js$" . js-ts-mode))
 
 (setq js-indent-level 2)
