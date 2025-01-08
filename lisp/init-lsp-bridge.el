@@ -67,10 +67,7 @@
   (lsp-bridge-python-multi-lsp-server "pyright_ruff")
   (lsp-bridge-multi-lang-server-extension-list
    '(
-     (("ts") . "typescript_eslint")
-     (("tsx") . "typescriptreact_eslint")
      (("css" "scss" "sass" "less") . "css_emmet")
-     (("vue") . "volar_emmet")
      ))
 
   :config
@@ -93,8 +90,6 @@
     (define-key embark-function-map (kbd "RET") #'+lsp-bridge-find-references)
     (define-key embark-defun-map (kbd "RET") #'+lsp-bridge-find-references)
     (define-key embark-identifier-map (kbd "RET") #'+lsp-bridge-find-def))
-
-  ;; (define-key lsp-bridge-mode-map [remap embark-dwim] #'+lsp-bridge-find-def)
 
   (leader-def :keymaps 'lsp-bridge-mode-map
     :infix "c"
