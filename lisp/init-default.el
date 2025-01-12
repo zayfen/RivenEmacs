@@ -163,7 +163,6 @@ that directory."
 ;; (bind-key "C-c a f" #'ff-find-related-file)
 (bind-key "C-s" #'isearch-forward-regexp)
 
-;; (add-hook 'before-save-hook #'delete-trailing-whitespace)
 (setq require-final-newline t)
 
 

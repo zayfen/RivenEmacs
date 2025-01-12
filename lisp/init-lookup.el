@@ -17,7 +17,8 @@
   (add-hook 'jtsx-tsx-mode-hook (lambda () (setq-local devdocs-current-docs '("react" "typescript" "javascript" "html" "css" "node~18_lts" "tailwindcss"))))
   (add-hook 'js-ts-mode-hook (lambda () (setq-local devdocs-current-docs '("javascript" "html" "css" "node" "node~18_lts"))))
   (add-hook 'rust-ts-mode-hook (lambda () (setq-local devdocs-current-docs '("rust"))))
-  (add-hook 'python-ts-mode-hook (lambda () (setq-local devdocs-current-docs '("python~3.12")))))
+  (add-hook 'python-ts-mode-hook (lambda () (setq-local devdocs-current-docs '("python~3.12"))))
+  (add-hook 'vue-mode-hook (lambda () (setq-local devdocs-current-docs '("vue3" "tailwindcss" "javascript" "typescript")))))
 
 (use-package fanyi
   :ensure t
