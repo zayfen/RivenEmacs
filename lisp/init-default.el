@@ -180,7 +180,10 @@ that directory."
   (tooltip-mode -1)
   (pixel-scroll-mode 1))
 
-(display-time-mode 1)
+(setq display-time-format "%Y-%m-%d %H:%M %A")  ; Set the date and time format
+(setq display-time-24hr-format t)
+(setq display-time-default-load-average nil) ; Do not show load average
+(display-time-mode 1)                        ; Enable time display in the modeline
 
 (when (eq system-type 'darwin)
   (setq ns-auto-hide-menu-bar t))
