@@ -7,7 +7,7 @@
 
 (use-package web-mode
   :ensure t
-  :mode ("\\.vue\\'" "\\.html\\'" "\\.ejs\\'")
+  :mode ("\\.html\\'" "\\.ejs\\'")
   :commands web-mode
   :config
   (setq web-mode-enable-auto-closing t) ;)
@@ -25,6 +25,26 @@
   (add-hook 'web-mode-hook
             (lambda()
               (local-unset-key (kbd "C-c C-l")))))
+
+;; Define vue-mode
+(define-derived-mode vue-mode web-mode "Vue"
+  "Major mode for Vue.js files.")
+
+;; Associate .vue files with vue-mode
+(add-to-list 'auto-mode-alist '("\\.vue\\'" . vue-mode))
+
+;; Customize web-mode settings for vue-mode
+(defun my-vue-mode-hook ()
+  "Hooks for Vue.js files."
+  ;; Set indentation
+  (setq web-mode-markup-indent-offset 2)
+  (setq web-mode-css-indent-offset 2)
+  (setq web-mode-code-indent-offset 2)
+
+  ;; Additional configurations can go here
+)
+(add-hook 'vue-mode-hook 'my-vue-mode-hook)
+
 
 (add-to-list 'auto-mode-alist '("\\.ts$" . typescript-ts-mode))
 ;; (add-to-list 'auto-mode-alist '("\\.tsx$" . tsx-ts-mode))

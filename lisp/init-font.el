@@ -17,7 +17,7 @@
                                                          :slant 'normal
                                                          :size (cond ((eq system-type 'gnu/linux) 20)
                                                                      ((eq system-type 'windows-nt) 12.5)
-                                                                     ((eq system-type 'darwin) 14))))
+                                                                     ((eq system-type 'darwin) 12))))
 (defun font-installed-p (font-name)
   "Check if font with FONT-NAME is available."
   (find-font (font-spec :name font-name)))
@@ -33,7 +33,7 @@
                                     :weight 'normal
                                     :size (cond ((eq system-type 'gnu/linux) 20)
                                                 ((eq system-type 'windows-nt) 12.5)
-                                                ((eq system-type 'darwin) 16)))))
+                                                ((eq system-type 'darwin) 14)))))
 
   (cl-loop for font in '("OpenSansEmoji" "Noto Color Emoji" "Segoe UI Emoji"
                          "EmojiOne Color" "Apple Color Emoji" "Symbola" "Symbol")
@@ -42,7 +42,7 @@
                                     (font-spec :family font
                                                :size (cond ((eq system-type 'gnu/linux) 14)
                                                            ((eq system-type 'windows-nt) 15.0)
-                                                           ((eq system-type 'darwin) 16.0)))
+                                                           ((eq system-type 'darwin) 14.0)))
                                     nil 'prepend))
 
   (cl-loop for font in '("Sarasa Term SC Nerd" "文泉驿等宽微米黑" "思源黑体 CN" "思源宋体 CN" "微软雅黑 CN"
@@ -56,7 +56,7 @@
                                                :slant 'normal
                                                :scale (cond ((eq system-type 'gnu/linux) 1.25)
                                                            ((eq system-type 'windows-nt) 1.25)
-                                                           ((eq system-type 'darwin) 0.75)
+                                                           ((eq system-type 'darwin) 1)
                                                            )
                                                )))
   (cl-loop for font in '("HanaMinB" "SimSun-ExtB")
