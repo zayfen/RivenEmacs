@@ -22,6 +22,7 @@
   (flycheck-add-mode 'javascript-eslint 'typescript-ts-mode)
   (flycheck-add-mode 'javascript-eslint 'jsx-mode)
   (flycheck-add-mode 'javascript-eslint 'web-mode)
+  (flycheck-add-mode 'javascript-eslint 'vue-mode)
   (define-key flycheck-mode-map [remap next-error] #'flycheck-next-error)
   (define-key flycheck-mode-map [remap previous-error] #'flycheck-previous-error)
 
