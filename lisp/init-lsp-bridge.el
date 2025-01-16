@@ -68,7 +68,7 @@
   (lsp-bridge-multi-lang-server-extension-list
    '(
      (("css" "scss" "sass" "less") . "css_emmet")
-     ))
+     ("vue" . "volar_emmet")))
 
   :config
   (add-to-list 'lsp-bridge-multi-lang-server-extension-list '(("html") . "html_tailwindcss"))
