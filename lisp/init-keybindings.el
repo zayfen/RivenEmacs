@@ -60,7 +60,7 @@
          "e" '(+open-in-system-explorer :wk "Explorer")
          "n" '(elfeed :wk "News")
          "q" '(quickrun :wk "Quickrun")
-         "t" '(+onpen-term-in-current-directory :wk "Terminal"))
+         "t" '(+open-term-in-current-directory :wk "Terminal"))
 
        (lookup-leader-def
          "" '(:ignore t :wk "Lookup")
