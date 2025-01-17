@@ -62,8 +62,9 @@
       :infix "k"
       "" '(:ignore t :wk "Kill")
       "k" '(sp-splice-sexp :wk "Delete pair")
+      "K" '(sp-rewrap-sexp :wk "Delete pair And Rewrap")
       "s" '(sp-delete-sexp :wk "Delete Sexp")
-      "r" '(sp-rewrap-sexp :wk "Delete pair And Rewrap"))
+      "r" '(vr/replace :wk "Replace"))
 
     (open-leader-def
       "" '(:ignore t :wk "Open")
@@ -93,10 +94,6 @@
       "\!" '(:ignore t :wk "Checker(Flycheck)")
       "&" '(:ignore t :wk "Yasnippet")
       "@" '(:ignore t :wk "Hideshow"))
-
-    (leader-def
-      :infix "r"
-      "" '(vr/replace :wk "+Replace"))
 
     ;; Minibufer functions
     (leader-def
