@@ -13,7 +13,7 @@
   (interactive)
   (cond
    ((eq system-type 'windows-nt)
-    (w32-shell-execute "explore" (replace-regexp-in-string "/" "\\" default-directory t t)))
+    (w32-shell-execute "explorer" (replace-regexp-in-string "/" "\\" default-directory t t)))
    ((eq system-type 'darwin) (shell-command "open ."))
    ((eq system-type 'gnu/linux) (shell-command "xdg-open ."))))
 
