@@ -55,6 +55,7 @@
   (acm-backend-search-file-words-enable-fuzzy-match t)
   (acm-enable-lsp-workspace-symbol nil) ;dont show workspace symbol
   (acm-enable-quick-access t)
+  (acm-backend-search-file-words-candidate-min-length 3)
 
   (lsp-bridge-enable-log nil)
   (lsp-bridge-enable-diagnostics nil) ;; we use flycheck only
@@ -72,7 +73,7 @@
 
   :config
   (add-to-list 'lsp-bridge-multi-lang-server-extension-list '(("html") . "html_tailwindcss"))
-  (add-to-list 'lsp-bridge-multi-lang-server-extension-list '(("css") . "css_tailwindcss"))
+  (add-to-list 'lsp-bridge-multi-lang-server-extension-list '(("css" "scss" "sass" "less") . "css_tailwindcss"))
 
   (defun +lsp-bridge-find-def ()
     (interactive "*")

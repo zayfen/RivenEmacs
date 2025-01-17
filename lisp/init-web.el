@@ -47,19 +47,10 @@
 
 
 (add-to-list 'auto-mode-alist '("\\.ts$" . typescript-ts-mode))
-;; (add-to-list 'auto-mode-alist '("\\.tsx$" . tsx-ts-mode))
-;; (add-to-list 'auto-mode-alist '("\\.jsx$" . js-jsx-mode))
 (add-to-list 'auto-mode-alist '("\\.js$" . js-ts-mode))
 
 (setq js-indent-level 2)
 (setq typescript-ts-mode-indent-offset 2)
-
-;; (use-package tsx-ts-helper-mode
-;;   :vc (:fetcher codeberg :repo "ckruse/tsx-ts-helper-mode")
-;;   :commands (tsx-ts-helper-mode)
-;;   :custom (tsx-ts-helper-mode-keymap-prefix (kbd "C-c e"))
-;;   :hook (tsx-ts-mode . tsx-ts-helper-mode))
-
 
 ;; https://github.com/llemaitre19/jtsx
 (use-package jtsx
@@ -67,20 +58,11 @@
   :mode (("\\.jsx?\\'" . jtsx-jsx-mode)
          ("\\.tsx\\'" . jtsx-tsx-mode))
   :commands jtsx-install-treesit-language
-  :hook ((jtsx-jsx-mode . hs-minor-mode)
-         (jtsx-tsx-mode . hs-minor-mode)
-         (jtsx-typescript-mode . hs-minor-mode))
   :custom
   ;; Optional customizations
   (js-indent-level 2)
   (typescript-ts-mode-indent-offset 2)
   (jtsx-switch-indent-offset 2)
-  ;; (jtsx-indent-statement-block-regarding-standalone-parent nil)
-  ;; (jtsx-jsx-element-move-allow-step-out t)
-  ;; (jtsx-enable-jsx-electric-closing-element t)
-  ;; (jtsx-enable-electric-open-newline-between-jsx-element-tags t)
-  ;; (jtsx-enable-jsx-element-tags-auto-sync nil)
-  ;; (jtsx-enable-all-syntax-highlighting-features t)
   :config
   (flycheck-add-mode 'javascript-eslint 'jtsx-tsx-mode)
   (flycheck-add-mode 'javascript-eslint 'jtsx-jsx-mode)
