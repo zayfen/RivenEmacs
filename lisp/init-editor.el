@@ -34,7 +34,7 @@
 (use-package sudo-edit)
 
 (use-package visual-regexp
-  :bind (("C-c r" . #'vr/replace)))
+  :commands (vr/replace))
 
 
 (use-package color-rg

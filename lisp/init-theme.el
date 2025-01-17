@@ -116,4 +116,13 @@
   :init
   (spacious-padding-mode 1))
 
+;; beautiful compilation buffer
+(use-package fancy-compilation
+  :commands (fancy-compilation-mode))
+
+(with-eval-after-load 'compile
+  (fancy-compilation-mode))
+
+
 (provide 'init-theme)
+;;; init-theme.el ends here

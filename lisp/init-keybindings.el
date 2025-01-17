@@ -7,6 +7,14 @@
          "Find any file from home directory"
          (consult-fd "~/"))
 
+(defun open-in-system-explorer ()
+  "Open the current directory in the system's file explorer."
+  (interactive)
+  (cond
+   ((eq system-type 'windows-nt) (w32-shell-execute "explore" (replace-regexp-in-string "/" "\\" default-directory t t)))
+   ((eq system-type 'darwin) (shell-command "open ."))
+   ((eq system-type 'gnu/linux) (shell-command "xdg-open ."))))
+
 (defun keybindings-config()
   (progn
        (leader-def
@@ -42,7 +50,8 @@
          "" '(:ignore t :wk "Open Tool")
          "d" '(docker :wk "Docker")
          "q" '(quickrun :wk "Quickrun")
-         "n" '(elfeed :wk "News"))
+         "n" '(elfeed :wk "News")
+         "e" '(open-in-system-explorer :wk "Open in explorer"))
 
        (lookup-leader-def
          "" '(:ignore t :wk "Lookup")
@@ -64,6 +73,11 @@
          "\!" '(:ignore t :wk "Checker(Flycheck)")
          "&" '(:ignore t :wk "Yasnippet")
          "@" '(:ignore t :wk "Hideshow"))
+
+       (leader-def
+         :infix "r"
+         "" '(vr/replace :wk "+Replace"))
+       
        ))
 
 
