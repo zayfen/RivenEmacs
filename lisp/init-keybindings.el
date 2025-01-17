@@ -7,13 +7,21 @@
          "Find any file from home directory"
          (consult-fd "~/"))
 
-(defun open-in-system-explorer ()
+(defun +open-in-system-explorer ()
   "Open the current directory in the system's file explorer."
   (interactive)
   (cond
    ((eq system-type 'windows-nt) (w32-shell-execute "explore" (replace-regexp-in-string "/" "\\" default-directory t t)))
    ((eq system-type 'darwin) (shell-command "open ."))
    ((eq system-type 'gnu/linux) (shell-command "xdg-open ."))))
+
+(defun +open-term-in-current-directory ()
+  "Open a terminal in the current directory."
+  (interactive)
+  (let ((default-directory (if (buffer-file-name)
+                               (file-name-directory (buffer-file-name))
+                             default-directory)))
+    (ansi-term "/usr/bin/zsh"))) ; Replace "/bin/bash" with your preferred shell (e.g., "/bin/zsh")
 
 (defun keybindings-config()
   (progn
@@ -47,11 +55,12 @@
          "r" '(sp-rewrap-sexp :wk "Delete pair And Rewrap"))
 
        (open-leader-def
-         "" '(:ignore t :wk "Open Tool")
+         "" '(:ignore t :wk "Open")
          "d" '(docker :wk "Docker")
-         "q" '(quickrun :wk "Quickrun")
+         "e" '(+open-in-system-explorer :wk "Explorer")
          "n" '(elfeed :wk "News")
-         "e" '(open-in-system-explorer :wk "Open in explorer"))
+         "q" '(quickrun :wk "Quickrun")
+         "t" '(+onpen-term-in-current-directory :wk "Terminal"))
 
        (lookup-leader-def
          "" '(:ignore t :wk "Lookup")
@@ -77,7 +86,7 @@
        (leader-def
          :infix "r"
          "" '(vr/replace :wk "+Replace"))
-       
+
        ))
 
 
