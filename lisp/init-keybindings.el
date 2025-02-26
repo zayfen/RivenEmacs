@@ -83,11 +83,14 @@
 
     (gpt-leader-def
       "" '(:ignore t :wk "GPT")
-      "g" '(gptel :wk "GPT")
-      "s" '(gptel-send :wk "GPT send")
-      "b" '(gptel-extensions-send-whole-buffer :wk "GPT send buffer")
+      "a" '(gptel-aibo :wk "Aibo Console")
+      "g" '(gptel :wk "GPT Console")
+      "s" '(gptel-send :wk "Send region or text to point")
+      "b" '(gptel-extensions-send-whole-buffer :wk "Send buffer")
       "t" '(gptel-translate-to-langs :wk "Translate to many languages")
-      "w" '(gptel-extensions-ask-document :wk "GPT ask document"))
+      "w" '(gptel-extensions-ask-document :wk "Ask document")
+      "i" '(gptel-aibo-complete-at-point :wk "Completion at point")
+      "<return>" '(gptel-aibo-apply-last-suggestions :wk "Apply last suggestion"))
 
     ;; define prefix lable
     (leader-def

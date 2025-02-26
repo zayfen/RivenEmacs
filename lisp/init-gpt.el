@@ -38,7 +38,13 @@
   :bind (("C-x =" . 'gptel-extensions-refactor)))
 
 
-
+(use-package gptel-aibo
+  :vc (:fetcher github :repo dolmens/gptel-aibo)
+  :after (gptel)
+  :hook (prog-mode . gptel-aibo-complete-mode)
+  ;; :config
+  ;; (add-hook 'prog-mode-hook #'gptel-aibo-complete-mode)
+  )
 
 (provide 'init-gpt)
 
