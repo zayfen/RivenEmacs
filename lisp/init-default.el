@@ -185,8 +185,8 @@ that directory."
 (setq display-time-default-load-average nil) ; Do not show load average
 (display-time-mode 1)                        ; Enable time display in the modeline
 
-(when (eq system-type 'darwin)
-  (setq ns-auto-hide-menu-bar t))
+;; (when (eq system-type 'darwin)
+;;   (setq ns-auto-hide-menu-bar t))
 
 (add-hook 'compilation-mode-hook 'visual-line-mode)
 

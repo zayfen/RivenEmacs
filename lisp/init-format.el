@@ -27,7 +27,7 @@
   :vc (:fetcher github :repo lassik/emacs-format-all-the-code)
   :commands format-all-mode
   ;; :hook (prog-mode . format-all-mode) ;; dont want format code on save
-  :bind ("M-I" . format-all-region-or-buffer)
+  :bind ("C-S-i" . format-all-region-or-buffer)
   :config
   (setq-default format-all-formatters
                 '(("C"     (astyle "--mode=c"))
