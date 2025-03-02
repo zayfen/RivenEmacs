@@ -49,7 +49,7 @@
   (acm-enable-path t)
   (acm-backend-yas-match-by-trigger-keyword t)
   (acm-enable-tabnine nil)
-  (acm-enable-codeium nil)
+  (acm-enable-copilot t)
   (acm-enable-preview t)
   (acm-enable-capf t)
   (acm-backend-search-file-words-enable-fuzzy-match t)
@@ -60,7 +60,7 @@
   (lsp-bridge-enable-log nil)
   (lsp-bridge-enable-diagnostics nil) ;; we use flycheck only
   (lsp-bridge-enable-hover-diagnostic t)
-  (lsp-bridge-code-action-enable-popup-menu t)
+  (lsp-bridge-code-action-enable-popup-menu nil)
   (lsp-bridge-find-ref-fallback #'xref-find-references)
   (lsp-bridge-inlay-hint t)
   (lsp-bridge-signature-show-function 'lsp-bridge-signature-show-with-frame)
