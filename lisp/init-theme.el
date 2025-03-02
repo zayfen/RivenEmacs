@@ -116,7 +116,7 @@
   :init
   (spacious-padding-mode 1)
   :custom
-  (spacious-padding-widths 8))
+  (spacious-padding-widths 6))
 
 ;; beautiful compilation buffer
 (use-package fancy-compilation
