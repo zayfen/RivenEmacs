@@ -112,9 +112,19 @@
   (add-to-list 'minions-prominent-modes 'flycheck-mode))
 
 (use-package spacious-padding
-  :init
-  (setq spacious-padding-widths 6)
-  (spacious-padding-mode 1))
+  :ensure t
+  :if (display-graphic-p)
+  ;; :hook after-init
+  :hook (after-init . spacious-padding-mode)
+  :custom
+  (spacious-padding-widths
+   '( :internal-border-width 15
+      :header-line-width 4
+      :mode-line-width 2
+      :tab-width 4
+      :right-divider-width 2
+      :scroll-bar-width 8
+      :fringe-width 8)))
 
 ;; beautiful compilation buffer
 (use-package fancy-compilation
