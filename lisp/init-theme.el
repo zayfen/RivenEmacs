@@ -6,7 +6,6 @@
   :vc (:fetcher github :repo emacs-dashboard/emacs-dashboard)
   :commands (dashboard-open)
   :config
-  (dashboard-setup-startup-hook)
   (setq dashboard-banner-logo-title "Welcome to RivenEmacs")
   ;; Set the banner
   (setq dashboard-startup-banner 'official)
@@ -20,10 +19,10 @@
                           (bookmarks . 5)
                           (projects  . 5)
                           (agenda    . 5)
-                          (registers . 5))))
+                          (registers . 5)))
+  (dashboard-setup-startup-hook))
 
 (add-hook 'after-init-hook (lambda () (dashboard-open)))
-
 
 ;; load theme and config
 ;; (load-theme 'modus-vivendi t)
@@ -83,7 +82,7 @@
   :hook ((prog-mode . ligature-mode))
   :config
   ;; Enable the "www" ligature in every possible major mode
-  (ligature-set-ligatures 't '("www"))
+  (ligature-set-ligatures t '("www"))
   ;; Enable traditional ligature support in eww-mode, if the
   ;; `variable-pitch' face supports it
   (ligature-set-ligatures 'eww-mode '("ff" "fi" "ffi"))
@@ -106,17 +105,16 @@
 
 (use-package minions
   :vc (:fetcher github :repo tarsius/minions)
+  :init
+  (minions-mode 1)
   :config
   (setq minions-mode-line-lighter "👋")
-  (add-to-list 'minions-prominent-modes 'flycheck-mode)
-  (minions-mode 1))
-(add-hook 'after-init-hook 'minions-mode)
+  (add-to-list 'minions-prominent-modes 'flycheck-mode))
 
 (use-package spacious-padding
   :init
-  (spacious-padding-mode 1)
-  :custom
-  (spacious-padding-widths 6))
+  (setq spacious-padding-widths 6)
+  (spacious-padding-mode 1))
 
 ;; beautiful compilation buffer
 (use-package fancy-compilation
@@ -125,6 +123,4 @@
 (with-eval-after-load 'compile
   (fancy-compilation-mode))
 
-
 (provide 'init-theme)
-;;; init-theme.el ends here
