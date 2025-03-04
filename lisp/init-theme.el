@@ -88,7 +88,7 @@
                     mode-line-format))
 
 
-;; customize mode-line end
+;;;;;;;; customize mode-line end ;;;;;;;;;;;;;;
 
 (add-hook 'prog-mode-hook (lambda ()
                             ;; (set-face-attribute 'fringe nil :background "#000000") ;; setting for modus-vivendi theme

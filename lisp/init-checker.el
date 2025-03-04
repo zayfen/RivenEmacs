@@ -26,6 +26,24 @@
   (define-key flycheck-mode-map [remap next-error] #'flycheck-next-error)
   (define-key flycheck-mode-map [remap previous-error] #'flycheck-previous-error)
 
+  ;; 定义自定义的 mode-line 显示函数
+  (defun my-flycheck-mode-line ()
+    "根据 Flycheck 的错误和警告状态显示带有颜色的 mode-line 文本。"
+    (let* ((error-counts (flycheck-count-errors flycheck-current-errors))
+           (errors (or (cdr (assq 'error error-counts)) 0))
+           (warnings (or (cdr (assq 'warning error-counts)) 0))
+           (text (format " %d | %d " errors warnings)))
+      (cond
+       ((> errors 0)
+        (propertize text 'face '(:foreground "red")))
+       ((> warnings 0)
+        (propertize text 'face '(:foreground "yellow")))
+       (t
+        (propertize text 'face '(:foreground "green"))))))
+
+  ;; 将自定义函数应用到 Flycheck 的 mode-line
+  (setq flycheck-mode-line '(:eval (my-flycheck-mode-line)))
+
   :custom
   (flycheck-indication-mode 'left-fringe)
   (flycheck-emacs-lisp-load-path 'inherit)
