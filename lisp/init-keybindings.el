@@ -104,6 +104,10 @@
       "" '(:ignore t :wk "Minibuffer")
       "p" '(+show-current-buffer-path :wk "Show buffer path"))
 
+    ;; Aider
+    (leader-def
+      "a" '(aider-transient-menu :wk "Aider"))
+
     ))
 
 

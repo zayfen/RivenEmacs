@@ -46,6 +46,18 @@
   ;; (add-hook 'prog-mode-hook #'gptel-aibo-complete-mode)
   )
 
+
+(use-package aider
+  :vc (:fetcher github :repo "tninja/aider.el")
+  :commands (aider-transient-menu)
+  :config
+  ;; For latest claude sonnet model
+  ;; (setq aider-args '("--model" "sonnet"))
+  ;; (setenv "ANTHROPIC_API_KEY" anthropic-api-key)
+  ;; Or use your personal config file
+  (setq aider-args `("--config" ,(expand-file-name "~/.aider.conf.yml")))
+  )
+
 (provide 'init-gpt)
 
 ;;; init-gpt.el ends here
