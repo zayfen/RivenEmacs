@@ -72,6 +72,8 @@
      ("vue" . "volar_emmet")))
 
   :config
+  (define-key acm-mode-map (kbd "C-m") nil)
+  (define-key acm-mode-map (kbd "<return>") nil)
   (add-to-list 'lsp-bridge-multi-lang-server-extension-list '(("html") . "html_tailwindcss"))
   (add-to-list 'lsp-bridge-multi-lang-server-extension-list '(("css" "scss" "sass" "less") . "css_tailwindcss"))
 
