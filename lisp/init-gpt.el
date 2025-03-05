@@ -9,7 +9,7 @@
   :vc (:fetcher github :repo karthink/gptel)
   :config
   ;; OPTIONAL configuration
-  (setq gptel-model   "deepseek-chat"
+  (setq gptel-model   'deepseek-chat
         gptel-backend
         (gptel-make-openai "DeepSeek"
           :host "api.deepseek.com"
