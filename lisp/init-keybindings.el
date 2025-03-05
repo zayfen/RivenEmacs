@@ -86,10 +86,10 @@
       "a" '(gptel-aibo :wk "Aibo Console")
       "g" '(gptel :wk "GPT Console")
       "s" '(gptel-send :wk "Send region or text to point")
-      "b" '(gptel-extensions-send-whole-buffer :wk "Send buffer")
+      "r" '(gptel-rewrite :wk "Rewrite(Refactor)")
       "t" '(gptel-translate-to-langs :wk "Translate to many languages")
-      "w" '(gptel-extensions-ask-document :wk "Ask document")
-      "i" '(gptel-aibo-complete-at-point :wk "Completion at point")
+      "?" '(gptel-extensions-ask-document :wk "Ask document")
+      "TAB" '(gptel-aibo-complete-at-point :wk "Completion at point")
       "<return>" '(gptel-aibo-apply-last-suggestions :wk "Apply last suggestion"))
 
     ;; define prefix lable
@@ -103,10 +103,6 @@
       :infix "m"
       "" '(:ignore t :wk "Minibuffer")
       "p" '(+show-current-buffer-path :wk "Show buffer path"))
-
-    ;; Aider
-    (leader-def
-      "a" '(aider-transient-menu :wk "Aider"))
 
     ))
 
