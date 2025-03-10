@@ -68,6 +68,18 @@ If no text is selected, prompt the user to select text first."
   ;; (add-hook 'prog-mode-hook #'gptel-aibo-complete-mode)
   )
 
+
+(use-package aidermacs
+  :bind (("M-I" . aidermacs-transient-menu))
+  :config
+                                        ; Enable minor mode for Aider files
+  (aidermacs-setup-minor-mode)
+  :custom
+                                        ; See the Configuration section below
+  (aidermacs-use-architect-mode t)
+  (aidermacs-default-model "deepseek")
+  )
+
 (provide 'init-gpt)
 
 ;;; init-gpt.el ends here
