@@ -2,11 +2,12 @@
 ;;; init-rust.el --- Rust lang development config
 
 (use-package rust-ts-mode
-  :mode ("\\.rs$\'" . rust-ts-mode)
+  :mode ("\\.rs\\'" . rust-ts-mode)
   :init
   (setq rust-ts-mode-treesitter-derive t)
   :config
-  (setq rust-ts-mode-indent-offset 2))
+  (setq rust-ts-mode-indent-offset 2)
+  (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-ts-mode)))
 
 ;; (use-package rustic
 ;;   :ensure t
