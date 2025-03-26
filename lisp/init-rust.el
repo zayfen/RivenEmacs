@@ -2,7 +2,6 @@
 ;;; init-rust.el --- Rust lang development config
 
 (use-package rust-ts-mode
-  :ensure t
   :mode ("\\.rs$\'" . rust-ts-mode)
   :init
   (setq rust-ts-mode-treesitter-derive t)
