@@ -37,7 +37,8 @@
 (with-eval-after-load 'python-ts-mode
   (define-key python-ts-mode-map (kbd "C-c C-c") 'python-shell-send-buffer)
   (define-key python-ts-mode-map (kbd "C-c C-r") 'python-shell-send-region)
-  (define-key python-ts-mode-map (kbd "C-c C-t") 'python-pytest-dispatch))
+  (define-key python-ts-mode-map (kbd "C-c C-t") 'python-pytest-dispatch)
+  (define-key python-ts-mode-map (kbd "C-c C-l") nil))
 
 (provide 'init-python)
 ;;; init-python.el ends here
