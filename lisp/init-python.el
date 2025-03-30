@@ -15,9 +15,10 @@
   :ensure nil
   :mode ("\\.py\\'" . python-ts-mode)
   :hook (python-ts-mode . (lambda ()
-                           (setq indent-tabs-mode nil
-                                 tab-width 4
-                                 python-indent-offset 4))))
+                            (define-key python-ts-mode-map (kbd "\C-c\C-l") nil)
+                            (setq indent-tabs-mode nil
+                                  tab-width 4
+                                  python-indent-offset 4))))
 
 ;; Python Environment Tools (virtualenv, pipenv etc.)
 (use-package pyvenv
@@ -38,8 +39,7 @@
   (define-key python-ts-mode-map (kbd "C-c C-c") 'python-shell-send-buffer)
   (define-key python-ts-mode-map (kbd "C-c C-r") 'python-shell-send-region)
   (define-key python-ts-mode-map (kbd "C-c C-t") 'python-pytest-dispatch)
-  (define-key python-ts-mode-map (kbd "C-c C-l") nil)
-  (define-key python-mode-map (kbd "C-c C-l") nil))
+  (define-key python-ts-mode-map (kbd "\C-c\C-l") nil))
 
 (provide 'init-python)
 ;;; init-python.el ends here
