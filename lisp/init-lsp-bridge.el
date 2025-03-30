@@ -49,7 +49,7 @@
   (acm-enable-path t)
   (acm-backend-yas-match-by-trigger-keyword t)
   (acm-enable-tabnine nil)
-  (acm-enable-copilot t)
+  (acm-enable-copilot nil)
   (acm-enable-preview t)
   (acm-enable-capf t)
   (acm-backend-search-file-words-enable-fuzzy-match t)
