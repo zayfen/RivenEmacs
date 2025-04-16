@@ -33,7 +33,7 @@
                                     :weight 'normal
                                     :size (cond ((eq system-type 'gnu/linux) 20)
                                                 ((eq system-type 'windows-nt) 12.5)
-                                                ((eq system-type 'darwin) 14)))))
+                                                ((eq system-type 'darwin) 16)))))
 
   (cl-loop for font in '("OpenSansEmoji" "Noto Color Emoji" "Segoe UI Emoji"
                          "EmojiOne Color" "Apple Color Emoji" "Symbola" "Symbol")
@@ -42,7 +42,7 @@
                                     (font-spec :family font
                                                :size (cond ((eq system-type 'gnu/linux) 14)
                                                            ((eq system-type 'windows-nt) 15.0)
-                                                           ((eq system-type 'darwin) 14.0)))
+                                                           ((eq system-type 'darwin) 16.0)))
                                     nil 'prepend))
 
   (cl-loop for font in '("Sarasa Term SC Nerd" "文泉驿等宽微米黑" "思源黑体 CN" "思源宋体 CN" "微软雅黑 CN"
