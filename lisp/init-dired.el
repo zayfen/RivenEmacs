@@ -34,6 +34,7 @@
   :bind
   (
    :map dirvish-mode-map ; Dirvish inherits `dired-mode-map'
+   ("?"   . dirvish-dispatch)
    ("a"   . dirvish-quick-access)
    ("f"   . dirvish-file-info-menu)
    ("y"   . dirvish-yank-menu)
