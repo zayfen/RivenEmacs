@@ -41,6 +41,7 @@
    ("~"   . dirvish-history-last)
    ("^"   . dired-up-directory)
    ("h"   . dirvish-history-jump) ; remapped `describe-mode'
+   ("r"   . dirvish-renaming-menu)      ; rename file
    ("s"   . dirvish-quicksort)    ; remapped `dired-sort-toggle-or-edit'
    ("v"   . dirvish-vc-menu)      ; remapped `dired-view-file'
    ("TAB" . dirvish-subtree-toggle)
