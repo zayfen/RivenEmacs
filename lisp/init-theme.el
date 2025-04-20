@@ -41,60 +41,108 @@
         (underline-link-symbolic border)))
 
 ;; customize mode-line
-(defun custom-buffer-name ()
-  "Return the buffer name, prepending the directory name if the file is named 'index' (ignoring extension)."
-  (let* ((name (buffer-name))
-         (file (buffer-file-name))
-         (filename (when file (file-name-nondirectory file)))
-         (basename (when filename (file-name-base filename)))
-         (dirname (when file (file-name-nondirectory (directory-file-name (file-name-directory file))))))
-    (if (and basename (string= basename "index"))
-        (concat dirname "/" name)
-      name)))
+;; (defun custom-buffer-name ()
+;;   "Return the buffer name, prepending the directory name if the file is named 'index' (ignoring extension)."
+;;   (let* ((name (buffer-name))
+;;          (file (buffer-file-name))
+;;          (filename (when file (file-name-nondirectory file)))
+;;          (basename (when filename (file-name-base filename)))
+;;          (dirname (when file (file-name-nondirectory (directory-file-name (file-name-directory file))))))
+;;     (if (and basename (string= basename "index"))
+;;         (concat dirname "/" name)
+;;       name)))
 
-(setq-default mode-line-buffer-identification
-              '(:eval (custom-buffer-name)))
+;; (setq-default mode-line-buffer-identification
+;;               '(:eval (custom-buffer-name)))
 
-;; 移除默认的vc-mode显示
-(setq-default mode-line-format
-              (delq 'vc-mode mode-line-format))
+;; ;; 移除默认的vc-mode显示
+;; (setq-default mode-line-format
+;;               (delq 'vc-mode mode-line-format))
 
-;; 添加自定义Git分支显示（正则匹配替换）
-;; 移除默认的vc-mode显示
-(setq-default mode-line-format
-              (assq-delete-all 'vc-mode mode-line-format))
-(add-to-list 'mode-line-format
- '(:eval
-   (when vc-mode
-     (let ((str (format-mode-line '(vc-mode vc-mode))))
-       (when (string-match " Git[:-]\\(.*\\)" str)
-         (format " %s" (match-string 1 str)))))))
+;; ;; 添加自定义Git分支显示（正则匹配替换）
+;; ;; 移除默认的vc-mode显示
+;; (setq-default mode-line-format
+;;               (assq-delete-all 'vc-mode mode-line-format))
+;; (add-to-list 'mode-line-format
+;;  '(:eval
+;;    (when vc-mode
+;;      (let ((str (format-mode-line '(vc-mode vc-mode))))
+;;        (when (string-match " Git[:-]\\(.*\\)" str)
+;;          (format " %s" (match-string 1 str)))))))
 
-;; 自定义mode-line中的行号和列号格式
-(setq-default mode-line-position
-              '((line-number-mode " %l:%c ")
-                (size-indication-mode " %I")))
+;; ;; 自定义mode-line中的行号和列号格式
+;; (setq-default mode-line-position
+;;               '((line-number-mode " %l:%c ")
+;;                 (size-indication-mode " %I")))
 
 
-;; 在 mode-line 显示加粗彩色项目名
-(setq-default mode-line-format
-              (cons '(:eval (when-let ((project (project-current))
-                                       (project-root (project-root project)))
-                              (format " %s"
-                                      (propertize
-                                       (file-name-nondirectory
-                                        (directory-file-name project-root))
-                                       'face '(:weight bold :foreground "#98C379")))))
-                    mode-line-format))
+;; ;; 在 mode-line 显示加粗彩色项目名
+;; (setq-default mode-line-format
+;;               (cons '(:eval (when-let ((project (project-current))
+;;                                        (project-root (project-root project)))
+;;                               (format " %s"
+;;                                       (propertize
+;;                                        (file-name-nondirectory
+;;                                         (directory-file-name project-root))
+;;                                        'face '(:weight bold :foreground "#98C379")))))
+;;                     mode-line-format))
 
 
 ;;;;;;;; customize mode-line end ;;;;;;;;;;;;;;
 
+(setq-default mode-line-format
+              '("%e"
+                mode-line-front-space
+
+                ;; 1. 项目名
+                (:eval (when (project-current)
+                         (propertize (concat "[" (project-name (project-current)) "] ")
+                                     'face 'bold)))
+
+                ;; 2. 文件名 + 父目录 + 修改状态
+                (:eval (when buffer-file-name
+                         (let* ((parent (file-name-nondirectory
+                                         (directory-file-name (file-name-directory buffer-file-name))))
+                                (file (file-name-nondirectory buffer-file-name))
+                                (modified (when (buffer-modified-p)
+                                            (propertize "󰳻" 'face 'warning))))
+                           (format "%s %s/%s " (or modified "󰆓") parent file))))
+
+                ;; 3. Git 分支
+                (:eval (when vc-mode
+                         (let ((branch (replace-regexp-in-string "^ Git[:-]" "" vc-mode)))
+                           (propertize (format " %s " branch)
+                                       'face 'font-lock-constant-face))))
+
+                ;; 4. Flycheck 诊断（错误/警告）
+                (:eval
+                 (when (bound-and-true-p flycheck-mode)
+                   (let* ((counts (flycheck-count-errors flycheck-current-errors))
+                          (errors (or (cdr (assq 'error counts)) 0))
+                          (warnings (or (cdr (assq 'warning counts)) 0)))
+                     (concat
+                      (propertize (format "⛔%d " errors) 'face 'error)
+                      (propertize (format "⚠️%d " warnings) 'face 'warning)))))
+
+                ;; 5. 文件编码
+                " %z "
+
+                ;; 6. Major mode
+                "[" mode-name "] "
+
+                ;; 7. 光标位置
+                " (%l,%c) "
+
+                ;; 8. 当前时间
+                (:eval (format-time-string "📆 %Y-%m-%d %H:%M"))
+
+                mode-line-end-spaces))
+
 (add-hook 'prog-mode-hook (lambda ()
                             ;; (set-face-attribute 'fringe nil :background "#000000") ;; setting for modus-vivendi theme
                             (set-face-attribute 'font-lock-comment-face nil :slant 'italic)
-                            (set-face-attribute 'font-lock-keyword-face nil :weight 'bold :slant 'italic)
-                            (set-face-attribute 'font-lock-function-name-face nil :weight 'bold :slant 'italic)))
+                            (set-face-attribute 'font-lock-keyword-face nil :weight 'semi-bold :slant 'italic)
+                            (set-face-attribute 'font-lock-function-name-face nil :weight 'semi-bold :slant 'italic)))
 
 
 (use-package rainbow-delimiters
