@@ -108,10 +108,17 @@
                                             (propertize "󰳻" 'face 'warning))))
                            (format "%s %s/%s " (or modified "󰆓") parent file))))
 
+
+                ;; 5. 文件编码
+                " %z "
+
+                ;; 7. 光标位置
+                " (%l,%c) "
+
                 ;; 3. Git 分支
                 (:eval (when vc-mode
                          (let ((branch (replace-regexp-in-string "^ Git[:-]" "" vc-mode)))
-                           (propertize (format " %s " branch)
+                           (propertize (format "   %s " branch)
                                        'face 'font-lock-constant-face))))
 
                 ;; 4. Flycheck 诊断（错误/警告）
@@ -124,14 +131,10 @@
                       (propertize (format "⛔%d " errors) 'face 'error)
                       (propertize (format "⚠️%d " warnings) 'face 'warning)))))
 
-                ;; 5. 文件编码
-                " %z "
 
                 ;; 6. Major mode
-                "[" mode-name "] "
+                " [" mode-name "] "
 
-                ;; 7. 光标位置
-                " (%l,%c) "
 
                 ;; 8. 当前时间
                 (:eval (format-time-string "📆 %Y-%m-%d %H:%M"))
