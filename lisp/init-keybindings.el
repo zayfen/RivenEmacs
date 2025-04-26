@@ -37,6 +37,12 @@
 (defun keybindings-config()
   (progn
     (leader-def
+      :infix "b"
+      "" '(:ignore t :wk "Buffer")
+      "l" '(ibuffer-list-buffers :wk "List buffers")
+      "r" '(vr/replace :wk "Replace in buffer"))
+
+    (leader-def
       :infix "p"
       "" '(:ignore t :wk "Project")
       "c" '(+remove-invalidate-buffers :wk "Clean invalidate buffers")
@@ -64,7 +70,7 @@
       "k" '(sp-splice-sexp :wk "Delete pair")
       "K" '(sp-rewrap-sexp :wk "Delete pair And Rewrap")
       "s" '(sp-delete-sexp :wk "Delete Sexp")
-      "r" '(vr/replace :wk "Replace"))
+      "z" '(zap-to-char :wk "Zap to char"))
 
     (open-leader-def
       "" '(:ignore t :wk "Open")
