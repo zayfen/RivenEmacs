@@ -113,7 +113,7 @@
                 " %z "
 
                 ;; 7. 光标位置
-                " (%l,%c) "
+                " %l:%c "
 
                 ;; 3. Git 分支
                 (:eval (when vc-mode
@@ -137,7 +137,7 @@
 
 
                 ;; 8. 当前时间
-                (:eval (format-time-string "📆 %Y-%m-%d %H:%M"))
+                (:eval (format-time-string "🕒 %m-%d %H:%M"))
 
                 mode-line-end-spaces))
 
