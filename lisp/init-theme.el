@@ -116,6 +116,10 @@
                 ;; 7. 光标位置
                 " %l:%c "
 
+                ;; 6. Major mode
+                " [" mode-name "] "
+
+                "      "
                 ;; 4. Flycheck 诊断（错误/警告）
                 (:eval
                  (when (bound-and-true-p flycheck-mode)
@@ -123,14 +127,8 @@
                           (errors (or (cdr (assq 'error counts)) 0))
                           (warnings (or (cdr (assq 'warning counts)) 0)))
                      (concat
-                      (propertize (format "(%d " errors) 'face 'error)
-                      (propertize (format "%d) " warnings) 'face 'warning)))))
-
-
-                ;; 6. Major mode
-                " [" mode-name "] "
-
-                "       "
+                      (propertize (format "%dE " errors) 'face 'error)
+                      (propertize (format "%dW    " warnings) 'face 'warning)))))
 
                 ;; 3. Git 分支
                 (:eval (when vc-mode
