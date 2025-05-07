@@ -104,11 +104,12 @@
                          (let* ((parent (file-name-nondirectory
                                          (directory-file-name (file-name-directory buffer-file-name))))
                                 (file (file-name-nondirectory buffer-file-name))
-                                (parent-file (format "%s/%s" parent file)))
-                           (format " %s "
-                                   (if (buffer-modified-p)
-                                       (propertize parent-file 'face 'error)
-                                     parent-file)))))
+                                (parent-file (format "%s/%s" parent file))
+                                (face (cond
+                                       (buffer-read-only 'shadow) ; 使用内置的shadow灰色样式
+                                       ((buffer-modified-p) 'error)
+                                       (t nil))))
+                           (format " %s " (propertize parent-file 'face face)))))
 
                 ;; 5. 文件编码
                 " %z "
@@ -129,6 +130,12 @@
                      (concat
                       (propertize (format "%dE " errors) 'face 'error)
                       (propertize (format "%dW    " warnings) 'face 'warning)))))
+
+                 ;; spaces to align right
+               '(:eval (propertize
+                        " " 'display
+                        `((space :align-to (- (+ right right-fringe right-margin)
+                                              ,(+ 3 (string-width mode-name)))))))
 
                 ;; 3. Git 分支
                 (:eval (when vc-mode
