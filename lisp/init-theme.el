@@ -96,30 +96,25 @@
 
                 ;; 1. 项目名
                 (:eval (when (project-current)
-                         (propertize (concat "[" (project-name (project-current)) "] ")
-                                     'face 'bold)))
+                         (propertize (concat "" (project-name (project-current)) "")
+                                     'face '(:weight bold :background "green"))))
 
                 ;; 2. 文件名 + 父目录 + 修改状态
                 (:eval (when buffer-file-name
                          (let* ((parent (file-name-nondirectory
                                          (directory-file-name (file-name-directory buffer-file-name))))
                                 (file (file-name-nondirectory buffer-file-name))
-                                (modified (when (buffer-modified-p)
-                                            (propertize "󰳻" 'face 'warning))))
-                           (format "%s %s/%s " (or modified "󰆓") parent file))))
-
+                                (parent-file (format "%s/%s" parent file)))
+                           (format " %s "
+                                   (if (buffer-modified-p)
+                                       (propertize parent-file 'face 'error)
+                                     parent-file)))))
 
                 ;; 5. 文件编码
                 " %z "
 
                 ;; 7. 光标位置
                 " %l:%c "
-
-                ;; 3. Git 分支
-                (:eval (when vc-mode
-                         (let ((branch (replace-regexp-in-string "^ Git[:-]" "" vc-mode)))
-                           (propertize (format "   %s " branch)
-                                       'face 'font-lock-constant-face))))
 
                 ;; 4. Flycheck 诊断（错误/警告）
                 (:eval
@@ -128,16 +123,23 @@
                           (errors (or (cdr (assq 'error counts)) 0))
                           (warnings (or (cdr (assq 'warning counts)) 0)))
                      (concat
-                      (propertize (format "⛔%d " errors) 'face 'error)
-                      (propertize (format "⚠️%d " warnings) 'face 'warning)))))
+                      (propertize (format "(%d " errors) 'face 'error)
+                      (propertize (format "%d) " warnings) 'face 'warning)))))
 
 
                 ;; 6. Major mode
                 " [" mode-name "] "
 
+                "       "
+
+                ;; 3. Git 分支
+                (:eval (when vc-mode
+                         (let ((branch (replace-regexp-in-string "^ Git[:-]" "" vc-mode)))
+                           (propertize (format "   %s " branch)
+                                       'face 'font-lock-constant-face))))
 
                 ;; 8. 当前时间
-                (:eval (format-time-string "🕒 %m-%d %H:%M"))
+                (:eval (format-time-string "  🕒 %m-%d %H:%M"))
 
                 mode-line-end-spaces))
 
