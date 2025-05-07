@@ -97,7 +97,7 @@
                 ;; 1. 项目名
                 (:eval (when (project-current)
                          (propertize (concat "" (project-name (project-current)) "")
-                                     'face '(:weight bold :background "green"))))
+                                     'face '(:weight bold :background "peru"))))
 
                 ;; 2. 文件名 + 父目录 + 修改状态
                 (:eval (when buffer-file-name
