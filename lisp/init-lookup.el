@@ -4,9 +4,6 @@
 
 
 ;;; Code:
-(use-package powerthesaurus
-  :ensure t)
-
 
 (use-package devdocs
   :vc (:fetcher github :repo astoff/devdocs.el)
@@ -32,24 +29,6 @@
                      fanyi-etymon-provider
                      ;; Longman
                      fanyi-longman-provider)))
-
-
-
-(use-package go-translate
-  :vc (:fetcher github :repo lorniu/go-translate)
-  :commands (gt-do-translate)
-  :config
-  (setq gt-preset-translators
-      `((ts-1 . ,(gt-translator
-                  :taker (gt-taker :langs '(en zh) :text 'sentence)
-                  :engines (gt-google-engine)
-                  :render (gt-posframe-pop-render)))
-        (ts-2 . ,(gt-translator
-                  :taker (gt-taker :langs '(en zh) :text 'buffer
-                                   :pick 'word :pick-pred (lambda (w) (length> w 6)))
-                  :engines (gt-google-engine)
-                  :render (gt-buffer-render))))))
-
 
 
 (provide 'init-lookup)

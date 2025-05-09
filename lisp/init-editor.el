@@ -69,7 +69,7 @@
   (define-key re/symbol-overlay-keymap (kbd "s") 'symbol-overlay-isearch-literally)
   (define-key re/symbol-overlay-keymap (kbd "q") 'symbol-overlay-query-replace)
   (define-key re/symbol-overlay-keymap (kbd "r") 'symbol-overlay-rename)
-  (global-set-key (kbd "M-o") re/symbol-overlay-keymap)
+  (global-set-key (kbd "M-s o") re/symbol-overlay-keymap)
   (global-set-key (kbd "M-n") 'symbol-overlay-jump-next)
   (global-set-key (kbd "M-p") 'symbol-overlay-jump-prev)
   :hook ((prog-mode text-mode) . symbol-overlay-mode))
