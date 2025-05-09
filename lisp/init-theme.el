@@ -40,56 +40,6 @@
         (underline-link-visited border)
         (underline-link-symbolic border)))
 
-;; customize mode-line
-;; (defun custom-buffer-name ()
-;;   "Return the buffer name, prepending the directory name if the file is named 'index' (ignoring extension)."
-;;   (let* ((name (buffer-name))
-;;          (file (buffer-file-name))
-;;          (filename (when file (file-name-nondirectory file)))
-;;          (basename (when filename (file-name-base filename)))
-;;          (dirname (when file (file-name-nondirectory (directory-file-name (file-name-directory file))))))
-;;     (if (and basename (string= basename "index"))
-;;         (concat dirname "/" name)
-;;       name)))
-
-;; (setq-default mode-line-buffer-identification
-;;               '(:eval (custom-buffer-name)))
-
-;; ;; 移除默认的vc-mode显示
-;; (setq-default mode-line-format
-;;               (delq 'vc-mode mode-line-format))
-
-;; ;; 添加自定义Git分支显示（正则匹配替换）
-;; ;; 移除默认的vc-mode显示
-;; (setq-default mode-line-format
-;;               (assq-delete-all 'vc-mode mode-line-format))
-;; (add-to-list 'mode-line-format
-;;  '(:eval
-;;    (when vc-mode
-;;      (let ((str (format-mode-line '(vc-mode vc-mode))))
-;;        (when (string-match " Git[:-]\\(.*\\)" str)
-;;          (format " %s" (match-string 1 str)))))))
-
-;; ;; 自定义mode-line中的行号和列号格式
-;; (setq-default mode-line-position
-;;               '((line-number-mode " %l:%c ")
-;;                 (size-indication-mode " %I")))
-
-
-;; ;; 在 mode-line 显示加粗彩色项目名
-;; (setq-default mode-line-format
-;;               (cons '(:eval (when-let ((project (project-current))
-;;                                        (project-root (project-root project)))
-;;                               (format " %s"
-;;                                       (propertize
-;;                                        (file-name-nondirectory
-;;                                         (directory-file-name project-root))
-;;                                        'face '(:weight bold :foreground "#98C379")))))
-;;                     mode-line-format))
-
-
-;;;;;;;; customize mode-line end ;;;;;;;;;;;;;;
-
 (setq-default mode-line-format
               '("%e" ; 错误信息，通常为空
                 mode-line-front-space
@@ -170,6 +120,8 @@
                 (:eval (propertize (format-time-string "  🕒 %m-%d %H:%M") 'face '(:foreground "LightSteelBlue")))
 
                 mode-line-end-spaces))
+;;;;;;;; customize mode-line end ;;;;;;;;;;;;;;
+
 
 (add-hook 'prog-mode-hook (lambda ()
                             ;; (set-face-attribute 'fringe nil :background "#000000") ;; setting for modus-vivendi theme
