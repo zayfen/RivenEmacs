@@ -14,7 +14,8 @@
       "l" '(ibuffer-list-buffers :wk "List buffers")
       "p" '(previous-buffer :wk "Prev buffer")
       "n" '(next-buffer :wk "Next buffer")
-      "q" '(read-only-mode :wk "ReadOnly buffer"))
+      "q" '(read-only-mode :wk "ReadOnly buffer")
+      "x" '(revert-buffer-quick :wk "Revert buffer"))
 
     (leader-def
       :infix "p"
@@ -38,6 +39,18 @@
       "r" '(consult-recent-file :wk "Recent files")
       "s" '(blink-search :wk "Search files"))
 
+    (leader-def :infix "g"
+      "" '(:ignore t :wk "Git")
+      "b" '(magit-blame :wk "Blame")
+      "d" '(magit-diff-dwim :wk "Diff")
+      "c" '(magit-clone :wk "Clone")
+      "g" '(magit-status :wk "Status")
+      "i" '(magit-init :wk "Init")
+      "l" '(magit-log :wk "Log")
+      "s" '(magit-stage :wk "Stage")
+      "t" '(git-timemachine-toggle :wk "Time machine")
+      "TAB" '(diff-hl-show-hunk :wk "Show hunk"))
+
     (leader-def
       :infix "k"
       "" '(:ignore t :wk "Kill")
@@ -55,23 +68,22 @@
       "q" '(quickrun :wk "Quickrun")
       "t" '(+open-term-in-current-directory :wk "Terminal"))
 
-    (lookup-leader-def
-      "" '(:ignore t :wk "Lookup")
+    (query-leader-def
+      "" '(:ignore t :wk "Query")
       "d" '(devdocs-lookup :wk "DevDocs")
       "." '(fanyi-dwim :wk "Dictionary")
       "m" '(woman :wk "Unix Manual")
       "g" '(riven/google-search :wk "Google")
       "t" '(riven/google-translate :wk "Google Translator"))
 
-    (gpt-leader-def
-      "" '(:ignore t :wk "GPT")
+    (ai-leader-def
+      "" '(:ignore t :wk "AI")
       "a" '(aidermacs-transient-menu :wk "Aider")
       "c" '(gptel :wk "Console")
       "s" '(gptel-send :wk "Send")
       "r" '(gptel-rewrite :wk "Rewrite(Refactor)")
       "t" '(gptel-translate-region :wk "Translate via AI")
-      "?" '(gptel-extensions-ask-document :wk "Ask document")
-      )
+      "?" '(gptel-extensions-ask-document :wk "Ask document"))
 
     ;; define prefix lable
     (leader-def
@@ -91,9 +103,7 @@
      "n" '(next-error :wk "Next Error")
      "p" '(previous-error :wk "Prev Error")
      )
-
     ))
-
 
 (add-hook 'after-init-hook #'keybindings-config)
 

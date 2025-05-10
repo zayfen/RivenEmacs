@@ -21,15 +21,13 @@
 
 (use-package avy
   :vc (:fetcher github :repo abo-abo/avy)
-  :bind ("C-'" . avy-goto-char-2)
+  :commands (avy-goto-char-2)
   :config
-  (avy-setup-default)
-  (global-set-key (kbd "C-c C-j") 'avy-resume))
+  (avy-setup-default))
 
 (use-package link-hint
   :ensure t
-  :bind
-  ("C-|" . link-hint-open-link))
+  :commands (link-hint-open-link))
 
 (use-package sudo-edit)
 

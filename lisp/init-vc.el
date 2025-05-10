@@ -2,46 +2,20 @@
 ;;; init-vc.el --- Git and version control
 
 (use-package magit
-  :init
-  (leader-def :infix "g"
-    "" '(:ignore t :wk "Git")
-    "g" #'magit-status
-    "C" #'magit-clone
-    "b" #'magit-blame
-    "l" #'magit-log
-    "d" #'magit-diff-dwim
-    "s" #'magit-stage
-    "i" #'magit-init)
   :custom
   (magit-diff-refine-hunk t)
   (magit-revision-show-gravatars t)
   (magit-save-repository-buffers nil)
   ;; Show in new window
-  (magit-display-buffer-function #'magit-display-buffer-fullcolumn-most-v1))
+  (magit-display-buffer-function #'magit-display-buffer-fullcolumn-most-v1)
+  :hook (prog-mode . (lambda ()
+                       (keymap-global-unset "C-c M-g"))))
+
 
 (use-package magit-todos
   :after magit
   :config
   (magit-todos-mode 1))
-
-;; (use-package forge
-;;   :if (version< emacs-version "30")
-;;   :after magit
-;;   :preface
-;;   (setq forge-add-default-bindings nil)
-;;   :init
-;;   (leader-def
-;;     :infix "g"
-;;     "f" '(:ignore t :wk "Forge")
-;;     "ff" #'forge-dispatch
-;;     "fc" #'forge-create-post
-;;     "fe" #'forge-edit-post
-;;     "ft" #'forge-edit-topic-title
-;;     "fs" #'forge-edit-topic-state
-;;     "fd" #'forge-edit-topic-draft)
-;;   :custom
-;;   (forge-database-connector 'sqlite-builtin)
-;;   (forge-database-file (concat local-dir "forge/database.sqlite")))
 
 
 (use-package diff-hl
@@ -49,8 +23,6 @@
   :hook (dired-mode   . diff-hl-dired-mode)
   :hook (vc-dir-mode  . diff-hl-dir-mode)
   :hook (diff-hl-mode . diff-hl-flydiff-mode)
-  :init
-  (leader-def "gs" #'diff-hl-stage-current-hunk)
   :custom
   (diff-hl-draw-borders nil)
   :config
@@ -58,8 +30,6 @@
   (add-hook 'magit-post-refresh-hook #'diff-hl-magit-post-refresh))
 
 (use-package git-timemachine
-  :init
-  (leader-def "gt" #'git-timemachine-toggle)
   :custom
   (git-timemachine-show-minibuffer-details t))
 

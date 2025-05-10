@@ -6,7 +6,6 @@
   (yas-snippet-dir "~/.emacs.d/snippets")
   :hook ((prog-mode LaTeX-mode org-mode markdown-mode) . yas-minor-mode-on)
   :bind
-  (:map yas-minor-mode-map ("C-c C-n" . yas-expand-from-trigger-key))
   (:map yas-keymap
         (("TAB" . smarter-yas-expand-next-field)
          ([(tab)] . smarter-yas-expand-next-field)))
