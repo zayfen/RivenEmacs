@@ -65,21 +65,33 @@
 
     (gpt-leader-def
       "" '(:ignore t :wk "GPT")
-      "a" '(gptel-aibo :wk "Aibo Console")
-      "g" '(gptel :wk "GPT Console")
-      "s" '(gptel-send :wk "Send region or text to point")
+      "a" '(aidermacs-transient-menu :wk "Aider")
+      "c" '(gptel :wk "Console")
+      "s" '(gptel-send :wk "Send")
       "r" '(gptel-rewrite :wk "Rewrite(Refactor)")
-      "t" '(gptel-translate-to-english-and-replace :wk "Translate to English in place")
-      "T" '(gptel-translate-to-langs :wk "Translate to many languages")
+      "t" '(gptel-translate-region :wk "Translate via AI")
       "?" '(gptel-extensions-ask-document :wk "Ask document")
-      "TAB" '(gptel-aibo-complete-at-point :wk "Completion at point")
-      "<return>" '(gptel-aibo-apply-last-suggestions :wk "Apply last suggestion"))
+      )
 
     ;; define prefix lable
     (leader-def
       "\!" '(:ignore t :wk "Checker(Flycheck)")
       "&" '(:ignore t :wk "Yasnippet")
       "@" '(:ignore t :wk "Hideshow"))
+
+    ;; define navigate to elements keybindings
+    (navigate-leader-def
+     "c" '(avy-goto-char-2 :wk "Goto Char")
+     "g" '(consult-goto-line :wk "Line")
+     "i" '(consult-imenu-multi :wk "Imenu")
+     "l" '(link-hint-open-link :wk "Link")
+     "o" '(consult-outline :wk "Outline")
+     "m" '(consult-mark :wk "Mark")
+     "M" '(consult-global-mark :wk "Global Mark")
+     "n" '(next-error :wk "Next Error")
+     "p" '(previous-error :wk "Prev Error")
+     )
+
     ))
 
 

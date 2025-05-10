@@ -21,7 +21,10 @@
     :prefix "C-c C-g")
 
   (general-create-definer open-leader-def
-    :prefix "C-c o"))
+    :prefix "C-c o")
+
+  (general-create-definer navigate-leader-def
+    :prefix "M-g"))
 
 
 (provide 'init-general)

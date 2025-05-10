@@ -80,7 +80,7 @@
                 ;; 6. Major mode (using format-mode-line)
                 (:eval (let ((formatted-mode-name (format-mode-line mode-name)))
                          (propertize (concat " " formatted-mode-name " ")
-                                     'face '(:foreground "PaleGreen" :weight 'semi-bold))))
+                                     'face '(:foreground "PaleGreen" :weight semi-bold))))
 
                 "  " ; 静态间隔
 

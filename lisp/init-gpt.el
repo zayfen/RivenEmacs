@@ -5,10 +5,10 @@
 ;;; gpt config
 
 ;;; Code:
+
 (use-package gptel
   :vc (:fetcher github :repo karthink/gptel)
   :config
-  ;; OPTIONAL configuration
   (setq gptel-model   'deepseek-chat
         gptel-backend
         (gptel-make-openai "DeepSeek"
@@ -18,40 +18,76 @@
           :key (getenv "DEEPSEEK_API_KEY")
           :models '(deepseek-chat deepseek-coder)))
 
-  ;; define other commands
-  (defun gptel-translate-to-langs ()
-    (interactive)
-    (message "Translate text to many languages...")
-    (require 'gptel)
-    (gptel-request
-        (format "把下面的内容(自动侦测源语言)翻译成如下语言：en, jp, kr, fr, hk, it, de ， 只输出内容， 不要解释：\n %s"
-                (if (region-active-p)
-                    (buffer-substring-no-properties (mark) (point))
-                  (substring-no-properties (buffer-string)))
-                :system "你是一个翻译家， 精通如下语言互译：汉语、英语、日语、韩语、法语、繁体中文、意大利语、德语")))
+  ;; translator
+  (defun gptel-translate-region (target-languages-str)
+    "Translate the text in the active region using GPTel."
+    (interactive
+     (list (read-string "Target language(s) (comma-separated, default 'en'): " "en")))
 
-  (defun gptel-translate-to-english-and-replace ()
-    "Translate the selected text to English and replace it.
-If no text is selected, prompt the user to select text first."
-    (interactive)
-    (if (not (use-region-p))  ; 检查是否有选中的文本
-        (message "No text selected. Please select some text first.")
-      (let ((selected-text (buffer-substring-no-properties (region-beginning) (region-end))))
-        (if (string-blank-p selected-text)  ; 检查选中的文本是否为空
-            (message "Selected text is empty. Please select some text.")
-          (message "Translating selected text...")  ; 提示翻译开始
-          (gptel-request
-              (concat "Don't explain, just translate the following text to English:\n\n" selected-text)
-            :callback (lambda (response _metadata)
-                        (if (string-blank-p response)  ; 检查翻译结果是否为空
-                            (message "Translation failed. Please try again.")
-                          (when (use-region-p)
-                            (delete-region (region-beginning) (region-end))
-                            (insert response)
-                            (message "Translation complete!")))))))))
+    ;; 1. Source text must be from a marked region
+    (unless (region-active-p)
+      (error "No region active. Please mark a region to translate."))
+
+    (let* ((original-buffer (current-buffer))
+           (original-text (buffer-substring-no-properties (region-beginning) (region-end)))
+           (beg (region-beginning))
+           (end (region-end)))
+
+      (let* ((lang (string-trim-left target-languages-str))
+             (prompt-text
+              (format "Translate the following text to %s. Preserve all formatting, including line breaks, spacing, and punctuation. Do not add any introductory or concluding remarks, or any conversational text. Just provide the translated text:\n\n%s" lang original-text))
+             (translated-text nil)
+             (confirmation-buffer (get-buffer-create "*Translation Confirmation*")))
+
+        ;; Call gptel to get the translation
+        (message "Translating...")
+        ;; Using gptel-send-prompt synchronously for simplicity in this flow
+        (gptel-request prompt-text
+          :callback (lambda (response _metadata)
+                      (progn
+                        (setq translated-text response)
+                        (if translated-text
+                            (progn
+                              (message "Translation succeeded")
+                              (defun accept-translation ()
+                                (interactive)
+                                (with-current-buffer original-buffer
+                                  (delete-region beg end)
+                                  (insert translated-text)
+                                  (delete-windows-on confirmation-buffer)))
+
+                              (defun reject-translation ()
+                                (interactive)
+                                (delete-windows-on confirmation-buffer))
+
+                              (with-current-buffer confirmation-buffer
+                                (erase-buffer)
+                                (insert (format "Translated to %s:\n\n---\n%s\n---\n\n" lang translated-text))
+                                (insert
+                                 (concat
+                                  (propertize "Press " 'face 'default)
+                                  (propertize "Enter" 'face '(:weight bold :foreground "green"))
+                                  (propertize " to accept and replace.\n" 'face 'default)
+                                  (propertize "Press " 'face 'default)
+                                  (propertize "C-g" 'face '(:weight bold :foreground "green"))
+                                  (propertize " or " 'face 'default)
+                                  (propertize "q" 'face '(:weight bold :foreground "green"))
+                                  (propertize " to reject and quit.\n\n" 'face 'default)))
+                                (goto-char (point-min))
+                                (local-set-key (kbd "\r") #'accept-translation)
+                                (local-set-key (kbd "C-g") #'reject-translation)
+                                (local-set-key (kbd "q") #'reject-translation))
+
+                                (pop-to-buffer confirmation-buffer))
+
+                            (message "Failed to get translation for %s." lang)
+                            (when (buffer-live-p confirmation-buffer)
+                              (delete-windows-on confirmation-buffer)))
+                          )
+                        )))             ; end of inner let*
+      )                                 ;end of outer let*
+    )                                   ;end of defun
   )
-
-
 
 
 
@@ -59,14 +95,6 @@ If no text is selected, prompt the user to select text first."
   :vc (:fetcher github :repo kamushadenes/gptel-extensions.el)
   :bind (("C-x =" . 'gptel-extensions-refactor)))
 
-
-(use-package gptel-aibo
-  :vc (:fetcher github :repo dolmens/gptel-aibo)
-  :after (gptel)
-  :hook (prog-mode . gptel-aibo-complete-mode)
-  ;; :config
-  ;; (add-hook 'prog-mode-hook #'gptel-aibo-complete-mode)
-  )
 
 
 (use-package aidermacs
@@ -81,5 +109,8 @@ If no text is selected, prompt the user to select text first."
   )
 
 (provide 'init-gpt)
+
+;; {Hello, World}
+;; {Hello, World}
 
 ;;; init-gpt.el ends here
