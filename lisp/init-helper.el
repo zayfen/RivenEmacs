@@ -82,7 +82,7 @@
   (let ((default-directory (if (buffer-file-name)
                                (file-name-directory (buffer-file-name))
                              default-directory)))
-    (ansi-term "/usr/bin/zsh")))
+    (ansi-term "zsh")))
 
 (defun +show-current-buffer-path ()
   "Show the absolute path of the current buffer in the minibuffer."
