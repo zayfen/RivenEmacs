@@ -34,11 +34,11 @@
     (leader-def
       :infix "f"
       "" '(:ignore t :wk "Find")
-      "d" '(crux-recentf-find-directory :wk "Find recent directory")
-      "f" '(consult-fd :wk "Find file in directory")
-      "l" '(+consult-fd-in-home :wk "Locate file")
-      "r" '(consult-recent-file :wk "Recent files")
-      "s" '(blink-search :wk "Search files"))
+      "d" '(crux-recentf-find-directory :wk "Global Recent directory")
+      "f" '(consult-fd :wk "Directory file")
+      "l" '(+consult-fd-in-home :wk "Home file")
+      "r" '(consult-recent-file :wk "Global Recent files")
+      "o" '(blink-search :wk "Occur"))
 
     (leader-def :infix "g"
       "" '(:ignore t :wk "Git")
