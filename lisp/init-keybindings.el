@@ -13,6 +13,7 @@
       "=" '(widen :wk "Widen narrow region")
       "l" '(ibuffer-list-buffers :wk "List buffers")
       "p" '(previous-buffer :wk "Prev buffer")
+      "m" '(bookmark-set-position :wk "Mark position")
       "n" '(next-buffer :wk "Next buffer")
       "q" '(read-only-mode :wk "ReadOnly buffer")
       "x" '(revert-buffer-quick :wk "Revert buffer")
