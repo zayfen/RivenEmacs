@@ -89,7 +89,10 @@
   (interactive)
   (let ((file-path (buffer-file-name)))
     (if file-path
-        (message "%s" (file-truename file-path))
+        (progn
+          (if (featurep 'dirvish)
+              (dirvish-copy-file-path))
+          (message "%s" (file-truename file-path)))
       (message "Current buffer is not visiting a file."))))
 
 (defun riven/google-search (keyword)
