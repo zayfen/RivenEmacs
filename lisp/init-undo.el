@@ -20,6 +20,4 @@
   :config
   (global-undo-fu-session-mode 1))
 
-
-
 (provide 'init-undo)

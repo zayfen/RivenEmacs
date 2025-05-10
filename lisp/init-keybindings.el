@@ -15,7 +15,8 @@
       "p" '(previous-buffer :wk "Prev buffer")
       "n" '(next-buffer :wk "Next buffer")
       "q" '(read-only-mode :wk "ReadOnly buffer")
-      "x" '(revert-buffer-quick :wk "Revert buffer"))
+      "x" '(revert-buffer-quick :wk "Revert buffer")
+      "h" '(vundo :wk "History"))
 
     (leader-def
       :infix "p"
