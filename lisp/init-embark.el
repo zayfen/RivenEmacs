@@ -1,10 +1,13 @@
 ;;; -*- coding: utf-8; lexical-binding: t -*-
-;;; init-embark.el --- embark config  
+;;; init-embark.el --- embark config
 
 ;;; Commentary:
 ;; install consult
 
 ;;; Code:
+
+;; @Deprecated
+;; I haven't usually used this package
 
 
 (use-package embark

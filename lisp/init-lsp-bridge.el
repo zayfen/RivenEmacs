@@ -78,20 +78,11 @@
 
   (defun +lsp-bridge-find-def ()
     (interactive "*")
-    (require 'embark)
-    (embark--xref-push-marker)
     (lsp-bridge-find-def))
 
   (defun +lsp-bridge-find-references ()
     (interactive "*")
-    (require 'embark)
-    (embark--xref-push-marker)
     (lsp-bridge-find-references))
-
-  (with-eval-after-load 'embark
-    (define-key embark-function-map (kbd "RET") #'+lsp-bridge-find-references)
-    (define-key embark-defun-map (kbd "RET") #'+lsp-bridge-find-references)
-    (define-key embark-identifier-map (kbd "RET") #'+lsp-bridge-find-def))
 
   (leader-def :keymaps 'lsp-bridge-mode-map
     :infix "c"

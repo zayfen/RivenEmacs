@@ -34,7 +34,7 @@
 (require 'init-consult)
 (require 'init-vertico)
 (require 'init-crux)
-(require 'init-embark)
+;; (require 'init-embark) ;; I haven't usually use this package
 (require 'init-editor)
 (require 'init-dired)
 (require 'init-format)
