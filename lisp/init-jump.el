@@ -26,28 +26,4 @@
   (dumb-jump-force-searcher 'rg)
   (dumb-jump-disable-obsolete-warnings t))
 
-;; (use-package dogears
-;;   :hook (prog-mode . dogears-mode)
-;;   :bind (:map global-map
-;;               ("M-g d" . dogears-go)
-;;               ("M-g M-b" . dogears-back)
-;;               ("M-g M-f" . dogears-forward)
-;;               ("M-g M-d" . dogears-list)
-;;               ("M-g M-D" . dogears-sidebar))
-;;   :config
-;;   (setq dogears-functions '(windmove-do-window-select
-;;                             +goto-file-at-point
-;;                             pop-to-mark-command
-;;                             pop-global-mark
-;;                             goto-last-change
-;;                             xref-go-back
-;;                             xref-find-definitions
-;;                             embark-dwim
-;;                             xref-find-references
-;;                             lsp-bridge-find-def
-;;                             lsp-bridge-find-type-def
-;;                             lsp-bridge-find-impl
-;;                             lsp-bridge-find-references)))
-
-
 (provide 'init-jump)
