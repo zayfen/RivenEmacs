@@ -49,8 +49,8 @@
                          (let ((project-name-str (project-name (project-current))))
                            (propertize (concat " " project-name-str " ") ; 前后加空格使其更宽
                                        'face `(:weight bold :background "Peru" :foreground "white")))))
-                                       ;; 右边半圆形较难直接实现，加宽背景可部分达到视觉效果
-                                       ;; 如果需要真实半圆，可能需要更复杂的powerline字符或图像
+                ;; 右边半圆形较难直接实现，加宽背景可部分达到视觉效果
+                ;; 如果需要真实半圆，可能需要更复杂的powerline字符或图像
 
                 ;; 2. 文件名 + 父目录 + 修改状态 (颜色优化)
                 (:eval (when buffer-file-name
@@ -77,10 +77,15 @@
                 (:eval (propertize " %l:%c " 'face '(:foreground "gray70")))
 
                 ;; 6. Major mode (颜色优化)
-                ;; 6. Major mode (using format-mode-line)
                 (:eval (let ((formatted-mode-name (format-mode-line mode-name)))
                          (propertize (concat " " formatted-mode-name " ")
                                      'face '(:foreground "PaleGreen" :weight semi-bold))))
+
+                (:eval (let ((formatted-mode-name (format-mode-line local-minor-modes)))
+                         (propertize (concat "" formatted-mode-name " ")
+                                     'face '(:foreground "PaleGreen" :weight semi-bold))))
+
+                ;; show minor mode
 
                 "  " ; 静态间隔
 
@@ -118,7 +123,11 @@
 
                 ;; 8. 当前时间 (颜色优化)
                 (:eval (propertize (format-time-string "  🕒 %m-%d %H:%M") 'face '(:foreground "LightSteelBlue")))
-
+                "    "
+                mode-line-process
+                " "
+                ;; minor-mode-alist ;;enable this to show minor modes
+                ;; Others
                 mode-line-end-spaces))
 ;;;;;;;; customize mode-line end ;;;;;;;;;;;;;;
 
