@@ -8,6 +8,7 @@
 
 (use-package gptel
   :vc (:fetcher github :repo karthink/gptel)
+  :commands (gptel-translate-region)
   :config
   (setq gptel-model   'deepseek-chat
         gptel-backend

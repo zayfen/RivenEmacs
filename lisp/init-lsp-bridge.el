@@ -60,7 +60,8 @@
   (lsp-bridge-enable-diagnostics nil) ;; we use flycheck only
   (lsp-bridge-enable-hover-diagnostic t)
   (lsp-bridge-code-action-enable-popup-menu nil)
-  (lsp-bridge-find-ref-fallback #'xref-find-references)
+  (lsp-bridge-find-def-fallback-function #'xref-find-definitions)
+  (lsp-bridge-find-ref-fallback-function #'xref-find-references)
   (lsp-bridge-inlay-hint t)
   (lsp-bridge-signature-show-function 'lsp-bridge-signature-show-with-frame)
   (lsp-bridge-python-lsp-server "ruff")
@@ -73,23 +74,19 @@
   :config
   (define-key acm-mode-map (kbd "C-m") nil)
   (define-key acm-mode-map (kbd "<return>") nil)
+  (keymap-global-set "M-." #'lsp-bridge-find-def)
+  (keymap-global-set "M-," #'lsp-bridge-find-def-return)
+  (keymap-global-set "M-?" #'lsp-bridge-find-references)
+
   (add-to-list 'lsp-bridge-multi-lang-server-extension-list '(("html") . "html_tailwindcss"))
   (add-to-list 'lsp-bridge-multi-lang-server-extension-list '(("css" "scss" "sass" "less") . "css_tailwindcss"))
-
-  (defun +lsp-bridge-find-def ()
-    (interactive "*")
-    (lsp-bridge-find-def))
-
-  (defun +lsp-bridge-find-references ()
-    (interactive "*")
-    (lsp-bridge-find-references))
 
   (leader-def :keymaps 'lsp-bridge-mode-map
     :infix "c"
     "" '(:ignore t :wk "Code")
     "a"  '(lsp-bridge-code-action :wk "Code actions")
     "e"  '(lsp-bridge-diagnostic-list :wk "Diagnostic list")
-    "d" '(+lsp-bridge-find-def :wk "Find define")
+    "d" '(lsp-bridge-find-def :wk "Find define")
     "f" '(lsp-bridge-code-format :wk "Format code")
     "i"  '(lsp-bridge-find-impl :wk "Find implementation")
     "k"  '(lsp-bridge-popup-documentation :wk "Find Document")

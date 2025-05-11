@@ -105,6 +105,16 @@
      "n" '(next-error :wk "Next Error")
      "p" '(previous-error :wk "Prev Error")
      )
+
+    ;; clean some global key bindings
+    (keymap-global-unset "M-g TAB")
+    (keymap-global-unset "M-g M-g")
+
+    ;; set other global key bindings
+    (when (featurep 'lsp-bridge)
+      (keymap-global-set "M-." #'lsp-bridge-find-def)
+      (keymap-global-set "C-," #'lsp-bridge-find-def-return))
+    
     ))
 
 (add-hook 'after-init-hook #'keybindings-config)

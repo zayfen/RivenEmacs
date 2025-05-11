@@ -26,6 +26,10 @@
   (define-key flycheck-mode-map [remap next-error] #'flycheck-next-error)
   (define-key flycheck-mode-map [remap previous-error] #'flycheck-previous-error)
 
+  ;; unbind "M-g M-n" and "M-g M-p"
+  (keymap-global-unset "M-g M-n")
+  (keymap-global-unset "M-g M-p")
+
   ;; 定义自定义的 mode-line 显示函数
   (defun my-flycheck-mode-line ()
     "根据 Flycheck 的错误和警告状态显示带有颜色的 mode-line 文本。"
