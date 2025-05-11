@@ -24,6 +24,14 @@
 (use-package yasnippet-snippets
   :ensure t)
 
+(defun lsp-bridge-find-def-return-ex ()
+  "Try to go back via \"lsp-bridge-find-def-return\", if error, use \"xref-go-back\" instead."
+  (interactive)
+  (condition-case err
+      (lsp-bridge-find-def-return)
+    (error
+     (xref-go-back))))
+
 (use-package lsp-bridge
   :vc (:fetcher github :repo "manateelazycat/lsp-bridge")
   :hook ((prog-mode) . lsp-bridge-mode)
@@ -75,7 +83,7 @@
   (define-key acm-mode-map (kbd "C-m") nil)
   (define-key acm-mode-map (kbd "<return>") nil)
   (keymap-global-set "M-." #'lsp-bridge-find-def)
-  (keymap-global-set "M-," #'lsp-bridge-find-def-return)
+  (keymap-global-set "M-," #'lsp-bridge-find-def-return-ex)
   (keymap-global-set "M-?" #'lsp-bridge-find-references)
 
   (add-to-list 'lsp-bridge-multi-lang-server-extension-list '(("html") . "html_tailwindcss"))
