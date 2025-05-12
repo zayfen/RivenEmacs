@@ -14,6 +14,9 @@
   (sp-local-pair 'web-mode "{" nil :post-handlers '((create-newline-and-enter-sexp "RET")))
   (sp-local-pair 'jtsx-tsx-mode "<" nil :actions nil)
   (sp-local-pair 'jtsx-jsx-mode "<" nil :actions nil)
+  (sp-local-pair 'js-ts-mode "<" nil :actions nil)
+  (sp-local-pair 'javascript-mode "<" nil :actions nil)
+  (sp-local-pair 'typescript-ts-mode "<" nil :actions nil)
 
   (require 'smartparens-config))
 
