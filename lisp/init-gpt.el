@@ -99,15 +99,15 @@
 
 
 (use-package aidermacs
+  :vc (:fetcher github :repo MatthewZMD/aidermacs)
   :bind (("M-I" . aidermacs-transient-menu))
   :config
                                         ; Enable minor mode for Aider files
   (aidermacs-setup-minor-mode)
   :custom
-                                        ; See the Configuration section below
+  (aidermacs-auto-commits nil)
   (aidermacs-use-architect-mode t)
-  (aidermacs-default-model "deepseek")
-  )
+  (aidermacs-default-model "deepseek"))
 
 (provide 'init-gpt)
 
