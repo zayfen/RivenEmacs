@@ -49,7 +49,7 @@
  '(markdown-header-face-5 ((t (:height 1.1 :foreground "#d08770" :weight semi-bold :inherit markdown-header-face))))
  '(markdown-header-face-6 ((t (:height 1.05 :foreground "#a3be8c" :weight semi-bold :inherit markdown-header-face))))
  '(markdown-code-face ((t (:family "LigaSFMonoNerdFont" :background "#2e3440" :foreground "#d8dee9"))))
- '(markdown-inline-code-face ((t (:inherit 'markdown-code-face :height 0.95))))
+ '(markdown-inline-code-face ((t (:inherit 'markdown-code-face :height 0.95)))))
 
 ;; Additional quality-of-life settings
 (setq markdown-fontify-code-blocks-natively t
