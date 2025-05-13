@@ -56,7 +56,7 @@
         markdown-hide-markup t
         markdown-list-indent-width 2
         markdown-gfm-additional-languages '("bash" "python" "emacs-lisp")
-        markdown-enable-math t)))
+        markdown-enable-math t))
 
 (provide 'init-markdown)
 ;;; init-markdown.el ends here
