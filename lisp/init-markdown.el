@@ -39,24 +39,24 @@
     (markdown-toggle-markup-hiding 'toggle)
     (font-lock-add-keywords nil '((nb/unhide-current-line)) t)
     (add-hook 'post-command-hook #'nb/refontify-on-linemove nil t))
-;; Enhanced color scheme with better contrast and modern aesthetics
-(custom-set-faces
- '(markdown-header-delimiter-face ((t (:foreground "#5e81ac" :height 0.9))))
- '(markdown-header-face-1 ((t (:height 1.8 :foreground "#8fbcbb" :weight extra-bold :inherit markdown-header-face))))
- '(markdown-header-face-2 ((t (:height 1.6 :foreground "#88c0d0" :weight extra-bold :inherit markdown-header-face))))
- '(markdown-header-face-3 ((t (:height 1.4 :foreground "#81a1c1" :weight bold :inherit markdown-header-face))))
- '(markdown-header-face-4 ((t (:height 1.2 :foreground "#5e81ac" :weight bold :inherit markdown-header-face))))
- '(markdown-header-face-5 ((t (:height 1.1 :foreground "#d08770" :weight semi-bold :inherit markdown-header-face))))
- '(markdown-header-face-6 ((t (:height 1.05 :foreground "#a3be8c" :weight semi-bold :inherit markdown-header-face))))
- '(markdown-code-face ((t (:family "LigaSFMonoNerdFont" :background "#2e3440" :foreground "#d8dee9"))))
- '(markdown-inline-code-face ((t (:inherit 'markdown-code-face :height 0.95)))))
+  ;; Enhanced color scheme with better contrast and modern aesthetics
+  (custom-set-faces
+   '(markdown-header-delimiter-face ((t (:foreground "#5e81ac" :height 0.9))))
+   '(markdown-header-face-1 ((t (:height 1.8 :foreground "#8fbcbb" :weight extra-bold :inherit markdown-header-face))))
+   '(markdown-header-face-2 ((t (:height 1.6 :foreground "#88c0d0" :weight extra-bold :inherit markdown-header-face))))
+   '(markdown-header-face-3 ((t (:height 1.4 :foreground "#81a1c1" :weight bold :inherit markdown-header-face))))
+   '(markdown-header-face-4 ((t (:height 1.2 :foreground "#5e81ac" :weight bold :inherit markdown-header-face))))
+   '(markdown-header-face-5 ((t (:height 1.1 :foreground "#d08770" :weight semi-bold :inherit markdown-header-face))))
+   '(markdown-header-face-6 ((t (:height 1.05 :foreground "#a3be8c" :weight semi-bold :inherit markdown-header-face))))
+   '(markdown-code-face ((t (:family "LigaSFMonoNerdFont" :background "#2e3440" :foreground "#d8dee9"))))
+   '(markdown-inline-code-face ((t (:inherit 'markdown-code-face :height 0.95)))))
 
-;; Additional quality-of-life settings
-(setq markdown-fontify-code-blocks-natively t
-      markdown-hide-markup t
-      markdown-list-indent-width 2
-      markdown-gfm-additional-languages '("bash" "python" "emacs-lisp")
-      markdown-enable-math t)
+  ;; Additional quality-of-life settings
+  (setq markdown-fontify-code-blocks-natively t
+        markdown-hide-markup t
+        markdown-list-indent-width 2
+        markdown-gfm-additional-languages '("bash" "python" "emacs-lisp")
+        markdown-enable-math t)))
 
 (provide 'init-markdown)
 ;;; init-markdown.el ends here
