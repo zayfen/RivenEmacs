@@ -97,7 +97,7 @@
     (navigate-leader-def
      "c" '(avy-goto-char-2 :wk "Goto Char")
      "g" '(consult-goto-line :wk "Line")
-     "i" '(consult-imenu-multi :wk "Imenu")
+     "i" '(consult-imenu :wk "Imenu")
      "l" '(link-hint-open-link :wk "Link")
      "o" '(consult-outline :wk "Outline")
      "m" '(consult-mark :wk "Mark")
