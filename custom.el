@@ -6,7 +6,8 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages nil)
  '(package-vc-selected-packages
-   '((gptel-aibo :vc-backend Git :url "https://github.com/dolmens/gptel-aibo")
+   '((aidermacs :vc-backend Git :url "https://github.com/MatthewZMD/aidermacs")
+     (gptel-aibo :vc-backend Git :url "https://github.com/dolmens/gptel-aibo")
      (pet :vc-backend Git :url "https://github.com/wyuenho/emacs-pet")
      (treesit-fold :vc-backend Git :url "https://github.com/abougouffa/treesit-fold"))))
 (custom-set-faces
