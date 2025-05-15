@@ -38,11 +38,11 @@
   :hook ((prog-mode) . lsp-bridge-semantic-tokens-mode)
   :bind (:map lsp-bridge-mode-map
               ("M-?" . lsp-bridge-find-references)
-              ("M-P" . lsp-bridge-popup-documentation-scroll-down)
-              ("M-N" . lsp-bridge-popup-documentation-scroll-up))
+              ("M-p" . lsp-bridge-popup-documentation-scroll-down)
+              ("M-n" . lsp-bridge-popup-documentation-scroll-up))
   :bind (:map acm-mode-map
-              ("M-P" . acm-doc-scroll-down)
-              ("M-N" . acm-doc-scroll-up))
+              ("M-p" . acm-doc-scroll-down)
+              ("M-n" . acm-doc-scroll-up))
   :bind (:map lsp-bridge-peek-keymap
               ("M-p" . lsp-bridge-peek-list-prev-line)
               ("M-n" . lsp-bridge-peek-list-next-line)
