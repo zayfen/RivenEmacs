@@ -129,6 +129,19 @@
                 ;; minor-mode-alist ;;enable this to show minor modes
                 ;; Others
                 mode-line-end-spaces))
+
+
+
+(add-hook 'after-init-hook
+          (lambda ()
+            (progn
+              ;; Customize active mode-line
+              (set-face-attribute 'mode-line nil
+                                  :background "#1a1a1a")
+
+              ;; Customize inactive mode-line
+              (set-face-attribute 'mode-line-inactive nil
+                                  :background "#2a2a2a"))))
 ;;;;;;;; customize mode-line end ;;;;;;;;;;;;;;
 
 
