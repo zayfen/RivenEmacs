@@ -7,25 +7,25 @@
 ;;; Code:
 
 
-(set-face-attribute 'fixed-pitch nil :font (font-spec :family "Cascadia Code NF"
-                                                      :slant 'italic
-                                                      :size (cond ((eq system-type 'gnu/linux) 20)
-                                                                  ((eq system-type 'windows-nt) 12.5)
-                                                                  ((eq system-type 'darwin) 14))))
-(set-face-attribute 'variable-pitch nil :font (font-spec :family "Cascadia Code NF"
-                                                         :weight 'bold
-                                                         :slant 'normal
-                                                         :size (cond ((eq system-type 'gnu/linux) 20)
-                                                                     ((eq system-type 'windows-nt) 12.5)
-                                                                     ((eq system-type 'darwin) 12))))
+(set-face-attribute 'fixed-pitch nil
+                    :font (font-spec :family "Cascadia Code NF"
+                                     :slant 'italic
+                                     :size (cond ((eq system-type 'gnu/linux) 20)
+                                                 ((eq system-type 'windows-nt) 12.5)
+                                                 ((eq system-type 'darwin) 14))))
+(set-face-attribute 'variable-pitch nil
+                    :font (font-spec :family "Cascadia Code NF"
+                                     :weight 'bold
+                                     :slant 'normal
+                                     :size (cond ((eq system-type 'gnu/linux) 20)
+                                                 ((eq system-type 'windows-nt) 12.5)
+                                                 ((eq system-type 'darwin) 12))))
 (defun font-installed-p (font-name)
   "Check if font with FONT-NAME is available."
   (find-font (font-spec :name font-name)))
 
 (when (display-graphic-p)
-  (cl-loop for font in '("Liga SFMono Nerd Font" "IBM Plex Mono" "SF Mono" "Cascadia Code NF" "JetBrains Mono NL" "FiraCode Nerd Font" "FiraCode" "Monaco" "Menlo"  "Cascadia Code" "Source Code Pro"
-                         "Dejavu Sans Mono"
-                         "Lucida Console" "Consolas" "SAS Monospace")
+  (cl-loop for font in '("Liga SFMono Nerd Font" "IBM Plex Mono" "SF Mono" "Cascadia Code NF" "JetBrains Mono NL" "FiraCode Nerd Font" "FiraCode" "Monaco" "Menlo"  "Cascadia Code" "Source Code Pro" "Dejavu Sans Mono" "Lucida Console" "Consolas" "SAS Monospace")
            when (font-installed-p font)
            return (set-face-attribute
                    'default nil
@@ -55,9 +55,9 @@
                                                :weight 'normal
                                                :slant 'normal
                                                :scale (cond ((eq system-type 'gnu/linux) 1.25)
-                                                           ((eq system-type 'windows-nt) 1.25)
-                                                           ((eq system-type 'darwin) 1)
-                                                           )
+                                                            ((eq system-type 'windows-nt) 1.25)
+                                                            ((eq system-type 'darwin) 1)
+                                                            )
                                                )))
   (cl-loop for font in '("HanaMinB" "SimSun-ExtB")
            when (font-installed-p font)

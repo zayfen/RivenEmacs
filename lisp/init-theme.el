@@ -174,13 +174,13 @@
                                        "\\\\" "://")))
 
 
-(use-package minions
-  :vc (:fetcher github :repo tarsius/minions)
-  :init
-  (minions-mode 1)
-  :config
-  (setq minions-mode-line-lighter "👋")
-  (add-to-list 'minions-prominent-modes 'flycheck-mode))
+;; (use-package minions
+;;   :vc (:fetcher github :repo tarsius/minions)
+;;   :init
+;;   (minions-mode 1)
+;;   :config
+;;   (setq minions-mode-line-lighter "👋")
+;;   (add-to-list 'minions-prominent-modes 'flycheck-mode))
 
 (use-package spacious-padding
   :ensure t
@@ -189,13 +189,14 @@
   :hook (after-init . spacious-padding-mode)
   :custom
   (spacious-padding-widths
-   '( :internal-border-width 15
+   '( :internal-border-width 8
       :header-line-width 4
       :mode-line-width 2
       :tab-width 4
       :right-divider-width 2
-      :scroll-bar-width 8
-      :fringe-width 8)))
+      :scroll-bar-width 4
+      :fringe-width 2)))
+
 
 ;; beautiful compilation buffer
 (use-package fancy-compilation
@@ -205,3 +206,4 @@
   (fancy-compilation-mode))
 
 (provide 'init-theme)
+;;; init-theme.el ends here
