@@ -1,62 +1,78 @@
-;;; -*- coding: utf-8; lexical-binding: t -*-
-
 (use-package markdown-mode
-  :mode ("README\\.md\\'" . gfm-mode)
-  :init 
-  (setq markdown-command "pandoc")  ; More powerful than multimarkdown
-  :hook
-  (markdown-mode . (lambda ()
-                     (nb/markdown-unhighlight)
-                     (variable-pitch-mode 1)  ; Better prose readability
-                     (visual-line-mode 1)))   ; Soft word wrapping
+  :ensure t
+  :commands (markdown-mode gfm-mode)
+  :mode (("README\\.md\\'" . gfm-mode)
+         ("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode))
+  :init (setq markdown-live-preview-engine 'eww) ; 或者 'markdown-preview-mode
   :config
-  (defvar nb/current-line '(0 . 0)
-    "(start . end) of current line in current buffer")
-  (make-variable-buffer-local 'nb/current-line)
+  ;; 确保在 markdown-mode 加载完毕后才修改其 faces
+  (with-eval-after-load 'markdown-mode
+    ;; --- 开始设置 Markdown 特定的 faces ---
 
-  (defun nb/unhide-current-line (limit)
-    "Font-lock function"
-    (let ((start (max (point) (car nb/current-line)))
-          (end (min limit (cdr nb/current-line))))
-      (when (< start end)
-        (remove-text-properties start end
-                                '(invisible t display "" composition ""))
-        (goto-char limit)
-        t)))
+    ;; 标题 Faces
+    (set-face-attribute 'markdown-header-face-1 nil
+                        :inherit 'font-lock-function-name-face
+                        :height 1.8
+                        :weight 'bold)
+    (set-face-attribute 'markdown-header-face-2 nil
+                        :inherit 'font-lock-function-name-face
+                        :height 1.6
+                        :weight 'bold)
+    (set-face-attribute 'markdown-header-face-3 nil
+                        :inherit 'font-lock-function-name-face
+                        :height 1.4
+                        :weight 'semi-bold)
+    (set-face-attribute 'markdown-header-face-4 nil
+                        :inherit 'font-lock-function-name-face
+                        :height 1.2
+                        :weight 'semi-bold)
+    (set-face-attribute 'markdown-header-face-5 nil
+                        :inherit 'font-lock-function-name-face
+                        :height 1.1)
+    (set-face-attribute 'markdown-header-face-6 nil
+                        :inherit 'font-lock-function-name-face
+                        :height 1.0)
 
-  (defun nb/refontify-on-linemove ()
-    "Post-command-hook"
-    (let* ((start (line-beginnin:g-position))
-           (end (line-beginning-position 2))
-           (needs-update (not (equal start (car nb/current-line)))))
-      (setq nb/current-line (cons start end))
-      (when needs-update
-        (font-lock-fontify-block 3))))
+    ;; 代码块 Faces
+    (set-face-attribute 'markdown-code-face nil :inherit 'fixed-pitch)
+    (set-face-attribute 'markdown-pre-face nil :inherit 'fixed-pitch :background "#333333") ; 您可以根据主题调整背景色
+    (set-face-attribute 'markdown-inline-code-face nil
+                        :inherit 'fixed-pitch
+                        :foreground "orange" ; 您可以根据主题调整前景色
+                        :background "#3A3A3A") ; 您可以根据主题调整背景色
 
-  (defun nb/markdown-unhighlight ()
-    "Enable markdown concealling"
-    (interactive)
-    (markdown-toggle-markup-hiding 'toggle)
-    (font-lock-add-keywords nil '((nb/unhide-current-line)) t)
-    (add-hook 'post-command-hook #'nb/refontify-on-linemove nil t))
-  ;; Enhanced color scheme with better contrast and modern aesthetics
-  (custom-set-faces
-   '(markdown-header-delimiter-face ((t (:foreground "#5e81ac" :height 0.9))))
-   '(markdown-header-face-1 ((t (:height 1.8 :foreground "#8fbcbb" :weight extra-bold :inherit markdown-header-face))))
-   '(markdown-header-face-2 ((t (:height 1.6 :foreground "#88c0d0" :weight extra-bold :inherit markdown-header-face))))
-   '(markdown-header-face-3 ((t (:height 1.4 :foreground "#81a1c1" :weight bold :inherit markdown-header-face))))
-   '(markdown-header-face-4 ((t (:height 1.2 :foreground "#5e81ac" :weight bold :inherit markdown-header-face))))
-   '(markdown-header-face-5 ((t (:height 1.1 :foreground "#d08770" :weight semi-bold :inherit markdown-header-face))))
-   '(markdown-header-face-6 ((t (:height 1.05 :foreground "#a3be8c" :weight semi-bold :inherit markdown-header-face))))
-   '(markdown-code-face ((t (:family "LigaSFMonoNerdFont" :background "#2e3440" :foreground "#d8dee9"))))
-   '(markdown-inline-code-face ((t (:inherit 'markdown-code-face :height 0.95)))))
+    ;; 强调 Faces (粗体和斜体)
+    (set-face-attribute 'markdown-bold-face nil :weight 'bold)
+    (set-face-attribute 'markdown-italic-face nil :slant 'italic)
 
-  ;; Additional quality-of-life settings
-  (setq markdown-fontify-code-blocks-natively t
-        markdown-hide-markup t
-        markdown-list-indent-width 2
-        markdown-gfm-additional-languages '("bash" "python" "emacs-lisp")
-        markdown-enable-math t))
+    ;; --- 结束设置 Markdown 特定的 faces ---
+    ) ; 结束 with-eval-after-load
+
+  ;; 为 Markdown 模式启用 variable-pitch (变宽字体)
+  (add-hook 'markdown-mode-hook #'variable-pitch-mode)
+
+  ;; 确保代码元素 (如代码块和行内代码) 使用 fixed-pitch (等宽字体) 的字体家族和高度
+  (add-hook 'markdown-mode-hook
+            (lambda ()
+              (face-remap-add-relative 'markdown-code-face
+                                       :family (face-attribute 'fixed-pitch :family)
+                                       :height (face-attribute 'fixed-pitch :height))
+              (face-remap-add-relative 'markdown-pre-face
+                                       :family (face-attribute 'fixed-pitch :family)
+                                       :height (face-attribute 'fixed-pitch :height))
+              (face-remap-add-relative 'markdown-inline-code-face
+                                       :family (face-attribute 'fixed-pitch :family)
+                                       :height (face-attribute 'fixed-pitch :height))))
+  )
+
+;; For nicer rendering of horizontal rules and other elements
+(add-hook 'markdown-mode-hook #'visual-line-mode) ; Better line wrapping
+(add-hook 'markdown-mode-hook (lambda () (setq display-line-numbers-type nil))) ; Optional: Hide line numbers in Markdown
+
+;; Enable prettify symbols for a more 'WYSIWYG' feel in some contexts
+;; (add-hook 'markdown-mode-hook 'prettify-symbols-mode)
+;; You can define markdown-specific prettifications if desired:
+;; (setq markdown-prettify-symbols-alist '((">=" . ?≥) ("<=" . ?≤) ("->" . ?→)))
 
 (provide 'init-markdown)
-;;; init-markdown.el ends here
