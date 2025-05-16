@@ -218,5 +218,8 @@
 (with-eval-after-load 'compile
   (fancy-compilation-mode))
 
+;; change line number color
+(set-face-foreground 'line-number "#808080")
+
 (provide 'init-theme)
 ;;; init-theme.el ends here
