@@ -13,26 +13,26 @@
     ;; 标题 Faces
     (set-face-attribute 'markdown-header-face-1 nil
                         :inherit 'font-lock-function-name-face
-                        :scale 1.8
+                        :height 22
                         :weight 'bold)
     (set-face-attribute 'markdown-header-face-2 nil
                         :inherit 'font-lock-function-name-face
-                        :scale 1.6
+                        :height 20
                         :weight 'bold)
     (set-face-attribute 'markdown-header-face-3 nil
                         :inherit 'font-lock-function-name-face
-                        :scale 1.4
+                        :height 18
                         :weight 'semi-bold)
     (set-face-attribute 'markdown-header-face-4 nil
                         :inherit 'font-lock-function-name-face
-                        :scale 1.2
+                        :height 16
                         :weight 'semi-bold)
     (set-face-attribute 'markdown-header-face-5 nil
                         :inherit 'font-lock-function-name-face
-                        :scale 1.1)
+                        :height 14)
     (set-face-attribute 'markdown-header-face-6 nil
                         :inherit 'font-lock-function-name-face
-                        :scale 1.0)
+                        :height 12)
 
     ;; 代码块 Faces
     (set-face-attribute 'markdown-code-face nil :inherit 'fixed-pitch)

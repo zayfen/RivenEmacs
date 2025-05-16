@@ -67,7 +67,7 @@
                                     (font-spec :name font
                                                :weight 'normal
                                                :slant 'normal
-                                               :size (cond ((eq system-type 'gnu/linux) 18)
+                                               :size (cond ((eq system-type 'gnu/linux) 15)
                                                            ((eq system-type 'windows-nt) 15.0)
                                                            ((eq system-type 'darwin) 12.0))))))
 
