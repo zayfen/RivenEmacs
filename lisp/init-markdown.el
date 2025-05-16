@@ -1,78 +1,52 @@
+
+
 (use-package markdown-mode
-  :ensure t
-  :commands (markdown-mode gfm-mode)
-  :mode (("README\\.md\\'" . gfm-mode)
-         ("\\.md\\'" . markdown-mode)
-         ("\\.markdown\\'" . markdown-mode))
-  :init (setq markdown-live-preview-engine 'eww) ; 或者 'markdown-preview-mode
+  :hook
+  (markdown-mode . nb/markdown-unhighlight)
+  :custom
+  (markdown-header-scaling t)
+  (markdown-hide-urls t)
+  (markdown-fontify-code-blocks-natively t)
   :config
-  ;; 确保在 markdown-mode 加载完毕后才修改其 faces
-  (with-eval-after-load 'markdown-mode
-    ;; --- 开始设置 Markdown 特定的 faces ---
+  (defvar nb/current-line '(0 . 0)
+    "(start . end) of current line in current buffer")
+  (make-variable-buffer-local 'nb/current-line)
 
-    ;; 标题 Faces
-    (set-face-attribute 'markdown-header-face-1 nil
-                        :inherit 'font-lock-function-name-face
-                        :height 22
-                        :weight 'bold)
-    (set-face-attribute 'markdown-header-face-2 nil
-                        :inherit 'font-lock-function-name-face
-                        :height 20
-                        :weight 'bold)
-    (set-face-attribute 'markdown-header-face-3 nil
-                        :inherit 'font-lock-function-name-face
-                        :height 18
-                        :weight 'semi-bold)
-    (set-face-attribute 'markdown-header-face-4 nil
-                        :inherit 'font-lock-function-name-face
-                        :height 16
-                        :weight 'semi-bold)
-    (set-face-attribute 'markdown-header-face-5 nil
-                        :inherit 'font-lock-function-name-face
-                        :height 14)
-    (set-face-attribute 'markdown-header-face-6 nil
-                        :inherit 'font-lock-function-name-face
-                        :height 12)
+  (defun nb/unhide-current-line (limit)
+    "Font-lock function"
+    (let ((start (max (point) (car nb/current-line)))
+          (end (min limit (cdr nb/current-line))))
+      (when (< start end)
+        (remove-text-properties start end
+                                '(invisible t display "" composition ""))
+        (goto-char limit)
+        t)))
 
-    ;; 代码块 Faces
-    (set-face-attribute 'markdown-code-face nil :inherit 'fixed-pitch)
-    (set-face-attribute 'markdown-pre-face nil :inherit 'fixed-pitch :background "#333333") ; 您可以根据主题调整背景色
-    (set-face-attribute 'markdown-inline-code-face nil
-                        :inherit 'fixed-pitch
-                        :foreground "orange" ; 您可以根据主题调整前景色
-                        :background "#3A3A3A") ; 您可以根据主题调整背景色
+  (defun nb/refontify-on-linemove ()
+    "Post-command-hook"
+    (let* ((start (line-beginning-position))
+           (end (line-beginning-position 2))
+           (needs-update (not (equal start (car nb/current-line)))))
+      (setq nb/current-line (cons start end))
+      (when needs-update
+        (font-lock-fontify-block 3))))
 
-    ;; 强调 Faces (粗体和斜体)
-    (set-face-attribute 'markdown-bold-face nil :weight 'bold)
-    (set-face-attribute 'markdown-italic-face nil :slant 'italic)
-
-    ;; --- 结束设置 Markdown 特定的 faces ---
-    ) ; 结束 with-eval-after-load
-
-  ;; 为 Markdown 模式启用 variable-pitch (变宽字体)
-  (add-hook 'markdown-mode-hook #'variable-pitch-mode)
-
-  ;; 确保代码元素 (如代码块和行内代码) 使用 fixed-pitch (等宽字体) 的字体家族和高度
-  (add-hook 'markdown-mode-hook
-            (lambda ()
-              (face-remap-add-relative 'markdown-code-face
-                                       :family (face-attribute 'fixed-pitch :family)
-                                       :height (face-attribute 'fixed-pitch :height))
-              (face-remap-add-relative 'markdown-pre-face
-                                       :family (face-attribute 'fixed-pitch :family)
-                                       :height (face-attribute 'fixed-pitch :height))
-              (face-remap-add-relative 'markdown-inline-code-face
-                                       :family (face-attribute 'fixed-pitch :family)
-                                       :height (face-attribute 'fixed-pitch :height))))
-  )
-
-;; For nicer rendering of horizontal rules and other elements
-(add-hook 'markdown-mode-hook #'visual-line-mode) ; Better line wrapping
-(add-hook 'markdown-mode-hook (lambda () (setq display-line-numbers-type nil))) ; Optional: Hide line numbers in Markdown
-
-;; Enable prettify symbols for a more 'WYSIWYG' feel in some contexts
-;; (add-hook 'markdown-mode-hook 'prettify-symbols-mode)
-;; You can define markdown-specific prettifications if desired:
-;; (setq markdown-prettify-symbols-alist '((">=" . ?≥) ("<=" . ?≤) ("->" . ?→)))
+  (defun nb/markdown-unhighlight ()
+    "Enable markdown concealling"
+    (interactive)
+    (markdown-toggle-markup-hiding 'toggle)
+    (font-lock-add-keywords nil '((nb/unhide-current-line)) t)
+    (add-hook 'post-command-hook #'nb/refontify-on-linemove nil t))
+  :custom-face
+  (markdown-header-delimiter-face ((t (:foreground "#616161" :height 0.9))))
+  (markdown-header-face-1 ((t (:height 1.6  :foreground "#A3BE8C" :weight extra-bold :inherit markdown-header-face))))
+  (markdown-header-face-2 ((t (:height 1.4  :foreground "#EBCB8B" :weight extra-bold :inherit markdown-header-face))))
+  (markdown-header-face-3 ((t (:height 1.2  :foreground "#D08770" :weight extra-bold :inherit markdown-header-face))))
+  (markdown-header-face-4 ((t (:height 1.15 :foreground "#BF616A" :weight bold :inherit markdown-header-face))))
+  (markdown-header-face-5 ((t (:height 1.1  :foreground "#b48ead" :weight bold :inherit markdown-header-face))))
+  (markdown-header-face-6 ((t (:height 1.05 :foreground "#5e81ac" :weight semi-bold :inherit markdown-header-face))))
+  :hook
+  (markdown-mode . abbrev-mode))
 
 (provide 'init-markdown)
+;;; init-markdown.el ends here
