@@ -65,7 +65,7 @@ that directory."
  save-some-buffers-default-predicate 'save-some-buffers-root
  ;; don't keep duplicate entries in kill ring
  kill-do-not-save-duplicates t
- desktop-save-buffer t
+ ;; desktop-save-buffer t
 
  ;; ====== Recent files ======
  ;; Increase the maximum number of saved items
@@ -194,7 +194,7 @@ that directory."
 (minibuffer-depth-indicate-mode)
 
 (recentf-mode 1)
-(desktop-save-mode 1)
+;; (desktop-save-mode 1)
 (global-subword-mode 1)
 
 ;; (add-hook 'after-init-hook
