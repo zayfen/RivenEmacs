@@ -58,7 +58,7 @@
            return (set-fontset-font t 'han
                                    (font-spec :family font
                                               :weight 'regular
-                                              :size (cond ((eq system-type 'gnu/linux) 15)
+                                              :size (cond ((eq system-type 'gnu/linux) 16)
                                                           ((eq system-type 'windows-nt) 14)
                                                           ((eq system-type 'darwin) 15)))))
   (cl-loop for font in '("HanaMinB" "SimSun-ExtB")

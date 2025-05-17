@@ -32,6 +32,14 @@
     (error
      (xref-go-back))))
 
+(defun lsp-bridge-find-def-ex()
+  "Tro to find define via \"lsp-bridge-find-def-return\", if error, use \"xref-find-defination\" instead."
+  (interactive)
+  (condition-case err
+      (lsp-bridge-find-def)
+    (error
+     (xref-find-definitions))))
+
 (use-package lsp-bridge
   :vc (:fetcher github :repo "manateelazycat/lsp-bridge")
   :hook ((prog-mode) . lsp-bridge-mode)
@@ -82,7 +90,7 @@
   :config
   (define-key acm-mode-map (kbd "C-m") nil)
   (define-key acm-mode-map (kbd "<return>") nil)
-  (keymap-global-set "M-." #'lsp-bridge-find-def)
+  (keymap-global-set "M-." #'lsp-bridge-find-def-ex)
   (keymap-global-set "M-," #'lsp-bridge-find-def-return-ex)
   (keymap-global-set "M-?" #'lsp-bridge-find-references)
 
@@ -94,7 +102,7 @@
     "" '(:ignore t :wk "Code")
     "a"  '(lsp-bridge-code-action :wk "Code actions")
     "e"  '(lsp-bridge-diagnostic-list :wk "Diagnostic list")
-    "d" '(lsp-bridge-find-def :wk "Find define")
+    "d" '(lsp-bridge-find-def-ex :wk "Find define")
     "f" '(lsp-bridge-code-format :wk "Format code")
     "i"  '(lsp-bridge-find-impl :wk "Find implementation")
     "k"  '(lsp-bridge-popup-documentation :wk "Find Document")

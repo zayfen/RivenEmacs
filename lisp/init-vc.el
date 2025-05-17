@@ -8,6 +8,7 @@
   (magit-save-repository-buffers nil)
   ;; Show in new window
   (magit-display-buffer-function #'magit-display-buffer-fullcolumn-most-v1)
+  :hook (magit-status-mode . magit-todos-mode)
   :hook (prog-mode . (lambda ()
                        (keymap-global-unset "C-c M-g"))))
 
