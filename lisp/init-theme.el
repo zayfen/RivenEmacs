@@ -187,14 +187,6 @@
                                        "\\\\" "://")))
 
 
-;; (use-package minions
-;;   :vc (:fetcher github :repo tarsius/minions)
-;;   :init
-;;   (minions-mode 1)
-;;   :config
-;;   (setq minions-mode-line-lighter "👋")
-;;   (add-to-list 'minions-prominent-modes 'flycheck-mode))
-
 (use-package spacious-padding
   :ensure t
   :if (display-graphic-p)
@@ -208,7 +200,7 @@
       :tab-width 4
       :right-divider-width 2
       :scroll-bar-width 4
-      :fringe-width 2)))
+      :fringe-width 8)))
 
 
 ;; beautiful compilation buffer
