@@ -17,6 +17,7 @@
   (sp-local-pair 'js-ts-mode "<" nil :actions nil)
   (sp-local-pair 'javascript-mode "<" nil :actions nil)
   (sp-local-pair 'typescript-ts-mode "<" nil :actions nil)
+  (sp-local-pair 'typescript-mode "<" nil :actions nil)
 
   (require 'smartparens-config))
 
