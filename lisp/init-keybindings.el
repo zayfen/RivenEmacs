@@ -58,6 +58,7 @@
       "" '(:ignore t :wk "Kill")
       "a" '(sp-splice-sexp :wk "Delete Around")
       "A" '(sp-rewrap-sexp :wk "Delete Around and Rewrap")
+      "k" '(sp-kill-whole-line :wk "Kill line(s) (smart)")
       "r" '(vr/replace :wk "Replace")
       "s" '(sp-delete-sexp :wk "Delete Sexp")
       "z" '(zap-to-char :wk "Zap to char"))
@@ -114,7 +115,7 @@
     (when (featurep 'lsp-bridge)
       (keymap-global-set "M-." #'lsp-bridge-find-def)
       (keymap-global-set "C-," #'lsp-bridge-find-def-return))
-    
+
     ))
 
 (add-hook 'after-init-hook #'keybindings-config)
