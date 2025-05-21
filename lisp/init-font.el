@@ -47,10 +47,7 @@
            when (font-installed-p fontname)
            return (dolist (charset '(kana han symbol cjk-misc bopomofo))
                       (set-fontset-font (frame-parameter nil 'font) charset
-                                        (font-spec :family fontname
-                                                   :height (cond ((eq system-type 'gnu/linux) 12)
-                                                                 ((eq system-type 'windows-nt) 12)
-                                                                 ((eq system-type 'darwin)  12))))))
+                                        (font-spec :family fontname))))
 
   (cl-loop for fontname in '("HanaMinB" "SimSun-ExtB")
            when (font-installed-p fontname)
