@@ -1,377 +1,248 @@
-
-;; Check for missing external software
+;; init-org.el
 ;;
-;; - soffice (LibreOffice): View and create office documents
-;; - zip: Unpack ePub documents
-;; - pdftotext (poppler-utils): Convert PDF to text
-;; - ddjvu (DjVuLibre): View DjVu files
-;; - curl: Reading RSS feeds
-;; - convert (ImageMagick) or gm (GraphicsMagick): Convert image files  ;; - latex (TexLive, MacTex or MikTeX): Preview LaTex and export Org to PDF
-;; - hunspell: Spellcheck. Also requires a hunspell dictionary
-;; - grep: Search inside files
-;; - gs (GhostScript) or mutool (MuPDF): View PDF files
-;; - mpg321, ogg123 (vorbis-tools), mplayer, mpv, vlc: Media players
-;; - git: Version control
+;; Comprehensive Org Mode configuration for Emacs.
+;; To use this file:
+;; 1. Save it as `init-org.el` (e.g., in `~/.emacs.d/lisp/init-org.el`).
+;; 2. In your main `init.el` (or `~/.emacs`), add:
+;;    (add-to-list 'load-path "~/.emacs.d/lisp/") ; Or wherever you save it
+;;    (require 'init-org)
+;;
+;; Make sure you have package.el set up in your main init.el before loading this.
 
-;; Mixed-pich mode
-
-(use-package mixed-pitch
-  :hook
-  (org-mode . mixed-pitch-mode))
-
-;;; Text mode settings
-(use-package text-mode
-  :ensure
-  nil
-  :hook
-  (text-mode . visual-line-mode)
-  :init
-  (delete-selection-mode t)
-  :custom
-  (sentence-end-double-space nil)
-  (scroll-error-top-bottom t)
-  (save-interprogram-paste-before-kill t))
-
-;;; Ricing Org mode
-
+;; --------------------------------------------------------------------------
+;; SECTION 1: CORE ORG MODE CONFIGURATION
+;; --------------------------------------------------------------------------
 (use-package org
-  :custom
-  (org-startup-indented t)
-  (org-hide-emphasis-markers t)
-  (org-startup-with-inline-images t)
-  (org-image-actual-width '(450))
-  (org-fold-catch-invisible-edits 'error)
-  (org-pretty-entities t)
-  (org-use-sub-superscripts "{}")
-  (org-id-link-to-org-use-id t)
-  (org-fold-catch-invisible-edits 'show))
+  ;; :ensure t ; Uncomment if you want to ensure the latest version from ELPA.
+  ;; Org is built-in, but this allows overriding with a newer version if desired.
+  ;; :pin org  ; Pin to the org-mode.org ELPA archive if you use it.
 
-;; Show hidden emphasis markers
+  :hook ((org-mode . visual-line-mode) ; Enable visual line mode for better readability
+         (org-mode . auto-fill-mode))   ; Enable auto-fill mode for text
 
-(use-package org-appear
-  :hook
-  (org-mode . org-appear-mode))
+  :init
+  (message "Initializing Org Mode core settings...")
 
-;; LaTeX previews
+  :config
+  ;; --- General Org Behavior ---
+  (setq org-startup-indented t)             ; Nicer indentation for outlines
+  (setq org-ellipsis " ▼ ")                ; Prettier ellipsis character
+  (setq org-hide-emphasis-markers t)      ; Hide *, /, _, etc., around emphasized text
+  (setq org-pretty-entities t)            ; Display LaTeX-like entities (e.g., \alpha as α)
+  (setq org-startup-folded 'content)      ; Fold all but the top-level headlines
+  ;; (setq org-startup-folded 'overview)  ; Or just show headlines
+  (setq org-cycle-separator-lines 2)      ; More space when cycling visibility
+  (setq org-use-speed-commands t)         ; Enable single-key commands on headlines
 
-(use-package org-fragtog
+  ;; --- File Handling ---
+  (setq org-directory "~/org")             ; Default directory for Org files
+  (setq org-default-notes-file (concat org-directory "/notes.org")) ; Default capture file
+  (setq org-archive-location (concat org-directory "/archive/%s::")) ; Archive location
+
+  ;; --- Image Display ---
+  ;; Automatically display inline images when opening an Org file.
+  (setq org-startup-with-inline-images t)
+  ;; You might need to set `image-actual-display' to t if images don't show.
+  ;; (setq image-actual-display t)
+  ;; Control image width (e.g., max 500 pixels)
+  ;; (setq org-image-actual-width 500)
+
+  ;; --- Math (LaTeX Preview) Display ---
+  ;; Prerequisites: A LaTeX distribution (TeX Live, MiKTeX, etc.) and `dvipng` or `dvisvgm`.
+  (setq org-startup-with-latex-preview t)
+  (setq org-latex-create-formula-image-program 'dvipng) ; Common choice, creates PNGs
+  ;; (setq org-latex-create-formula-image-program 'dvisvgm) ; Creates SVGs, often sharper
+  (setq org-latex-listings 'listings) ; For code listings in LaTeX export
+  (setq org-latex-packages-alist '(("" "amsmath" t)
+                                   ("" "amssymb" t)
+                                   ("" "amsfonts" t)
+                                   ("" "graphicx" t)
+                                   ("" "xcolor" t))) ; Common LaTeX packages
+
+  ;; --- Code Block Enhancements ---
+  (setq org-src-fontify-natively t)          ; Use native font-locking from language major modes
+  (setq org-src-tab-acts-natively t)        ; TAB key behaves as in the language's major mode
+  (setq org-src-window-setup 'current-window) ; Where to display results of code execution
+  (setq org-confirm-babel-evaluate t)     ; Set to 't to prompt before executing code blocks
+
+  ;; Enable languages for Org Babel (add more as needed)
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)
+     (shell . t)
+     (python . t)
+     (js . t)
+     (C . t)
+     ;; (org . t) ; For evaluating org code blocks within org
+     ;; (sql . t)
+     ;; (R . t)
+     ))
+
+  ;; --- TODO Keywords and Appearance ---
+  (setq org-todo-keywords
+        '((sequence
+           "TODO(t!)"  ; A task that needs doing (with note prompt)
+           "PROJ(p!)"  ; A project
+           "NEXT(n!)"  ; Next action
+           "WAIT(w@)"  ; Waiting for something/someone (with note prompt on state change)
+           "|"         ; Separator for done states
+           "DONE(d!)"  ; Task completed (with note prompt)
+           "KILL(k@)") ; Task cancelled (with note prompt on state change)
+          (sequence
+           "[ ](T)"    ; Simple checkbox todo
+           "[-](S)"    ; In-progress checkbox
+           "[?](W)"    ; Question/hold checkbox
+           "|"
+           "[X](D)")   ; Done checkbox
+          ))
+
+  (setq org-todo-keyword-faces
+        '(("TODO" :foreground "red1" :weight 'bold)
+          ("PROJ" :foreground "deep sky blue" :weight 'bold)
+          ("NEXT" :foreground "dark orange" :weight 'bold)
+          ("WAIT" :foreground "magenta1" :weight 'bold :background "gray15")
+          ("DONE" :foreground "forest green" :weight 'bold)
+          ("KILL" :foreground "dim gray" :weight 'bold :strike-through t)
+          ("[ ]"  :foreground "red1" :weight 'bold)
+          ("[-]"  :foreground "dark orange" :weight 'bold)
+          ("[?]"  :foreground "magenta1" :weight 'bold)
+          ("[X]"  :foreground "forest green" :weight 'bold)
+          ))
+
+  ;; --- Clocking Configuration ---
+  (setq org-clock-persist 'history)             ; Save clock history across Emacs sessions
+  (org-clock-persistence-insinuate)             ; Load clock history when Org mode starts
+  (setq org-clock-out-when-done t)              ; Automatically clock out when marking a task DONE
+  (setq org-clock-report-include-clocking-task t) ; Show current clocking task in report
+  (setq org-auto-clock-resolution 'when-no-clock) ; Auto clock in when starting tasks if nothing else is clocked
+  (setq org-clock-idle-time 15)                 ; Ask what to do after 15 minutes of idle time while clocked in
+
+  ;; --- Modeline Display for Clocked Task ---
+  ;; Display total time for the currently clocked task in the modeline.
+  ;; The standard Org modeline already shows the current headline.
+  (setq org-clock-modeline-total 'current) ; Show time for current task, or 'today for all today
+  ;; To customize the format further, you might explore `org-mode-line-clock-format`
+  ;; or packages like `doom-modeline` for more advanced modeline displays.
+
+  (message "Org Mode core configuration loaded.")
+  )
+
+;; --------------------------------------------------------------------------
+;; SECTION 2: ORG AGENDA CONFIGURATION
+;; --------------------------------------------------------------------------
+(use-package org-agenda
+  :ensure org ; Part of the org package
+  :after org  ; Ensure org is loaded first
+  :config
+  (message "Configuring Org Agenda...")
+
+  ;; Define the list of files to be included in the agenda.
+  ;; Create the org-directory if it doesn't exist.
+  (unless (file-directory-p org-directory)
+    (make-directory org-directory t))
+
+  (setq org-agenda-files (list (concat org-directory "/Agenda") ; Include all .org files in org-directory/Agenda
+                               ;; You can add specific files too:
+                               ;; (concat org-directory "/work.org")
+                               ;; (concat org-directory "/personal.org")
+                               ))
+
+  ;; Customize agenda appearance and behavior
+  (setq org-agenda-start-on-weekday nil)      ; Start agenda view on current day
+  (setq org-agenda-span 'day)                 ; Default agenda span (day, week, month, year)
+  (setq org-agenda-deadline-faces
+        '((1.0 . org-warning)                 ; Due today
+          (0.0 . org-error)))                 ; Overdue
+  (setq org-agenda-skip-deadline-if-done t)
+  (setq org-agenda-skip-scheduled-if-done t)
+  (setq org-agenda-tags-column -105)          ; Adjust width for tags column
+  (setq org-agenda-sticky t)                  ; Keep agenda buffer open
+
+  ;;---------------------------------------------
+  ;;org-agenda-time-grid
+  ;;--------------------------------------------
+  (setq org-agenda-time-grid (quote ((daily today require-timed)
+                                     (300
+                                      600
+                                      900
+                                      1200
+                                      1500
+                                      1800
+                                      2100
+                                      2400)
+                                     "......"
+                                     "-----------------------------------------------------"
+                                     )))
+
+  ;;integrated with Calendar
+  (general-advice-add 'org-agenda :after
+                      (lambda (_)
+                        (when (equal (buffer-name)
+                                     "*Org Agenda*")
+                          (calendar)
+                          (calendar-mark-holidays)
+                          (other-window 1))))
+
+  (general-advice-add 'org-agenda-quit :before
+                      (lambda ()
+                        (let ((window (get-buffer-window calendar-buffer)))
+                          (when (and window (not (one-window-p window)))
+                            (delete-window window)))))
+
+
+  ;; ;; Keybindings for agenda (global, easily accessible)
+  ;; (global-set-key (kbd "C-c a") 'org-agenda)  ; Main agenda dispatcher
+  ;; (global-set-key (kbd "C-c c") 'org-capture) ; Capture new items
+
+  (message "Org Agenda configuration loaded.")
+  )
+
+;; --------------------------------------------------------------------------
+;; SECTION 3: ORG CAPTURE TEMPLATES (EXAMPLE)
+;; --------------------------------------------------------------------------
+(use-package org-capture
+  :ensure org ; Part of the org package
   :after org
-  :hook
-  (org-mode . org-fragtog-mode)
-  :custom
-  (org-startup-with-latex-preview nil)
-  (org-format-latex-options
-   (plist-put org-format-latex-options :scale 2)
-   (plist-put org-format-latex-options :foreground 'auto)
-   (plist-put org-format-latex-options :background 'auto)))
-
-;; Org modern: Most features are disabled for beginning users
-
-(use-package org-modern
-  :hook
-  (org-mode . org-modern-mode)
-  :custom
-  (org-modern-table nil)
-  (org-modern-keyword nil)
-  (org-modern-timestamp nil)
-  (org-modern-priority nil)
-  (org-modern-checkbox nil)
-  (org-modern-tag nil)
-  (org-modern-block-name nil)
-  (org-modern-keyword nil)
-  (org-modern-footnote nil)
-  (org-modern-internal-target nil)
-  (org-modern-radio-target nil)
-  (org-modern-statistics nil)
-  (org-modern-progress nil))
-
-
-(use-package doc-view
-  :custom
-  (doc-view-resolution 300)
-  (large-file-warning-threshold (* 50 (expt 2 20))))
-
-(use-package nov
-  :init
-  (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode)))
-
-;; Reading LibreOffice files
-
-;; Fixing a bug in Org Mode pre-9.7
-;; Org mode clobbers associations with office documents
-
-(use-package ox-odt
-  :ensure nil
   :config
-  (add-to-list 'auto-mode-alist
-               '("\\.\\(?:OD[CFIGPST]\\|od[cfigpst]\\)\\'"
-                 . doc-view-mode-maybe)))
+  (message "Configuring Org Capture...")
+  (setq org-capture-templates
+        '(("t" "Todo" entry (file+headline org-default-notes-file "Tasks")
+           "* TODO %?\n  %i\n  %a" :prepend t)
+          ("j" "Journal" entry (file+datetree (concat org-directory "/journal.org"))
+           "* %<%Y-%m-%d %a %H:%M> %?\n%i%a" :tree-type week :prepend t)
+          ("n" "Note" entry (file+headline org-default-notes-file "Notes")
+           "* %? :NOTE:\n%i%a" :prepend t)
+          ("p" "Project Idea" entry (file+headline org-default-notes-file "Projects")
+           "* PROJ %? :PROJECT:\n%i%a" :prepend t)
+          ))
+  (message "Org Capture templates configured.")
+  )
 
-;; Managing Bibliographies
-
-(use-package bibtex
-  :custom
-  (bibtex-user-optional-fields
-   '(("keywords" "Keywords to describe the entry" "")
-     ("file"     "Relative or absolute path to attachments" "" )))
-  (bibtex-align-at-equal-sign t)
+;; --------------------------------------------------------------------------
+;; SECTION 4: OPTIONAL ENHANCEMENTS (Example: org-bullets)
+;; --------------------------------------------------------------------------
+(use-package org-bullets
+  :ensure t
+  :after org
+  :hook (org-mode . org-bullets-mode)
   :config
-  (ews-bibtex-register)
-  :bind
-  (("C-c w b r" . ews-bibtex-register)))
+  (message "Org Bullets configured.")
+  )
 
-;; Biblio package for adding BibTeX records
+(setq org-level-color-stars-only nil
+      org-fontify-whole-heading-line t
+      org-cycle-level-faces nil
+      org-n-level-faces 8)
 
-(use-package biblio
-  :defer t
-  :bind
-  (("C-c w b b" . ews-bibtex-biblio-lookup)))
+;; This makes each level 10% smaller than the previous
+(custom-set-faces
+ '(org-level-1 ((t (:height 1.5 :weight bold))))
+ '(org-level-2 ((t (:height 1.4 :weight bold))))
+ '(org-level-3 ((t (:height 1.3 :weight bold))))
+ '(org-level-4 ((t (:height 1.2 :weight bold))))
+ '(org-level-5 ((t (:height 1.1 :weight bold))))
+ '(org-level-6 ((t (:height 1.0 :weight bold)))))
 
-;; Citar to access bibliographies
-
-(use-package citar
-  :defer t
-  :custom
-  (citar-bibliography ews-bibtex-files)
-  :bind
-  (("C-c w b o" . citar-open)))
-
-
-;; Fleeting notes
-
-(use-package org
-  :bind
-  (("C-c w c" . org-capture)
-   ("C-c w l" . org-store-link))
-  :custom
-  (org-goto-interface 'outline-path-completion)
-  (org-capture-templates
-   '(("f" "Fleeting note"
-      item
-      (file+headline org-default-notes-file "Notes")
-      "- %?")
-     ("p" "Permanent note" plain
-      (file denote-last-path)
-      #'denote-org-capture
-      :no-save t
-      :immediate-finish nil
-      :kill-buffer t
-      :jump-to-captured t)
-     ("t" "New task" entry
-      (file+headline org-default-notes-file "Tasks")
-      "* TODO %i%?"))))
-
-;; Denote
-
-(use-package denote
-  :defer t
-  :custom
-  (denote-sort-keywords t)
-  (denote-link-description-function #'ews-denote-link-description-title-case)
-  :hook
-  (dired-mode . denote-dired-mode)
-  :custom-face
-  (denote-faces-link ((t (:slant italic))))
-  :init
-  (require 'denote-org-extras)
-  :bind
-  (("C-c w d b" . denote-find-backlink)
-   ("C-c w d d" . denote-date)
-   ("C-c w d l" . denote-find-link)
-   ("C-c w d h" . denote-org-extras-link-to-heading)
-   ("C-c w d i" . denote-link-or-create)
-   ("C-c w d k" . denote-rename-file-keywords)
-   ("C-c w d l" . denote-insert-link)
-   ("C-c w d n" . denote)
-   ("C-c w d r" . denote-rename-file)
-   ("C-c w d R" . denote-rename-file-using-front-matter)))
-
-;; Consult-Notes for easy access to notes
-
-(use-package consult-notes
-  :bind
-  (("C-c w d f" . consult-notes)
-   ("C-c w d g" . consult-notes-search-in-all-notes))
-  :init
-  (consult-notes-denote-mode))
-
-;; Citar-Denote to manage literature notes
-
-(use-package citar-denote
-  :hook (org-mode . citar-denote-mode)
-  :custom
-  (citar-open-always-create-notes t)
-  :bind
-  (("C-c w b c" . citar-create-note)
-   ("C-c w b n" . citar-denote-open-note)
-   ("C-c w b x" . citar-denote-nocite)
-   :map org-mode-map
-   ("C-c w b k" . citar-denote-add-citekey)
-   ("C-c w b K" . citar-denote-remove-citekey)
-   ("C-c w b d" . citar-denote-dwim)
-   ("C-c w b e" . citar-denote-open-reference-entry)))
-
-;; Explore and manage your Denote collection
-
-(use-package denote-explore
-  :after denote
-  :bind
-  (;; Statistics
-   ("C-c w x c" . denote-explore-count-notes)
-   ("C-c w x C" . denote-explore-count-keywords)
-   ("C-c w x b" . denote-explore-barchart-keywords)
-   ("C-c w x e" . denote-explore-barchart-filetypes)
-   ;; Random walks
-   ("C-c w x r" . denote-explore-random-note)
-   ("C-c w x l" . denote-explore-random-link)
-   ("C-c w x k" . denote-explore-random-keyword)
-   ("C-c w x x" . denote-explore-random-regex)
-   ;; Denote Janitor
-   ("C-c w x d" . denote-explore-identify-duplicate-notes)
-   ("C-c w x z" . denote-explore-zero-keywords)
-   ("C-c w x s" . denote-explore-single-keywords)
-   ("C-c w x o" . denote-explore-sort-keywords)
-   ("C-c w x w" . denote-explore-rename-keyword)
-   ;; Visualise denote
-   ("C-c w x n" . denote-explore-network)
-   ("C-c w x v" . denote-explore-network-regenerate)
-   ("C-c w x D" . denote-explore-degree-barchart)))
-
-;; Set some Org mode shortcuts
-
-(use-package org
-  :bind
-  (:map org-mode-map
-        ("C-c w n" . ews-org-insert-notes-drawer)
-        ("C-c w p" . ews-org-insert-screenshot)))
-
-
-;; Export citations with Org Mode
-
-(require 'oc-natbib)
-(require 'oc-csl)
-
-(setq org-cite-global-bibliography ews-bibtex-files
-      org-cite-insert-processor 'citar
-      org-cite-follow-processor 'citar
-      org-cite-activate-processor 'citar)
-
-
-;; Writegood-Mode for weasel words, passive writing and repeated word detection
-
-(use-package writegood-mode
-  :bind
-  (("C-c w s r" . writegood-reading-ease)
-   ("C-c w s l" . writegood-grade-level))
-  :hook
-  (text-mode . writegood-mode))
-
-;; Abbreviations
-
-(add-hook 'text-mode-hook 'abbrev-mode)
-
-;; Lorem Ipsum generator
-
-(use-package lorem-ipsum
-  :custom
-  (lorem-ipsum-list-bullet "- ") ;; Org mode bullets
-  :init
-  (setq lorem-ipsum-sentence-separator
-        (if sentence-end-double-space "  " " "))
-  :bind
-  (("C-c w s i" . lorem-ipsum-insert-paragraphs)))
-
-
-;; Generic Org Export Settings
-
-(use-package org
-  :custom
-  (org-export-with-drawers nil)
-  (org-export-with-todo-keywords nil)
-  (org-export-with-broken-links t)
-  (org-export-with-toc nil)
-  (org-export-with-smart-quotes t)
-  (org-export-date-timestamp-format "%e %B %Y"))
-
-;; epub export
-
-(use-package ox-epub
-  :init
-  (require 'ox-org))
-
-;; LaTeX PDF Export settings
-
-(use-package ox-latex
-  :ensure nil
-  :custom
-  ;; Multiple LaTeX passes for bibliographies
-  (org-latex-pdf-process
-   '("pdflatex -interaction nonstopmode -output-directory %o %f"
-     "bibtex %b"
-     "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
-     "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
-  ;; Clean temporary files after export
-  (org-latex-logfiles-extensions
-   (quote ("lof" "lot" "tex~" "aux" "idx" "log" "out"
-           "toc" "nav" "snm" "vrb" "dvi" "fdb_latexmk"
-           "blg" "brf" "fls" "entoc" "ps" "spl" "bbl"
-           "tex" "bcf"))))
-
-;; EWS paperback configuration
-
-(with-eval-after-load 'ox-latex
-  (add-to-list
-   'org-latex-classes
-   '("ews"
-     "\\documentclass[11pt, twoside, hidelinks]{memoir}
-      \\setstocksize{9.25in}{7.5in}
-      \\settrimmedsize{\\stockheight}{\\stockwidth}{*}
-      \\setlrmarginsandblock{2cm}{1cm}{*}
-      \\setulmarginsandblock{1.5cm}{2.25cm}{*}
-      \\checkandfixthelayout
-      \\setcounter{tocdepth}{0}
-      \\OnehalfSpacing
-      \\usepackage{ebgaramond}
-      \\usepackage[htt]{hyphenat}
-      \\chapterstyle{bianchi}
-      \\setsecheadstyle{\\normalfont \\raggedright \\textbf}
-      \\setsubsecheadstyle{\\normalfont \\raggedright \\textbf}
-      \\setsubsubsecheadstyle{\\normalfont\\centering}
-      \\renewcommand\\texttt[1]{{\\normalfont\\fontfamily{cmvtt}
-        \\selectfont #1}}
-      \\usepackage[font={small, it}]{caption}
-      \\pagestyle{myheadings}
-      \\usepackage{ccicons}
-      \\usepackage[authoryear]{natbib}
-      \\bibliographystyle{apalike}
-      \\usepackage{svg}"
-     ("\\chapter{%s}" . "\\chapter*{%s}")
-     ("\\section{%s}" . "\\section*{%s}")
-     ("\\subsection{%s}" . "\\subsection*{%s}")
-     ("\\subsubsection{%s}" . "\\subsubsection*{%s}"))))
-
-;;; ADMINISTRATION
-
-;; Bind org agenda command and custom agenda
-
-(use-package org
-  :custom
-  (org-agenda-custom-commands
-   '(("e" "Agenda, next actions and waiting"
-      ((agenda "" ((org-agenda-overriding-header "Next three days:")
-                   (org-agenda-span 3)
-                   (org-agenda-start-on-weekday nil)))
-       (todo "NEXT" ((org-agenda-overriding-header "Next Actions:")))
-       (todo "WAIT" ((org-agenda-overriding-header "Waiting:")))))))
-  :bind
-  (("C-c a" . org-agenda)))
-
-;; ADVANCED UNDOCUMENTED EXPORT SETTINGS FOR EWS
-
-;; Use GraphViz for flow diagrams
-;; requires GraphViz software
-(org-babel-do-load-languages
- 'org-babel-load-languages
- '((dot . t))) ; this line activates GraophViz dot
-
+;; --------------------------------------------------------------------------
 (provide 'init-org)
+;;; init-org.el ends here
