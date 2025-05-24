@@ -28,17 +28,26 @@
   "Try to go back via \"lsp-bridge-find-def-return\", if error, use \"xref-go-back\" instead."
   (interactive)
   (condition-case err
-      (lsp-bridge-find-def-return)
+      (call-interactively 'lsp-bridge-find-def-return)
     (error
-     (xref-go-back))))
+     (call-interactively 'xref-go-back))))
 
 (defun lsp-bridge-find-def-ex()
-  "Tro to find define via \"lsp-bridge-find-def-return\", if error, use \"xref-find-defination\" instead."
+  "Try to find define via \"lsp-bridge-find-def-return\", if error, use \"xref-find-defination\" instead."
   (interactive)
   (condition-case err
-      (lsp-bridge-find-def)
+      (call-interactively 'lsp-bridge-find-def)
     (error
-     (xref-find-definitions))))
+     (call-interactively 'xref-find-definitions))))
+
+(defun lsp-bridge-find-def-fallback-ex (&rest _)
+  "Define fallback function of lsp-bridge-find-def-fallback"
+  (call-interactively 'xref-find-definitions))
+
+(defun lsp-bridge-find-ref-fallback-ex (&rest _)
+  "Define fallback function of lsp-bridge-find-def-fallback"
+  (setq xref-prompt-for-identifier nil)
+  (call-interactively 'xref-find-references))
 
 (use-package lsp-bridge
   :vc (:fetcher github :repo "manateelazycat/lsp-bridge")
@@ -76,8 +85,8 @@
   (lsp-bridge-enable-diagnostics nil) ;; we use flycheck only
   (lsp-bridge-enable-hover-diagnostic t)
   (lsp-bridge-code-action-enable-popup-menu nil)
-  (lsp-bridge-find-def-fallback-function #'xref-find-definitions)
-  (lsp-bridge-find-ref-fallback-function #'xref-find-references)
+  (lsp-bridge-find-def-fallback-function #'lsp-bridge-find-def-fallback-ex)
+  (lsp-bridge-find-ref-fallback-function #'lsp-bridge-find-ref-fallback-ex)
   (lsp-bridge-inlay-hint t)
   (lsp-bridge-signature-show-function 'lsp-bridge-signature-show-with-frame)
   (lsp-bridge-python-lsp-server "ruff")
