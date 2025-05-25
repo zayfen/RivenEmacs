@@ -234,6 +234,26 @@
       org-cycle-level-faces nil
       org-n-level-faces 8)
 
+
+
+(use-package org-ql
+  :ensure t
+  :after org)
+
+
+(defun get-last-friday (&optional from-time)
+  (let* ((from-time (or from-time (ts-adjust 'day -1 (ts-now))))
+         (adjust-prev-friday (- (mod (- (ts-dow from-time) 5) 7))))
+    (ts-adjust 'day adjust-prev-friday from-time)))
+
+(defun report-last-week-tasks ()
+  (interactive)
+  (let ((query
+         `(and
+             (planning :from ,(ts-adjust 'day -7 (get-last-friday)))
+             (planning :to ,(ts-adjust 'day -1 (get-last-friday))))))
+    (org-ql-search org-agenda-files query)))
+
 ;; This makes each level 10% smaller than the previous
 (custom-set-faces
  '(org-level-1 ((t (:height 1.5 :weight bold))))

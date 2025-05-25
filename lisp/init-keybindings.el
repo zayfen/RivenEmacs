@@ -35,6 +35,16 @@
       "?" '(lsp-bridge-find-references :wk "Find References"))
 
     (leader-def
+      :infix "n"
+      "" '(:ignroe t :wk "Note (Org)")
+      "a" '(org-agenda-list :wk "Agenda List")
+      "ci" '(org-agenda-clock-in :wk "Clock in")
+      "co" '(org-agenda-clock-out :wk "Clock out")
+      "cg" '(org-agenda-clock-goto :wk "Clock goto current")
+      "s" '(org-ql-search :wk "Search")
+      "w" '(report-last-week-tasks :wk "Last Week Tasks"))
+
+    (leader-def
       :infix "p"
       "" '(:ignore t :wk "Project")
       "c" '(+remove-invalidate-buffers :wk "Clean invalidate buffers")
