@@ -106,19 +106,7 @@
   (add-to-list 'lsp-bridge-multi-lang-server-extension-list '(("html") . "html_tailwindcss"))
   (add-to-list 'lsp-bridge-multi-lang-server-extension-list '(("css" "scss" "sass" "less") . "css_tailwindcss"))
 
-  (leader-def :keymaps 'lsp-bridge-mode-map
-    :infix "c"
-    "" '(:ignore t :wk "Code")
-    "a"  '(lsp-bridge-code-action :wk "Code actions")
-    "e"  '(lsp-bridge-diagnostic-list :wk "Diagnostic list")
-    "d" '(lsp-bridge-find-def-ex :wk "Find define")
-    "f" '(lsp-bridge-code-format :wk "Format code")
-    "i"  '(lsp-bridge-find-impl :wk "Find implementation")
-    "k"  '(lsp-bridge-popup-documentation :wk "Find Document")
-    "p"  '(lsp-bridge-peek :wk "Peek")
-    "r" '(lsp-bridge-rename :wk "Rename")
-    "t"  '(lsp-bridge-find-type-def :wk "Find type definition")
-    "?" '(lsp-bridge-find-references :wk "Find References")))
+  )
 
 
 (add-hook 'web-mode-hook (lambda ()

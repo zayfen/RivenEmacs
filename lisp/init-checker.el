@@ -58,6 +58,19 @@
 (when (executable-find "oxlint")
   (setq flycheck-javascript-eslint-executable "oxlint"))
 
+
+(defun get-eslint-path ()
+  "Get the path to the local eslint executable if available, otherwise fall back to global eslint."
+  (let* ((root (locate-dominating-file
+                (or (buffer-file-name) default-directory)
+                "node_modules"))
+         (eslint (when root
+                   (expand-file-name "node_modules/.bin/eslint" root))))
+    (if (and eslint (file-executable-p eslint))
+        eslint
+      "eslint")))
+
+
 (defun my/use-eslint-from-node-modules ()
   (let* ((root (locate-dominating-file
                 (or (buffer-file-name) default-directory)
@@ -70,6 +83,12 @@
       (setq-local flycheck-javascript-eslint-executable eslint))))
 
 (add-hook 'flycheck-mode-hook #'my/use-eslint-from-node-modules)
+
+;; install eslint-fix package
+
+(use-package eslint-fix
+  :vc (:fetcher github  :repo "codesuki/eslint-fix")
+  :commands (eslint-fix))
 
 
 (provide 'init-checker)

@@ -19,6 +19,21 @@
       "x" '(revert-buffer-quick :wk "Revert buffer")
       "h" '(vundo :wk "History"))
 
+    (leader-def :keymaps 'lsp-bridge-mode-map
+      :infix "c"
+      "" '(:ignore t :wk "Code")
+      "a"  '(lsp-bridge-code-action :wk "Code actions")
+      "e"  '(lsp-bridge-diagnostic-list :wk "Diagnostic list")
+      "d" '(lsp-bridge-find-def-ex :wk "Find define")
+      "f" '(lsp-bridge-code-format :wk "Format code")
+      "i"  '(lsp-bridge-find-impl :wk "Find implementation")
+      "k"  '(lsp-bridge-popup-documentation :wk "Find Document")
+      "p"  '(lsp-bridge-peek :wk "Peek")
+      "q" '(eslint-fix :wk "QuickFix (Eslint)")
+      "r" '(lsp-bridge-rename :wk "Rename")
+      "t"  '(lsp-bridge-find-type-def :wk "Find type definition")
+      "?" '(lsp-bridge-find-references :wk "Find References"))
+
     (leader-def
       :infix "p"
       "" '(:ignore t :wk "Project")
@@ -96,16 +111,16 @@
 
     ;; define navigate to elements keybindings
     (navigate-leader-def
-     "c" '(avy-goto-char-2 :wk "Goto Char")
-     "g" '(consult-goto-line :wk "Line")
-     "i" '(consult-imenu :wk "Imenu")
-     "l" '(link-hint-open-link :wk "Link")
-     "o" '(consult-outline :wk "Outline")
-     "m" '(consult-mark :wk "Mark")
-     "M" '(consult-global-mark :wk "Global Mark")
-     "n" '(next-error :wk "Next Error")
-     "p" '(previous-error :wk "Prev Error")
-     )
+      "c" '(avy-goto-char-2 :wk "Goto Char")
+      "g" '(consult-goto-line :wk "Line")
+      "i" '(consult-imenu :wk "Imenu")
+      "l" '(link-hint-open-link :wk "Link")
+      "o" '(consult-outline :wk "Outline")
+      "m" '(consult-mark :wk "Mark")
+      "M" '(consult-global-mark :wk "Global Mark")
+      "n" '(next-error :wk "Next Error")
+      "p" '(previous-error :wk "Prev Error")
+      )
 
     ;; clean some global key bindings
     (keymap-global-unset "M-g TAB")
