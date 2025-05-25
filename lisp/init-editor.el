@@ -9,6 +9,10 @@
 (use-package iedit
   :demand t
   :vc (:fetcher github :repo victorhge/iedit)
+  :bind
+  (:map iedit-mode-keymap
+        (("M-n" . iedit-next-occurrence)
+         ("M-p" . iedit-prev-occurrence)))
   :config
   ;; Define a new face for iedit occurrence highlighting
   (defface iedit-occurrence
