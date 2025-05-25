@@ -10,7 +10,7 @@
   :demand t
   :vc (:fetcher github :repo victorhge/iedit)
   :bind
-  (:map iedit-mode-keymap
+  (:map iedit-occurrence-keymap
         (("M-n" . iedit-next-occurrence)
          ("M-p" . iedit-prev-occurrence)))
   :config
