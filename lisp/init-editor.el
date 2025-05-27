@@ -10,18 +10,9 @@
   :demand t
   :vc (:fetcher github :repo victorhge/iedit)
   :bind
-  (:map iedit-occurrence-keymap
+  (:map iedit-mode-occurrence-keymap
         (("M-n" . iedit-next-occurrence)
-         ("M-p" . iedit-prev-occurrence)))
-  :config
-  ;; Define a new face for iedit occurrence highlighting
-  (defface iedit-occurrence
-    '((t (:background "#1A8899" :foreground "black")))
-    "Face for iedit occurrence highlighting.")
-  (add-hook 'iedit-mode-hook
-            (lambda ()
-              (set-face-attribute 'iedit-occurrence nil :background "#1A8899" :foreground "black")))
-  )
+         ("M-p" . iedit-prev-occurrence))))
 
 (use-package avy
   :vc (:fetcher github :repo abo-abo/avy)
