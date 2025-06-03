@@ -107,6 +107,7 @@
   :custom
   (aidermacs-auto-commits nil)
   (aidermacs-use-architect-mode t)
+  (aidermacs-exit-kills-buffer t)
   (aidermacs-comint-multiline-newline-key "S-<return>")
   (aidermacs-default-model "deepseek"))
 
