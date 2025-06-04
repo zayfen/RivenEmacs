@@ -4,16 +4,14 @@
 (use-package eat
   :vc (:fetcher codeberg :repo akib/emacs-eat)
   :commands eat
+  :hook (eat-mode . eat-line-mode)
   :config
   ;; ;; Make the shell grok the ctrl-moves
-  (delete [C-left] eat-semi-char-non-bound-keys)
-  (delete [C-right] eat-semi-char-non-bound-keys)
-  ;; ;; Setup eat in the right mode
-  (eat-update-semi-char-mode-map)
-  ;; ;; Keep the scroll-back buffer in check
-  (setq eat-line-input-ring-size 1000)
-  (setq eat-term-scrollback-size 300000)  ;; in chars! nil == unlimited
-  (eat-reload))
+  ;; (delete [C-left] eat-semi-char-non-bound-keys)
+  ;; (delete [C-right] eat-semi-char-non-bound-keys)
+  (eat-line-mode))
+
+(add-hook 'eshell-load-hook #'eat-eshell-mode)
 
 ;; (use-package vterm
 ;;   :ensure t
