@@ -8,7 +8,7 @@
 ;;; Code:
 
 (use-package consult
-  :vc (:fetcher github :repo minad/consult)
+  :vc (:url "https://github.com/minad/consult")
   :bind (;; C-c bindings in `mode-specific-map'
          ("C-s" . consult-line-ex)
          ([remap Info-search] . consult-info)

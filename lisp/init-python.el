@@ -29,7 +29,7 @@
 
 ;; Python Editing Tools (auto-formatting, snippets etc.)
 (use-package pet
-  :vc (:fetcher github :repo "wyuenho/emacs-pet")
+  :vc (:url "https://github.com/wyuenho/emacs-pet")
   :hook (python-base-mode . pet-mode)
   :config
   (setq pet-python-command "python3"))

@@ -3,7 +3,7 @@
 
 
 (use-package dape
-  :vc (:fetcher github :repo svaante/dape)
+  :vc (:url "https://github.com/svaante/dape")
   :preface
   ;; By default dape shares the same keybinding prefix as `gud'
   ;; If you do not want to use any prefix, set it to nil.

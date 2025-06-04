@@ -2,7 +2,7 @@
 ;;; init-format.el --- Config for code format -*- lexical-binding: t; -*-
 
 (use-package aggressive-indent-mode
-  :vc (:fetcher github :repo Malabarba/aggressive-indent-mode)
+  :vc (:url "https://github.com/Malabarba/aggressive-indent-mode")
   :hook ((json-ts-mode . aggressive-indent-mode)
          (css-ts-mode . aggressive-indent-mode)
          (find-file . (lambda ()
@@ -24,7 +24,7 @@
 
 
 (use-package format-all
-  :vc (:fetcher github :repo lassik/emacs-format-all-the-code)
+  :vc (:url "https://github.com/lassik/emacs-format-all-the-code")
   :commands format-all-mode
   ;; :hook (prog-mode . format-all-mode) ;; dont want format code on save
   :bind ("C-S-i" . format-all-region-or-buffer)

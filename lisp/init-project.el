@@ -32,7 +32,7 @@
   )
 
 ;; (use-package otpp
-;;   :vc (:fetcher github :repo "abougouffa/one-tab-per-project")
+;;   :vc (:url "https://github.com/abougouffa/one-tab-per-project")
 ;;   :after project
 ;;   :init
 ;;   ;; If you like to define some aliases for better user experience

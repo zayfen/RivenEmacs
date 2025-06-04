@@ -7,7 +7,7 @@
 ;;; Code:
 
 (use-package vertico
-  :vc (:fetcher github :repo minad/vertico)
+  :vc (:url "https://github.com/minad/vertico")
   :custom
   (vertico-cycle t)
   (vertico-resize nil)
@@ -96,7 +96,7 @@
 
 ;; Enable rich annotations using the Marginalia package
 (use-package marginalia
-  :vc (:fetcher github :repo minad/marginalia)
+  :vc (:url "https://github.com/minad/marginalia")
   ;; Bind `marginalia-cycle' locally in the minibuffer.  To make the binding
   ;; available in the *Completions* buffer, add it to the
   ;; `completion-list-mode-map'.

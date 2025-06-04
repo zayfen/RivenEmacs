@@ -1,7 +1,7 @@
 ;; -*- coding: utf-8; lexical-binding: t -*-
 
 (use-package envrc
-  :vc (:fetcher github :repo "purcell/envrc")
+  :vc (:url "https://github.com/purcell/envrc")
   :hook (after-init . envrc-global-mode))
 
 

@@ -4,7 +4,7 @@
 
 
 (use-package elfeed
-  :vc (:fetcher github :repo skeeto/elfeed)
+  :vc (:url "https://github.com/skeeto/elfeed")
   :custom
   (elfeed-feeds '("https://www.mdpi.com/rss/journal/algorithms"
                   "https://web.dev/static/blog/feed.xml"
@@ -22,7 +22,7 @@
                   "http://feeds.dzone.com/publications")))
 
 (use-package elfeed-goodies
-  :vc (:fetcher github :repo jeetelongname/elfeed-goodies)
+  :vc (:url "https://github.com/jeetelongname/elfeed-goodies")
   :config
   (elfeed-goodies/setup))
 

@@ -18,7 +18,7 @@
 
 
 (use-package dumb-jump
-  :vc (:fetcher github :repo "jacktasia/dumb-jump")
+  :vc (:url "https://github.com/jacktasia/dumb-jump")
   :init
   (add-hook 'xref-backend-functions #'dumb-jump-xref-activate -100)
   :after xref

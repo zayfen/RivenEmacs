@@ -3,7 +3,7 @@
 ;;; Code: fold feature
 
 (use-package treesit-fold
-  :vc (:fetcher github :repo emacs-tree-sitter/treesit-fold)
+  :vc (:url "https://github.com/emacs-tree-sitter/treesit-fold")
   :commands (treesit-fold-toggle)
   :bind ("M-i" . treesit-fold-toggle)
   :config
@@ -20,7 +20,7 @@
 
 
 ;; (use-package treesit-fold-indicators
-;;   :vc (:fetcher github :repo "emacs-tree-sitter/ts-fold"))
+;;   :vc (:url "https://github.com/emacs-tree-sitter/ts-fold")")
 
 (use-package hideif
   :init

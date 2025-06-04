@@ -2,7 +2,7 @@
 ;;; init-terminal.el --- Terminal
 
 (use-package eat
-  :vc (:fetcher codeberg :repo akib/emacs-eat)
+  :vc (:url "https://codeberg.org/akib/emacs-eat")
   :commands (eat eat-line-mode)
   :hook (eat-exec . (lambda (_) (eat-line-mode))))
 

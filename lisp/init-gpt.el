@@ -7,7 +7,7 @@
 ;;; Code:
 
 (use-package gptel
-  :vc (:fetcher github :repo karthink/gptel)
+  :vc (:url "https://github.com/karthink/gptel")
   :commands (gptel-translate-region gptel-rewrite)
   :config
   (setq gptel-model   'deepseek-chat
@@ -93,13 +93,13 @@
 
 
 (use-package gpt-extensions.el
-  :vc (:fetcher github :repo kamushadenes/gptel-extensions.el)
+  :vc (:url "https://github.com/kamushadenes/gptel-extensions.el")
   :bind (("C-x =" . 'gptel-extensions-refactor)))
 
 
 
 (use-package aidermacs
-  :vc (:fetcher github :repo MatthewZMD/aidermacs)
+  :vc (:url "https://github.com/MatthewZMD/aidermacs")
   :bind (("M-I" . aidermacs-transient-menu))
   :config
                                         ; Enable minor mode for Aider files

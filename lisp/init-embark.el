@@ -11,7 +11,7 @@
 
 
 (use-package embark
-  :vc (:fetcher github :repo oantolin/embark)
+  :vc (:url "https://github.com/oantolin/embark")
   :bind
   (("C-." . embark-act)         ;; pick some comfortable binding
    ("M-." . embark-dwim)        ;; good alternative: M-.

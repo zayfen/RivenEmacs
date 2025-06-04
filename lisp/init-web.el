@@ -39,7 +39,7 @@
 
 ;; https://github.com/llemaitre19/jtsx
 (use-package jtsx
-  :vc (:fetcher github :repo "llemaitre19/jtsx")
+  :vc (:url "https://github.com/llemaitre19/jtsx")
   :mode (("\\.jsx\\'" . jtsx-jsx-mode)
          ("\\.tsx\\'" . jtsx-tsx-mode))
   :commands jtsx-install-treesit-language

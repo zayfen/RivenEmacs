@@ -16,6 +16,7 @@ that directory."
 (setq
  make-backup-files nil
  auto-save-default nil
+ package-vc-allow-build-commands t
 
  ;; No need to see GNU agitprop.
  inhibit-startup-screen t

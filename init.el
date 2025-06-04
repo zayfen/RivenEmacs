@@ -80,6 +80,7 @@
 (require 'init-feed)
 (require 'init-lookup)
 (require 'init-terminal)
+(require 'init-reader)
 
 ;; keybindings
 (require 'init-keybindings)

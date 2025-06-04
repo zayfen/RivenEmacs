@@ -87,7 +87,7 @@
 ;; install eslint-fix package
 
 (use-package eslint-fix
-  :vc (:fetcher github  :repo "codesuki/eslint-fix")
+  :vc (:url "https://github.com/codesuki/eslint-fix")
   :commands (eslint-fix))
 
 

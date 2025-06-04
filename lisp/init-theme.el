@@ -3,7 +3,7 @@
 
 ;; use-package with package.el:
 (use-package dashboard
-  :vc (:fetcher github :repo emacs-dashboard/emacs-dashboard)
+  :vc (:url "https://github.com/emacs-dashboard/emacs-dashboard")
   :commands (dashboard-open)
   :config
   (setq dashboard-banner-logo-title "Welcome to RivenEmacs")
@@ -43,7 +43,7 @@
 
 
 (use-package doom-modeline
-  :vc (:fetcher github :repo seagle0128/doom-modeline)
+  :vc (:url "https://github.com/seagle0128/doom-modeline")
   :hook (after-init . doom-modeline-mode)
   :config
   (setq doom-modeline-spc-face-overrides `(list :family (face-attribute 'fixed-pitch :family)))
@@ -82,7 +82,7 @@
 
 ;; This assumes you've installed the package via MELPA.
 (use-package ligature
-  :vc (:fetcher github :repo mickeynp/ligature.el)
+  :vc (:url "https://github.com/mickeynp/ligature.el")
   :hook ((prog-mode . ligature-mode))
   :config
   ;; Enable the "www" ligature in every possible major mode

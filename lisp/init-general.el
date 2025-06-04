@@ -3,7 +3,7 @@
 
 
 (use-package general
-  :vc (:fetcher github :repo noctuid/general.el)
+  :vc (:url "https://github.com/noctuid/general.el")
   :config
 
   (defun unbind-prefixed-keys (prefix &optional keymap)

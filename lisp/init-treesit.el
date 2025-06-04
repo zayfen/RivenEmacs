@@ -89,7 +89,7 @@
 
 ;; @Deprecated
 ;; (use-package combobulate
-;;   :vc (:fetcher github :repo mickeynp/combobulate)
+;;   :vc (:url "https://github.com/mickeynp/combobulate")
 ;;   :preface
 ;;   ;; You can customize Combobulate's key prefix here.
 ;;   ;; Note that you may have to restart Emacs for this to take effect!

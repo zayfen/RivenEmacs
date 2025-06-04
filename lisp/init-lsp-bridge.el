@@ -50,7 +50,7 @@
   (call-interactively 'xref-find-references))
 
 (use-package lsp-bridge
-  :vc (:fetcher github :repo "manateelazycat/lsp-bridge")
+  :vc (:url "https://github.com/manateelazycat/lsp-bridge")
   :hook ((prog-mode) . lsp-bridge-mode)
   :hook ((prog-mode) . lsp-bridge-semantic-tokens-mode)
   :bind (:map lsp-bridge-mode-map

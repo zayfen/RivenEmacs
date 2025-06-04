@@ -5,7 +5,7 @@
 
 ;;; Code:
 (use-package citre
-  :vc (:fetcher github :repo universal-ctags/citre)
+  :vc (:url "https://github.com/universal-ctags/citre")
   :defer t
   :init
   ;; This is needed in `:init' block for lazy load to work.
