@@ -3,13 +3,9 @@
 
 (use-package eat
   :vc (:fetcher codeberg :repo akib/emacs-eat)
-  :commands eat
-  :hook (eat-mode . eat-line-mode)
-  :config
-  ;; ;; Make the shell grok the ctrl-moves
-  ;; (delete [C-left] eat-semi-char-non-bound-keys)
-  ;; (delete [C-right] eat-semi-char-non-bound-keys)
-  (eat-line-mode))
+  :commands (eat eat-line-mode)
+  :hook (eat-exec . (lambda (_) (eat-line-mode))))
+
 
 (add-hook 'eshell-load-hook #'eat-eshell-mode)
 
