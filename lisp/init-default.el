@@ -125,7 +125,9 @@ that directory."
  shadow-todo-file (concat local-dir "shadow/todo.el")
  semanticdb-default-system-save-directory (concat local-dir "semantic/")
  desktop-dirname (+directory-ensure local-dir "desktop/")
- desktop-path (list desktop-dirname))
+ desktop-path (list desktop-dirname)
+ warning-frame-parameters nil           ;To stop Emacs from displaying warnings in a separate frame and instead show them in the echo area (minibuffer)
+ )
 
 ;; Never mix tabs and spaces. Never use tabs, period.
 ;; We need the setq-default here because this becomes
@@ -213,6 +215,9 @@ that directory."
 
 ;; or same as DoomEmacs
 ;; (setq-default bidi-paragraph-direction 'left-to-right)
+(setopt project-mode-line t)
+(which-key-mode +1)
+(global-completion-preview-mode +1)
 
 (provide 'init-default)
 ;;; init-default.el ends here

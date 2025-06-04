@@ -79,6 +79,7 @@
 (require 'init-quickrun)
 (require 'init-feed)
 (require 'init-lookup)
+(require 'init-terminal)
 
 ;; keybindings
 (require 'init-keybindings)

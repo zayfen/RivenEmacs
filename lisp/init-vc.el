@@ -61,7 +61,19 @@
      (defun +ediff--restore-window-config-h ()
        (when (window-configuration-p +ediff--saved-window-config)
          (set-window-configuration +ediff--saved-window-config)))
-     101)))
+     101))
+
+  (setq ediff-keep-variants nil)
+  (setq ediff-make-buffers-readonly-at-startup nil)
+  (setq ediff-merge-revisions-with-ancestor t)
+  (setq ediff-show-clashes-only t)
+
+  (setq ediff-split-window-function 'split-window-horizontally)
+  (setq ediff-window-setup-function 'ediff-setup-windows-plain)
+
+  ;; Always expand org buffers in ediff mode.
+  (with-eval-after-load 'outline
+    (add-hook 'ediff-prepare-buffer-hook #'org-show-all)))
 
 
 ;; config smerge-mode

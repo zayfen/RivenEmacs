@@ -94,7 +94,7 @@
       "e" '(+open-in-system-explorer :wk "Explorer")
       "n" '(elfeed :wk "News")
       "q" '(quickrun :wk "Quickrun")
-      "t" '(+open-term-in-current-directory :wk "Terminal"))
+      "t" '(eat :wk "Terminal"))
 
     (query-leader-def
       "" '(:ignore t :wk "Query")
