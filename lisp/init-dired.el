@@ -15,8 +15,8 @@
   :custom
   (dirvish-attributes '(subtree-state collapse file-size file-time vc-state git-msg vscode-icon))
   (dirvish-mode-line-format '(:left (sort file-time symlink) :right (omit yank index)))
-  (dirvish-side-width 30)
-  (dirvish-vscode-icon-size 23)
+  (dirvish-side-width 40)
+  (dirvish-vscode-icon-size 20)
   (dirvish-fd-default-dir "~/")
   (dirvish-use-header-line t) ; 'global make header line span all panes
   (dirvish-use-mode-line t)
