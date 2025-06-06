@@ -64,7 +64,7 @@
   (setq org-src-tab-acts-natively t)        ; TAB key behaves as in the language's major mode
   (setq org-src-window-setup 'current-window) ; Where to display results of code execution
   (setq org-confirm-babel-evaluate t)     ; Set to 't to prompt before executing code blocks
-
+  (setq org-babel-python-command "python3")
   ;; Enable languages for Org Babel (add more as needed)
   (org-babel-do-load-languages
    'org-babel-load-languages
