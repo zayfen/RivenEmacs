@@ -16,7 +16,7 @@
   ;; :ensure t ; Uncomment if you want to ensure the latest version from ELPA.
   ;; Org is built-in, but this allows overriding with a newer version if desired.
   ;; :pin org  ; Pin to the org-mode.org ELPA archive if you use it.
-
+  :mode ("\\.org\\'" . org-mode)
   :hook ((org-mode . visual-line-mode) ; Enable visual line mode for better readability
          (org-mode . auto-fill-mode))   ; Enable auto-fill mode for text
 
@@ -125,6 +125,7 @@
   ;; or packages like `doom-modeline` for more advanced modeline displays.
 
   (message "Org Mode core configuration loaded.")
+
   )
 
 ;; --------------------------------------------------------------------------
