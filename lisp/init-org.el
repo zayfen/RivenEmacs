@@ -226,7 +226,9 @@
   :ensure t
   :init
   (add-hook 'org-mode-hook #'org-bullets-mode)
-  :commands org-bullets-mode)
+  :commands org-bullets-mode
+  :custom
+  (org-bullets-bullet-list . '("●" "○" "✸" "✿")))
 
 (setq org-level-color-stars-only nil
       org-fontify-whole-heading-line t
@@ -238,9 +240,7 @@
   :after org)
 
 ;; install ox-beamer-lecture https://github.com/fjesser/ox-beamer-lecture.git
-(use-package ox-beamer-lecture
-  :vc (:url "https://github.com/fjesser/ox-beamer-lecture"))
-
+(require 'ox-beamer-lecture)
 
 (defun get-last-friday (&optional from-time)
   (let* ((from-time (or from-time (ts-adjust 'day -1 (ts-now))))
