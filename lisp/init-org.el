@@ -219,16 +219,6 @@
   (message "Org Capture templates configured.")
   )
 
-;; --------------------------------------------------------------------------
-;; SECTION 4: OPTIONAL ENHANCEMENTS (Example: org-bullets)
-;; --------------------------------------------------------------------------
-(use-package org-bullets
-  :ensure t
-  :init
-  (add-hook 'org-mode-hook #'org-bullets-mode)
-  :commands org-bullets-mode
-  :custom
-  (org-bullets-bullet-list . '("●" "○" "✸" "✿")))
 
 (setq org-level-color-stars-only nil
       org-fontify-whole-heading-line t
