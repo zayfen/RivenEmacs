@@ -73,9 +73,13 @@
      (python . t)
      (js . t)
      (C . t)
+     (cpp . t)
+     (latex . t)
+     (haskell . t)
      ;; (org . t) ; For evaluating org code blocks within org
-     ;; (sql . t)
-     ;; (R . t)
+     (sql . t)
+     (R . t)
+     (matlab . t)
      ))
 
   ;; --- TODO Keywords and Appearance ---
