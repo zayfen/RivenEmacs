@@ -233,11 +233,13 @@
       org-cycle-level-faces nil
       org-n-level-faces 8)
 
-
-
 (use-package org-ql
   :ensure t
   :after org)
+
+;; install ox-beamer-lecture https://github.com/fjesser/ox-beamer-lecture.git
+(use-package ox-beamer-lecture
+  :vc (:url "https://github.com/fjesser/ox-beamer-lecture.git" :branch "main"))
 
 
 (defun get-last-friday (&optional from-time)
