@@ -10,6 +10,8 @@
   :vc (:url "https://github.com/karthink/gptel")
   :commands (gptel-translate-region gptel-rewrite)
   :config
+  (add-hook 'gptel-post-stream-hook 'gptel-auto-scroll)
+  (add-hook 'gptel-post-response-functions 'gptel-end-of-response)
   (setq gptel-model   'deepseek-chat
         gptel-backend
         (gptel-make-openai "DeepSeek"
@@ -17,7 +19,7 @@
           :endpoint "/chat/completions"
           :stream t
           :key (getenv "DEEPSEEK_API_KEY")
-          :models '(deepseek-chat deepseek-coder)))
+          :models '(deepseek-reasoner deepseek-chat deepseek-coder)))
 
   ;; translator
   (defun gptel-translate-region (target-languages-str)
@@ -110,6 +112,9 @@
   (aidermacs-exit-kills-buffer t)
   (aidermacs-comint-multiline-newline-key "S-<return>")
   (aidermacs-default-model "deepseek"))
+
+;; install mcp.el
+
 
 (provide 'init-gpt)
 
