@@ -12,14 +12,12 @@
   :config
   (add-hook 'gptel-post-stream-hook 'gptel-auto-scroll)
   (add-hook 'gptel-post-response-functions 'gptel-end-of-response)
-  (setq gptel-model   'deepseek-chat
+
+  (setq gptel-model   'deepseek-reeasoner
         gptel-backend
-        (gptel-make-openai "DeepSeek"
-          :host "api.deepseek.com"
-          :endpoint "/chat/completions"
-          :stream t
-          :key (getenv "DEEPSEEK_API_KEY")
-          :models '(deepseek-reasoner deepseek-chat deepseek-coder)))
+        (gptel-make-deepseek "DeepSeek"
+                       :stream t
+                       :key (getenv "DEEPSEEK_API_KEY")))
 
   ;; translator
   (defun gptel-translate-region (target-languages-str)
