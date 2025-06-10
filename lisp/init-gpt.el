@@ -13,7 +13,8 @@
   (add-hook 'gptel-post-stream-hook 'gptel-auto-scroll)
   (add-hook 'gptel-post-response-functions 'gptel-end-of-response)
 
-  (setq gptel-model   'deepseek-reeasoner
+  (require 'gptel-openai-extras)
+  (setq gptel-model 'deepseek-reasoner
         gptel-backend
         (gptel-make-deepseek "DeepSeek"
                        :stream t
