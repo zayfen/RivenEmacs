@@ -6,6 +6,13 @@
 
 ;;; Code:
 
+(defun delete-window-or-kill-buffer (buffer-name)
+  "Delete window if the window only contain one buffer (BUFFER-NAME), otherwise delete buffer (BUFFER-NAME)."
+  (if (window-prev-buffers)
+      (kill-buffer buffer-name)
+    (delete-windows-on buffer-name)))
+
+
 (use-package gptel
   :vc (:url "https://github.com/karthink/gptel")
   :commands (gptel-translate-region gptel-rewrite)
@@ -17,8 +24,8 @@
   (setq gptel-model 'deepseek-reasoner
         gptel-backend
         (gptel-make-deepseek "DeepSeek"
-                       :stream t
-                       :key (getenv "DEEPSEEK_API_KEY")))
+          :stream t
+          :key (getenv "DEEPSEEK_API_KEY")))
 
   ;; translator
   (defun gptel-translate-region (target-languages-str)
@@ -56,11 +63,11 @@
                                 (with-current-buffer original-buffer
                                   (delete-region beg end)
                                   (insert translated-text)
-                                  (delete-windows-on confirmation-buffer)))
+                                  (delete-window-or-kill-buffer confirmation-buffer)))
 
                               (defun reject-translation ()
                                 (interactive)
-                                (delete-windows-on confirmation-buffer))
+                                (delete-window-or-kill-buffer confirmation-buffer))
 
                               (with-current-buffer confirmation-buffer
                                 (erase-buffer)
@@ -79,14 +86,12 @@
                                 (local-set-key (kbd "\r") #'accept-translation)
                                 (local-set-key (kbd "C-g") #'reject-translation)
                                 (local-set-key (kbd "q") #'reject-translation))
-
-                                (pop-to-buffer confirmation-buffer))
-
-                            (message "Failed to get translation for %s." lang)
-                            (when (buffer-live-p confirmation-buffer)
-                              (delete-windows-on confirmation-buffer)))
-                          )
-                        )))             ; end of inner let*
+                              (pop-to-buffer confirmation-buffer))
+                          (message "Failed to get translation for %s." lang)
+                          (when (buffer-live-p confirmation-buffer)
+                            (delete-window-or-kill-buffer confirmation-buffer)))
+                        )
+                      )))             ; end of inner let*
       )                                 ;end of outer let*
     )                                   ;end of defun
   )

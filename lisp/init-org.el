@@ -73,7 +73,7 @@
      (python . t)
      (js . t)
      (C . t)
-     (cpp . t)
+     ;;(cpp . t)
      (latex . t)
      (haskell . t)
      ;; (org . t) ; For evaluating org code blocks within org
