@@ -128,6 +128,8 @@
   ;; To customize the format further, you might explore `org-mode-line-clock-format`
   ;; or packages like `doom-modeline` for more advanced modeline displays.
 
+  (setq org-latex-create-formula-image-program 'latexmk)
+  (setq org-latex-compiler "xelatex")
   (message "Org Mode core configuration loaded.")
 
   )
