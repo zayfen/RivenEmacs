@@ -21,7 +21,7 @@
   (add-hook 'gptel-post-response-functions 'gptel-end-of-response)
 
   (require 'gptel-openai-extras)
-  (setq gptel-model 'deepseek-reasoner
+  (setq gptel-model 'deepseek-chat
         gptel-backend
         (gptel-make-deepseek "DeepSeek"
           :stream t
@@ -108,14 +108,15 @@
   :vc (:url "https://github.com/MatthewZMD/aidermacs")
   :bind (("M-I" . aidermacs-transient-menu))
   :config
-                                        ; Enable minor mode for Aider files
   (aidermacs-setup-minor-mode)
   :custom
   (aidermacs-auto-commits nil)
   (aidermacs-use-architect-mode t)
   (aidermacs-exit-kills-buffer t)
   (aidermacs-comint-multiline-newline-key "S-<return>")
-  (aidermacs-default-model "deepseek"))
+  (aidermacs-default-model "deepseek")
+  (aidermacs-architect-model "deepseek/deepseek-reasoner")
+  (aidermacs-editor-model "deepseek/deepseek-chat"))
 
 ;; install mcp.el
 
