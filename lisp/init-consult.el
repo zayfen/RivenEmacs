@@ -57,7 +57,11 @@
   :custom
   (consult-buffer-filter '(
                            "\\` "
-                           "\\`*"
+                           "\\`\\*dashboard\\*\\'"
+                           "\\`\\*flycheck-posframe-buffer\\*\\'"
+                           "\\`\\*Messages\\*\\'"
+                           "\\`\\*scratch\\*\\'"
+                           "\\`\\*lsp-bridge"
                            "\\`\\*Completions\\*\\'"
                            "\\`\\*Flymake log\\*\\'"
                            "\\`\\*Semantic SymRef\\*\\'"
