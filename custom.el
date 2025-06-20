@@ -4,7 +4,19 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages nil)
+ '(package-selected-packages
+   '(ace-window aggressive-indent-mode aidermacs biblio blink-search buttercup cargo citar-denote citre color-rg
+                consult-notes consult-project-extra crux dape dashboard denote-explore devdocs diff-hl dirvish docker
+                dockerfile-mode dogears doom-modeline dumb-jump eat elfeed-goodies embark-consult emmet-mode envrc
+                eslint-fix exec-path-from-shell expand-region fancy-compilation fanyi flycheck-rust format-all
+                fountain-mode general git-modes git-timemachine go-translate goto-chg goto-last-change gpt-extensions.el
+                helm hydra iedit jtsx ligature lorem-ipsum lsp-bridge magit-todos marginalia mermaid-mode minions
+                mixed-pitch nov olivetti orderless org-appear org-bullets org-fragtog org-modern org-ql org-web-tools
+                otpp ox-beamer-lecture ox-epub pet powerthesaurus prescient pyvenv quickrun rainbow-delimiters reader
+                rust-mode smartparens spacious-padding spinner sudo-edit super-save symbol-overlay titlecase
+                treesit-fold treesit-fold-indicators treesitter-context undo-fu undo-fu-session valign vc-use-package
+                vertico visual-regexp vscode-icon vterm-toggle vundo web-mode writegood-mode xterm-color
+                yasnippet-snippets))
  '(package-vc-selected-packages
    '((aidermacs :vc-backend Git :url "https://github.com/MatthewZMD/aidermacs")
      (gptel-aibo :vc-backend Git :url "https://github.com/dolmens/gptel-aibo")
@@ -15,17 +27,4 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(fringe ((t :background "#000000")))
- '(header-line ((t :box (:line-width 4 :color "#1e1e1e" :style nil))))
- '(header-line-highlight ((t :box (:color "#ffffff"))))
- '(keycast-key ((t)))
- '(line-number ((t :background "#000000")))
- '(tab-bar-tab ((t :box (:line-width 4 :color "#000000" :style nil))))
- '(tab-bar-tab-inactive ((t :box (:line-width 4 :color "#545454" :style nil))))
- '(tab-line-tab ((t)))
- '(tab-line-tab-active ((t)))
- '(tab-line-tab-inactive ((t)))
- '(vertical-border ((t :background "#000000" :foreground "#000000")))
- '(window-divider ((t (:background "#000000" :foreground "#000000"))))
- '(window-divider-first-pixel ((t (:background "#000000" :foreground "#000000"))))
- '(window-divider-last-pixel ((t (:background "#000000" :foreground "#000000")))))
+ )

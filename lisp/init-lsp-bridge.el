@@ -106,7 +106,8 @@
   (add-to-list 'lsp-bridge-multi-lang-server-extension-list '(("html") . "html_tailwindcss"))
   (add-to-list 'lsp-bridge-multi-lang-server-extension-list '(("css" "scss" "sass" "less") . "css_tailwindcss"))
 
-  )
+  (require 'lsp-bridge-popup-documentation-fix)
+  (lsp-bridge-apply-popup-documentation-fix))
 
 
 (add-hook 'web-mode-hook (lambda ()
