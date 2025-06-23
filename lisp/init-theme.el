@@ -46,7 +46,6 @@
   :vc (:url "https://github.com/seagle0128/doom-modeline")
   :hook (after-init . doom-modeline-mode)
   :config
-  (setq doom-modeline-spc-face-overrides `(list :family (face-attribute 'fixed-pitch :family)))
   (setq doom-modeline-buffer-file-name-style 'relative-to-project)
   ;; Don’t compact font caches during GC.
   (setq inhibit-compacting-font-caches t))
