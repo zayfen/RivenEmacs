@@ -1,5 +1,3 @@
-
-
 (use-package markdown-mode
   :hook
   (markdown-mode . nb/markdown-unhighlight)
@@ -22,17 +20,19 @@
         (goto-char limit)
         t)))
 
+  ;; FIXED: Handle end-of-buffer case where (line-beginning-position 2) returns nil
   (defun nb/refontify-on-linemove ()
     "Post-command-hook"
     (let* ((start (line-beginning-position))
-           (end (line-beginning-position 2))
+           (end (or (line-beginning-position 2) (point-max)))  ;; Handle nil case
            (needs-update (not (equal start (car nb/current-line)))))
       (setq nb/current-line (cons start end))
       (when needs-update
-        (font-lock-fontify-block 3))))
+        (font-lock-fontify-block 1))
+      ))
 
   (defun nb/markdown-unhighlight ()
-    "Enable markdown concealling"
+    "Enable markdown concealing"
     (interactive)
     (markdown-toggle-markup-hiding 'toggle)
     (font-lock-add-keywords nil '((nb/unhide-current-line)) t)
@@ -54,7 +54,6 @@
   :config (setq grip-command 'auto) ;; auto, grip, go-grip or mdopen
   :bind (:map markdown-mode-command-map
          ("g" . grip-mode)))
-
 
 (provide 'init-markdown)
 ;;; init-markdown.el ends here

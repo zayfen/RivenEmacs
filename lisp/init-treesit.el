@@ -70,7 +70,6 @@
 ;;                                     ("php" 'php))))
 ;;                                )))
 
-(add-hook 'markdown-mode-hook #'(lambda () (treesit-parser-create 'markdown)))
 (add-hook 'zig-mode-hook #'(lambda () (treesit-parser-create 'zig)))
 (add-hook 'mojo-mode-hook #'(lambda () (treesit-parser-create 'mojo)))
 ;;(add-hook 'emacs-lisp-mode-hook #'(lambda () (treesit-parser-create 'elisp)))
