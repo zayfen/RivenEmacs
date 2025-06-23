@@ -48,5 +48,13 @@
   :hook
   (markdown-mode . abbrev-mode))
 
+;; Use keybindings
+(use-package grip-mode
+  :ensure t
+  :config (setq grip-command 'auto) ;; auto, grip, go-grip or mdopen
+  :bind (:map markdown-mode-command-map
+         ("g" . grip-mode)))
+
+
 (provide 'init-markdown)
 ;;; init-markdown.el ends here
