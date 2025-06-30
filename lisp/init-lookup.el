@@ -1,4 +1,4 @@
-;;; init-lookup.el --- do lookup stuff
+;;; init-lookup.el --- do lookup stuff  -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 

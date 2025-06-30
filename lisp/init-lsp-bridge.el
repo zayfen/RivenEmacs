@@ -50,7 +50,7 @@
   (call-interactively 'xref-find-references))
 
 (use-package lsp-bridge
-  :vc (:url "https://github.com/manateelazycat/lsp-bridge")
+  :vc (:url "https://github.com/manateelazycat/lsp-bridge.git" :branch "master" :rev "3b37a04bd1b6bbcdc2b0ad7a5c388ad027eb7a25")
   :hook ((prog-mode) . lsp-bridge-mode)
   :hook ((prog-mode) . lsp-bridge-semantic-tokens-mode)
   :bind (:map lsp-bridge-mode-map
@@ -68,12 +68,9 @@
   (acm-enable-icon t)
   (acm-enable-yas t)
   (acm-enable-doc t)
-  (acm-enable-citre nil)
   (acm-enable-doc-markdown-render t)
   (acm-enable-path t)
   (acm-backend-yas-match-by-trigger-keyword t)
-  (acm-enable-tabnine nil)
-  (acm-enable-copilot nil)
   (acm-enable-preview t)
   (acm-enable-capf t)
   (acm-backend-search-file-words-enable-fuzzy-match t)
@@ -85,7 +82,7 @@
   (lsp-bridge-enable-diagnostics nil) ;; we use flycheck only
   (lsp-bridge-enable-hover-diagnostic t)
   (lsp-bridge-code-action-enable-popup-menu nil)
-  (lsp-bridge-find-def-fallback-function #'lsp-bridge-find-def-fallback-ex)
+  (lsp-bridge-find-def-fallback-function #'xref-find-definitions)
   (lsp-bridge-find-ref-fallback-function #'lsp-bridge-find-ref-fallback-ex)
   (lsp-bridge-inlay-hint t)
   (lsp-bridge-signature-show-function 'lsp-bridge-signature-show-with-frame)
@@ -94,7 +91,9 @@
   (lsp-bridge-multi-lang-server-extension-list
    '(
      (("css" "scss" "sass" "less") . "css_emmet")
-     ("vue" . "volar_emmet")))
+     ("vue" . "volar_emmet")
+     ("tsx" . "typescriptreact_eslint")
+     ("ts" . "typescript_eslint")))
 
   :config
   (define-key acm-mode-map (kbd "C-m") nil)
@@ -105,9 +104,7 @@
 
   (add-to-list 'lsp-bridge-multi-lang-server-extension-list '(("html") . "html_tailwindcss"))
   (add-to-list 'lsp-bridge-multi-lang-server-extension-list '(("css" "scss" "sass" "less") . "css_tailwindcss"))
-
-  (require 'lsp-bridge-popup-documentation-fix)
-  (lsp-bridge-apply-popup-documentation-fix))
+)
 
 
 (add-hook 'web-mode-hook (lambda ()

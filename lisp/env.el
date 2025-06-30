@@ -1,3 +1,5 @@
+;; -*- lexical-binding: t; -*-
+
 (defconst root-dir
   (abbreviate-file-name
    (file-name-directory

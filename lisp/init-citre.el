@@ -1,4 +1,4 @@
-;;; init-citre.el --- integrate citre
+;;; init-citre.el --- integrate citre  -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 
