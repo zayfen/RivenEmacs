@@ -11,11 +11,7 @@
     (unless (car (treesit-parser-list))
       (hs-minor-mode)
       (define-key hs-minor-mode-map (kbd "M-i") 'hs-toggle-hiding)))
-  (add-hook 'prog-mode-hook #'my-enable-hs-if-treesit-unavailable)
-  ;; add others mode
-  (add-to-list 'treesit-fold-range-alist
-               '(jtsx-typescript-mode . ,(treesit-fold-parsers-typescript)))
-  )
+  (add-hook 'prog-mode-hook #'my-enable-hs-if-treesit-unavailable))
 
 
 
@@ -27,7 +23,7 @@
   (dolist (h '(c++-mode-hook c++-ts-mode-hook c-mode-hook c-ts-mode-hook cuda-mode-hook))
       (add-hook h #'hide-ifdef-mode))
   :custom
-  (hide-ifdef-shadow t) 
+  (hide-ifdef-shadow t)
   (hide-ifdef-initially t))
 
 (provide 'init-fold)
