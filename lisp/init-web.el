@@ -126,6 +126,30 @@ Relies on `tree-sitter` to find the boundaries of the jsx_element."
               (goto-char name-start)
               (insert new-name))))))))
 
+(defun riv/in-jsx-context-p ()
+  "Return non-nil if the point is inside a JSX element but not in a JS expression."
+  (let ((node (treesit-node-at (point))))
+    (and (riv/treesit-get-ancestor-matching node (lambda (n) (string-match-p "^jsx_" (treesit-node-type n))))
+         (not (riv/treesit-get-ancestor-matching node (lambda (n) (string-equal (treesit-node-type n) "jsx_expression")))))))
+
+(defun riv/jsx-comment-dwim (arg)
+  "Context-aware comment command for JSX.
+Uses {/* ... */} inside JSX tags and `comment-dwim` elsewhere."
+  (interactive "P")
+  (if (riv/in-jsx-context-p)
+      ;; In JSX context, temporarily override all relevant comment variables
+      ;; and then call the standard `comment-dwim` command. This is the
+      ;; most robust way to handle all cases (region, no region, etc.).
+      (let* ((cs "{/* ")
+             (ce " */}")
+             (css (concat "\\s-*" (regexp-quote cs))))
+        (let ((comment-start cs)
+              (comment-end ce)
+              (comment-start-skip css))
+          (comment-dwim arg)))
+    ;; Outside JSX, use the default behavior.
+    (comment-dwim arg)))
+
 (defun my-react-mode-hook ()
   "Hook for React modes (tsx, jsx) to add keybindings."
   ;; Helpers for react under `C-c C-e` prefix
@@ -136,7 +160,9 @@ Relies on `tree-sitter` to find the boundaries of the jsx_element."
     (define-key map (kbd "r") 'riv/treesit-jsx-rename-tag)
     (define-key map (kbd "j") 'riv/treesit-jsx-goto-matching-tag)
     (define-key map (kbd "d") 'riv/treesit-jsx-delete-tag)
-    (local-set-key (kbd "C-c C-e") map)))
+    (local-set-key (kbd "C-c C-e") map))
+  ;; Override comment command for JSX context
+  (local-set-key (kbd "M-;") 'riv/jsx-comment-dwim))
 
 ; Add the hook to tsx and jsx modes.
 (add-hook 'tsx-ts-mode-hook 'my-react-mode-hook)
