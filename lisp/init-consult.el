@@ -58,6 +58,8 @@
   (consult-buffer-filter '(
                            "\\` "
                            "\\`\\*dashboard\\*\\'"
+                           "\\`\\*img-cache\\*\\'"
+                           "\\`\\*Warnings\\*\\'"
                            "\\`\\*Native-compile-Log\\*\\'"
                            "\\`\\*Async-native-compile-log\\*\\'"
                            "\\`\\*flycheck-posframe-buffer\\*\\'"
