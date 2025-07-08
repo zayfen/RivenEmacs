@@ -54,6 +54,7 @@
 
   (setq xref-show-xrefs-function #'consult-xref
         xref-show-definitions-function #'consult-xref)
+  
   :custom
   (consult-buffer-filter '(
                            "\\` "

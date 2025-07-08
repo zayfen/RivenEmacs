@@ -2,16 +2,20 @@
 
 ;;; config checker
 
+(use-package flyover
+  :vc (:url "https://github.com/konrad1977/flyover.git")
+  :hook (flycheck-mode . flyover-mode)
+  :config
+  (setq flyover-levels '(error warning))
+  (setq flyover-use-theme-colors t)
+  (setq flyover-text-tint 'lighter)
+  (setq flyover-show-at-eol t)
+  (setq flyover-hide-when-cursor-is-on-same-line t)
+  (setq flyover-show-virtual-line t)
+  (setq flyover-checkers '(flycheck flymake)))
+
 (use-package flycheck
   :ensure t
-  :init
-  (with-eval-after-load 'flycheck
-    (require 'flycheck-posframe)
-    (setq flycheck-posframe-border-width 2)
-    (setq flycheck-posframe-position 'window-top-right-corner)
-    (add-hook 'flycheck-mode-hook #'flycheck-posframe-mode)
-    (flycheck-posframe-configure-pretty-defaults))
-
   :commands flycheck-mode
   :hook (prog-mode . flycheck-mode)
   :config
@@ -52,6 +56,9 @@
   (flycheck-indication-mode 'left-fringe)
   (flycheck-emacs-lisp-load-path 'inherit)
   (flycheck-check-syntax-automatically '(save idle-change mode-enabled)))
+
+
+
 
 
 
