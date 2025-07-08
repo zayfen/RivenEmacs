@@ -2,17 +2,7 @@
 
 ;;; config checker
 
-(use-package flyover
-  :vc (:url "https://github.com/konrad1977/flyover.git")
-  :hook (flycheck-mode . flyover-mode)
-  :config
-  (setq flyover-levels '(error warning))
-  (setq flyover-use-theme-colors t)
-  (setq flyover-text-tint 'lighter)
-  (setq flyover-show-at-eol t)
-  (setq flyover-hide-when-cursor-is-on-same-line t)
-  (setq flyover-show-virtual-line t)
-  (setq flyover-checkers '(flycheck flymake)))
+
 
 (use-package flycheck
   :ensure t
@@ -58,8 +48,15 @@
   (flycheck-check-syntax-automatically '(save idle-change mode-enabled)))
 
 
-
-
+(use-package flyover
+  :vc (:url "https://github.com/konrad1977/flyover.git")
+  :after flycheck
+  :hook (flycheck-mode . flyover-mode)
+  :config
+  (setq flyover-levels '(error warning))
+  (setq flyover-use-theme-colors t)
+  (setq flyover-text-tint 'lighter)
+  (setq flyover-checkers '(flycheck flymake)))
 
 
 (when (executable-find "oxlint")
