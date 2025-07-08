@@ -49,13 +49,15 @@
 
 
 (use-package flyover
-  :vc (:url "https://github.com/konrad1977/flyover.git")
+  :vc (:url "https://github.com/konrad1977/flyover.git" :rev :newest)
   :after flycheck
   :hook (flycheck-mode . flyover-mode)
   :config
   (setq flyover-levels '(error warning))
   (setq flyover-use-theme-colors t)
   (setq flyover-text-tint 'lighter)
+  (setq flyover-background-lightness 80)
+  (setq flyover-text-tint-percent 100)
   (setq flyover-checkers '(flycheck flymake)))
 
 

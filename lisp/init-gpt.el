@@ -105,7 +105,7 @@
 
 
 (use-package aidermacs
-  :vc (:url "https://github.com/MatthewZMD/aidermacs")
+  :vc (:url "https://github.com/MatthewZMD/aidermacs" :rev :newest)
   :bind (("M-I" . aidermacs-transient-menu))
   :config
   (aidermacs-setup-minor-mode)
@@ -120,10 +120,7 @@
 
 ;; install mcp.el
 
-
 (provide 'init-gpt)
 
-;; {Hello, World}
-;; {Hello, World}
 
 ;;; init-gpt.el ends here
