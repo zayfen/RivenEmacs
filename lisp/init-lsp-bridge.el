@@ -79,7 +79,7 @@
   (acm-backend-search-file-words-candidate-min-length 3)
 
   (lsp-bridge-enable-log nil)
-  (lsp-bridge-enable-diagnostics nil) ;; we use flycheck only
+  (lsp-bridge-enable-diagnostics nil)
   (lsp-bridge-enable-hover-diagnostic t)
   (lsp-bridge-code-action-enable-popup-menu nil)
   (lsp-bridge-find-def-fallback-function #'xref-find-definitions)

@@ -1,0 +1,49 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# RivenEmacs 配置管理规则
+
+## 添加新的配置模块
+
+1. **创建模块文件**: 在 `lisp/` 目录下创建 `init-<模块名>.el` 文件
+2. **模块结构**: 使用 `use-package` 进行包管理，遵循以下结构：
+   ```elisp
+   ;;; init-<模块名>.el --- <模块描述> -*- lexical-binding: t; -*-
+   
+   (use-package <包名>
+     :ensure t
+     :config
+     ;; 配置内容
+     )
+   
+   (provide 'init-<模块名>)
+   ;;; init-<模块名>.el ends here
+   ```
+3. **加载模块**: 在 [init.el](mdc:init.el) 中添加 `(require 'init-<模块名>)`
+
+## 配置优先级
+
+- **early-init.el**: 早期初始化，性能优化、UI 设置
+- **init.el**: 主配置加载器
+- **lisp/init-*.el**: 功能模块
+- **custom.el**: 用户自定义配置
+
+## 包管理最佳实践
+
+1. **使用 use-package**: 所有第三方包都应该通过 use-package 管理
+2. **延迟加载**: 默认启用 `:defer t`，需要立即加载时使用 `:demand t`
+3. **按需加载**: 使用 `:hook`, `:bind`, `:mode` 等自动加载触发器
+4. **配置隔离**: 每个包的配置应该独立在对应的模块文件中
+
+## 代理配置
+
+项目包含代理设置功能 `setup-proxy`，用于网络受限环境下的包下载。
+
+## 镜像源
+
+使用清华大学 ELPA 镜像：
+- GNU: http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/
+- NonGNU: http://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/
+- MELPA: http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/

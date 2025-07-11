@@ -2,34 +2,26 @@
 
 ;;; config checker
 
-
-
-(use-package flycheck
-  :ensure t
-  :commands flycheck-mode
-  :hook (prog-mode . flycheck-mode)
+(use-package flymake
+  :ensure nil ; 内置包
+  :commands flymake-mode
+  :hook (prog-mode . flymake-mode)
   :config
-  (setq-default flycheck-emacs-lisp-initialize-packages t
-                flycheck-highlighting-mode 'lines)
-
-  (flycheck-add-mode 'javascript-eslint 'tsx-ts-mode)
-  (flycheck-add-mode 'javascript-eslint 'typescript-ts-mode)
-  (flycheck-add-mode 'javascript-eslint 'jsx-mode)
-  (flycheck-add-mode 'javascript-eslint 'web-mode)
-  (flycheck-add-mode 'javascript-eslint 'vue-mode)
-  (define-key flycheck-mode-map [remap next-error] #'flycheck-next-error)
-  (define-key flycheck-mode-map [remap previous-error] #'flycheck-previous-error)
+  ;; 键绑定重新映射
+  (define-key flymake-mode-map [remap next-error] #'flymake-goto-next-error)
+  (define-key flymake-mode-map [remap previous-error] #'flymake-goto-prev-error)
 
   ;; unbind "M-g M-n" and "M-g M-p"
   (keymap-global-unset "M-g M-n")
   (keymap-global-unset "M-g M-p")
 
   ;; 定义自定义的 mode-line 显示函数
-  (defun my-flycheck-mode-line ()
-    "根据 Flycheck 的错误和警告状态显示带有颜色的 mode-line 文本。"
-    (let* ((error-counts (flycheck-count-errors flycheck-current-errors))
-           (errors (or (cdr (assq 'error error-counts)) 0))
-           (warnings (or (cdr (assq 'warning error-counts)) 0))
+  (defun my-flymake-mode-line ()
+    "根据 Flymake 的错误和警告状态显示带有颜色的 mode-line 文本。"
+    (let* ((error-count (flymake--lookup-type-property 'flymake-error :counter))
+           (warning-count (flymake--lookup-type-property 'flymake-warning :counter))
+           (errors (or error-count 0))
+           (warnings (or warning-count 0))
            (text (format " %d | %d " errors warnings)))
       (cond
        ((> errors 0)
@@ -39,62 +31,101 @@
        (t
         (propertize text 'face '(:foreground "green"))))))
 
-  ;; 将自定义函数应用到 Flycheck 的 mode-line
-  (setq flycheck-mode-line '(:eval (my-flycheck-mode-line)))
+  ;; 将自定义函数应用到 Flymake 的 mode-line
+  (setq flymake-mode-line-format '(" " (:eval (my-flymake-mode-line))))
 
   :custom
-  (flycheck-indication-mode 'left-fringe)
-  (flycheck-emacs-lisp-load-path 'inherit)
-  (flycheck-check-syntax-automatically '(save idle-change mode-enabled)))
+  (flymake-fringe-indicator-position 'left-fringe)
+  (flymake-show-diagnostics-at-end-of-line nil)
+  (flymake-suppress-zero-counters t))
 
 
-(use-package flyover
-  :vc (:url "https://github.com/konrad1977/flyover.git" :rev :newest)
-  :after flycheck
-  :hook (flycheck-mode . flyover-mode)
+;; ESLint 支持
+(use-package flymake-eslint
+  :ensure t
+  :hook ((js-mode . flymake-eslint-enable)
+         (js-ts-mode . flymake-eslint-enable)
+         (jsx-mode . flymake-eslint-enable)
+         (typescript-mode . flymake-eslint-enable)
+         (typescript-ts-mode . flymake-eslint-enable)
+         (tsx-ts-mode . flymake-eslint-enable)
+         (web-mode . flymake-eslint-enable)
+         (vue-mode . flymake-eslint-enable))
   :config
-  (setq flyover-levels '(error warning))
-  (setq flyover-use-theme-colors t)
-  (setq flyover-text-tint 'lighter)
-  (setq flyover-background-lightness 80)
-  (setq flyover-text-tint-percent 100)
-  (setq flyover-checkers '(flycheck flymake)))
+  ;; 设置 ESLint 可执行文件
+  (when (executable-find "oxlint")
+    (setq flymake-eslint-executable-name "oxlint"))
+
+  (defun get-eslint-path ()
+    "Get the path to the local eslint executable if available, otherwise fall back to global eslint."
+    (let* ((root (locate-dominating-file
+                  (or (buffer-file-name) default-directory)
+                  "node_modules"))
+           (eslint (when root
+                     (expand-file-name "node_modules/.bin/eslint" root))))
+      (if (and eslint (file-executable-p eslint))
+          eslint
+        "eslint")))
+
+  (defun my/use-eslint-from-node-modules ()
+    "使用项目本地的 ESLint 可执行文件。"
+    (let* ((root (locate-dominating-file
+                  (or (buffer-file-name) default-directory)
+                  "node_modules"))
+           (eslint
+            (and root
+                 (expand-file-name "node_modules/.bin/eslint"
+                                   root))))
+      (when (and eslint (file-executable-p eslint))
+        (setq-local flymake-eslint-executable-name eslint))))
+
+  (add-hook 'flymake-mode-hook #'my/use-eslint-from-node-modules))
 
 
-(when (executable-find "oxlint")
-  (setq flycheck-javascript-eslint-executable "oxlint"))
+;; 错误修复支持
+(use-package flymake-quickdef
+  :ensure t
+  :after flymake
+  :config
+  ;; 定义 ESLint 修复后端
+  (flymake-quickdef-backend flymake-eslint-fix
+    :pre-let ((eslint-exec (or (and (boundp 'flymake-eslint-executable-name)
+                                    flymake-eslint-executable-name)
+                               "eslint")))
+    :pre-check (lambda () (executable-find eslint-exec))
+    :write-type 'file
+    :proc-form (list eslint-exec "--fix" fmqd-temp-file)
+    :search-regexp "^\\(.+\\)$"
+    :prep-diagnostic (lambda (_match) (flymake-make-diagnostic
+                                       (current-buffer)
+                                       (point-min) (point-max)
+                                       :note "ESLint fix applied")))
+
+  ;; 添加 ESLint 修复命令
+  (defun eslint-fix ()
+    "使用 ESLint 修复当前文件。"
+    (interactive)
+    (let* ((eslint-exec (get-eslint-path)))
+      (if (executable-find eslint-exec)
+          (progn
+            (shell-command (format "%s --fix %s" eslint-exec (buffer-file-name)))
+            (revert-buffer t t)
+            (message "ESLint fix applied"))
+        (message "ESLint not found")))))
 
 
-(defun get-eslint-path ()
-  "Get the path to the local eslint executable if available, otherwise fall back to global eslint."
-  (let* ((root (locate-dominating-file
-                (or (buffer-file-name) default-directory)
-                "node_modules"))
-         (eslint (when root
-                   (expand-file-name "node_modules/.bin/eslint" root))))
-    (if (and eslint (file-executable-p eslint))
-        eslint
-      "eslint")))
-
-
-(defun my/use-eslint-from-node-modules ()
-  (let* ((root (locate-dominating-file
-                (or (buffer-file-name) default-directory)
-                "node_modules"))
-         (eslint
-          (and root
-               (expand-file-name "node_modules/.bin/eslint"
-                                 root))))
-    (when (and eslint (file-executable-p eslint))
-      (setq-local flycheck-javascript-eslint-executable eslint))))
-
-(add-hook 'flycheck-mode-hook #'my/use-eslint-from-node-modules)
-
-;; install eslint-fix package
-
-(use-package eslint-fix
-  :vc (:url "https://github.com/codesuki/eslint-fix")
-  :commands (eslint-fix))
+;; 增强的错误显示
+(use-package flymake-popon
+  :ensure t
+  :after flymake
+  :hook (flymake-mode . flymake-popon-mode)
+  :config
+  (setq flymake-popon-method 'popon)
+  
+  ;; 设置白色背景
+  (custom-set-faces
+   '(flymake-popon ((t (:background "white" :foreground "black"))))
+   '(flymake-popon-posframe-border ((t (:background "white"))))))
 
 
 (provide 'init-checker)

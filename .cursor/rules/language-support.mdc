@@ -1,0 +1,63 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# RivenEmacs 编程语言支持规则
+
+## 现有语言支持
+
+- **Web 开发**: `init-web.el` - HTML, CSS, JavaScript, TypeScript
+- **Rust**: `init-rust.el` - Rust 编程语言支持
+- **Python**: `init-python.el` - Python 编程语言支持
+
+## 添加新语言支持
+
+1. **创建语言模块**: 在 `lisp/` 目录下创建 `init-<语言名>.el`
+2. **基础结构**:
+   ```elisp
+   ;;; init-<语言名>.el --- <语言名> language support -*- lexical-binding: t; -*-
+   
+   ;; 主要模式支持
+   (use-package <语言名>-mode
+     :ensure t
+     :mode ("\\.ext\\'" . <语言名>-mode))
+   
+   ;; LSP 支持
+   (use-package lsp-mode
+     :hook (<语言名>-mode . lsp))
+   
+   ;; 格式化支持
+   (use-package format-all
+     :hook (<语言名>-mode . format-all-mode))
+   
+   (provide 'init-<语言名>)
+   ;;; init-<语言名>.el ends here
+   ```
+3. **在 init.el 中加载**: 添加 `(require 'init-<语言名>)`
+
+## IDE 功能集成
+
+- **LSP Bridge**: 主要的 LSP 客户端，在 `init-lsp-bridge.el` 中配置
+- **Tree-sitter**: 语法高亮和解析，在 `init-treesit.el` 中配置
+- **Citre**: 代码导航，在 `init-citre.el` 中配置
+
+## 调试支持
+
+- **调试适配器**: 在 `debug-adapters/` 目录下配置
+- **调试器**: 在 `init-debugger.el` 中配置通用调试功能
+
+## 代码格式化
+
+- **Format-all**: 统一的格式化工具，在 `init-format.el` 中配置
+- **EditorConfig**: 编辑器配置，在 `init-editorconfig.el` 中配置
+
+## 语法检查
+
+- **Checker**: 语法检查器，在 `init-checker.el` 中配置
+- **集成 LSP**: 通过 LSP 提供实时语法检查
+
+## 代码片段
+
+- **Snippets**: 在 `snippets/` 目录下按语言组织代码片段
+- **命名规则**: `<语言名>-mode/` 目录下放置对应语言的片段

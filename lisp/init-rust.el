@@ -22,9 +22,8 @@
 (use-package cargo
   :hook (rust-ts-mode . cargo-minor-mode))
 
-(use-package flycheck-rust
-  :after (flycheck)
-  :hook (rust-ts-mode . flycheck-rust-setup))
+;; 使用内置的 flymake 支持 Rust
+;; Rust 语言服务器 (rust-analyzer) 通过 lsp-bridge 提供语法检查
 
 (provide 'init-rust)
 

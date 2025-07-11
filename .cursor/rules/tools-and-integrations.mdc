@@ -1,0 +1,114 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# RivenEmacs 工具和集成规则
+
+## 核心工具集成
+
+### 搜索和导航
+- **Consult**: 增强的搜索和导航，配置在 `init-consult.el`
+- **Vertico**: 竖直补全界面，配置在 `init-vertico.el`
+- **Embark**: 上下文操作（可选），配置在 `init-embark.el`
+
+### 编辑增强
+- **Crux**: 编辑器命令集合，配置在 `init-crux.el`
+- **Which-key**: 按键提示，配置在 `init-which-key.el`
+- **General**: 按键绑定框架，配置在 `init-general.el`
+- **Hydra**: 按键组合，配置在 `init-hydra.el`
+
+### 文件管理
+- **Dired**: 目录编辑器增强，配置在 `init-dired.el`
+- **Project**: 项目管理，配置在 `init-project.el`
+
+## 开发工具
+
+### 版本控制
+- **VC**: Git 集成，配置在 `init-vc.el`
+- **支持功能**: 状态显示、提交、分支管理
+
+### 终端和 Shell
+- **Terminal**: 终端集成，配置在 `init-terminal.el`
+- **Eshell**: 内置 shell 配置
+
+### 容器化
+- **Docker**: Docker 支持，配置在 `init-docker.el`
+- **功能**: 容器管理、Dockerfile 编辑
+
+## AI 和 GPT 集成
+
+### GPT 配置
+- **模块**: `init-gpt.el`
+- **API 密钥**: 通过环境变量配置
+  - `GROQ_API_KEY`
+  - `DEEPSEEK_API_KEY`
+
+### 使用场景
+- 代码补全和生成
+- 文档编写辅助
+- 代码解释和重构建议
+
+## 文档和写作
+
+### Markdown 支持
+- **模块**: `init-markdown.el`
+- **预览**: 使用 `grip` 或 `mdopen` 进行预览
+- **安装**: `pip install grip` 或 `cargo install mdopen`
+
+### Org Mode
+- **延迟加载**: 只在 org-mode 激活时加载配置
+- **模块**: `init-org.el`
+
+### 写作工具
+- **EWS**: 写作环境配置
+
+## 实用工具
+
+### 快速执行
+- **QuickRun**: 快速运行代码，配置在 `init-quickrun.el`
+- **支持**: 多种编程语言的快速执行
+
+### 信息查找
+- **Lookup**: 信息查找工具，配置在 `init-lookup.el`
+- **Feed**: RSS 阅读器，配置在 `init-feed.el`
+- **Reader**: 阅读器工具，配置在 `init-reader.el`
+
+### 环境管理
+- **Envrc**: 环境变量管理，配置在 `init-envrc.el`
+- **集成**: 与 direnv 集成，自动加载项目环境
+
+## 性能监控
+
+### 启动时间
+- **测量**: 使用 `emacs-init-time` 测量启动时间
+- **优化**: 通过延迟加载和 GC 优化
+
+### 内存使用
+- **监控**: 定期检查内存使用情况
+- **优化**: 及时清理不必要的缓存
+
+## 调试工具
+
+### 调试器
+- **模块**: `init-debugger.el`
+- **支持**: 多语言调试支持
+- **适配器**: 在 `debug-adapters/` 目录配置
+
+### 日志和诊断
+- **错误日志**: 配置适当的错误日志级别
+- **性能分析**: 使用 profiler 分析性能瓶颈
+
+## 扩展指南
+
+### 添加新工具
+1. 创建对应的配置模块 `init-<工具名>.el`
+2. 配置 use-package 声明
+3. 在 [init.el](mdc:init.el) 中加载模块
+4. 更新文档和按键绑定
+
+### 集成第三方服务
+1. 配置 API 密钥和认证
+2. 设置代理（如需要）
+3. 配置缓存和持久化
+4. 添加错误处理和降级策略

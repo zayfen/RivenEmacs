@@ -117,9 +117,20 @@
 
     ;; define prefix lable
     (leader-def
-      "\!" '(:ignore t :wk "Checker(Flycheck)")
+      "\!" '(:ignore t :wk "Checker(Flymake)")
       "&" '(:ignore t :wk "Yasnippet")
       "@" '(:ignore t :wk "Hideshow"))
+
+    ;; define flymake keybindings
+    (leader-def
+      :infix "\!"
+      "" '(:ignore t :wk "Checker(Flymake)")
+      "l" '(flymake-show-buffer-diagnostics :wk "List diagnostics")
+      "n" '(flymake-goto-next-error :wk "Next error")
+      "p" '(flymake-goto-prev-error :wk "Previous error")
+      "s" '(flymake-start :wk "Start flymake")
+      "v" '(flymake-switch-to-log-buffer :wk "View log")
+      "f" '(eslint-fix :wk "Fix with ESLint"))
 
     ;; define navigate to elements keybindings
     (navigate-leader-def

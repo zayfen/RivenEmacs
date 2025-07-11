@@ -194,7 +194,8 @@ that directory."
 (add-hook 'compilation-mode-hook 'visual-line-mode)
 
 (setq enable-recursive-minibuffers t)
-(minibuffer-depth-indicate-mode)
+(when (fboundp 'minibuffer-depth-indicate-mode)
+  (minibuffer-depth-indicate-mode))
 
 (recentf-mode 1)
 ;; (desktop-save-mode 1)
