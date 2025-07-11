@@ -3,22 +3,21 @@
 ;; load env from exec-path-from-shell
 (use-package exec-path-from-shell
   :ensure t
-  :demand t
+  :defer 2
   :config
   (dolist (var '("SSH_AUTH_SOCK" "SSH_AGENT_PID" "GPG_AGENT_INFO" "LANG" "LC_CTYPE" "NIX_SSL_CERT_FILE" "NIX_PATH" "GROQ_API_KEY" "DEEPSEEK_API_KEY"))
     (add-to-list 'exec-path-from-shell-variables var))
   (exec-path-from-shell-initialize))
 
 (defun setup-proxy ()
-  "Setup my network proxy."
+  "Setup network proxy using configuration management."
   (interactive)
-  (setq url-proxy-services
-      '(("http" . "127.0.0.1:7890")
-        ("https" . "127.0.0.1:7890"))))
+  (rivenEmacs-setup-proxy))
 
 ;; export https_proxy=http://127.0.0.1:7890 http_proxy=http://127.0.0.1:7890 all_proxy=socks5://127.0.0.1:7890
 
 (require 'init-use-package)
+(require 'init-config)
 (require 'init-default)
 (require 'init-helper)
 (require 'init-theme)
@@ -65,7 +64,7 @@
 ;; init gpt
 (require 'init-gpt)
 
-;; Languages ;TODO
+;; Languages
 (require 'init-web)
 (require 'init-rust)
 (require 'init-python)

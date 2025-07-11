@@ -6,8 +6,7 @@
   :ensure t
   :commands (vscode-icon-for-file))
 
-;; issuse on MacOs
-;; NOTE: brew install coreutils
+;; Note: On macOS, you may need to install coreutils: brew install coreutils
 (use-package dirvish
   :ensure t
   :init

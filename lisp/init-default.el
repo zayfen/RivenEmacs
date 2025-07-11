@@ -10,7 +10,7 @@ that directory."
     (unless (file-directory-p parent-dir)
       (ignore-errors (mkdir parent-dir t))
       (unless (file-directory-p parent-dir)
-        (+error! "Cannot create directory %s" parent-dir)))
+        (error "Cannot create directory %s" parent-dir)))
     path))
 
 (setq
@@ -40,8 +40,8 @@ that directory."
  ;; the documentation advises against setting this variable
  ;; the documentation can get bent imo
  use-short-answers t
- ;; my source directory
- default-directory "~/Github/"
+ ;; my source directory - use configuration management
+ default-directory (rivenEmacs-get-default-directory)
  ;; eke out a little more scrolling performance
  fast-but-imprecise-scrolling t
  ;; when I say to quit, I mean quit

@@ -3,7 +3,7 @@
 (use-package yasnippet
   :ensure t
   :custom
-  (yas-snippet-dir "~/.emacs.d/snippets")
+  (yas-snippet-dir rivenEmacs-snippets-dir)
   :hook ((prog-mode LaTeX-mode org-mode markdown-mode) . yas-minor-mode-on)
   :bind
   (:map yas-keymap
@@ -50,9 +50,20 @@
   (call-interactively 'xref-find-references))
 
 (use-package lsp-bridge
-  :vc (:url "https://github.com/manateelazycat/lsp-bridge.git" :branch "master" :rev "3b37a04bd1b6bbcdc2b0ad7a5c388ad027eb7a25")
-  :hook ((prog-mode) . lsp-bridge-mode)
-  :hook ((prog-mode) . lsp-bridge-semantic-tokens-mode)
+  :vc (:url "https://github.com/manateelazycat/lsp-bridge.git" :branch "master")
+  :hook ((python-ts-mode python-mode) . lsp-bridge-mode)
+  :hook ((js-ts-mode javascript-mode) . lsp-bridge-mode)
+  :hook ((typescript-ts-mode typescript-mode) . lsp-bridge-mode)
+  :hook ((tsx-ts-mode) . lsp-bridge-mode)
+  :hook ((rust-ts-mode rust-mode) . lsp-bridge-mode)
+  :hook ((c-ts-mode c-mode) . lsp-bridge-mode)
+  :hook ((c++-ts-mode c++-mode) . lsp-bridge-mode)
+  :hook ((java-ts-mode java-mode) . lsp-bridge-mode)
+  :hook ((php-ts-mode php-mode) . lsp-bridge-mode)
+  :hook ((web-mode vue-mode) . lsp-bridge-mode)
+  :hook ((css-ts-mode css-mode) . lsp-bridge-mode)
+  :hook ((html-ts-mode html-mode) . lsp-bridge-mode)
+  :hook ((python-ts-mode python-mode js-ts-mode javascript-mode typescript-ts-mode typescript-mode tsx-ts-mode rust-ts-mode rust-mode c-ts-mode c-mode c++-ts-mode c++-mode java-ts-mode java-mode php-ts-mode php-mode web-mode vue-mode css-ts-mode css-mode html-ts-mode html-mode) . lsp-bridge-semantic-tokens-mode)
   :bind (:map lsp-bridge-mode-map
               ("M-?" . lsp-bridge-find-references)
               ("M-P" . lsp-bridge-popup-documentation-scroll-down)

@@ -22,7 +22,8 @@
                           (registers . 5)))
   (dashboard-setup-startup-hook))
 
-(add-hook 'after-init-hook (lambda () (dashboard-open)))
+;; Use idle timer to delay dashboard loading for better startup performance
+(run-with-idle-timer rivenEmacs-dashboard-delay nil #'dashboard-open)
 
 ;; load theme and config
 ;; (load-theme 'modus-vivendi t)

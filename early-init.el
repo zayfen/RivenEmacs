@@ -86,8 +86,8 @@
 (when (featurep 'native-compile)
   (setq
    native-comp-async-report-warnings-errors 'silent
-   native-comp-verbose 1 		; can be 0 if config no error
-   native-comp-debug 1 			; can be 0 if config no error
+   native-comp-verbose 0 		; Turn off verbose messages in production
+   native-comp-debug 0 			; Turn off debug messages in production
    ;; Make native compilation happens asynchronously.
    native-comp-jit-compilation t)
 

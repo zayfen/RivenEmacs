@@ -35,7 +35,7 @@
   (setq org-use-speed-commands t)         ; Enable single-key commands on headlines
 
   ;; --- File Handling ---
-  (setq org-directory "~/org")             ; Default directory for Org files
+  (setq org-directory (rivenEmacs-get-org-directory))             ; Default directory for Org files
   (setq org-default-notes-file (concat org-directory "/notes.org")) ; Default capture file
   (setq org-archive-location (concat org-directory "/archive/%s::")) ; Archive location
 
