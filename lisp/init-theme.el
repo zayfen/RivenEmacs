@@ -36,11 +36,9 @@
       modus-themes-variable-pitch-ui t
       modus-themes-custom-auto-reload t
       modus-themes-headings
-      '(
-        (underline-link border)
+      '((underline-link border)
         (underline-link-visited border)
         (underline-link-symbolic border)))
-
 
 
 (use-package doom-modeline
@@ -50,22 +48,6 @@
   (setq doom-modeline-buffer-file-name-style 'relative-to-project)
   ;; Don’t compact font caches during GC.
   (setq inhibit-compacting-font-caches t))
-
-
-;; (add-hook 'after-init-hook
-;;           (lambda ()
-;;             (progn
-;;               ;; Customize active mode-line
-;;               (set-face-attribute 'mode-line nil
-;;                                   :background "#1a1a1a"
-;;                                   :font (font-spec :weight 'semi-bold))
-
-;;               ;; Customize inactive mode-line
-;;               (set-face-attribute 'mode-line-inactive nil
-;;                                   :background "#2a2a2a"
-;;                                   :font (font-spec :weight 'regular)))))
-
-;;;;;;;; customize mode-line end ;;;;;;;;;;;;;;
 
 
 (add-hook 'prog-mode-hook (lambda ()
@@ -131,7 +113,8 @@
   (fancy-compilation-mode))
 
 ;; change line number color
-;; (set-face-foreground 'line-number "#808080")
+(with-eval-after-load 'modus-themes
+  (set-face-foreground 'line-number (modus-themes-get-color-value 'fg-dim)))
 
 (provide 'init-theme)
 ;;; init-theme.el ends here
