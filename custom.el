@@ -6,7 +6,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages nil)
  '(package-vc-selected-packages
-   '((flyover :url "https://github.com/konrad1977/flyover.git")
+   '((deadgrep :url "https://github.com/Wilfred/deadgrep.git" :branch "master")
      (aidermacs :vc-backend Git :url "https://github.com/MatthewZMD/aidermacs")
      (gptel-aibo :vc-backend Git :url "https://github.com/dolmens/gptel-aibo")
      (pet :vc-backend Git :url "https://github.com/wyuenho/emacs-pet")

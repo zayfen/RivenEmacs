@@ -115,13 +115,14 @@
 
 
 ;; 增强的错误显示
+(use-package posframe)
 (use-package flymake-popon
   :ensure t
   :after flymake
   :hook (flymake-mode . flymake-popon-mode)
   :config
   (setq flymake-popon-method 'popon)
-  
+
   ;; 设置白色背景
   (custom-set-faces
    '(flymake-popon ((t (:background "white" :foreground "black"))))

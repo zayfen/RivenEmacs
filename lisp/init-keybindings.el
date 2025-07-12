@@ -64,7 +64,7 @@
       "f" '(consult-fd :wk "Directory file")
       "l" '(+consult-fd-in-home :wk "Home file")
       "r" '(consult-recent-file :wk "Global Recent files")
-      "o" '(blink-search :wk "Occur"))
+      "s" '(deadgrep :wk "String"))
 
     (leader-def :infix "g"
       "" '(:ignore t :wk "Git")

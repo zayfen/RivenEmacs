@@ -33,6 +33,7 @@ TAGS
 
 # elpa packages
 /elpa/
+!/elpa/.dir-locals.el
 
 # reftex files
 *.rel
@@ -63,3 +64,4 @@ flycheck_*.el
 # End of https://www.toptal.com/developers/gitignore/api/emacs
 /recentf
 .aider*
+

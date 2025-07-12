@@ -89,11 +89,12 @@
    native-comp-verbose 0 		; Turn off verbose messages in production
    native-comp-debug 0 			; Turn off debug messages in production
    ;; Make native compilation happens asynchronously.
-   native-comp-jit-compilation t)
+   native-comp-jit-compilation nil)
 
   ;; Set the right directory to store the native compilation cache to avoid
   ;; messing with "~/.emacs.d/".
   (startup-redirect-eln-cache (concat local-dir "eln/")))
+
 
 ;;dont need (package-initialize) on emacs27+
 (when (< emacs-major-version 27)

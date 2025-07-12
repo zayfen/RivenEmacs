@@ -1,7 +1,7 @@
 ;; -*- coding: utf-8; lexical-binding: t -*-
 
 
-
+;;; Code:
 (use-package vscode-icon
   :ensure t
   :commands (vscode-icon-for-file))

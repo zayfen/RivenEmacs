@@ -35,16 +35,11 @@
   :vc (:url "https://github.com/manateelazycat/color-rg")
   :init
   (add-to-list 'load-path (concat repo-dir "color-rg"))
-  :commands (color-rg-search-input-in-project color-rg-search-symbol-in-project color-rg-search-input-in-current-file color-rg-search-symbol-in-current-file)
-  )
+  :commands (color-rg-search-input-in-project color-rg-search-symbol-in-project color-rg-search-input-in-current-file color-rg-search-symbol-in-current-file))
 
-(use-package blink-search
-  :vc (:url "https://github.com/manateelazycat/blink-search")
-  :init
-  (setq blink-search-browser-function
-        (if (display-graphic-p)
-            #'xwidget-webkit-browse-url
-          #'eww)))
+(use-package deadgrep
+  :vc (:url "https://github.com/Wilfred/deadgrep.git" :branch "master")
+  :commands (deadgrep))
 
 
 (use-package symbol-overlay
