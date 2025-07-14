@@ -106,7 +106,7 @@
 
 (use-package aidermacs
   :vc (:url "https://github.com/MatthewZMD/aidermacs" :rev :newest)
-  :bind (("M-I" . aidermacs-transient-menu))
+  ;; :bind (("M-I" . aidermacs-transient-menu))
   :config
   (aidermacs-setup-minor-mode)
   :custom
@@ -117,6 +117,12 @@
   (aidermacs-default-model "deepseek")
   (aidermacs-architect-model "deepseek/deepseek-reasoner")
   (aidermacs-editor-model "deepseek/deepseek-chat"))
+
+
+(use-package claude-code :ensure t
+  :vc (:url "https://github.com/stevemolitor/claude-code.el" :rev :newest)
+  :config (claude-code-mode)
+  :bind-keymap ("M-I" . claude-code-command-map))
 
 ;; install mcp.el
 

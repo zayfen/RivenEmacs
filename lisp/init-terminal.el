@@ -3,8 +3,8 @@
 
 (use-package eat
   :vc (:url "https://codeberg.org/akib/emacs-eat")
-  :commands (eat eat-line-mode)
-  :hook (eat-exec . (lambda (_) (eat-line-mode))))
+  :commands (eat eat-line-mode eat-semi-char-mode)
+  :hook (eat-exec . (lambda (_) (eat-semi-char-mode))))
 
 
 (add-hook 'eshell-load-hook #'eat-eshell-mode)
