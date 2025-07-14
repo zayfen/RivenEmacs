@@ -35,7 +35,7 @@
 
     ;; 1. Source text must be from a marked region
     (unless (region-active-p)
-      (error "No region active. Please mark a region to translate."))
+      (error "No region active. Please mark a region to translate"))
 
     (let* ((original-buffer (current-buffer))
            (original-text (buffer-substring-no-properties (region-beginning) (region-end)))
@@ -106,7 +106,7 @@
 
 (use-package aidermacs
   :vc (:url "https://github.com/MatthewZMD/aidermacs" :rev :newest)
-  ;; :bind (("M-I" . aidermacs-transient-menu))
+  :bind (("M-I" . aidermacs-transient-menu))
   :config
   (aidermacs-setup-minor-mode)
   :custom
@@ -122,7 +122,7 @@
 (use-package claude-code :ensure t
   :vc (:url "https://github.com/stevemolitor/claude-code.el" :rev :newest)
   :config (claude-code-mode)
-  :bind-keymap ("M-I" . claude-code-command-map))
+  :bind ("M-*" . claude-code-transient))
 
 ;; install mcp.el
 
