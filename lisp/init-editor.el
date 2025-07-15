@@ -38,7 +38,7 @@
   :commands (color-rg-search-input-in-project color-rg-search-symbol-in-project color-rg-search-input-in-current-file color-rg-search-symbol-in-current-file))
 
 (use-package deadgrep
-  :vc (:url "https://github.com/Wilfred/deadgrep.git" :branch "master")
+  :vc (:url "https://github.com/Wilfred/deadgrep" :branch "master")
   :commands (deadgrep))
 
 

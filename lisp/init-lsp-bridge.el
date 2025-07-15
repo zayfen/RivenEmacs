@@ -50,7 +50,7 @@
   (call-interactively 'xref-find-references))
 
 (use-package lsp-bridge
-  :vc (:url "https://github.com/manateelazycat/lsp-bridge.git" :branch "master")
+  :vc (:url "https://github.com/manateelazycat/lsp-bridge" :branch "master")
   :hook ((python-ts-mode python-mode) . lsp-bridge-mode)
   :hook ((js-ts-mode javascript-mode) . lsp-bridge-mode)
   :hook ((typescript-ts-mode typescript-mode) . lsp-bridge-mode)
