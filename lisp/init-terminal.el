@@ -9,25 +9,17 @@
 
 (add-hook 'eshell-load-hook #'eat-eshell-mode)
 
-;; (use-package vterm
-;;   :ensure t
-;;   :custom
-;;   (vterm-shell "/usr/bin/zsh")  ; Set your default shell
-;;   (vterm-max-scrollback 10000)  ; Increase scrollback buffer
-;;   (vterm-kill-buffer-on-exit t)  ; Auto-kill buffer on exit
-;;   :bind
-;;   (:map vterm-mode-map
-;;         ("C-c C-c" . vterm-send-C-c)  ; Send C-c to terminal
-;;         ("C-c C-y" . vterm-yank)  ; Yank from kill-ring
-;;         ("C-c C-t" . vterm-copy-mode))  ; Toggle copy mode
-
-;;   :config
-;;   ;; Enable directory tracking
-;;   (add-hook 'vterm-mode-hook #'vterm-set-title)
-
-;;   ;; Optional: Auto-close when process finishes
-;;   (setq vterm-kill-buffer-on-exit t)
-;; )
+(use-package vterm
+  :custom
+  (vterm-shell "/usr/bin/zsh")  ; Set your default shell
+  (vterm-max-scrollback 10000)  ; Increase scrollback buffer
+  (vterm-kill-buffer-on-exit t)  ; Auto-kill buffer on exit
+  ;; :bind
+  ;; (:map vterm-mode-map
+  ;;       ("C-c C-c" . vterm-send-C-c)  ; Send C-c to terminal
+  ;;       ("C-c C-y" . vterm-yank)  ; Yank from kill-ring
+  ;;       ("C-c C-t" . vterm-copy-mode))  ; Toggle copy mode
+)
 
 ;; ;; Optional: vterm-toggle package for better toggling
 ;; (use-package vterm-toggle

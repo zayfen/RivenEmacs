@@ -34,6 +34,10 @@
   ;; 将自定义函数应用到 Flymake 的 mode-line
   (setq flymake-mode-line-format '(" " (:eval (my-flymake-mode-line))))
 
+  ;; show diagnostic
+  (when (>= emacs-major-version 31)
+    (setopt flymake-show-diagnostics-at-end-of-line 'fancy))
+
   :custom
   (flymake-fringe-indicator-position 'left-fringe)
   (flymake-show-diagnostics-at-end-of-line nil)
@@ -115,18 +119,18 @@
 
 
 ;; 增强的错误显示
-(use-package posframe)
-(use-package flymake-popon
-  :ensure t
-  :after flymake
-  :hook (flymake-mode . flymake-popon-mode)
-  :config
-  (setq flymake-popon-method 'popon)
+;; (use-package posframe)
+;; (use-package flymake-popon
+;;   :ensure t
+;;   :after flymake
+;;   :hook (flymake-mode . flymake-popon-mode)
+;;   :config
+;;   (setq flymake-popon-method 'popon)
 
-  ;; 设置白色背景
-  (custom-set-faces
-   '(flymake-popon ((t (:background "white" :foreground "black"))))
-   '(flymake-popon-posframe-border ((t (:background "white"))))))
-
+;;   ;; 设置白色背景
+;;   (custom-set-faces
+;;    '(flymake-popon ((t (:background "white" :foreground "black"))))
+;;    '(flymake-popon-posframe-border ((t (:background "white"))))))
 
 (provide 'init-checker)
+;;; init-checker.el ends here

@@ -121,7 +121,11 @@
 
 (use-package claude-code :ensure t
   :vc (:url "https://github.com/stevemolitor/claude-code.el" :rev :newest)
-  :config (claude-code-mode)
+  :config
+  (if os/mac (setq claude-code-terminal-backend 'eat)
+    (setq claude-code-terminal-backend 'vterm))
+  
+  (claude-code-mode)
   :bind ("M-*" . claude-code-transient))
 
 ;; install mcp.el
