@@ -83,7 +83,6 @@
   (acm-enable-path t)
   (acm-backend-yas-match-by-trigger-keyword t)
   (acm-enable-preview t)
-  (acm-enable-capf t)
   (acm-backend-search-file-words-enable-fuzzy-match t)
   (acm-enable-lsp-workspace-symbol nil) ;dont show workspace symbol
   (acm-enable-quick-access t)
@@ -91,12 +90,10 @@
 
   (lsp-bridge-enable-log nil)
   (lsp-bridge-enable-diagnostics nil)
-  (lsp-bridge-enable-hover-diagnostic t)
   (lsp-bridge-code-action-enable-popup-menu nil)
   (lsp-bridge-find-def-fallback-function #'xref-find-definitions)
   (lsp-bridge-find-ref-fallback-function #'lsp-bridge-find-ref-fallback-ex)
   (lsp-bridge-inlay-hint t)
-  (lsp-bridge-signature-show-function 'lsp-bridge-signature-show-with-frame)
   (lsp-bridge-python-lsp-server "ruff")
   (lsp-bridge-python-multi-lsp-server "pyright_ruff")
   (lsp-bridge-multi-lang-server-extension-list
