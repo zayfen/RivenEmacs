@@ -49,7 +49,7 @@
 
 ;; IDE
 (require 'init-lsp-bridge)
-(require 'init-citre)
+;;(require 'init-citre)
 
 ;; init git
 (require 'init-vc)
