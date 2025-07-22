@@ -221,5 +221,8 @@ that directory."
 (which-key-mode +1)
 (global-completion-preview-mode +1)
 
+;; enable auto revert buffer
+(global-auto-revert-mode 1)
+
 (provide 'init-default)
 ;;; init-default.el ends here
