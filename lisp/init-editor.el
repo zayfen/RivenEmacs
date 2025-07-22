@@ -67,6 +67,10 @@
   :vc (:url "https://github.com/tarsius/hl-todo")
   :hook (prog-mode . hl-todo-mode))
 
-
+(use-package goggles
+  :vc (:url "https://github.com/minad/goggles" :branch "main")
+  :hook ((prog-mode text-mode) . goggles-mode)
+  :config
+  (setq-default goggles-pulse t))
 
 (provide 'init-editor)
