@@ -143,6 +143,8 @@
       "M" '(consult-global-mark :wk "Global Mark")
       "n" '(next-error :wk "Next Error")
       "p" '(previous-error :wk "Prev Error")
+      "[" '(diff-hl-previous-hunk :wk "Previous Hunk")
+      "]" '(diff-hl-next-hunk :wk "Next Hunk")
       )
 
     ;; clean some global key bindings
