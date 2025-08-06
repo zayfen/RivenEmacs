@@ -124,7 +124,27 @@
   :config
   (if os/mac (setq claude-code-terminal-backend 'eat)
     (setq claude-code-terminal-backend 'vterm))
-  
+
+  ;; For GNOME/Unity desktops
+  (defun my-claude-notify--linux (title message)
+    "Display a Linux notification using notify-send."
+    (if (executable-find "notify-send")
+        (call-process "notify-send" nil nil nil title message)
+      (message "%s: %s" title message)))
+
+  (defun my-claude-notify--mac (title message)
+  "Display a macOS notification with sound."
+  (call-process "osascript" nil nil nil
+                "-e" (format "display notification \"%s\" with title \"%s\" sound name \"Glass\""
+                             message title)))
+  (if os/mac (setq claude-code-notification-function #'my-claude-notify--mac)
+    (setq claude-code-notification-function #'my-claude-notify--linux))
+
+  (add-to-list 'display-buffer-alist
+                 '("^\\*claude"
+                   (display-buffer-in-side-window)
+                   (side . right)
+                   (window-width . 90)))
   (claude-code-mode)
   :bind ("M-*" . claude-code-transient))
 

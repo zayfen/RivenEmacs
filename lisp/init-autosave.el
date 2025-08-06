@@ -16,7 +16,7 @@
   (super-save-auto-save-when-idle t)
   (super-save-idle-duration 1)
   (super-save-silent t)
-  (super-save-delete-trailing-whitespace 'except-current-line)
+  (super-save-delete-trailing-whitespace nil)
   (super-save-exclude '(".gpg"))
   :config
   (add-to-list 'super-save-triggers 'ace-window)
