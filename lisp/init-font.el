@@ -11,21 +11,21 @@
                         (cond
                          ((eq system-type 'gnu/linux) 12)
                          ((eq system-type 'windows-nt) 12)
-                         ((eq system-type 'darwin) 14))))
+                         ((eq system-type 'darwin) 16))))
 
 (set-face-attribute 'fixed-pitch nil
                     :font (font-spec :family "Liga SFMono Nerd Font"
                                      :weight 'regular
                                      :size (cond ((eq system-type 'gnu/linux) 12)
                                                  ((eq system-type 'windows-nt) 12)
-                                                 ((eq system-type 'darwin) 14))))
+                                                 ((eq system-type 'darwin) 16))))
 
 (set-face-attribute 'variable-pitch nil
                     :font (font-spec :family "SF Pro Display"
                                      :weight 'regular
                                      :size (cond ((eq system-type 'gnu/linux) 12)
                                                  ((eq system-type 'windows-nt) 12)
-                                                 ((eq system-type 'darwin) 14))))
+                                                 ((eq system-type 'darwin) 16))))
 
 
 (defun font-installed-p (font-name)
@@ -40,7 +40,7 @@
                                     (font-spec :family fontname
                                                :size (cond ((eq system-type 'gnu/linux) 12)
                                                            ((eq system-type 'windows-nt) 12)
-                                                           ((eq system-type 'darwin) 14)))
+                                                           ((eq system-type 'darwin) 16)))
                                     nil 'prepend))
 
   (cl-loop for fontname in '("Sarasa Mono SC" "PingFang SC" "Microsoft YaHei" "Source Han Sans SC" "WenQuanYi Micro Hei")
