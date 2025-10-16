@@ -23,7 +23,17 @@
   (dashboard-setup-startup-hook))
 
 ;; Use idle timer to delay dashboard loading for better startup performance
-(run-with-idle-timer rivenEmacs-dashboard-delay nil #'dashboard-open)
+;; Only open dashboard when no files were specified on command line
+(when (and (= 1 (length command-line-args))  ; Only emacs binary in args
+           (not (member "-f" command-line-args))  ; Not running function
+           (not (member "--funcall" command-line-args))  ; Not running function
+           (not (member "-l" command-line-args))  ; Not loading file
+           (not (member "--load" command-line-args))  ; Not loading file
+           (not (member "-e" command-line-args))  ; Not evaluating expression
+           (not (member "--eval" command-line-args))  ; Not evaluating expression
+           (not (member "-t" command-line-args))  ; Not running terminal
+           (not (member "--terminal" command-line-args)))  ; Not running terminal
+  (run-with-idle-timer rivenEmacs-dashboard-delay nil #'dashboard-open))
 
 ;; load theme and config
 ;; (load-theme 'modus-vivendi t)
