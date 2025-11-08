@@ -72,6 +72,7 @@
       "d" '(magit-diff-dwim :wk "Diff")
       "c" '(magit-clone :wk "Clone")
       "g" '(magit-status :wk "Status")
+      "h" '(git-hunk-toggle-mode :wk "Hunk navigation")
       "i" '(magit-init :wk "Init")
       "l" '(magit-log :wk "Log")
       "s" '(magit-stage :wk "Stage")

@@ -54,6 +54,7 @@
 ;; init git
 (require 'init-vc)
 (require 'init-debugger)
+(require 'init-git-hunk)
 
 ;; init env
 (require 'init-envrc)
