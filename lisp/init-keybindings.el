@@ -108,7 +108,6 @@
 
     (ai-leader-def
       "" '(:ignore t :wk "AI")
-      "a" '(aidermacs-transient-menu :wk "Aider")
       "c" '(gptel :wk "Console")
       "g" '(gptel-menu :wk "Gptel Menu")
       "s" '(gptel-send :wk "Send")

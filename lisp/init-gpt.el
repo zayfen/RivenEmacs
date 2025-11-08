@@ -102,23 +102,6 @@
   :vc (:url "https://github.com/kamushadenes/gptel-extensions.el")
   :bind (("C-x =" . 'gptel-extensions-refactor)))
 
-
-
-(use-package aidermacs
-  :vc (:url "https://github.com/MatthewZMD/aidermacs" :rev :newest)
-  :bind (("M-I" . aidermacs-transient-menu))
-  :config
-  (aidermacs-setup-minor-mode)
-  :custom
-  (aidermacs-auto-commits nil)
-  (aidermacs-use-architect-mode t)
-  (aidermacs-exit-kills-buffer t)
-  (aidermacs-comint-multiline-newline-key "S-<return>")
-  (aidermacs-default-model "deepseek")
-  (aidermacs-architect-model "deepseek/deepseek-reasoner")
-  (aidermacs-editor-model "deepseek/deepseek-chat"))
-
-
 (use-package claude-code :ensure t
   :vc (:url "https://github.com/stevemolitor/claude-code.el" :rev :newest)
   :config

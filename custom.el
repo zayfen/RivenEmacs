@@ -8,7 +8,6 @@
  '(package-vc-selected-packages
    '((goggles :url "https://github.com/minad/goggles" :branch "main")
      (deadgrep :url "https://github.com/Wilfred/deadgrep" :branch "master")
-     (aidermacs :vc-backend Git :url "https://github.com/MatthewZMD/aidermacs")
      (gptel-aibo :vc-backend Git :url "https://github.com/dolmens/gptel-aibo")
      (pet :vc-backend Git :url "https://github.com/wyuenho/emacs-pet")
      (treesit-fold :vc-backend Git :url "https://github.com/abougouffa/treesit-fold"))))
