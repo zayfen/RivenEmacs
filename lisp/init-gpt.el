@@ -98,7 +98,7 @@
 
 
 
-(use-package gpt-extensions.el
+(use-package gpt-extensions
   :vc (:url "https://github.com/kamushadenes/gptel-extensions.el")
   :bind (("C-x =" . 'gptel-extensions-refactor)))
 

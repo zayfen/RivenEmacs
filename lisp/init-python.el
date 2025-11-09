@@ -30,7 +30,7 @@
 ;; Python Editing Tools (auto-formatting, snippets etc.)
 (use-package pet
   :vc (:url "https://github.com/wyuenho/emacs-pet")
-  :hook (python-base-mode . pet-mode)
+  :hook (python-ts-mode . pet-mode)
   :config
   (setq pet-python-command "python3"))
 

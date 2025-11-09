@@ -11,7 +11,13 @@
 
 (use-package vterm
   :custom
-  (vterm-shell "/usr/bin/zsh")  ; Set your default shell
+  (vterm-shell (cond
+                 ((file-exists-p "/opt/homebrew/bin/zsh") "/opt/homebrew/bin/zsh")
+                 ((file-exists-p "/usr/local/bin/zsh") "/usr/local/bin/zsh")
+                 ((file-exists-p "/usr/bin/zsh") "/usr/bin/zsh")
+                 ((file-exists-p "/bin/bash") "/bin/bash")
+                 ((file-exists-p "/bin/sh") "/bin/sh")
+                 (t "zsh")))  ; Set your default shell (with fallback)
   (vterm-max-scrollback 10000)  ; Increase scrollback buffer
   (vterm-kill-buffer-on-exit t)  ; Auto-kill buffer on exit
   ;; :bind

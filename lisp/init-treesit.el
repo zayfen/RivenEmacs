@@ -52,13 +52,25 @@
 (defun auto-install-treesit-grammars ()
   "Auto-install tree-sitter grammars for better syntax highlighting."
   (interactive)
-  (install-treesit-language-grammars))
+  (dolist (lang '(bash c cpp cmake css elisp go html javascript json make ocaml python php typescript tsx ruby rust sql vue yaml toml zig haskell kotlin java lua dockerfile elixir heex angular))
+    (unless (treesit-language-available-p lang)
+      (condition-case err
+          (treesit-install-language-grammar lang)
+        (error (message "Failed to install tree-sitter grammar for %s: %s" lang err))))))
+
+(defun treesit-needs-install-p ()
+  "Check if any tree-sitter grammars need to be installed."
+  (let ((langs-to-check '(bash c cpp cmake css elisp go html javascript json make ocaml python php typescript tsx ruby rust sql vue yaml toml zig haskell kotlin java lua dockerfile elixir heex angular)))
+    (cl-some (lambda (lang) (not (treesit-language-available-p lang))) langs-to-check)))
 
 ;; Optional: Install tree-sitter grammars on first startup
 ;; You can manually run M-x auto-install-treesit-grammars to install
 ;; Or set rivenEmacs-auto-install-treesit to t in customize
 (when rivenEmacs-auto-install-treesit
-  (add-hook 'emacs-startup-hook #'auto-install-treesit-grammars))
+  (add-hook 'emacs-startup-hook
+            (lambda ()
+              (when (treesit-needs-install-p)
+                (auto-install-treesit-grammars)))))
 
 ;; Install essential grammars only on demand
 (defun install-essential-treesit-grammars ()

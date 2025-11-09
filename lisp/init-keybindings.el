@@ -36,7 +36,7 @@
 
     (leader-def
       :infix "n"
-      "" '(:ignroe t :wk "Note (Org)")
+      "" '(:ignore t :wk "Note (Org)")
       "a" '(org-agenda-list :wk "Agenda List")
       "ci" '(org-agenda-clock-in :wk "Clock in")
       "co" '(org-agenda-clock-out :wk "Clock out")

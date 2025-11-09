@@ -6,7 +6,8 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages nil)
  '(package-vc-selected-packages
-   '((goggles :url "https://github.com/minad/goggles" :branch "main")
+   '((gpt-extensions :url "https://github.com/kamushadenes/gptel-extensions.el")
+     (goggles :url "https://github.com/minad/goggles" :branch "main")
      (deadgrep :url "https://github.com/Wilfred/deadgrep" :branch "master")
      (gptel-aibo :vc-backend Git :url "https://github.com/dolmens/gptel-aibo")
      (pet :vc-backend Git :url "https://github.com/wyuenho/emacs-pet")
