@@ -59,11 +59,12 @@
   :hook ((c-ts-mode c-mode) . lsp-bridge-mode)
   :hook ((c++-ts-mode c++-mode) . lsp-bridge-mode)
   :hook ((java-ts-mode java-mode) . lsp-bridge-mode)
+  :hook ((kotlin-ts-mode kotlin-mode) . lsp-bridge-mode)
   :hook ((php-ts-mode php-mode) . lsp-bridge-mode)
   :hook ((web-mode vue-mode) . lsp-bridge-mode)
   :hook ((css-ts-mode css-mode) . lsp-bridge-mode)
   :hook ((html-ts-mode html-mode) . lsp-bridge-mode)
-  :hook ((python-ts-mode python-mode js-ts-mode javascript-mode typescript-ts-mode typescript-mode tsx-ts-mode rust-ts-mode rust-mode c-ts-mode c-mode c++-ts-mode c++-mode java-ts-mode java-mode php-ts-mode php-mode web-mode vue-mode css-ts-mode css-mode html-ts-mode html-mode) . lsp-bridge-semantic-tokens-mode)
+  :hook ((python-ts-mode python-mode js-ts-mode javascript-mode typescript-ts-mode typescript-mode tsx-ts-mode rust-ts-mode rust-mode c-ts-mode c-mode c++-ts-mode c++-mode java-ts-mode java-mode kotlin-ts-mode kotlin-mode php-ts-mode php-mode web-mode vue-mode css-ts-mode css-mode html-ts-mode html-mode) . lsp-bridge-semantic-tokens-mode)
   :bind (:map lsp-bridge-mode-map
               ("M-?" . lsp-bridge-find-references)
               ("M-P" . lsp-bridge-popup-documentation-scroll-down)

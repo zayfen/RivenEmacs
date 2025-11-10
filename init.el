@@ -69,6 +69,7 @@
 (require 'init-web)
 (require 'init-rust)
 (require 'init-python)
+(require 'init-java)
 
 ;; Writing
 (require 'ews)

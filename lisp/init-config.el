@@ -61,6 +61,7 @@
     c-ts-mode c-mode
     c++-ts-mode c++-mode
     java-ts-mode java-mode
+    kotlin-ts-mode kotlin-mode
     php-ts-mode php-mode
     web-mode vue-mode
     css-ts-mode css-mode
