@@ -131,7 +131,102 @@
   (claude-code-mode)
   :bind ("M-*" . claude-code-transient))
 
-;; install mcp.el
+
+;; install agent shell
+(use-package agent-shell
+  :ensure t
+  :config
+  (require 'transient)
+  (setq agent-shell-preferred-agent-config (agent-shell-anthropic-make-claude-code-config))
+
+  ;; Check if any agent-shell buffer exists
+  (defun agent-shell-buffer-exists-p ()
+    "Check if any agent-shell buffer exists."
+    (cl-some (lambda (buf)
+               (with-current-buffer buf
+                 (derived-mode-p 'agent-shell-mode)))
+             (buffer-list)))
+
+  ;; transient menu for agent-shell
+  (transient-define-prefix agent-shell-transient ()
+    "Transient menu for agent-shell commands."
+    [:description
+     (lambda () (format "Agent Shell Commands"))
+
+     ;; 启动时可用的命令组
+     ["Basic Operations"
+      ("n" "New shell" agent-shell-new-shell)
+      ("N" "Start/reuse shell" agent-shell)
+      ("t" "Toggle display" agent-shell-toggle)
+      ("T" "Toggle display buffer" agent-shell--display-buffer)
+      ("C" "Start Claude" agent-shell-anthropic-start-claude-code)
+      ("G" "Start Gemini" agent-shell-google-start-gemini)
+      ("O" "Start Codex" agent-shell-openai-start-codex)
+      ("Q" "Start Qwen" agent-shell-qwen-start)
+      ("U" "Start Cursor" agent-shell-cursor-start-agent)
+      ("E" "Start Goose" agent-shell-goose-start-agent)
+      ("Y" "Start OpenCode" agent-shell-opencode-start-agent)]]
+
+    ;; 以下命令组只在 agent-shell buffer 存在时显示
+    [:if agent-shell-buffer-exists-p
+     ["Input & Submission"
+      ("RET" "Submit input" agent-shell-submit)
+      ("C-c" "Interrupt request" agent-shell-interrupt)
+      ("S-RET" "Insert newline" agent-shell-newline)]
+
+     ["History Navigation"
+      ("C-p" "Previous input" agent-shell-previous-input)
+      ("C-n" "Next input" agent-shell-next-input)
+      ("M-r" "Search history" agent-shell-search-history)]
+
+     ["Item Navigation"
+      ("TAB" "Next item" agent-shell-next-item)
+      ("S-TAB" "Previous item" agent-shell-previous-item)
+      ("C-d" "Next permission button" agent-shell-next-permission-button)
+      ("C-u" "Previous permission button" agent-shell-previous-permission-button)
+      ("C-j" "Jump to latest permission" agent-shell-jump-to-latest-permission-button-row)]]
+
+    [:if agent-shell-buffer-exists-p
+     ["Block Navigation"
+      ("C-f" "Next block" agent-shell-ui-forward-block)
+      ("C-b" "Previous block" agent-shell-ui-backward-block)
+      ("C-v" "Toggle dialog block" agent-shell-ui-toggle-dialog-block-at-point)]
+
+     ["Send & Insert"
+      ("s" "Send region" agent-shell-send-region)
+      ("S" "Send file" agent-shell-send-file)
+      ("C-s" "Send current file" agent-shell-send-current-file)
+      ("o" "Send other file" agent-shell-send-other-file)
+      ("i" "Insert file" agent-shell-insert-file)
+      ("C-i" "Insert shell command output" agent-shell-insert-shell-command-output)
+      ("P" "Screenshot" agent-shell-send-screenshot)]
+
+     ["File Operations"
+      ("C-x C-s" "Save transcript" agent-shell-save-session-transcript)
+      ("L" "Restore from transcript" agent-shell-restore-session-from-transcript)
+      ("R" "Reset logs" agent-shell-reset-logs)]]
+
+    [:if agent-shell-buffer-exists-p
+     ["Session Mode"
+      ("m" "Set session mode" agent-shell-set-session-mode)
+      ("M" "Cycle session mode" agent-shell-cycle-session-mode)]
+
+     ["Toggle Options"
+      ("g" "Toggle logging" agent-shell-toggle-logging)
+      ("C-m" "Toggle completion mode" agent-shell-completion-mode)]
+
+     ["View & Debug"
+      ("v" "View traffic" agent-shell-view-traffic)
+      ("V" "View ACP logs" agent-shell-view-acp-logs)
+      ("x" "Delete interaction" agent-shell-delete-interaction-at-point)
+      ("h" "Show version" agent-shell-version)]]
+
+    [["Help"
+      ("?" "Help menu" agent-shell-help-menu)
+      ("q" "Quit" transient-quit-one)]])
+
+  ;; Set keybinding for the transient menu
+  :bind ("M-+" . agent-shell-transient))
 
 (provide 'init-gpt)
 
