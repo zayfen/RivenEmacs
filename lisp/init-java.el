@@ -10,7 +10,7 @@
   :mode ("\\.kt\\'" . kotlin-ts-mode)
   :mode ("\\.kts\\'" . kotlin-ts-mode)
   :init
-  (setq kotlin-ts-mode-indent-offset 4)
+  (setq kotlin-ts-mode-indent-offset 2)
   :config
   (add-to-list 'auto-mode-alist '("\\.kt\\'" . kotlin-ts-mode))
   (add-to-list 'auto-mode-alist '("\\.kts\\'" . kotlin-ts-mode)))
