@@ -49,6 +49,7 @@
 
 ;; IDE
 (require 'init-lsp-bridge)
+;;(require 'init-eglot)
 ;;(require 'init-citre)
 
 ;; init git
