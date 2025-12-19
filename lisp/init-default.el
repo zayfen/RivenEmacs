@@ -201,12 +201,6 @@ that directory."
 ;; (desktop-save-mode 1)
 (global-subword-mode 1)
 
-;; (add-hook 'after-init-hook
-;;           (
-;;            lambda ()
-;;                   (desktop-save-mode 1)))
-
-
 
 ;;improve performance of long file
 (setq-default bidi-display-reordering nil)
@@ -217,7 +211,6 @@ that directory."
 
 ;; or same as DoomEmacs
 ;; (setq-default bidi-paragraph-direction 'left-to-right)
-(setopt project-mode-line t)
 (which-key-mode +1)
 (global-completion-preview-mode +1)
 

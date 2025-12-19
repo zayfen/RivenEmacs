@@ -1,4 +1,5 @@
-
+;; -*- coding: utf-8; lexical-binding: t -*-
+;;; init-swift.el --- config swift
 
 ;;; Locate sourcekit-lsp
 (defun find-sourcekit-lsp ()

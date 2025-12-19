@@ -54,10 +54,10 @@
 
 
 (use-package doom-modeline
-  :vc (:url "https://github.com/seagle0128/doom-modeline")
+  :vc (:url "https://github.com/seagle0128/doom-modeline" :rev "master")
   :hook (after-init . doom-modeline-mode)
   :config
-  (setq doom-modeline-buffer-file-name-style 'relative-to-project)
+  (setq doom-modeline-buffer-file-name-style 'file-name-with-project)
   ;; Don’t compact font caches during GC.
   (setq inhibit-compacting-font-caches t))
 
@@ -126,6 +126,11 @@
 ;; change line number color
 (with-eval-after-load 'modus-themes
   (set-face-foreground 'line-number (modus-themes-get-color-value 'fg-dim)))
+
+;; Show file path in header line (first line)
+(setq-default header-line-format
+              '((:propertize (:eval (abbreviate-file-name buffer-file-name))
+                 face (:height 0.9 :foreground "gray60"))))
 
 (provide 'init-theme)
 ;;; init-theme.el ends here
