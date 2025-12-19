@@ -114,7 +114,24 @@
 
   (add-to-list 'lsp-bridge-multi-lang-server-extension-list '(("html") . "html_tailwindcss"))
   (add-to-list 'lsp-bridge-multi-lang-server-extension-list '(("css" "scss" "sass" "less") . "css_tailwindcss"))
-)
+
+  ;; Custom mode line display
+  (defun lsp-bridge--mode-line-format ()
+    "Compose the LSP-bridge's mode-line."
+    (setq-local mode-face
+                (if (lsp-bridge-process-live-p)
+                    'lsp-bridge-alive-mode-line
+                  'lsp-bridge-kill-mode-line))
+    (when lsp-bridge-server
+      (propertize "LSPB" 'face mode-face)))  ;; Use "LSPB" instead of "lsp-bridge"
+
+  (when lsp-bridge-enable-mode-line
+    ;; Remove existing lsp-bridge-mode entry
+    (setq mode-line-misc-info (assq-delete-all 'lsp-bridge-mode mode-line-misc-info))
+    ;; Add new entry
+    (add-to-list 'mode-line-misc-info
+                 `(lsp-bridge-mode ("" lsp-bridge--mode-line-format " "))))
+  )
 
 
 (add-hook 'web-mode-hook (lambda ()
@@ -123,3 +140,4 @@
 
 
 (provide 'init-lsp-bridge)
+;; init-lsp-bridge.el ends here.
