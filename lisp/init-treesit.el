@@ -38,7 +38,8 @@
         (dockerfile . ("https://github.com/camdencheek/tree-sitter-dockerfile"))
         (elixir . ("https://github.com/elixir-lang/tree-sitter-elixir"))
         (heex . ("https://github.com/phoenixframework/tree-sitter-heex"))
-        (angular . ("https://github.com/dlvandenberg/tree-sitter-angular"))))
+        (angular . ("https://github.com/dlvandenberg/tree-sitter-angular"))
+        (swift . ("https://github.com/alex-pinkus/tree-sitter-swift"))))
 
 (defun install-treesit-language-grammars ()
   "Install tree-sitter language grammars."
@@ -123,6 +124,7 @@
                 ('php-ts-mode 'php)
                 ('haskell-mode 'haskell)
                 ('kotlin-mode 'kotlin)
+                ('swift-mode 'swift)
                 (_ nil))))
     (when (and lang (treesit-language-available-p lang))
       (condition-case err

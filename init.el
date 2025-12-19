@@ -71,6 +71,7 @@
 (require 'init-rust)
 (require 'init-python)
 (require 'init-java)
+(require 'init-swift)
 
 ;; Writing
 (require 'ews)
