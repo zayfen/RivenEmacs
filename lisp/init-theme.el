@@ -15,6 +15,8 @@
   (setq dashboard-vertically-center-content t)
   ;; To disable shortcut "jump" indicators for each section, set
   (setq dashboard-show-shortcuts t)
+  ;; Set projects backend to project-el (built-in) instead of projectile
+  (setq dashboard-projects-backend 'project-el)
   (setq dashboard-items '((recents   . 6)
                           (bookmarks . 5)
                           (projects  . 5)
@@ -74,15 +76,14 @@
 
 ;; This assumes you've installed the package via MELPA.
 (use-package ligature
-  :vc (:url "https://github.com/mickeynp/ligature.el")
-  :hook ((prog-mode . ligature-mode))
+  :vc (:url "https://github.com/mickeynp/ligature.el" :rev "master")
+  :hook (prog-mode . ligature-mode)
   :config
   ;; Enable the "www" ligature in every possible major mode
   (ligature-set-ligatures t '("www"))
   ;; Enable traditional ligature support in eww-mode, if the
   ;; `variable-pitch' face supports it
   (ligature-set-ligatures 'eww-mode '("ff" "fi" "ffi"))
-  (global-ligature-mode t)
   ;; Enable all Cascadia Code ligatures in programming modes
   (ligature-set-ligatures 'prog-mode '("|||>" "<|||" "<==>" "<!--" "####" "~~>" "***" "||=" "||>"
                                        ":::" "::=" "=:=" "===" "==>" "=!=" "=>>" "=<<" "=/=" "!=="
@@ -97,7 +98,7 @@
                                        "##" "#(" "#?" "#_" "%%" ".=" ".-" ".." ".?" "+>" "++" "?:"
                                        "?=" "?." "??" ";;" "/*" "/=" "/>" "//" "__" "~~" "(*" "*)"
                                        "\\\\" "://")))
-
+  
 
 (use-package spacious-padding
   :ensure t
