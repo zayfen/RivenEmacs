@@ -2,9 +2,13 @@
 ;;; init-gpt.el --- config gpt
 
 ;;; Commentary:
-;;; gpt config
+;;; GPT 配置：包括 gptel, gpt-extensions 和 claude-code-ide
 
 ;;; Code:
+
+;; ============================================================
+;; 辅助函数
+;; ============================================================
 
 (defun delete-window-or-kill-buffer (buffer-name)
   "Delete window if the window only contain one buffer (BUFFER-NAME), otherwise delete buffer (BUFFER-NAME)."
@@ -12,6 +16,9 @@
       (kill-buffer buffer-name)
     (delete-windows-on buffer-name)))
 
+;; ============================================================
+;; GPTel 配置
+;; ============================================================
 
 (use-package gptel
   :vc (:url "https://github.com/karthink/gptel")
@@ -27,7 +34,7 @@
           :stream t
           :key (getenv "DEEPSEEK_API_KEY")))
 
-  ;; translator
+  ;; 翻译功能（带确认）
   (defun gptel-translate-region (target-languages-str)
     "Translate the text in the active region using GPTel."
     (interactive
@@ -93,84 +100,35 @@
                         )
                       )))             ; end of inner let*
       )                                 ;end of outer let*
-    )                                   ;end of defun
-  )
+    ))                                  ;end of defun
 
+;; 加载 GPTel 辅助命令
+(require 'init-gpt-helper)
 
+;; ============================================================
+;; GPT Extensions
+;; ============================================================
 
 (use-package gpt-extensions
   :vc (:url "https://github.com/kamushadenes/gptel-extensions.el")
   :bind (("C-x =" . 'gptel-extensions-refactor)))
 
-;; install claude-code-ide
+;; ============================================================
+;; Claude Code IDE
+;; ============================================================
+
 (use-package claude-code-ide
   :vc (:url "https://github.com/manzaltu/claude-code-ide.el" :rev :newest)
-  :bind ("M-*" . claude-code-ide-menu) ; Set your favorite keybinding
+  :bind ("M-*" . claude-code-ide-menu)
   :config
   (setq claude-code-ide-terminal-backend 'eat)
-  (claude-code-ide-emacs-tools-setup)) ; Optionally enable Emacs MCP tools
+  (claude-code-ide-emacs-tools-setup))
 
 
-;; install agent shell
-(use-package agent-shell
-  :ensure t
-  :config
-  (require 'transient)
-  (setq agent-shell-preferred-agent-config (agent-shell-anthropic-make-claude-code-config))
-
-  ;; Check if any agent-shell buffer exists
-  (defun agent-shell-buffer-exists-p ()
-    "Check if any agent-shell buffer exists."
-    (cl-some (lambda (buf)
-               (with-current-buffer buf
-                 (derived-mode-p 'agent-shell-mode)))
-             (buffer-list)))
-
-  ;; transient menu for agent-shell
-  (transient-define-prefix agent-shell-transient ()
-    "Transient menu for agent-shell commands."
-    [:description
-     (lambda () (format "Agent Shell Commands"))
-
-     ;; 启动时可用的命令组
-     ["Basic Operations"
-      ("n" "New shell" agent-shell-new-shell)
-      ("N" "Start/reuse shell" agent-shell)
-      ("t" "Toggle display" agent-shell-toggle)
-      ;;("T" "Toggle display buffer" agent-shell--display-buffer)
-      ("C" "Start Claude" agent-shell-anthropic-start-claude-code)
-      ;;("G" "Start Gemini" agent-shell-google-start-gemini)
-      ("O" "Start Codex" agent-shell-openai-start-codex)
-      ;;("Q" "Start Qwen" agent-shell-qwen-start)
-      ("U" "Start Cursor" agent-shell-cursor-start-agent)
-      ;;("Y" "Start OpenCode" agent-shell-opencode-start-agent)
-      ]]
-
-    ;; 以下命令组只在 agent-shell buffer 存在时显示
-    [:if agent-shell-buffer-exists-p
-     ["Control"
-      ("c" "Interrupt" agent-shell-interrupt)
-      ("l" "Clear buffer" agent-shell-clear-buffer)
-      ("j" "Jump to permission" agent-shell-jump-to-latest-permission-button-row)
-      ("r" "Search history" agent-shell-search-history)]
-
-     ["Send"
-      ("s" "Send region" agent-shell-send-region)
-      ("f" "Send current file" agent-shell-send-current-file)
-      ("F" "Send other file" agent-shell-send-file)]
-
-     ["Session"
-      ("w" "Save transcript" agent-shell-save-session-transcript)
-      ("x" "Delete interaction" agent-shell-delete-interaction-at-point)]]
-
-    [["Help"
-      ("?" "Help menu" agent-shell-help-menu)
-      ("q" "Quit" transient-quit-one)]])
-
-  ;; Set keybinding for the transient menu
-  :bind ("M-+" . agent-shell-transient))
+;; ============================================================
+;; 结束
+;; ============================================================
 
 (provide 'init-gpt)
-
 
 ;;; init-gpt.el ends here

@@ -65,6 +65,7 @@
 
 ;; init gpt
 (require 'init-gpt)
+(require 'init-agent-shell)
 
 ;; Languages
 (require 'init-web)
