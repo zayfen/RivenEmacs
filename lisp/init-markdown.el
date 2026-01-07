@@ -39,12 +39,162 @@
   :hook
   (markdown-mode . abbrev-mode))
 
-;; Use keybindings
+;; Grip live preview mode
 (use-package grip-mode
   :ensure t
-  :config (setq grip-command 'auto) ;; auto, grip, go-grip or mdopen
+  :after markdown-mode
+  :hook (markdown-mode . grip-mode-maybe-enable)
+  :config
+  ;; Auto-detect best grip command
+  (setq grip-command 'auto)
+  
+  ;; Function to check and install grip if needed
+  (defun riven/install-grip-if-needed ()
+    "Install grip if not found in system."
+    (interactive)
+    (unless (executable-find "grip")
+      (message "grip not found. Installing...")
+      (condition-case err
+          (cond
+           ((executable-find "pip")
+            (shell-command "pip install grip"))
+           ((executable-find "pip3")
+            (shell-command "pip3 install grip"))
+           ((executable-find "python")
+            (shell-command "python -m pip install grip"))
+           ((executable-find "python3")
+            (shell-command "python3 -m pip install grip"))
+           (t
+            (error "No Python/pip found. Please install grip manually: pip install grip")))
+        (if (executable-find "grip")
+            (message "grip installed successfully!")
+          (error "Failed to install grip: %s" (error-message-string err))))))
+  
+  ;; Function to enable grip-mode with auto-install
+  (defun grip-mode-maybe-enable ()
+    "Enable grip-mode, installing grip if necessary."
+    (when (and (buffer-file-name)
+               (string-match-p "\\.md\\'" (buffer-file-name)))
+      (unless (executable-find "grip")
+        (riven/install-grip-if-needed))
+      (when (executable-find "grip")
+        (grip-mode +1))))
+  
+  ;; Auto-refresh settings
+  (setq grip-auto-refresh t)
+  (setq grip-update-on-save t)
+  (setq grip-preview-use-webkit t)
+  
+  ;; Custom keybindings for grip-mode
+  :bind (:map markdown-mode-map
+         ("C-c C-p" . grip-mode)
+         ("C-c p" . grip-mode))
   :bind (:map markdown-mode-command-map
          ("g" . grip-mode)))
+
+;; Markdown Live Commands - C-c l
+(use-package markdown-mode
+  :after general
+  :config
+  ;; Create a definer for markdown live commands
+  (general-create-definer markdown-live-def
+    :prefix "C-c l"
+    :keymaps 'markdown-mode-map)
+  
+  ;; Define markdown live command groups
+  (markdown-live-def
+    "" '(:ignore t :wk "Markdown Live")
+    ;; Text formatting
+    "b" '(markdown-insert-bold :wk "Bold")
+    "i" '(markdown-insert-italic :wk "Italic")
+    "c" '(markdown-insert-code :wk "Inline Code")
+    "s" '(markdown-insert-strike-through :wk "Strikethrough")
+    ;; Headers
+    "h" '(:ignore t :wk "Headers")
+    "h1" '(markdown-insert-header-1 :wk "Header 1")
+    "h2" '(markdown-insert-header-2 :wk "Header 2") 
+    "h3" '(markdown-insert-header-3 :wk "Header 3")
+    "h4" '(markdown-insert-header-4 :wk "Header 4")
+    "h5" '(markdown-insert-header-5 :wk "Header 5")
+    "h6" '(markdown-insert-header-6 :wk "Header 6")
+    "ha" '(markdown-insert-header-dwim :wk "Auto Header")
+    ;; Lists
+    "l" '(:ignore t :wk "Lists")
+    "lu" '(markdown-insert-list-item :wk "List Item")
+    "lo" '(markdown-insert-ordered-list-item :wk "Ordered List")
+    "lt" '(markdown-insert-gfm-checkbox :wk "Task List")
+    "li" '(markdown-insert-list-item-at-level :wk "List at Level")
+    ;; Links and images
+    "L" '(:ignore t :wk "Links")
+    "Ll" '(markdown-insert-link :wk "Insert Link")
+    "Lu" '(markdown-insert-link-dwim :wk "Smart Link")
+    "Li" '(markdown-insert-image :wk "Insert Image")
+    "Lw" '(markdown-insert-wiki-link :wk "Wiki Link")
+    "Lr" '(markdown-insert-reference-link :wk "Ref Link")
+    ;; Code blocks
+    "C" '(:ignore t :wk "Code")
+    "Cb" '(markdown-insert-gfm-code-block :wk "Code Block")
+    "Ci" '(markdown-insert-code :wk "Inline Code")
+    "Cf" '(markdown-insert-code-block-with-fence :wk "Fenced Code")
+    "Cl" '(markdown-insert-gfm-code-block-with-lang :wk "Code with Lang")
+    ;; Tables
+    "t" '(:ignore t :wk "Tables")
+    "tt" '(markdown-insert-table :wk "Insert Table")
+    "ta" '(markdown-table-align :wk "Align Table")
+    "tr" '(markdown-table-insert-row :wk "Insert Row")
+    "tc" '(markdown-table-insert-column :wk "Insert Column")
+    "td" '(markdown-table-delete-row :wk "Delete Row")
+    "tD" '(markdown-table-delete-column :wk "Delete Column")
+    "tm" '(markdown-table-move-row :wk "Move Row")
+    "tM" '(markdown-table-move-column :wk "Move Column")
+    ;; Horizontal rules and breaks
+    "-" '(markdown-insert-hr :wk "Horizontal Rule")
+    "_" '(markdown-insert-line-break :wk "Line Break")
+    ;; Preview and export
+    "p" '(:ignore t :wk "Preview/Export")
+    "pp" '(grip-mode :wk "Live Preview")
+    "pe" '(markdown-export :wk "Export")
+    "po" '(markdown-open :wk "Open Output")
+    "pv" '(markdown-live-preview-mode :wk "Live Preview Mode")
+    "pw" '(markdown-export-and-preview :wk "Export & Preview")
+    ;; Movement and navigation
+    "n" '(:ignore t :wk "Navigation")
+    "np" '(markdown-previous-link :wk "Prev Link")
+    "nn" '(markdown-next-link :wk "Next Link")
+    "nf" '(markdown-follow-link-at-point :wk "Follow Link")
+    "nb" '(markdown-back-to-heading :wk "Back to Heading")
+    "nf" '(markdown-next-heading :wk "Next Heading")
+    "np" '(markdown-previous-heading :wk "Prev Heading")
+    ;; Toggles and settings
+    "T" '(:ignore t :wk "Toggles")
+    "Tw" '(markdown-toggle-wiki-links :wk "Wiki Links")
+    "Tl" '(markdown-toggle-url-hiding :wk "Hide URLs")
+    "Ti" '(markdown-toggle-inline-images :wk "Inline Images")
+    "Tm" '(markdown-toggle-markup-hiding :wk "Hide Markup")
+    "Tf" '(markdown-fontify-buffer-wiki-links :wk "Fontify Wiki"))
+  
+  ;; Additional useful functions
+  (defun markdown-insert-header-dwim ()
+    "Insert header based on context (DWIM - Do What I Mean)."
+    (interactive)
+    (if (markdown-at-heading-p)
+        (markdown-demote-heading)
+      (markdown-insert-header-1)))
+  
+  (defun markdown-insert-link-dwim ()
+    "Smart link insertion based on context."
+    (interactive)
+    (if (use-region-p)
+        (let ((link-text (buffer-substring-no-properties (region-beginning) (region-end))))
+          (delete-region (region-beginning) (region-end))
+          (markdown-insert-link nil link-text))
+      (markdown-insert-link)))
+  
+  (defun markdown-insert-gfm-code-block-with-lang ()
+    "Insert GFM code block with language prompt."
+    (interactive)
+    (let ((lang (read-string "Language: " "python")))
+      (markdown-insert-gfm-code-block lang))))
 
 (provide 'init-markdown)
 ;;; init-markdown.el ends here

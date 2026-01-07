@@ -261,5 +261,26 @@
  '(org-level-6 ((t (:height 1.0 :weight bold)))))
 
 ;; --------------------------------------------------------------------------
+;; SECTION 4: ORG TRANSCLUSION
+;; --------------------------------------------------------------------------
+(use-package org-transclusion
+  :ensure t
+  :after org
+  :config
+  (message "Configuring Org Transclusion...")
+  ;; Enable org-transclusion-mode by default in org-mode
+  (add-hook 'org-mode-hook #'org-transclusion-mode)
+  
+  ;; Configure default behaviors
+  (setq org-transclusion-default-tc-type "org")
+  (setq org-transclusion-add-replace-id-when-create t)
+  (setq org-transclusion-sync-at-saving t)
+  
+  ;; Make transcluded content visually distinct
+  (setq org-transclusion-face 'org-block)
+  
+  (message "Org Transclusion configuration loaded."))
+
+;; --------------------------------------------------------------------------
 (provide 'init-org)
 ;;; init-org.el ends here

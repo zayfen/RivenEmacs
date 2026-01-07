@@ -89,4 +89,3 @@ If you encounter tree-sitter installation errors:
 3. **Missing Dependencies**: Ensure you have `git`, `gcc`, and build tools installed
 4. **Selective Installation**: Use `M-x install-essential-treesit-grammars` for core languages only
 
-

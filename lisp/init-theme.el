@@ -129,7 +129,8 @@
 
 ;; Show file path in header line (first line)
 (setq-default header-line-format
-              '((:propertize (:eval (abbreviate-file-name buffer-file-name))
+              '((:propertize (:eval (when buffer-file-name
+                                      (abbreviate-file-name buffer-file-name)))
                  face (:height 0.9 :foreground "gray60"))))
 
 (provide 'init-theme)
