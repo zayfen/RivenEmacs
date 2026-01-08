@@ -36,6 +36,7 @@
   (markdown-header-face-4 ((t (:height 1.15 :foreground "#BF616A" :weight bold :inherit markdown-header-face))))
   (markdown-header-face-5 ((t (:height 1.1  :foreground "#b48ead" :weight bold :inherit markdown-header-face))))
   (markdown-header-face-6 ((t (:height 1.05 :foreground "#5e81ac" :weight semi-bold :inherit markdown-header-face))))
+  (markdown-strikethrough-face ((t (:strike-through t :height 1.0))))
   :hook
   (markdown-mode . abbrev-mode))
 
@@ -45,39 +46,31 @@
   :after markdown-mode
   :hook (markdown-mode . grip-mode-maybe-enable)
   :config
-  ;; Auto-detect best grip command
-  (setq grip-command 'auto)
+  ;; Use go-grip command
+  (setq grip-command 'go-grip)          ;auto, grip, go-grip or mdopen
   
-  ;; Function to check and install grip if needed
+  ;; Function to check and install go-grip if needed
   (defun riven/install-grip-if-needed ()
-    "Install grip if not found in system."
+    "Install go-grip if not found in system."
     (interactive)
-    (unless (executable-find "grip")
-      (message "grip not found. Installing...")
+    (unless (executable-find "go-grip")
+      (message "go-grip not found. Installing...")
       (condition-case err
-          (cond
-           ((executable-find "pip")
-            (shell-command "pip install grip"))
-           ((executable-find "pip3")
-            (shell-command "pip3 install grip"))
-           ((executable-find "python")
-            (shell-command "python -m pip install grip"))
-           ((executable-find "python3")
-            (shell-command "python3 -m pip install grip"))
-           (t
-            (error "No Python/pip found. Please install grip manually: pip install grip")))
-        (if (executable-find "grip")
-            (message "grip installed successfully!")
-          (error "Failed to install grip: %s" (error-message-string err))))))
+          (if (executable-find "go")
+              (shell-command "go install github.com/chrishrb/go-grip@latest")
+            (error "No Go found. Please install go-grip manually: go install github.com/chrishrb/go-grip@latest"))
+        (if (executable-find "go-grip")
+            (message "go-grip installed successfully!")
+          (error "Failed to install go-grip: %s" (error-message-string err))))))
   
   ;; Function to enable grip-mode with auto-install
   (defun grip-mode-maybe-enable ()
-    "Enable grip-mode, installing grip if necessary."
+    "Enable grip-mode, installing go-grip if necessary."
     (when (and (buffer-file-name)
                (string-match-p "\\.md\\'" (buffer-file-name)))
-      (unless (executable-find "grip")
+      (unless (executable-find "go-grip")
         (riven/install-grip-if-needed))
-      (when (executable-find "grip")
+      (when (executable-find "go-grip")
         (grip-mode +1))))
   
   ;; Auto-refresh settings
