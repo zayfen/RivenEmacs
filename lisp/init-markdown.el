@@ -36,7 +36,7 @@
   (markdown-header-face-4 ((t (:height 1.15 :foreground "#BF616A" :weight bold :inherit markdown-header-face))))
   (markdown-header-face-5 ((t (:height 1.1  :foreground "#b48ead" :weight bold :inherit markdown-header-face))))
   (markdown-header-face-6 ((t (:height 1.05 :foreground "#5e81ac" :weight semi-bold :inherit markdown-header-face))))
-  (markdown-strikethrough-face ((t (:strike-through t :height 1.0))))
+  (markdown-strike-through-face ((t (:strike-through t :height 1.0))))
   :hook
   (markdown-mode . abbrev-mode))
 
