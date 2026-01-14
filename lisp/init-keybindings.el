@@ -269,6 +269,7 @@
   "t" '(agent-shell-toggle :wk "Toggle Agent Shell")
   "c" '(riven/start-claude-code :wk "Start Claude Code")
   "u" '(riven/start-cursor-acp :wk "Start Cursor ACP")
+  "o" '(riven/start-open-code :wk "Start Open Code")
   "+" '(agent-shell-transient :wk "Agent Menu")
   "d" '(riven/agent-shell-diagnose :wk "Diagnose Agents")
   ;; Code operations

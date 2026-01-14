@@ -20,6 +20,7 @@
              agent-shell-new-shell
              agent-shell-toggle
              riven/start-claude-code
+             riven/start-open-code
              riven/start-cursor-acp
              riven/start-openai-codex
              riven/agent-shell-diagnose
@@ -74,12 +75,32 @@
      (t
       (when (yes-or-no-p "是否要安装 Claude Code (需要 Homebrew)? ")
         (message "正在安装 Claude Code...")
-        (let ((result (shell-command "brew install anthropics/claude/claude")))
+        (let ((result (shell-command "brew install --cask claude-code")))
           (if (= result 0)
               (progn
                 (message "✓ Claude Code 安装成功!")
                 t)
-            (message "✗ Claude Code 安装失败。请手动运行: brew install anthropics/claude/claude")
+            (message "✗ Claude Code 安装失败。请手动运行: brew install --cask claude-code")
+            nil))))))
+
+
+  (defun riven/install-opencode ()
+    "自动安装 Open Code 通过 Homebrew (仅 macOS)"
+    (interactive)
+    (cond
+     ((not (eq system-type 'darwin))
+      (message "Open Code 自动安装目前仅支持 macOS。请手动从 https://opencode.ai/ 安装。"))
+     ((not (executable-find "brew"))
+      (message "错误: Homebrew 未安装。请先安装 Homebrew 或手动安装 Open Code。"))
+     (t
+      (when (yes-or-no-p "是否要安装 Open Code (需要 Homebrew)? ")
+        (message "正在安装 Open Code...")
+        (let ((result (shell-command "brew install anomalyco/tap/opencode")))
+          (if (= result 0)
+              (progn
+                (message "✓ Open Code 安装成功!")
+                t)
+            (message "✗ Open Code 安装失败。请手动运行: brew install anomalyco/tap/opencode")
             nil))))))
   
   (defun riven/prompt-install-agent (agent-name install-function)
@@ -105,6 +126,21 @@
         (message "已取消 Claude Code 安装。")))
      (t
       (agent-shell-anthropic-start-claude-code))))
+
+  (defun riven/start-open-code ()
+    "快速启动 Open Code agent，如果未安装则提示安装."
+    (interactive)
+    (cond
+     ((not (fboundp 'agent-shell-opencode-start-agent))
+      (message "Open Code not available in agent-shell. Please update agent-shell package."))
+     ((not (riven/agent-executable-exists-p "opencode"))
+      (if (riven/prompt-install-agent "Opencode" 'riven/install-opencode)
+          ;; 安装成功后重试启动
+          (when (riven/agent-executable-exists-p "opencode")
+            (agent-shell-opencode-start-agent))
+        (message "已取消 Open Code 安装。")))
+     (t
+      (agent-shell-opencode-start-agent))))
   
   (defun riven/start-cursor-acp ()
     "快速启动 Cursor ACP agent，如果未安装则提示安装."
