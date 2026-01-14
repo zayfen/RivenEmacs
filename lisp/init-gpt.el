@@ -23,6 +23,7 @@
 (use-package gptel
   :vc (:url "https://github.com/karthink/gptel")
   :commands (gptel-translate-region gptel-rewrite)
+  :after exec-path-from-shell
   :config
   (add-hook 'gptel-post-stream-hook 'gptel-auto-scroll)
   (add-hook 'gptel-post-response-functions 'gptel-end-of-response)
