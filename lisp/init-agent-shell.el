@@ -15,7 +15,7 @@
 ;; ============================================================
 
 (use-package agent-shell
-  :ensure t
+  :vc (:url "https://github.com/xenodium/agent-shell" :branch "main")
   :commands (agent-shell
              agent-shell-new-shell
              agent-shell-toggle
@@ -25,8 +25,7 @@
              riven/start-openai-codex
              riven/agent-shell-diagnose
              riven/install-claude-code
-             riven/install-cursor-agent-acp
-             agent-shell-transient))
+             riven/install-cursor-agent-acp))
 
 ;; ============================================================
 ;; Agent Shell 配置
@@ -435,10 +434,14 @@
      (lambda () "Agent Shell Commands")
 
      ["Quick Start"
-      ("c" "Start Claude Code" 
-       (lambda () 
+      ("C" "Start Claude Code"
+       (lambda ()
          (interactive)
          (call-interactively 'riven/start-claude-code)))
+      ("O" "Start Open Code"
+       (lambda ()
+         (interactive)
+         (call-interactively 'riven/start-open-code)))
       ("u" "Start Cursor ACP"
        (lambda ()
          (interactive)
@@ -451,11 +454,12 @@
      ["Basic Operations"
       ("n" "New shell" agent-shell-new-shell)
       ("N" "Start/reuse shell" agent-shell)
-      ("t" "Toggle display" agent-shell-toggle)
+      ("v" "Toggle display" agent-shell-toggle)
       ("d" "Diagnose agents" riven/agent-shell-diagnose)]
      
      ["Install Tools"
       ("ic" "Install Claude Code" riven/install-claude-code)
+      ("iO" "Install Open Code" riven/install-opencode)
       ("iu" "Install Cursor ACP" riven/install-cursor-agent-acp)]]
 
     [:if agent-shell-buffer-exists-p
@@ -469,13 +473,18 @@
      ["Context"
       ("cb" "Send buffer context" riven/agent-shell-send-buffer-context)
       ("cp" "Send project context" riven/agent-shell-send-project-context)
-      ("cr" "Send region" agent-shell-send-region)
-      ("cf" "Send file" agent-shell-send-current-file)]
-      
+      ("cr" "Send region"
+       (lambda () (interactive) (call-interactively 'agent-shell-send-region)))
+      ("cf" "Send file"
+       (lambda () (interactive) (call-interactively 'agent-shell-send-current-file)))]
+
      ["Control"
-      ("cc" "Interrupt" agent-shell-interrupt)
-      ("cl" "Clear buffer" agent-shell-clear-buffer)
-      ("ch" "Search history" agent-shell-search-history)]]
+      ("cc" "Interrupt"
+       (lambda () (interactive) (call-interactively 'agent-shell-interrupt)))
+      ("cl" "Clear buffer"
+       (lambda () (interactive) (call-interactively 'agent-shell-clear-buffer)))
+      ("ch" "Search history"
+       (lambda () (interactive) (call-interactively 'agent-shell-search-history)))]]
 
     [["Help & Quit"
       ("?" "Help" agent-shell-help-menu :if (lambda () (fboundp 'agent-shell-help-menu)))
