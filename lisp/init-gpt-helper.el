@@ -3,7 +3,7 @@
 ;;; init-gpt-helper.el --- GPTel helper commands
 
 ;;; Commentary:
-;; GPTel 辅助命令集合，提供代码分析、优化、生成等实用功能
+;; GPTel auxiliary command collection, providing practical functions such as code analysis, optimization, and generation.
 
 ;;; Code:
 
@@ -11,7 +11,7 @@
 (require 'url)
 
 ;; ============================================================
-;; 辅助函数
+;; auxiliary function
 ;; ============================================================
 
 (defun delete-window-or-kill-buffer (buffer-name)
@@ -22,7 +22,7 @@
 
 
 ;; ============================================================
-;; 公用临时Buffer框架
+;; Public Temporary Buffer Framework
 ;; ============================================================
 
 (defvar gptel-temp-original-buffer nil
@@ -34,6 +34,9 @@
 (defvar gptel-temp-refine-prompt ""
   "The additional prompt for refining the content.")
 
+(defvar gptel-temp-region-bounds nil
+  "The (beg end) bounds of the region to replace, if applicable.")
+
 (defvar gptel-temp-buffer-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "y") #'gptel-temp-buffer-accept)
@@ -43,8 +46,11 @@
   "Keymap for temporary GPT buffer.")
 
 (defun gptel-create-temp-buffer (buffer-name mode-name header-text)
-  "Create a temporary buffer with the given NAME, MODE, and HEADER text."
-  (let ((buffer (get-buffer-create buffer-name)))
+  "Create a temporary buffer with the given NAME, MODE, and HEADER text.
+Preserves gptel-temp-original-buffer from being overwritten."
+  (let ((buffer (get-buffer-create buffer-name))
+        (original (when (boundp 'gptel-temp-original-buffer)
+                    gptel-temp-original-buffer)))
     (with-current-buffer buffer
       (erase-buffer)
       (insert header-text)
@@ -54,22 +60,35 @@
       (forward-line 2)
       (funcall mode-name)
       (use-local-map gptel-temp-buffer-map)
-      (setq-local gptel-temp-original-buffer (current-buffer)))
+      ;; Restore the original buffer reference
+      (setq-local gptel-temp-original-buffer original))
     buffer))
 
 (defun gptel-temp-buffer-accept ()
   "Accept the content in the temporary buffer and close it.
-Replace the original buffer content with the current buffer content."
+If gptel-temp-region-bounds is set, replace only that region.
+Otherwise, replace the entire original buffer content."
   (interactive)
   (when gptel-temp-original-buffer
     (with-current-buffer gptel-temp-original-buffer
-      (erase-buffer)
-      (insert gptel-temp-content)))
-  (kill-buffer (current-buffer)))
+      (if gptel-temp-region-bounds
+          (let ((beg (car gptel-temp-region-bounds))
+                (end (cdr gptel-temp-region-bounds)))
+            (delete-region beg end)
+            (insert gptel-temp-content))
+        (erase-buffer)
+        (insert gptel-temp-content))))
+  ;; Reset temp variables
+  (setq gptel-temp-region-bounds nil)
+  (setq gptel-temp-refine-prompt "")
+  (delete-window-or-kill-buffer (current-buffer)))
 
 (defun gptel-temp-buffer-quit ()
   "Quit the temporary buffer without accepting changes."
   (interactive)
+  ;; Reset temp variables
+  (setq gptel-temp-region-bounds nil)
+  (setq gptel-temp-refine-prompt "")
   (delete-window-or-kill-buffer (current-buffer)))
 
 (defun gptel-temp-buffer-refine ()
@@ -77,7 +96,11 @@ Replace the original buffer content with the current buffer content."
   (interactive)
   (let ((prompt (read-string "Enter additional instructions for refinement: ")))
     (setq gptel-temp-refine-prompt prompt)
-    (message "Refining content with additional instructions...")))
+    (message "Refinement input saved. Re-run the command to apply with additional instructions.")
+    ;; Note: Full refinement support requires storing the original prompt.
+    ;; For now, this resets for the next command.
+    (setq gptel-temp-region-bounds nil)
+    (setq gptel-temp-refine-prompt "")))
 
 (defun gptel-temp-buffer-wait-for-refine (original-buffer prompt-text callback)
   "Wait for user refinement and retry the request.
@@ -150,6 +173,9 @@ Otherwise, return current word at point."
 TITLE is the buffer name prefix.
 CALLBACK is called with the response."
   (message "Processing...")
+  ;; Reset temp variables for full buffer replacement
+  (setq gptel-temp-region-bounds nil)
+  (setq gptel-temp-refine-prompt "")
   (gptel-request prompt
     :callback (lambda (response _metadata)
                 (when response
@@ -165,71 +191,39 @@ CALLBACK is called with the response."
 ;; ============================================================
 
 (defun gptel-translate-region (target-languages-str)
-  "Translate the text in the active region using GPTel."
+  "Translate the text in the active region using GPTel.
+Shows result in a temporary buffer. Press 'y' to accept and replace,
+'q' to quit, or 'C-c C-c' to refine."
   (interactive
    (list (read-string "Target language(s) (comma-separated, default 'en'): " "en")))
 
-  ;; 1. Source text must be from a marked region
+  ;; Source text must be from a marked region
   (unless (region-active-p)
     (error "No region active. Please mark a region to translate"))
 
   (let* ((original-buffer (current-buffer))
          (original-text (buffer-substring-no-properties (region-beginning) (region-end)))
          (beg (region-beginning))
-         (end (region-end)))
+         (end (region-end))
+         (lang (string-trim-left target-languages-str))
+         (prompt-text
+          (format "Translate the following text to %s. Preserve all formatting, including line breaks, spacing, and punctuation. Do not add any introductory or concluding remarks, or any conversational text. Just provide the translated text:\n\n%s" lang original-text)))
 
-    (let* ((lang (string-trim-left target-languages-str))
-           (prompt-text
-            (format "Translate the following text to %s. Preserve all formatting, including line breaks, spacing, and punctuation. Do not add any introductory or concluding remarks, or any conversational text. Just provide the translated text:\n\n%s" lang original-text))
-           (translated-text nil)
-           (confirmation-buffer (get-buffer-create "*Translation Confirmation*")))
+    ;; Set up temp buffer variables for region replacement
+    (setq gptel-temp-original-buffer original-buffer)
+    (setq gptel-temp-region-bounds (cons beg end))
+    (setq gptel-temp-refine-prompt "")
 
-      ;; Call gptel to get the translation
-      (message "Translating...")
-      ;; Using gptel-send-prompt synchronously for simplicity in this flow
-      (gptel-request prompt-text
-        :callback (lambda (response _metadata)
-                    (progn
-                      (setq translated-text response)
-                      (if translated-text
-                          (progn
-                            (message "Translation succeeded")
-                            (defun accept-translation ()
-                              (interactive)
-                              (with-current-buffer original-buffer
-                                (delete-region beg end)
-                                (insert translated-text)
-                                (delete-window-or-kill-buffer confirmation-buffer)))
-
-                            (defun reject-translation ()
-                              (interactive)
-                              (delete-window-or-kill-buffer confirmation-buffer))
-
-                            (with-current-buffer confirmation-buffer
-                              (erase-buffer)
-                              (insert (format "Translated to %s:\n\n---\n%s\n---\n\n" lang translated-text))
-                              (insert
-                               (concat
-                                (propertize "Press " 'face 'default)
-                                (propertize "Enter" 'face '(:weight bold :foreground "green"))
-                                (propertize " to accept and replace.\n" 'face 'default)
-                                (propertize "Press " 'face 'default)
-                                (propertize "C-g" 'face '(:weight bold :foreground "green"))
-                                (propertize " or " 'face 'default)
-                                (propertize "q" 'face '(:weight bold :foreground "green"))
-                                (propertize " to reject and quit.\n\n" 'face 'default)))
-                              (goto-char (point-min))
-                              (local-set-key (kbd "\r") #'accept-translation)
-                              (local-set-key (kbd "C-g") #'reject-translation)
-                              (local-set-key (kbd "q") #'reject-translation))
-                            (pop-to-buffer confirmation-buffer))
-                        (message "Failed to get translation for %s." lang)
-                        (when (buffer-live-p confirmation-buffer)
-                          (delete-window-or-kill-buffer confirmation-buffer)))
-                      )
-                    )))             ; end of inner let*
-      )                                 ;end of outer let*
-    )
+    ;; Call gptel to get the translation
+    (message "Translating...")
+    (gptel-request prompt-text
+      :callback (lambda (response _metadata)
+                  (when response
+                    (setq gptel-temp-content response)
+                    (gptel-create-temp-buffer "*Translation*" 'markdown-mode
+                      (format "=== Translation to %s ===\nPress 'y' to accept and replace, 'q' to quit, 'C-c C-c' to refine" lang))
+                    (pop-to-buffer "*Translation*")
+                    (message "Translation ready. Press 'y' to accept, 'q' to quit, or 'C-c C-c' to refine."))))))
 
 ;; ============================================================
 ;; 重写技术文章
