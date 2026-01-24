@@ -16,6 +16,10 @@
 
 (use-package agent-shell
   :vc (:url "https://github.com/xenodium/agent-shell" :branch "main")
+  :init
+  (general-create-definer agent-shell-leader-def
+    :prefix "C-c =")
+  
   :commands (agent-shell
              agent-shell-new-shell
              agent-shell-toggle

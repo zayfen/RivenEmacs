@@ -12,7 +12,7 @@
 ;; config project keybindings
 
 (defun keybindings-config()
-   (progn
+  (progn
     (leader-def
       :infix "b"
       "" '(:ignore t :wk "Buffer")
@@ -177,42 +177,20 @@
       "g" '(riven/google-search :wk "Google")
       "t" '(riven/google-translate :wk "Google Translator"))
 
-     (ai-leader-def
+    (ai-leader-def
        "" '(:ignore t :wk "AI")
        ;; 基础功能
-       "c" '(gptel :wk "Console")
-       "g" '(gptel-menu :wk "Gptel Menu")
+       "." '(gptel :wk "Console")
+       "m" '(gptel-menu :wk "Menu")
        "s" '(gptel-send :wk "Send")
-       
-       ;; 代码理解
-       "e" '(gptel-explain-code :wk "Explain Code")
-       "?" '(gptel-ask-about-code :wk "Ask About Code")
-       "d" '(gptel-generate-docstring :wk "Generate Docstring")
-       
-       ;; 代码改进
        "r" '(gptel-rewrite :wk "Rewrite")
-       "o" '(gptel-optimize-code :wk "Optimize Code")
-       "f" '(gptel-fix-code :wk "Fix Code")
-       "m" '(gptel-simplify-code :wk "Simplify Code")
-       "R" '(gptel-suggest-refactor :wk "Refactor Suggestions")
-       
-       ;; 代码生成
-       "a" '(gptel-add-comments :wk "Add Comments")
-       "t" '(gptel-generate-test :wk "Generate Test")
-       "C" '(gptel-complete-code :wk "Complete Code")
-       
-       ;; 代码质量
-       "v" '(gptel-review-code :wk "Review Code")
-       "S" '(gptel-check-security :wk "Check Security")
-       
-       ;; 其他功能
-       "T" '(gptel-translate-region :wk "Translate")
-       "y" '(gptel-convert-style :wk "Convert Style")
-       "E" '(gptel-explain-error :wk "Explain Error")
-       "D" '(gptel-extensions-ask-document :wk "Ask Document"))
-
-     ;; Agent Shell keybindings - delayed until agent-shell is loaded
-     ;; Note: using with-eval-after-load because agent-shell is lazy-loaded by use-package
+       "t" '(gptel-translate-region :wk "Translate")
+       "?" '(gptel-extensions-ask-document :wk "Ask Document")
+       ;; 新增功能
+       "aa" '(gptel-rewrite-article :wk "Rewrite Article")
+       "as" '(gptel-summarize-document :wk "Summarize Document")
+       "ad" '(gptel-query-devdoc :wk "Query DevDoc")
+       "am" '(gptel-generate-commit-message :wk "Commit Message"))
 
     ;; define prefix lable
     (leader-def
@@ -255,33 +233,28 @@
       (keymap-global-set "M-." #'lsp-bridge-find-def)
       (keymap-global-set "C-," #'lsp-bridge-find-def-return))
 
-    ))
+
+    (agent-shell-leader-def
+     "" '(:ignore t :wk "Agent")
+     ;; Main agent controls
+     "=" '(agent-shell :wk "Start/Reuse Agent Shell")
+     "1" '(riven/start-claude-code :wk "Start Claude Code")
+     "2" '(riven/start-open-code :wk "Start Open Code")
+     "3" '(riven/start-cursor-acp :wk "Start Cursor ACP"))
+
+    ;; Global agent shell keybindings
+    ;; If agent-shell not started, start it with C-c =; otherwise show transient menu
+    (defun riven/agent-shell-dispatch ()
+      "Dispatch agent-shell: start if not running, show transient if running."
+      (interactive)
+      (if (and (fboundp 'agent-shell-buffers)
+               (agent-shell-buffers))
+          (when (fboundp 'agent-shell-transient)
+            (agent-shell-transient))
+        (call-interactively 'agent-shell)))
+    (keymap-global-set "M-*" #'riven/agent-shell-dispatch)))
 
 (add-hook 'after-init-hook #'keybindings-config)
-
-;; Agent Shell keybindings - loaded after agent-shell is available
-(general-create-definer agent-shell-leader-def
-  :prefix "C-c =")
-
-(agent-shell-leader-def
-  "" '(:ignore t :wk "Agent")
-  ;; Main agent controls
-  "=" '(agent-shell :wk "Start/Reuse Agent Shell")
-  "1" '(riven/start-claude-code :wk "Start Claude Code")
-  "2" '(riven/start-open-code :wk "Start Open Code")
-  "3" '(riven/start-cursor-acp :wk "Start Cursor ACP"))
-
- ;; Global agent shell keybindings
- ;; If agent-shell not started, start it with C-c =; otherwise show transient menu
- (defun riven/agent-shell-dispatch ()
-   "Dispatch agent-shell: start if not running, show transient if running."
-   (interactive)
-   (if (and (fboundp 'agent-shell-buffers)
-            (agent-shell-buffers))
-       (when (fboundp 'agent-shell-transient)
-         (agent-shell-transient))
-     (call-interactively 'agent-shell)))
- (keymap-global-set "M-*" #'riven/agent-shell-dispatch)
 
 (provide 'init-keybindings)
 

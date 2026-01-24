@@ -1,183 +1,279 @@
-;;; Package -- Summary: -*- coding: utf-8; lexical-binding: t -*-
+;; -*- coding: utf-8; lexical-binding: t -*-
+
 ;;; init-gpt-helper.el --- GPTel helper commands
 
 ;;; Commentary:
-;;; GPTel 辅助命令集合，提供代码分析、优化、生成等实用功能
+;; GPTel 辅助命令集合，提供代码分析、优化、生成等实用功能
 
 ;;; Code:
 
 (require 'gptel)
+(require 'url)
+
+;; ============================================================
+;; 公用临时Buffer框架
+;; ============================================================
+
+(defvar gptel-temp-original-buffer nil
+  "The original buffer where the command was invoked.")
+
+(defvar gptel-temp-content nil
+  "The content to be displayed in the temporary buffer.")
+
+(defvar gptel-temp-refine-prompt ""
+  "The additional prompt for refining the content.")
+
+(defvar gptel-temp-buffer-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "y") #'gptel-temp-buffer-accept)
+    (define-key map (kbd "q") #'gptel-temp-buffer-quit)
+    (define-key map (kbd "C-c C-c") #'gptel-temp-buffer-refine)
+    map)
+  "Keymap for temporary GPT buffer.")
+
+(defun gptel-create-temp-buffer (buffer-name mode-name header-text)
+  "Create a temporary buffer with the given NAME, MODE, and HEADER text."
+  (let ((buffer (get-buffer-create buffer-name)))
+    (with-current-buffer buffer
+      (erase-buffer)
+      (insert header-text)
+      (insert "\n\n")
+      (insert gptel-temp-content)
+      (goto-char (point-min))
+      (forward-line 2)
+      (funcall mode-name)
+      (use-local-map gptel-temp-buffer-map)
+      (setq-local gptel-temp-original-buffer (current-buffer)))
+    buffer))
+
+(defun gptel-temp-buffer-accept ()
+  "Accept the content in the temporary buffer and close it.
+Replace the original buffer content with the current buffer content."
+  (interactive)
+  (when gptel-temp-original-buffer
+    (with-current-buffer gptel-temp-original-buffer
+      (erase-buffer)
+      (insert gptel-temp-content)))
+  (kill-buffer (current-buffer)))
+
+(defun gptel-temp-buffer-quit ()
+  "Quit the temporary buffer without accepting changes."
+  (interactive)
+  (kill-buffer (current-buffer)))
+
+(defun gptel-temp-buffer-refine ()
+  "Refine the content based on additional user input."
+  (interactive)
+  (let ((prompt (read-string "Enter additional instructions for refinement: ")))
+    (setq gptel-temp-refine-prompt prompt)
+    (message "Refining content with additional instructions...")))
+
+(defun gptel-temp-buffer-wait-for-refine (original-buffer prompt-text callback)
+  "Wait for user refinement and retry the request.
+ORIGINAL-BUFFER is the buffer to update.
+PROMPT-TEXT is the base prompt.
+CALLBACK is the function to call after response."
+  (if (string-empty-p gptel-temp-refine-prompt)
+      (funcall callback)
+    (let* ((combined-prompt (format "%s\n\nAdditional instructions:\n%s"
+                                    prompt-text
+                                    gptel-temp-refine-prompt)))
+      (gptel-request combined-prompt
+        :callback (lambda (response _metadata)
+                    (when response
+                      (setq gptel-temp-content response)
+                      (with-current-buffer "*GPT Temp*"
+                        (erase-buffer)
+                        (insert "=== Refined Content ===\n\n")
+                        (insert gptel-temp-content)
+                        (goto-char (point-min))
+                        (forward-line 2))
+                      (setq gptel-temp-refine-prompt "")
+                      (message "Refinement complete. Press y to accept, q to quit, or C-c C-c to refine further.")))))))
 
 ;; ============================================================
 ;; 辅助函数
 ;; ============================================================
 
-(defun gptel-helper--get-code-and-language ()
-  "获取选中的代码和语言类型."
-  (when (region-active-p)
-    (let ((code (buffer-substring-no-properties (region-beginning) (region-end)))
-          (lang (or (and (boundp 'treesit-language-at-point)
-                        (treesit-language-at-point (point)))
-                   (symbol-name major-mode))))
-      (cons code lang))))
+(defun gptel-get-region-or-buffer ()
+  "Get content from region or buffer.
+If region is active, return region content.
+Otherwise, return buffer content."
+  (if (region-active-p)
+      (buffer-substring-no-properties (region-beginning) (region-end))
+    (buffer-string)))
 
-(defun gptel-helper--require-region (func-name)
-  "检查是否选中了区域，未选中时提示."
+(defun gptel-get-region-or-word ()
+  "Get content from region or current word.
+If region is active, return region content.
+Otherwise, return current word at point."
+  (if (region-active-p)
+      (buffer-substring-no-properties (region-beginning) (region-end))
+    (thing-at-point 'symbol)))
+
+(defun gptel-read-document-input ()
+  "Read document input (file path or URL) from user."
+  (let ((input (read-string "Enter file path or URL: ")))
+    (cond
+     ((string-match-p "^https?://" input)
+      (gptel-fetch-url-content input))
+     ((file-exists-p input)
+      (gptel-read-file-content input))
+     (t
+      (error "File does not exist and not a valid URL: %s" input)))))
+
+(defun gptel-fetch-url-content (url)
+  "Fetch content from URL."
+  (with-temp-buffer
+    (url-insert-file-contents url)
+    (buffer-string)))
+
+(defun gptel-read-file-content (file-path)
+  "Read content from FILE-PATH."
+  (with-temp-buffer
+    (insert-file-contents file-path)
+    (buffer-string)))
+
+(defun gptel-call-gpt-with-temp-buffer (title prompt callback)
+  "Call GPT with the given PROMPT and show result in temp buffer.
+TITLE is the buffer name prefix.
+CALLBACK is called with the response."
+  (message "Processing...")
+  (gptel-request prompt
+    :callback (lambda (response _metadata)
+                (when response
+                  (setq gptel-temp-content response)
+                  (let ((buffer-name (format "*GPT %s*" title)))
+                    (gptel-create-temp-buffer buffer-name 'markdown-mode
+                      (format "=== %s ===\nPress 'y' to accept, 'q' to quit, 'C-c C-c' to refine" title)))
+                  (pop-to-buffer (format "*GPT %s*" title))
+                  (message "Result ready. Press y to accept, q to quit, or C-c C-c to refine.")))))
+
+;; ============================================================
+;; 翻译功能
+;; ============================================================
+
+(defun gptel-translate-region (target-languages-str)
+  "Translate the text in the active region using GPTel."
+  (interactive
+   (list (read-string "Target language(s) (comma-separated, default 'en'): " "en")))
+
+  ;; 1. Source text must be from a marked region
   (unless (region-active-p)
-    (user-error "请先选中要%s的代码" func-name)))
+    (error "No region active. Please mark a region to translate"))
+
+  (let* ((original-buffer (current-buffer))
+         (original-text (buffer-substring-no-properties (region-beginning) (region-end)))
+         (beg (region-beginning))
+         (end (region-end)))
+
+    (let* ((lang (string-trim-left target-languages-str))
+           (prompt-text
+            (format "Translate the following text to %s. Preserve all formatting, including line breaks, spacing, and punctuation. Do not add any introductory or concluding remarks, or any conversational text. Just provide the translated text:\n\n%s" lang original-text))
+           (translated-text nil)
+           (confirmation-buffer (get-buffer-create "*Translation Confirmation*")))
+
+      ;; Call gptel to get the translation
+      (message "Translating...")
+      ;; Using gptel-send-prompt synchronously for simplicity in this flow
+      (gptel-request prompt-text
+        :callback (lambda (response _metadata)
+                    (progn
+                      (setq translated-text response)
+                      (if translated-text
+                          (progn
+                            (message "Translation succeeded")
+                            (defun accept-translation ()
+                              (interactive)
+                              (with-current-buffer original-buffer
+                                (delete-region beg end)
+                                (insert translated-text)
+                                (delete-window-or-kill-buffer confirmation-buffer)))
+
+                            (defun reject-translation ()
+                              (interactive)
+                              (delete-window-or-kill-buffer confirmation-buffer))
+
+                            (with-current-buffer confirmation-buffer
+                              (erase-buffer)
+                              (insert (format "Translated to %s:\n\n---\n%s\n---\n\n" lang translated-text))
+                              (insert
+                               (concat
+                                (propertize "Press " 'face 'default)
+                                (propertize "Enter" 'face '(:weight bold :foreground "green"))
+                                (propertize " to accept and replace.\n" 'face 'default)
+                                (propertize "Press " 'face 'default)
+                                (propertize "C-g" 'face '(:weight bold :foreground "green"))
+                                (propertize " or " 'face 'default)
+                                (propertize "q" 'face '(:weight bold :foreground "green"))
+                                (propertize " to reject and quit.\n\n" 'face 'default)))
+                              (goto-char (point-min))
+                              (local-set-key (kbd "\r") #'accept-translation)
+                              (local-set-key (kbd "C-g") #'reject-translation)
+                              (local-set-key (kbd "q") #'reject-translation))
+                            (pop-to-buffer confirmation-buffer))
+                        (message "Failed to get translation for %s." lang)
+                        (when (buffer-live-p confirmation-buffer)
+                          (delete-window-or-kill-buffer confirmation-buffer)))
+                      )
+                    )))             ; end of inner let*
+      )                                 ;end of outer let*
+    )
 
 ;; ============================================================
-;; 代码理解类命令
+;; 重写技术文章
 ;; ============================================================
 
-(defun gptel-explain-code ()
-  "解释选中的代码，分析其功能、逻辑和关键点."
+(defun gptel-rewrite-article ()
+  "Rewrite the current buffer or region as a professional technical article."
   (interactive)
-  (gptel-helper--require-region "解释")
-  (let ((code (buffer-substring-no-properties (region-beginning) (region-end))))
-    (gptel-request 
-     (format "请详细解释以下代码的功能、逻辑和关键点：\n\n```\n%s\n```" code)
-     :buffer (current-buffer))))
-
-(defun gptel-ask-about-code (question)
-  "询问关于选中代码的问题."
-  (interactive "s关于这段代码的问题: ")
-  (gptel-helper--require-region "询问")
-  (let ((code (buffer-substring-no-properties (region-beginning) (region-end))))
-    (gptel-request 
-     (format "代码：\n```\n%s\n```\n\n问题：%s" code question)
-     :buffer (current-buffer))))
-
-(defun gptel-generate-docstring ()
-  "为选中的函数生成规范的文档字符串."
-  (interactive)
-  (gptel-helper--require-region "生成文档")
-  (let* ((result (gptel-helper--get-code-and-language))
-         (code (car result))
-         (lang (cdr result)))
-    (gptel-request 
-     (format "请为以下 %s 函数生成规范的文档字符串（docstring），包括功能描述、参数说明、返回值和示例：\n\n```\n%s\n```" lang code)
-     :buffer (current-buffer))))
+  (let* ((content (gptel-get-region-or-buffer))
+         (prompt (format "Rewrite the following content into a professional technical blog article:\n1. Use Markdown format\n2. Add Hugo blog frontmatter header with title, date, tags, and categories\n3. Structure should include overview, principles, examples, and summary\n4. Maintain technical depth and professionalism\n5. Output in Simplified Chinese\n\nContent:\n%s" content)))
+    (gptel-call-gpt-with-temp-buffer "Article Rewrite" prompt nil)))
 
 ;; ============================================================
-;; 代码改进类命令
+;; 中文文档总结
 ;; ============================================================
 
-(defun gptel-optimize-code ()
-  "优化选中的代码，提高性能和可读性."
+(defun gptel-summarize-document ()
+  "Summarize a document (file path or URL) in Chinese."
   (interactive)
-  (gptel-helper--require-region "优化")
-  (let ((code (buffer-substring-no-properties (region-beginning) (region-end))))
-    (gptel-request 
-     (format "请优化以下代码，提高性能、可读性和代码质量。说明优化点并提供优化后的代码：\n\n```\n%s\n```" code)
-     :buffer (current-buffer))))
-
-(defun gptel-fix-code ()
-  "修复选中代码中的问题和错误."
-  (interactive)
-  (gptel-helper--require-region "修复")
-  (let ((code (buffer-substring-no-properties (region-beginning) (region-end))))
-    (gptel-request 
-     (format "请检查并修复以下代码中的错误、潜在问题和不良实践。提供修复后的代码并说明修改原因：\n\n```\n%s\n```" code)
-     :buffer (current-buffer))))
-
-(defun gptel-simplify-code ()
-  "简化选中的代码，使其更简洁易读."
-  (interactive)
-  (gptel-helper--require-region "简化")
-  (let ((code (buffer-substring-no-properties (region-beginning) (region-end))))
-    (gptel-request 
-     (format "请简化以下代码，使其更简洁易读，同时保持功能不变：\n\n```\n%s\n```" code)
-     :buffer (current-buffer))))
-
-(defun gptel-suggest-refactor ()
-  "提供详细的代码重构建议."
-  (interactive)
-  (gptel-helper--require-region "分析重构")
-  (let ((code (buffer-substring-no-properties (region-beginning) (region-end))))
-    (gptel-request 
-     (format "请分析以下代码，提供详细的重构建议，包括：\n1. 代码结构改进\n2. 设计模式应用\n3. 命名优化\n4. 函数拆分建议\n\n```\n%s\n```" code)
-     :buffer (current-buffer))))
+  (let* ((content (gptel-read-document-input))
+         (prompt (format "请用中文总结以下文档的主要内容，包括：\n1. 文档概述\n2. 关键概念和要点\n3. 重要细节\n\n文档内容：\n%s" content)))
+    (gptel-call-gpt-with-temp-buffer "Document Summary" prompt nil)))
 
 ;; ============================================================
-;; 代码生成类命令
+;; 开发文档查询
 ;; ============================================================
 
-(defun gptel-add-comments ()
-  "为选中的代码添加详细注释."
+(defun gptel-query-devdoc ()
+  "Generate documentation for the selected code or current word."
   (interactive)
-  (gptel-helper--require-region "添加注释")
-  (let* ((result (gptel-helper--get-code-and-language))
-         (code (car result))
-         (lang (cdr result)))
-    (gptel-request 
-     (format "请为以下 %s 代码添加清晰的注释，保持原代码格式，只输出带注释的完整代码：\n\n```\n%s\n```" lang code)
-     :buffer (current-buffer))))
-
-(defun gptel-generate-test ()
-  "为选中的代码生成单元测试."
-  (interactive)
-  (gptel-helper--require-region "生成测试")
-  (let* ((result (gptel-helper--get-code-and-language))
-         (code (car result))
-         (lang (cdr result)))
-    (gptel-request 
-     (format "请为以下 %s 代码生成完整的单元测试，包括边界情况和异常处理：\n\n```\n%s\n```" lang code)
-     :buffer (current-buffer))))
-
-(defun gptel-complete-code ()
-  "根据上下文补全或续写代码."
-  (interactive)
-  (let* ((start (if (region-active-p) (region-beginning) (point-min)))
-         (end (if (region-active-p) (region-end) (point)))
-         (code (buffer-substring-no-properties start end)))
-    (gptel-request 
-     (format "请根据以下代码上下文，补全或续写代码。只输出补全的代码部分：\n\n```\n%s\n```\n\n请继续..." code)
-     :buffer (current-buffer))))
+  (let* ((content (gptel-get-region-or-word))
+         (prompt (format "为以下代码生成详细的技术文档，结果使用中文显示：\n1. 函数功能说明\n2. 参数说明\n3. 返回值说明\n4. 使用示例（至少3个不同场景，用代码块展示）\n5. 注意事项和常见错误\n\n代码：\n%s" content)))
+    (gptel-call-gpt-with-temp-buffer "DevDoc" prompt nil)))
 
 ;; ============================================================
-;; 代码质量类命令
+;; 生成代码提交信息
 ;; ============================================================
 
-(defun gptel-review-code ()
-  "对选中的代码进行全面的代码审查."
+(defun gptel-generate-commit-message ()
+  "Generate a professional git commit message for the current changes."
   (interactive)
-  (gptel-helper--require-region "审查")
-  (let ((code (buffer-substring-no-properties (region-beginning) (region-end))))
-    (gptel-request 
-     (format "请对以下代码进行全面的代码审查，包括：\n1. 代码质量和最佳实践\n2. 潜在的bug和安全问题\n3. 性能优化建议\n4. 可维护性和可读性\n\n```\n%s\n```" code)
-     :buffer (current-buffer))))
-
-(defun gptel-check-security ()
-  "检查选中代码的安全问题."
-  (interactive)
-  (gptel-helper--require-region "检查安全性")
-  (let ((code (buffer-substring-no-properties (region-beginning) (region-end))))
-    (gptel-request 
-     (format "请分析以下代码的安全性，指出潜在的安全漏洞和风险，并提供修复建议：\n\n```\n%s\n```" code)
-     :buffer (current-buffer))))
-
-;; ============================================================
-;; 其他实用功能
-;; ============================================================
-
-(defun gptel-convert-style (style)
-  "将选中代码转换为指定的代码风格（如 functional, OOP, async）."
-  (interactive "sTarget style (e.g., functional, OOP, async): ")
-  (gptel-helper--require-region "转换风格")
-  (let ((code (buffer-substring-no-properties (region-beginning) (region-end))))
-    (gptel-request 
-     (format "请将以下代码转换为 %s 风格，保持功能不变：\n\n```\n%s\n```" style code)
-     :buffer (current-buffer))))
-
-(defun gptel-explain-error (error-msg)
-  "解释错误信息并提供详细的解决方案."
-  (interactive "sError message: ")
-  (gptel-request 
-   (format "请解释以下错误信息，分析可能的原因，并提供详细的解决方案：\n\n%s" error-msg)
-   :buffer (current-buffer)))
+  (let* ((content (gptel-get-region-or-buffer))
+         (prompt (format "Generate a professional git commit message for the following changes:\n1. Use English\n2. Follow Conventional Commits format (type(scope): description)\n3. Clear description with change rationale\n4. List the main changes\n\nCode changes:\n%s" content))
+         (commit-message nil))
+    (message "Generating commit message...")
+    (gptel-request prompt
+      :callback (lambda (response _metadata)
+                  (when response
+                    (setq commit-message response)
+                    (with-current-buffer (current-buffer)
+                      (insert "\n")
+                      (insert commit-message)
+                      (insert "\n"))
+                    (message "Commit message inserted successfully!"))))))
 
 (provide 'init-gpt-helper)
 
 ;;; init-gpt-helper.el ends here
-
