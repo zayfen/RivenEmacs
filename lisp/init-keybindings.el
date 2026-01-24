@@ -5,12 +5,6 @@
 
 (defun keybindings-config()
    (progn
-     ;; Ensure agent-shell functions are available before defining keybindings
-     (when (featurep 'agent-shell)
-       ;; Load agent-shell functions if available
-       (with-eval-after-load 'agent-shell
-         ;; Functions are already defined in init-gpt.el via with-eval-after-load
-         nil))
     (leader-def
       :infix "b"
       "" '(:ignore t :wk "Buffer")
@@ -265,29 +259,9 @@
   "" '(:ignore t :wk "Agent")
   ;; Main agent controls
   "=" '(agent-shell :wk "Start/Reuse Agent Shell")
-  "n" '(agent-shell-new-shell :wk "New Agent Shell")
-  "t" '(agent-shell-toggle :wk "Toggle Agent Shell")
   "1" '(riven/start-claude-code :wk "Start Claude Code")
   "2" '(riven/start-open-code :wk "Start Open Code")
-  "3" '(riven/start-cursor-acp :wk "Start Cursor ACP")
-  "m" '(agent-shell-transient :wk "Agent Menu")
-  "d" '(riven/agent-shell-diagnose :wk "Diagnose Agents")
-  ;; Code operations
-  "r" '(riven/agent-shell-code-review :wk "Review Code")
-  "e" '(riven/agent-shell-explain-code :wk "Explain Code")
-  "f" '(riven/agent-shell-refactor-code :wk "Refactor Code")
-  "T" '(riven/agent-shell-add-tests :wk "Add Tests")
-  "s" '(riven/agent-shell-send-current-function :wk "Send Function")
-  ;; Context and analysis
-  "b" '(riven/agent-shell-send-buffer-context :wk "Buffer Context")
-  "p" '(riven/agent-shell-send-project-context :wk "Project Context")
-  "A" '(riven/agent-shell-analyze-project :wk "Analyze Project")
-  "/" '(riven/agent-shell-search-codebase :wk "Search Codebase")
-  "g" '(riven/agent-shell-git-status :wk "Git Status")
-  ;; Documentation and quality
-  "D" '(riven/agent-shell-generate-docs :wk "Generate Docs")
-  "G" '(riven/agent-shell-generate-tests :wk "Generate Tests")
-  "L" '(riven/agent-shell-lint-code :wk "Lint Code"))
+  "3" '(riven/start-cursor-acp :wk "Start Cursor ACP"))
 
 ;; Global agent shell keybindings
 (keymap-global-set "M-+" #'agent-shell-transient)

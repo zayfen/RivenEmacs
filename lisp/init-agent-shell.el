@@ -19,10 +19,16 @@
   :commands (agent-shell
              agent-shell-new-shell
              agent-shell-toggle
+             agent-shell-send-region
+             agent-shell-send-current-file
+             agent-shell-send-screenshot
+             agent-shell-clear-buffer
+             agent-shell-search-history
+             agent-shell-help-menu
+             agent-shell-interrupt
              riven/start-claude-code
              riven/start-open-code
              riven/start-cursor-acp
-             riven/start-openai-codex
              riven/agent-shell-diagnose
              riven/install-claude-code
              riven/install-cursor-agent-acp))
@@ -33,19 +39,19 @@
 
 (with-eval-after-load 'agent-shell
   (require 'transient)
-  
+
   ;; ============================================================
   ;; Agent Shell 辅助函数
   ;; ============================================================
-  
+
   (defun riven/agent-executable-exists-p (executable)
     "检查 EXECUTABLE 是否在 PATH 中可用."
     (executable-find executable))
-  
+
   ;; ============================================================
   ;; Agent Shell 安装函数
   ;; ============================================================
-  
+
   (defun riven/install-cursor-agent-acp ()
     "自动安装 cursor-agent-acp 通过 npm."
     (interactive)
@@ -62,7 +68,7 @@
                 t)
             (message "✗ cursor-agent-acp 安装失败。请手动运行: npm install -g @blowmage/cursor-agent-acp")
             nil)))))
-  
+
   (defun riven/install-claude-code ()
     "自动安装 Claude Code 通过 Homebrew (仅 macOS)."
     (interactive)
@@ -82,7 +88,6 @@
             (message "✗ Claude Code 安装失败。请手动运行: brew install --cask claude-code")
             nil))))))
 
-
   (defun riven/install-opencode ()
     "自动安装 Open Code 通过 Homebrew (仅 macOS)"
     (interactive)
@@ -101,16 +106,16 @@
                 t)
             (message "✗ Open Code 安装失败。请手动运行: brew install anomalyco/tap/opencode")
             nil))))))
-  
+
   (defun riven/prompt-install-agent (agent-name install-function)
     "提示用户安装 AGENT-NAME，使用 INSTALL-FUNCTION 进行安装."
     (when (yes-or-no-p (format "%s 未安装。是否现在安装? " agent-name))
       (funcall install-function)))
-  
+
   ;; ============================================================
   ;; Agent Shell 快速启动函数
   ;; ============================================================
-  
+
   (defun riven/start-claude-code ()
     "快速启动 Claude Code agent，如果未安装则提示安装."
     (interactive)
@@ -140,7 +145,7 @@
         (message "已取消 Open Code 安装。")))
      (t
       (agent-shell-opencode-start-agent))))
-  
+
   (defun riven/start-cursor-acp ()
     "快速启动 Cursor ACP agent，如果未安装则提示安装."
     (interactive)
@@ -155,22 +160,11 @@
         (message "已取消 Cursor ACP 安装。")))
      (t
       (agent-shell-cursor-start-agent))))
-  
-  (defun riven/start-openai-codex ()
-    "快速启动 OpenAI Codex agent."
-    (interactive)
-    (cond
-     ((not (fboundp 'agent-shell-openai-start-codex))
-      (message "OpenAI Codex not available in agent-shell. Please update agent-shell package."))
-     ((not (getenv "OPENAI_API_KEY"))
-      (message "OpenAI API Key 未设置。请设置环境变量 OPENAI_API_KEY。"))
-     (t
-      (agent-shell-openai-start-codex))))
-  
+
   ;; ============================================================
   ;; Agent Shell 诊断函数
   ;; ============================================================
-  
+
   (defun riven/agent-shell-diagnose ()
     "诊断并显示所有 agent 的可用性状态."
     (interactive)
@@ -178,11 +172,11 @@
           (need-claude nil)
           (need-cursor nil))
       ;; 检查 agent-shell 功能
-      (push (format "agent-shell package: %s" 
+      (push (format "agent-shell package: %s"
                     (if (featurep 'agent-shell) "✓ 已加载" "✗ 未加载"))
             results)
       (push "" results)
-      
+
       ;; 检查 Claude Code
       (push "=== Claude Code ===" results)
       (push (format "Function: %s"
@@ -194,7 +188,7 @@
               results)
         (setq need-claude (not has-claude)))
       (push "" results)
-      
+
       ;; 检查 Cursor ACP
       (push "=== Cursor ACP ===" results)
       (push (format "Function: %s"
@@ -206,17 +200,7 @@
               results)
         (setq need-cursor (not has-cursor)))
       (push "" results)
-      
-      ;; 检查 OpenAI Codex
-      (push "=== OpenAI Codex ===" results)
-      (push (format "Function: %s"
-                    (if (fboundp 'agent-shell-openai-start-codex) "✓ 可用" "✗ 不可用"))
-            results)
-      (push (format "API Key: %s"
-                    (if (getenv "OPENAI_API_KEY") "✓ 已设置" "✗ 未设置"))
-            results)
-      (push "" results)
-      
+
       ;; 显示结果
       (let ((buffer (get-buffer-create "*Agent Shell Diagnosis*")))
         (with-current-buffer buffer
@@ -226,26 +210,26 @@
             (dolist (result (reverse results))
               (insert result "\n"))
             (insert "\n提示: ✓ = 可用, ✗ = 不可用\n\n")
-            
+
             ;; 添加安装按钮
             (when (or need-claude need-cursor)
               (insert "=== 快速安装 ===\n\n")
               (when need-claude
                 (insert-button "安装 Claude Code"
-                              'action (lambda (_) 
-                                       (riven/install-claude-code)
-                                       (riven/agent-shell-diagnose))
-                              'follow-link t)
+                               'action (lambda (_)
+                                         (riven/install-claude-code)
+                                         (riven/agent-shell-diagnose))
+                               'follow-link t)
                 (insert " (需要 Homebrew, 仅 macOS)\n"))
               (when need-cursor
                 (insert-button "安装 Cursor ACP"
-                              'action (lambda (_) 
-                                       (riven/install-cursor-agent-acp)
-                                       (riven/agent-shell-diagnose))
-                              'follow-link t)
+                               'action (lambda (_)
+                                         (riven/install-cursor-agent-acp)
+                                         (riven/agent-shell-diagnose))
+                               'follow-link t)
                 (insert " (需要 npm)\n"))
               (insert "\n"))
-            
+
             ;; 手动安装说明
             (insert "=== 手动安装命令 ===\n\n")
             (insert "Claude Code (macOS):  brew install anthropics/claude/claude\n")
@@ -255,241 +239,182 @@
           (special-mode)
           (local-set-key (kbd "r") 'riven/agent-shell-diagnose))
         (display-buffer buffer))))
-  
+
   ;; ============================================================
-  ;; Agent Shell 代码操作辅助函数
+  ;; Agent Shell 发送函数
   ;; ============================================================
-  
-  (defun riven/agent-shell-send-current-function ()
-    "发送当前函数到 agent shell."
+
+  (defun riven/agent-shell-send-dwim-or-file ()
+    "Send region if active, otherwise send current file."
     (interactive)
-    (if (derived-mode-p 'prog-mode)
-        (let ((func-start (save-excursion (beginning-of-defun) (point)))
-              (func-end (save-excursion (end-of-defun) (point))))
-          (when (> func-end func-start)
-            (agent-shell-send-region func-start func-end)))
-      (message "Not in a programming mode")))
-  
-  (defun riven/agent-shell-send-buffer-context ()
-    "发送 buffer 上下文信息到 agent shell."
+    (if (use-region-p)
+        (agent-shell-send-region)
+      (agent-shell-send-current-file)))
+
+  (defun riven/agent-shell-send-directory ()
+    "Send current directory to agent shell."
     (interactive)
-    (when buffer-file-name
-      (let ((context (format "Context: %s (mode: %s, line: %d)"
-                             buffer-file-name
-                             major-mode
-                             (line-number-at-pos))))
-        (agent-shell-send-string context))))
-  
-  (defun riven/agent-shell-send-project-context ()
-    "发送项目上下文信息到 agent shell."
-    (interactive)
-    (when (project-current)
-      (let* ((project-root (project-root (project-current)))
-             (project-name (file-name-nondirectory (directory-file-name project-root)))
-             (context (format "Project: %s (root: %s)" project-name project-root)))
-        (agent-shell-send-string context))))
-  
+    (agent-shell-insert :text (format "Current directory: `%s`" default-directory)))
+
   ;; ============================================================
-  ;; Agent Shell 代码操作命令
+  ;; Agent Shell 操作函数
   ;; ============================================================
-  
-  (defun riven/agent-shell-code-review ()
-    "发送当前函数进行代码审查."
+
+  (defun riven/agent-shell-undo-last-edit ()
+    "Undo last edit by sending agent-specific undo command.
+OpenCode uses /undo, Claude Code uses /rewind."
     (interactive)
-    (riven/agent-shell-send-current-function)
-    (agent-shell-send-string "Please review this code for best practices, potential bugs, and improvements."))
-  
+    (let* ((config (map-elt agent-shell--state :agent-config))
+           (agent-name (or (map-elt config :mode-line-name)
+                          (map-elt config :buffer-name) "Unknown")))
+      (cond
+       ((string-match-p "opencode" agent-name :ignore-case)
+        (agent-shell-insert :text "/undo" :submit t))
+       ((string-match-p "claude" agent-name :ignore-case)
+        (agent-shell-insert :text "/rewind" :submit t))
+       ((string-match-p "cursor" agent-name :ignore-case)
+        (agent-shell-insert :text "/undo" :submit t))
+       (t
+        (message "Unknown agent type: %s. Try /undo or /rewind" agent-name)))))
+
+  (defun riven/agent-shell-compact-session ()
+    "Compact session by sending agent-specific compact command.
+All agents use /compact."
+    (interactive)
+    (let* ((config (map-elt agent-shell--state :agent-config))
+           (agent-name (or (map-elt config :mode-line-name)
+                          (map-elt config :buffer-name) "Unknown")))
+      (cond
+       ((string-match-p "opencode" agent-name :ignore-case)
+        (agent-shell-insert :text "/compact" :submit t))
+       ((string-match-p "claude" agent-name :ignore-case)
+        (agent-shell-insert :text "/compact" :submit t))
+       ((string-match-p "cursor" agent-name :ignore-case)
+        (agent-shell-insert :text "/compact" :submit t))
+       (t
+        (message "Unknown agent type: %s" agent-name)))))
+
+  (defun riven/agent-shell-review-changes ()
+    "Show modified files in magit for review with stage/unstage support."
+    (interactive)
+    (call-interactively 'magit-status))
+
+  ;; ============================================================
+  ;; Agent Shell 代码操作函数
+  ;; ============================================================
+
   (defun riven/agent-shell-explain-code ()
-    "请求 agent 解释当前代码."
+    "Explain selected code with detailed prompt, auto submit."
     (interactive)
-    (riven/agent-shell-send-current-function)
-    (agent-shell-send-string "Please explain what this code does in detail."))
-  
+    (if (use-region-p)
+        (agent-shell-insert
+         :text (format "Please use Chinese to explain this code in detail:\n1. What does this code do?\n2. How does it work?\n3. Any potential issues or improvements?\n\n```\n%s\n```"
+                       (buffer-substring-no-properties (region-beginning) (region-end)))
+         :submit t)
+      (message "请选中要解释的代码")))
+
   (defun riven/agent-shell-refactor-code ()
-    "请求 agent 重构当前代码."
+    "Refactor selected code with detailed prompt, auto submit."
     (interactive)
-    (riven/agent-shell-send-current-function)
-    (agent-shell-send-string "Please refactor this code to improve readability and maintainability."))
-  
-  (defun riven/agent-shell-add-tests ()
-    "请求 agent 为当前代码添加测试."
+    (if (use-region-p)
+        (agent-shell-insert
+         :text (format "Please refactor this code:\n1. Improve readability and maintainability\n2. Follow best practices\n3. Add comments where needed\n\nProvide the refactored code with explanations.\n\n```\n%s\n```"
+                       (buffer-substring-no-properties (region-beginning) (region-end)))
+         :submit t)
+      (message "请选中要重构的代码")))
+
+  (defun riven/agent-shell-add-comments ()
+    "Add standard comments to selected code, auto submit."
     (interactive)
-    (riven/agent-shell-send-current-function)
-    (agent-shell-send-string "Please add comprehensive tests for this code."))
-  
-  ;; ============================================================
-  ;; Agent Shell 项目分析命令
-  ;; ============================================================
-  
-  (defun riven/agent-shell-analyze-project ()
-    "发送项目结构和关键文件给 agent 进行分析."
+    (if (use-region-p)
+        (agent-shell-insert
+         :text (format "Please add appropriate comments to this code following language best practices:\n1. Add docstring for functions/classes\n2. Explain complex logic with inline comments\n3. Use clear and concise language\n\n```\n%s\n```"
+                       (buffer-substring-no-properties (region-beginning) (region-end)))
+         :submit t)
+      (message "请选中要添加注释的代码")))
+
+  (defun riven/agent-shell-fix-errors ()
+    "Fix flymake errors with detailed prompt, auto submit."
     (interactive)
-    (when (project-current)
-      (let* ((project-root (project-root (project-current)))
-             (config-files (directory-files project-root t "\\.json\\|\\.yaml\\|\\.yml\\|\\.toml\\|\\.ini\\|Makefile" t))
-             (readme-files (directory-files project-root t "README\\|readme\\|CHANGELOG\\|changelog" t)))
-        (agent-shell-send-string (format "Project Analysis Request for: %s" project-root))
-        (agent-shell-send-string "Please analyze this project structure and provide insights.")
-        (when config-files
-          (agent-shell-send-string "Configuration files found:")
-          (dolist (file config-files)
-            (when (and (file-regular-p file)
-                       (< (nth 7 (file-attributes file)) 10000)) ; files < 10KB
-              (agent-shell-send-file file))))
-        (when readme-files
-          (agent-shell-send-string "Documentation files:")
-          (dolist (file readme-files)
-            (when (file-regular-p file)
-              (agent-shell-send-file file)))))))
-  
-  (defun riven/agent-shell-search-codebase (pattern)
-    "在代码库中搜索模式并发送结果给 agent."
-    (interactive "sSearch pattern: ")
-    (when (project-current)
-      (let* ((project-root (project-root (project-current)))
-             (matches (split-string 
-                      (shell-command-to-string 
-                       (format "cd %s && grep -r -n --include='*.py' --include='*.js' --include='*.ts' --include='*.el' --include='*.go' '%s' . 2>/dev/null | head -20" 
-                               (shell-quote-argument project-root) 
-                               (shell-quote-argument pattern))) 
-                      "\n" t)))
-        (agent-shell-send-string (format "Codebase search results for '%s':" pattern))
-        (dolist (match matches)
-          (agent-shell-send-string match))
-        (agent-shell-send-string "Please analyze these search results and provide insights."))))
-  
-  (defun riven/agent-shell-git-status ()
-    "发送 git 状态给 agent 进行分析."
-    (interactive)
-    (when (and (fboundp 'magit-get-current-branch)
-               (magit-get-current-branch))
-      (let ((status (shell-command-to-string "git status --porcelain"))
-            (branch (magit-get-current-branch))
-            (diff (shell-command-to-string "git diff --stat HEAD")))
-        (agent-shell-send-string (format "Git Status (Branch: %s):" branch))
-        (when (string-match-p "^[^#]" status)
-          (agent-shell-send-string "Modified files:")
-          (agent-shell-send-string status))
-        (when (string-match-p "." diff)
-          (agent-shell-send-string "Diff summary:")
-          (agent-shell-send-string diff))
-        (agent-shell-send-string "Please analyze the git status and suggest next steps."))))
-  
-  ;; ============================================================
-  ;; Agent Shell 文档和测试生成命令
-  ;; ============================================================
-  
-  (defun riven/agent-shell-generate-docs ()
-    "请求 agent 为当前项目生成文档."
-    (interactive)
-    (when (project-current)
-      (riven/agent-shell-send-project-context)
-      (agent-shell-send-string "Please generate comprehensive documentation for this project including:")
-      (agent-shell-send-string "1. Project overview and purpose")
-      (agent-shell-send-string "2. Architecture and key components")
-      (agent-shell-send-string "3. Setup and installation instructions")
-      (agent-shell-send-string "4. Usage examples and API documentation")
-      (agent-shell-send-string "5. Development guidelines and contribution info")))
-  
-  (defun riven/agent-shell-generate-tests ()
-    "为当前文件生成测试."
-    (interactive)
-    (if (buffer-file-name)
-        (progn
-          (agent-shell-send-string (format "File: %s" buffer-file-name))
-          (agent-shell-send-string (format "Mode: %s" major-mode))
-          (agent-shell-send-current-file)
-          (agent-shell-send-string "Please generate comprehensive tests for this code.")
-          (agent-shell-send-string "Include unit tests, integration tests, and edge cases."))
-      (message "No file associated with current buffer")))
-  
-  (defun riven/agent-shell-lint-code ()
-    "请求 agent 审查代码风格和 lint 问题."
-    (interactive)
-    (if (buffer-file-name)
-        (progn
-          (agent-shell-send-current-file)
-          (agent-shell-send-string "Please review this code for:")
-          (agent-shell-send-string "1. Code style and formatting issues")
-          (agent-shell-send-string "2. Potential bugs and errors")
-          (agent-shell-send-string "3. Performance optimizations")
-          (agent-shell-send-string "4. Security vulnerabilities")
-          (agent-shell-send-string "5. Best practices violations"))
-      (message "No file associated with current buffer")))
-  
+    (require 'flymake)
+    (let ((errors (flymake-diagnostics-at-point (point-min) (point-max))))
+      (if errors
+          (let* ((diag (car errors))
+                 (line (flymake-diagnostic-line diag))
+                 (text (flymake-diagnostic-text diag))
+                 (buffer-file (buffer-file-name))
+                 (file-content (when buffer-file
+                                (with-temp-buffer
+                                  (insert-file-contents buffer-file)
+                                  (goto-char (point-min))
+                                  (forward-line (1- line))
+                                  (let ((start (point)))
+                                    (forward-line 1)
+                                    (buffer-substring start (point)))))))
+            (agent-shell-insert
+             :text (format "Please fix this flymake error at line %d:\n1. Identify the root cause\n2. Provide the corrected code\n3. Explain what was wrong and how you fixed it\n\nContext:\n```\n%s\n```\n\nError: %s"
+                           line file-content text)
+             :submit t))
+        (message "当前缓冲区没有flymake错误"))))
+
   ;; ============================================================
   ;; Agent Shell Transient 菜单
   ;; ============================================================
-  
+
   (defun agent-shell-buffer-exists-p ()
     "检查是否存在任何 agent-shell buffer."
     (cl-some (lambda (buf)
                (with-current-buffer buf
                  (derived-mode-p 'agent-shell-mode)))
              (buffer-list)))
-  
+
   (transient-define-prefix agent-shell-transient ()
-    "Agent Shell 命令的 Transient 菜单."
+    "Agent Shell Commands"
+
     [:description
-     (lambda () "Agent Shell Commands")
+     (lambda () "🤖 Agent Shell Commands")
 
-     ["Quick Start"
-      ("C" "Start Claude Code"
-       (lambda ()
-         (interactive)
-         (call-interactively 'riven/start-claude-code)))
-      ("O" "Start Open Code"
-       (lambda ()
-         (interactive)
-         (call-interactively 'riven/start-open-code)))
-      ("u" "Start Cursor ACP"
-       (lambda ()
-         (interactive)
-         (call-interactively 'riven/start-cursor-acp)))
-      ("o" "Start OpenAI Codex"
-       (lambda ()
-         (interactive)
-         (call-interactively 'riven/start-openai-codex)))]
+     ["Start"
+      ("1" "Claude Code" riven/start-claude-code)
+      ("2" "Open Code" riven/start-open-code)
+      ("3" "Cursor ACP" riven/start-cursor-acp)]
 
-     ["Basic Operations"
+     ["Basic"
       ("n" "New shell" agent-shell-new-shell)
-      ("N" "Start/reuse shell" agent-shell)
-      ("v" "Toggle display" agent-shell-toggle)
-      ("d" "Diagnose agents" riven/agent-shell-diagnose)]
-     
-     ["Install Tools"
-      ("ic" "Install Claude Code" riven/install-claude-code)
-      ("iO" "Install Open Code" riven/install-opencode)
-      ("iu" "Install Cursor ACP" riven/install-cursor-agent-acp)]]
+      ("N" "Start/reuse" agent-shell)
+      ("t" "Toggle" agent-shell-toggle)
+      ("d" "Diagnose" riven/agent-shell-diagnose)]
+
+     ["Install"
+      ("i1" "Claude Code" riven/install-claude-code)
+      ("i2" "Open Code" riven/install-opencode)
+      ("i3" "Cursor ACP" riven/install-cursor-agent-acp)]]
 
     [:if agent-shell-buffer-exists-p
-     ["Code Operations"
-      ("rf" "Review function" riven/agent-shell-code-review)
-      ("ef" "Explain function" riven/agent-shell-explain-code)
-      ("Ff" "Refactor function" riven/agent-shell-refactor-code)
-      ("tf" "Add tests" riven/agent-shell-add-tests)
-      ("sf" "Send function" riven/agent-shell-send-current-function)]
-      
-     ["Context"
-      ("cb" "Send buffer context" riven/agent-shell-send-buffer-context)
-      ("cp" "Send project context" riven/agent-shell-send-project-context)
-      ("cr" "Send region"
-       (lambda () (interactive) (call-interactively 'agent-shell-send-region)))
-      ("cf" "Send file"
-       (lambda () (interactive) (call-interactively 'agent-shell-send-current-file)))]
+     ["📤 Send"
+      ("sr" "Send region/file" riven/agent-shell-send-dwim-or-file)
+      ("sd" "Send directory" riven/agent-shell-send-directory)
+      ("sf" "Send file" agent-shell-send-current-file)
+      ("ss" "Screenshot" agent-shell-send-screenshot)]
 
-     ["Control"
-      ("cc" "Interrupt"
-       (lambda () (interactive) (call-interactively 'agent-shell-interrupt)))
-      ("cl" "Clear buffer"
-       (lambda () (interactive) (call-interactively 'agent-shell-clear-buffer)))
-      ("ch" "Search history"
-       (lambda () (interactive) (call-interactively 'agent-shell-search-history)))]]
+     ["🔧 Code & Review"
+      ("v" "Review changes" riven/agent-shell-review-changes)
+      ("u" "Undo last edit" riven/agent-shell-undo-last-edit)
+      ("f" "Fix error" riven/agent-shell-fix-errors)
+      ("e" "Explain code" riven/agent-shell-explain-code)
+      ("r" "Refactor code" riven/agent-shell-refactor-code)
+      ("/" "Add comments" riven/agent-shell-add-comments)]
 
-    [["Help & Quit"
-      ("?" "Help" agent-shell-help-menu :if (lambda () (fboundp 'agent-shell-help-menu)))
+     ["⚡ Control"
+      ("I" "Interrupt" agent-shell-interrupt)
+      ("C" "Clear buffer" agent-shell-clear-buffer)
+      ("H" "Search history" agent-shell-search-history)
+      ("K" "Compact session" riven/agent-shell-compact-session)]]
+
+    [["❓ Help & Quit"
+      ("?" "Help" agent-shell-help-menu)
       ("q" "Quit" transient-quit-one)]])
-  
+
   (message "Agent-shell configuration loaded"))
 
 ;; ============================================================
@@ -499,4 +424,3 @@
 (provide 'init-agent-shell)
 
 ;;; init-agent-shell.el ends here
-

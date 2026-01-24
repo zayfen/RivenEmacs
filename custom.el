@@ -18,7 +18,8 @@
                 treesit-fold-indicators tsx-ts-helper-mode undo-fu undo-fu-session vertico visual-regexp vscode-icon
                 vterm vundo web-mode wfnames writegood-mode yasnippet-snippets))
  '(package-vc-selected-packages
-   '((claude-code-ide :url "https://github.com/manzaltu/claude-code-ide.el")
+   '((agent-shell :url "https://github.com/xenodium/agent-shell" :branch "main")
+     (claude-code-ide :url "https://github.com/manzaltu/claude-code-ide.el")
      (lsp-bridge :url "https://github.com/manateelazycat/lsp-bridge" :branch "master")
      (reader :url "https://codeberg.org/divyaranjan/emacs-reader" :make "all")
      (eat :url "https://codeberg.org/akib/emacs-eat")
