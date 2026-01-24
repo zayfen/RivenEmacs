@@ -258,21 +258,30 @@ CALLBACK is called with the response."
 ;; ============================================================
 
 (defun gptel-generate-commit-message ()
-  "Generate a professional git commit message for the current changes."
+  "Generate a professional git commit message for uncommitted changes.
+Uses git diff to get uncommitted changes and generates a commit message."
   (interactive)
-  (let* ((content (gptel-get-region-or-buffer))
-         (prompt (format "Generate a professional git commit message for the following changes:\n1. Use English\n2. Follow Conventional Commits format (type(scope): description)\n3. Clear description with change rationale\n4. List the main changes\n\nCode changes:\n%s" content))
-         (commit-message nil))
-    (message "Generating commit message...")
-    (gptel-request prompt
-      :callback (lambda (response _metadata)
-                  (when response
-                    (setq commit-message response)
-                    (with-current-buffer (current-buffer)
-                      (insert "\n")
-                      (insert commit-message)
-                      (insert "\n"))
-                    (message "Commit message inserted successfully!"))))))
+  (let* ((default-directory (or (and (fboundp 'projectile-project-root)
+                                     (projectile-project-root))
+                                default-directory))
+         ;; Get uncommitted changes from git diff (staged and unstaged)
+         (diff-output (shell-command-to-string "git diff --cached --unified=5"))
+         (unstaged-diff (shell-command-to-string "git diff --unified=5"))
+         (combined-diff (string-trim (concat diff-output "\n" unstaged-diff))))
+    (if (string-empty-p combined-diff)
+        (error "No uncommitted changes found in the current repository")
+      (let* ((prompt (format "Generate a professional git commit message for the following changes:\n1. Use English\n2. Follow Conventional Commits format (type(scope): description)\n3. Clear description with change rationale\n4. List the main changes\n5. Keep the message concise (50 chars for title, 72 chars per line for body)\n\nCode changes:\n%s" combined-diff))
+             (commit-message nil))
+        (message "Generating commit message from git diff...")
+        (gptel-request prompt
+          :callback (lambda (response _metadata)
+                      (when response
+                        (setq commit-message response)
+                        (with-current-buffer (current-buffer)
+                          (insert "\n")
+                          (insert commit-message)
+                          (insert "\n"))
+                        (message "Commit message inserted successfully!"))))))))
 
 (provide 'init-gpt-helper)
 
