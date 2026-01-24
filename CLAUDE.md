@@ -96,7 +96,6 @@ M-x auto-install-treesit-grammars       ;; All supported grammars
 - `M-?`: Find references
 - `C-x o t`: Terminal (eat)
 - `C-x o d`: Docker
-- `M-*`: Claude Code
 
 ### AI Integration
 - **SPC a a**: Aider AI assistant

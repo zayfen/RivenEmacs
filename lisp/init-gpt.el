@@ -115,18 +115,6 @@
   :bind (("C-x =" . 'gptel-extensions-refactor)))
 
 ;; ============================================================
-;; Claude Code IDE
-;; ============================================================
-
-(use-package claude-code-ide
-  :vc (:url "https://github.com/manzaltu/claude-code-ide.el" :rev :newest)
-  :bind ("M-*" . claude-code-ide-menu)
-  :config
-  (setq claude-code-ide-terminal-backend 'eat)
-  (claude-code-ide-emacs-tools-setup))
-
-
-;; ============================================================
 ;; 结束
 ;; ============================================================
 

@@ -1,5 +1,13 @@
 ;; -*- coding: utf-8; lexical-binding: t -*-
 
+;;; init-keybindings.el --- Keybindings configuration for RivenEmacs
+
+;;; Commentary:
+;; This module defines all keybindings for RivenEmacs using general.el.
+;; It includes leader key definitions for various modes and functionality
+;; including buffer management, code navigation, git operations, project
+;; management, and AI assistant integration.
+
 ;;; Code:
 ;; config project keybindings
 
@@ -263,7 +271,18 @@
   "2" '(riven/start-open-code :wk "Start Open Code")
   "3" '(riven/start-cursor-acp :wk "Start Cursor ACP"))
 
-;; Global agent shell keybindings
-(keymap-global-set "M-+" #'agent-shell-transient)
+ ;; Global agent shell keybindings
+ ;; If agent-shell not started, start it with C-c =; otherwise show transient menu
+ (defun riven/agent-shell-dispatch ()
+   "Dispatch agent-shell: start if not running, show transient if running."
+   (interactive)
+   (if (and (fboundp 'agent-shell-buffers)
+            (agent-shell-buffers))
+       (when (fboundp 'agent-shell-transient)
+         (agent-shell-transient))
+     (call-interactively 'agent-shell)))
+ (keymap-global-set "M-*" #'riven/agent-shell-dispatch)
 
 (provide 'init-keybindings)
+
+;;; init-keybindings.el ends here
