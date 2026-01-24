@@ -1,13 +1,12 @@
-;; -*- coding: utf-8; lexical-binding: t -*-
-
-;;; init-gpt-helper.el --- GPTel helper commands
+;;; init-gpt-helper.el --- GPTel helper commands -*- lexical-binding: t; coding: utf-8; -*-
 
 ;;; Commentary:
 ;; GPTel auxiliary command collection, providing practical functions such as code analysis, optimization, and generation.
 
 ;;; Code:
 
-(require 'gptel)
+;; Require gptel when available
+(require 'gptel nil t)
 (require 'url)
 
 ;; ============================================================
@@ -15,7 +14,7 @@
 ;; ============================================================
 
 (defun delete-window-or-kill-buffer (buffer-name)
-  "Delete window if the window only contain one buffer (BUFFER-NAME), otherwise delete buffer (BUFFER-NAME)."
+  "Delete window if it contains only one buffer (BUFFER-NAME), otherwise delete buffer (BUFFER-NAME)."
   (if (window-prev-buffers)
       (kill-buffer buffer-name)
     (delete-windows-on buffer-name)))
@@ -192,8 +191,8 @@ CALLBACK is called with the response."
 
 (defun gptel-translate-region (target-languages-str)
   "Translate the text in the active region using GPTel.
-Shows result in a temporary buffer. Press 'y' to accept and replace,
-'q' to quit, or 'C-c C-c' to refine."
+Shows result in a temporary buffer. Press `y' to accept and replace,
+`q' to quit, or `C-c C-c' to refine."
   (interactive
    (list (read-string "Target language(s) (comma-separated, default 'en'): " "en")))
 
@@ -223,7 +222,7 @@ Shows result in a temporary buffer. Press 'y' to accept and replace,
                     (gptel-create-temp-buffer "*Translation*" 'markdown-mode
                       (format "=== Translation to %s ===\nPress 'y' to accept and replace, 'q' to quit, 'C-c C-c' to refine" lang))
                     (pop-to-buffer "*Translation*")
-                    (message "Translation ready. Press 'y' to accept, 'q' to quit, or 'C-c C-c' to refine."))))))
+                    (message "Translation ready. Press 'y' to accept, 'q' to quit, or C-c C-c to refine."))))))
 
 ;; ============================================================
 ;; 重写技术文章

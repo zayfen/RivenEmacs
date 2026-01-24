@@ -341,23 +341,14 @@ All agents use /compact."
     "Fix flymake errors with detailed prompt, auto submit."
     (interactive)
     (require 'flymake)
-    (let ((errors (flymake-diagnostics-at-point (point-min) (point-max))))
+    ;; Get diagnostics at current point
+    (let* ((errors (flymake-diagnostics (point) (point))))
+      (message "%s" errors)
       (if errors
-          (let* ((diag (car errors))
-                 (line (flymake-diagnostic-line diag))
-                 (text (flymake-diagnostic-text diag))
-                 (buffer-file (buffer-file-name))
-                 (file-content (when buffer-file
-                                (with-temp-buffer
-                                  (insert-file-contents buffer-file)
-                                  (goto-char (point-min))
-                                  (forward-line (1- line))
-                                  (let ((start (point)))
-                                    (forward-line 1)
-                                    (buffer-substring start (point)))))))
+          (let* ()
             (agent-shell-insert
-             :text (format "Please fix this flymake error at line %d:\n1. Identify the root cause\n2. Provide the corrected code\n3. Explain what was wrong and how you fixed it\n\nContext:\n```\n%s\n```\n\nError: %s"
-                           line file-content text)
+             :text (format "Please fix this flymake error:\n1. Identify the root cause\n2. Provide the corrected code\n3. Explain what was wrong and how you fixed it\n\nError: %s"
+                           errors)
              :submit t))
         (message "当前缓冲区没有flymake错误"))))
 
