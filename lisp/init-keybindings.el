@@ -182,15 +182,15 @@
        ;; 基础功能
        "." '(gptel :wk "Console")
        "m" '(gptel-menu :wk "Menu")
-       "s" '(gptel-send :wk "Send")
+       "=" '(gptel-send :wk "Send")
        "r" '(gptel-rewrite :wk "Rewrite")
        "t" '(gptel-translate-region :wk "Translate")
        "?" '(gptel-extensions-ask-document :wk "Ask Document")
        ;; 新增功能
-       "aa" '(gptel-rewrite-article :wk "Rewrite Article")
-       "as" '(gptel-summarize-document :wk "Summarize Document")
-       "ad" '(gptel-query-devdoc :wk "Query DevDoc")
-       "am" '(gptel-generate-commit-message :wk "Commit Message"))
+       "w" '(gptel-rewrite-article :wk "Write Article")
+       "s" '(gptel-summarize-document :wk "Summarize Document")
+       "q" '(gptel-query-devdoc :wk "Query DevDoc")
+       "g" '(gptel-generate-commit-message :wk "Generate Commit Message"))
 
     ;; define prefix lable
     (leader-def

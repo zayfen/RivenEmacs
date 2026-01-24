@@ -11,6 +11,17 @@
 (require 'url)
 
 ;; ============================================================
+;; 辅助函数
+;; ============================================================
+
+(defun delete-window-or-kill-buffer (buffer-name)
+  "Delete window if the window only contain one buffer (BUFFER-NAME), otherwise delete buffer (BUFFER-NAME)."
+  (if (window-prev-buffers)
+      (kill-buffer buffer-name)
+    (delete-windows-on buffer-name)))
+
+
+;; ============================================================
 ;; 公用临时Buffer框架
 ;; ============================================================
 
@@ -59,7 +70,7 @@ Replace the original buffer content with the current buffer content."
 (defun gptel-temp-buffer-quit ()
   "Quit the temporary buffer without accepting changes."
   (interactive)
-  (kill-buffer (current-buffer)))
+  (delete-window-or-kill-buffer (current-buffer)))
 
 (defun gptel-temp-buffer-refine ()
   "Refine the content based on additional user input."

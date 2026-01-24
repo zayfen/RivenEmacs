@@ -6,15 +6,6 @@
 
 ;;; Code:
 
-;; ============================================================
-;; 辅助函数
-;; ============================================================
-
-(defun delete-window-or-kill-buffer (buffer-name)
-  "Delete window if the window only contain one buffer (BUFFER-NAME), otherwise delete buffer (BUFFER-NAME)."
-  (if (window-prev-buffers)
-      (kill-buffer buffer-name)
-    (delete-windows-on buffer-name)))
 
 ;; ============================================================
 ;; GPTel 配置
@@ -22,7 +13,15 @@
 
 (use-package gptel
   :vc (:url "https://github.com/karthink/gptel" :branch "master")
-  :commands (gptel-translate-region gptel-rewrite)
+  :commands (gptel-translate-region
+             gptel-rewrite
+             gptel-menu
+             gptel-send
+             gptel-extensions-ask-document
+             gptel-rewrite-article
+             gptel-summarize-document
+             gptel-query-devdoc
+             gptel-generate-commit-message)
   :after exec-path-from-shell
   :config
   (require 'gptel-openai-extras)
