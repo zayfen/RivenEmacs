@@ -101,9 +101,9 @@
   (lsp-bridge-multi-lang-server-extension-list
    '(
      (("css" "scss" "sass" "less") . "css_emmet")
-     ("vue" . "volar_emmet")
      ("tsx" . "typescriptreact_eslint")
-     ("ts" . "typescript_eslint")))
+     ("ts" . "typescript_eslint")
+     ("vue" . "volar_vtsls")))
 
   :config
   (define-key acm-mode-map (kbd "C-m") nil)

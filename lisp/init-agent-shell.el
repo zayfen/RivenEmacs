@@ -14,6 +14,15 @@
 ;; Agent Shell
 ;; ============================================================
 
+;; Install agent-shell dependencies
+
+;; Install acp.el
+(use-package acp
+  :vc (:url "https://github.com/xenodium/acp.el" :branch "main"))
+
+(use-package shell-maker
+  :vc (:url "https://github.com/xenodium/shell-maker" :branch "main"))
+
 (use-package agent-shell
   :vc (:url "https://github.com/xenodium/agent-shell" :branch "main")
   :init
