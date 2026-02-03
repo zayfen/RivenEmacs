@@ -24,7 +24,7 @@
 ;; ============================================================================
 
 (defcustom rivenEmacs-session-directory
-  (expand-file-name "local/sessions/" user-emacs-directory)
+  (expand-file-name "sessions/" user-emacs-directory)
   "Directory where session files are stored."
   :type 'directory
   :group 'rivenEmacs)
