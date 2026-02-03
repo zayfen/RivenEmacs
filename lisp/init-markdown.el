@@ -44,7 +44,6 @@
 (use-package grip-mode
   :ensure t
   :after markdown-mode
-  :hook (markdown-mode . grip-mode-maybe-enable)
   :config
   ;; Use go-grip command
   (setq grip-command 'go-grip)          ;auto, grip, go-grip or mdopen
@@ -80,8 +79,7 @@
   
   ;; Custom keybindings for grip-mode
   :bind (:map markdown-mode-map
-         ("C-c C-p" . grip-mode)
-         ("C-c p" . grip-mode))
+         ("C-c C-p" . grip-mode))
   :bind (:map markdown-mode-command-map
          ("g" . grip-mode)))
 

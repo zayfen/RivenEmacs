@@ -8,6 +8,7 @@
 ;; Require gptel when available
 (require 'gptel nil t)
 (require 'url)
+(require 'init-prompt-template nil t)
 
 ;; ============================================================
 ;; auxiliary function
@@ -175,6 +176,7 @@ CALLBACK is called with the response."
   ;; Reset temp variables for full buffer replacement
   (setq gptel-temp-region-bounds nil)
   (setq gptel-temp-refine-prompt "")
+  (setq gptel-temp-original-buffer (current-buffer))
   (gptel-request prompt
     :callback (lambda (response _metadata)
                 (when response
@@ -205,8 +207,8 @@ Shows result in a temporary buffer. Press `y' to accept and replace,
          (beg (region-beginning))
          (end (region-end))
          (lang (string-trim-left target-languages-str))
-         (prompt-text
-          (format "Translate the following text to %s. Preserve all formatting, including line breaks, spacing, and punctuation. Do not add any introductory or concluding remarks, or any conversational text. Just provide the translated text:\n\n%s" lang original-text)))
+          (prompt-text
+           (format gptel-prompt-translate lang original-text)))
 
     ;; Set up temp buffer variables for region replacement
     (setq gptel-temp-original-buffer original-buffer)
@@ -232,7 +234,7 @@ Shows result in a temporary buffer. Press `y' to accept and replace,
   "Rewrite the current buffer or region as a professional technical article."
   (interactive)
   (let* ((content (gptel-get-region-or-buffer))
-         (prompt (format "Rewrite the following content into a professional technical blog article:\n1. Use Markdown format\n2. Add Hugo blog frontmatter header with title, date, tags, and categories\n3. Structure should include overview, principles, examples, and summary\n4. Maintain technical depth and professionalism\n5. Output in Simplified Chinese\n\nContent:\n%s" content)))
+          (prompt (format gptel-prompt-rewrite-article content)))
     (gptel-call-gpt-with-temp-buffer "Article Rewrite" prompt nil)))
 
 ;; ============================================================
@@ -243,7 +245,7 @@ Shows result in a temporary buffer. Press `y' to accept and replace,
   "Summarize a document (file path or URL) in Chinese."
   (interactive)
   (let* ((content (gptel-read-document-input))
-         (prompt (format "请用中文总结以下文档的主要内容，包括：\n1. 文档概述\n2. 关键概念和要点\n3. 重要细节\n\n文档内容：\n%s" content)))
+          (prompt (format gptel-prompt-summarize-document content)))
     (gptel-call-gpt-with-temp-buffer "Document Summary" prompt nil)))
 
 ;; ============================================================
@@ -254,7 +256,7 @@ Shows result in a temporary buffer. Press `y' to accept and replace,
   "Generate documentation for the selected code or current word."
   (interactive)
   (let* ((content (gptel-get-region-or-word))
-         (prompt (format "为以下代码生成详细的技术文档，结果使用中文显示：\n1. 函数功能说明\n2. 参数说明\n3. 返回值说明\n4. 使用示例（至少3个不同场景，用代码块展示）\n5. 注意事项和常见错误\n\n代码：\n%s" content)))
+          (prompt (format gptel-prompt-generate-devdoc content)))
     (gptel-call-gpt-with-temp-buffer "DevDoc" prompt nil)))
 
 ;; ============================================================
@@ -274,7 +276,7 @@ Uses git diff to get uncommitted changes and generates a commit message."
          (combined-diff (string-trim (concat diff-output "\n" unstaged-diff))))
     (if (string-empty-p combined-diff)
         (error "No uncommitted changes found in the current repository")
-      (let* ((prompt (format "Generate a professional git commit message for the following changes:\n1. Use English\n2. Follow Conventional Commits format (type(scope): description)\n3. Clear description with change rationale\n4. List the main changes\n5. Keep the message concise (50 chars for title, 72 chars per line for body)\n\nCode changes:\n%s" combined-diff))
+         (let* ((prompt (format gptel-prompt-generate-commit combined-diff))
              (commit-message nil))
         (message "Generating commit message from git diff...")
         (gptel-request prompt

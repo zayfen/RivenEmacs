@@ -10,6 +10,8 @@
 
 ;;; Code:
 
+(require 'init-prompt-template nil t)
+
 ;; ============================================================
 ;; Agent Shell
 ;; ============================================================
@@ -316,50 +318,49 @@ All agents use /compact."
   ;; Agent Shell 代码操作函数
   ;; ============================================================
 
-  (defun riven/agent-shell-explain-code ()
-    "Explain selected code with detailed prompt, auto submit."
-    (interactive)
-    (if (use-region-p)
-        (agent-shell-insert
-         :text (format "Please use Chinese to explain this code in detail:\n1. What does this code do?\n2. How does it work?\n3. Any potential issues or improvements?\n\n```\n%s\n```"
-                       (buffer-substring-no-properties (region-beginning) (region-end)))
-         :submit t)
-      (message "请选中要解释的代码")))
+(defun riven/agent-shell-explain-code ()
+  "Explain selected code with detailed prompt, auto submit."
+  (interactive)
+  (if (use-region-p)
+      (agent-shell-insert
+       :text (format riven-prompt-explain-code
+                     (buffer-substring-no-properties (region-beginning) (region-end)))
+       :submit t)
+    (message "请选中要解释的代码")))
 
-  (defun riven/agent-shell-refactor-code ()
-    "Refactor selected code with detailed prompt, auto submit."
-    (interactive)
-    (if (use-region-p)
-        (agent-shell-insert
-         :text (format "Please refactor this code:\n1. Improve readability and maintainability\n2. Follow best practices\n3. Add comments where needed\n\nProvide the refactored code with explanations.\n\n```\n%s\n```"
-                       (buffer-substring-no-properties (region-beginning) (region-end)))
-         :submit t)
-      (message "请选中要重构的代码")))
+(defun riven/agent-shell-refactor-code ()
+  "Refactor selected code with detailed prompt, auto submit."
+  (interactive)
+  (if (use-region-p)
+      (agent-shell-insert
+       :text (format riven-prompt-refactor-code
+                     (buffer-substring-no-properties (region-beginning) (region-end)))
+       :submit t)
+    (message "请选中要重构的代码")))
 
-  (defun riven/agent-shell-add-comments ()
-    "Add standard comments to selected code, auto submit."
-    (interactive)
-    (if (use-region-p)
-        (agent-shell-insert
-         :text (format "Please add appropriate comments to this code following language best practices:\n1. Add docstring for functions/classes\n2. Explain complex logic with inline comments\n3. Use clear and concise language\n\n```\n%s\n```"
-                       (buffer-substring-no-properties (region-beginning) (region-end)))
-         :submit t)
-      (message "请选中要添加注释的代码")))
+(defun riven/agent-shell-add-comments ()
+  "Add standard comments to selected code, auto submit."
+  (interactive)
+  (if (use-region-p)
+      (agent-shell-insert
+       :text (format riven-prompt-add-comments
+                     (buffer-substring-no-properties (region-beginning) (region-end)))
+       :submit t)
+    (message "请选中要添加注释的代码")))
 
-  (defun riven/agent-shell-fix-errors ()
-    "Fix flymake errors with detailed prompt, auto submit."
-    (interactive)
-    (require 'flymake)
-    ;; Get diagnostics at current point
-    (let* ((errors (flymake-diagnostics (point) (point))))
-      (message "%s" errors)
-      (if errors
-          (let* ()
-            (agent-shell-insert
-             :text (format "Please fix this flymake error:\n1. Identify the root cause\n2. Provide the corrected code\n3. Explain what was wrong and how you fixed it\n\nError: %s"
-                           errors)
-             :submit t))
-        (message "当前缓冲区没有flymake错误"))))
+(defun riven/agent-shell-fix-errors ()
+  "Fix flymake errors with detailed prompt, auto submit."
+  (interactive)
+  (require 'flymake)
+  ;; Get diagnostics at current point
+  (let* ((errors (flymake-diagnostics (point) (point))))
+    (message "%s" errors)
+    (if errors
+        (let* ()
+          (agent-shell-insert
+           :text (format riven-prompt-fix-errors errors)
+           :submit t))
+      (message "当前缓冲区没有flymake错误"))))
 
   ;; ============================================================
   ;; Agent Shell Transient 菜单
