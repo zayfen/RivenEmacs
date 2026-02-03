@@ -78,6 +78,9 @@
 (require 'ews)
 (add-hook 'org-mode-hook (lambda () (require 'init-org)))
 
+;; Session management (load early for auto-save)
+(require 'init-session)
+
 ;; Tools
 (require 'init-docker)
 (require 'init-quickrun)

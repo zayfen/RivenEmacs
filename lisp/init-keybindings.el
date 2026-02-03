@@ -192,6 +192,20 @@
        "q" '(gptel-query-devdoc :wk "Query DevDoc")
        "g" '(gptel-generate-commit-message :wk "Generate Commit Message"))
 
+    ;; Session management keybindings (requires init-session)
+    ;; Uses easysession's built-in commands directly
+    (leader-def
+      :infix "s"
+      "" '(:ignore t :wk "Session")
+      "s" '(easysession-switch-to :wk "Switch session")
+      "S" '(easysession-save-as :wk "Save as new")
+      "l" '(easysession-load :wk "Load session")
+      "L" '(easysession-load-including-geometry :wk "Load with geometry")
+      "d" '(easysession-delete :wk "Delete session")
+      "r" '(easysession-rename :wk "Rename session")
+      "." '(easysession-save :wk "Save current")
+      "c" '(easysession-get-current-session-name :wk "Current session"))
+
     ;; define prefix lable
     (leader-def
       "\!" '(:ignore t :wk "Checker(Flymake)")
