@@ -12,6 +12,7 @@
 ;; config project keybindings
 
 (defun keybindings-config()
+  (require 'agent-shell nil t) ; Ensure agent-shell-leader-def exists
   (progn
     (leader-def
       :infix "b"
@@ -27,20 +28,7 @@
       "x" '(revert-buffer-quick :wk "Revert buffer")
       "h" '(vundo :wk "History"))
 
-    (leader-def :keymaps 'lsp-bridge-mode-map
-      :infix "c"
-      "" '(:ignore t :wk "Code")
-      "a"  '(lsp-bridge-code-action :wk "Code actions")
-      "e"  '(lsp-bridge-diagnostic-list :wk "Diagnostic list")
-      "d" '(lsp-bridge-find-def-ex :wk "Find define")
-      "f" '(lsp-bridge-code-format :wk "Format code")
-      "i"  '(lsp-bridge-find-impl :wk "Find implementation")
-      "k"  '(lsp-bridge-popup-documentation :wk "Find Document")
-      "p"  '(lsp-bridge-peek :wk "Peek")
-      "q" '(eslint-fix :wk "QuickFix (Eslint)")
-      "r" '(lsp-bridge-rename :wk "Rename")
-      "t"  '(lsp-bridge-find-type-def :wk "Find type definition")
-      "?" '(lsp-bridge-find-references :wk "Find References"))
+    ;; LSP-bridge SPC c bindings set in with-eval-after-load 'lsp-bridge
 
     (leader-def
       :infix "n"
@@ -242,11 +230,7 @@
     (keymap-global-unset "M-g TAB")
     (keymap-global-unset "M-g M-g")
 
-    ;; set other global key bindings
-    (when (featurep 'lsp-bridge)
-      (keymap-global-set "M-." #'lsp-bridge-find-def)
-      (keymap-global-set "C-," #'lsp-bridge-find-def-return))
-
+    ;; M-. M-, M-? for lsp-bridge set in init-lsp-bridge :config
 
     (agent-shell-leader-def
      "" '(:ignore t :wk "Agent")
@@ -269,6 +253,27 @@
     (keymap-global-set "M-*" #'riven/agent-shell-dispatch)))
 
 (add-hook 'after-init-hook #'keybindings-config)
+
+;; LSP-bridge keybindings: set up when lsp-bridge loads (may be deferred)
+(defun riven/lsp-bridge-keybindings ()
+  "Set up lsp-bridge mode keybindings. Called when lsp-bridge loads."
+  (when (featurep 'lsp-bridge)
+    (leader-def :keymaps 'lsp-bridge-mode-map
+      :infix "c"
+      "" '(:ignore t :wk "Code")
+      "a"  '(lsp-bridge-code-action :wk "Code actions")
+      "e"  '(lsp-bridge-diagnostic-list :wk "Diagnostic list")
+      "d" '(lsp-bridge-find-def-ex :wk "Find define")
+      "f" '(lsp-bridge-code-format :wk "Format code")
+      "i"  '(lsp-bridge-find-impl :wk "Find implementation")
+      "k"  '(lsp-bridge-popup-documentation :wk "Find Document")
+      "p"  '(lsp-bridge-peek :wk "Peek")
+      "q" '(eslint-fix :wk "QuickFix (Eslint)")
+      "r" '(lsp-bridge-rename :wk "Rename")
+      "t"  '(lsp-bridge-find-type-def :wk "Find type definition")
+      "?" '(lsp-bridge-find-references :wk "Find References"))))
+(with-eval-after-load 'lsp-bridge
+  (riven/lsp-bridge-keybindings))
 
 (provide 'init-keybindings)
 

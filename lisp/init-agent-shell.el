@@ -27,6 +27,7 @@
 
 (use-package agent-shell
   :vc (:url "https://github.com/xenodium/agent-shell" :branch "main")
+  :after general
   :init
   (general-create-definer agent-shell-leader-def
     :prefix "C-c =")

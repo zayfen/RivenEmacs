@@ -47,33 +47,18 @@
 ;; important: tree-sitter
 (require 'init-treesit)
 
-;; IDE
-(require 'init-lsp-bridge)
+;; IDE (deferred: lsp-bridge is heavy, load on emacs-startup-hook)
 ;;(require 'init-eglot)
 ;;(require 'init-citre)
 
-;; init git
-(require 'init-vc)
-(require 'init-debugger)
-(require 'init-git-hunk)
-
-;; init env
-(require 'init-envrc)
-
-;; init project
-(require 'init-project)
-
-;; init gpt
-(require 'init-gpt)
+;; init git (deferred: load after startup for faster initial display)
+;; init env (deferred)
+;; init project (deferred)
+;; init gpt (deferred)
+;; init agent-shell (required before keybindings - has agent-shell-leader-def)
 (require 'init-agent-shell)
 
-;; Languages
-(require 'init-web)
-(require 'init-rust)
-(require 'init-python)
-(require 'init-java)
-(require 'init-swift)
-
+;; Languages (deferred: load on emacs-startup-hook)
 ;; Writing
 (require 'ews)
 (add-hook 'org-mode-hook (lambda () (require 'init-org)))
@@ -81,13 +66,31 @@
 ;; Session management (load early for auto-save)
 (require 'init-session)
 
-;; Tools
-(require 'init-docker)
-(require 'init-quickrun)
-(require 'init-feed)
-(require 'init-lookup)
+;; Tools (deferred)
+;; Terminal kept in main path - commonly used
 (require 'init-terminal)
-(require 'init-reader)
+
+;; Deferred modules: load after startup to reduce time-to-first-frame
+(defun riven/load-deferred-modules ()
+  "Load modules deferred to emacs-startup-hook for faster startup."
+  (require 'init-lsp-bridge)
+  (require 'init-vc)
+  (require 'init-debugger)
+  (require 'init-git-hunk)
+  (require 'init-envrc)
+  (require 'init-project)
+  (require 'init-gpt)
+  (require 'init-web)
+  (require 'init-rust)
+  (require 'init-python)
+  (require 'init-java)
+  (require 'init-swift)
+  (require 'init-docker)
+  (require 'init-quickrun)
+  (require 'init-feed)
+  (require 'init-lookup)
+  (require 'init-reader))
+(add-hook 'emacs-startup-hook #'riven/load-deferred-modules 90)
 
 ;; keybindings
 (require 'init-keybindings)
