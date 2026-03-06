@@ -1,6 +1,20 @@
 ;; -*- coding: utf-8; lexical-binding: t -*-
 
-;; load env from exec-path-from-shell
+(let* ((riven/root-dir (file-name-directory (file-truename (or load-file-name (buffer-file-name)))))
+       (riven/lisp-dir (expand-file-name "lisp" riven/root-dir)))
+  (add-to-list 'load-path riven/lisp-dir)
+  (add-to-list 'load-path riven/root-dir)
+  (dolist (dir (directory-files riven/lisp-dir t "^[^.].*"))
+    (when (and (file-directory-p dir)
+               (not (member (file-name-nondirectory dir) '("local"))))
+      (add-to-list 'load-path dir)
+      (dolist (sub (directory-files dir t "^[^.].*"))
+        (when (file-directory-p sub)
+          (add-to-list 'load-path sub)))))
+  (let ((riven/writing-dir (expand-file-name "writing" riven/lisp-dir)))
+    (when (file-directory-p riven/writing-dir)
+      (add-to-list 'load-path riven/writing-dir))))
+
 (use-package exec-path-from-shell
   :ensure t
   :defer 2
@@ -9,74 +23,70 @@
     (add-to-list 'exec-path-from-shell-variables var))
   (exec-path-from-shell-initialize))
 
+(load (expand-file-name "lisp/env.el" (file-name-directory (file-truename (or load-file-name (buffer-file-name))))) nil t)
+
 (defun setup-proxy ()
   "Setup network proxy using configuration management."
   (interactive)
   (rivenEmacs-setup-proxy))
 
-;; export https_proxy=http://127.0.0.1:7890 http_proxy=http://127.0.0.1:7890 all_proxy=socks5://127.0.0.1:7890
+(defun riven/load-core-modules ()
+  "Load core modules required during startup."
+  (require 'init-use-package)
+  (require 'init-config)
+  (require 'init-default)
+  (require 'init-helper))
 
-(require 'init-use-package)
-(require 'init-config)
-(require 'init-default)
-(require 'init-helper)
-(require 'init-theme)
-(require 'init-font)
-(require 'init-undo)
-(require 'init-autosave)
+(defun riven/load-ui-modules ()
+  "Load UI and editing foundation modules."
+  (require 'init-theme)
+  (require 'init-font)
+  (require 'init-undo)
+  (require 'init-autosave)
+  (require 'init-which-key)
+  (require 'init-general)
+  (require 'init-hydra)
+  (require 'init-consult)
+  (require 'init-vertico)
+  (require 'init-crux)
+  (require 'init-editor)
+  (require 'init-dired)
+  (require 'init-format)
+  (require 'init-jump)
+  (require 'init-editorconfig)
+  (require 'init-checker)
+  (require 'init-pair)
+  (require 'init-fold)
+  (require 'init-markdown)
+  (require 'init-treesit))
 
-;; init thirdparty packages
-(require 'init-which-key)
-(require 'init-general)
-(require 'init-hydra)
+(defun riven/load-ai-modules ()
+  "Load AI and agent integration modules needed early."
+  (require 'init-agent-shell))
 
-(require 'init-consult)
-(require 'init-vertico)
-(require 'init-crux)
-;; (require 'init-embark) ;; I haven't usually use this package
-(require 'init-editor)
-(require 'init-dired)
-(require 'init-format)
-(require 'init-jump)
-(require 'init-editorconfig)
-(require 'init-checker)
-(require 'init-pair)
-(require 'init-fold)
-(require 'init-markdown)
+(defun riven/load-writing-modules ()
+  "Load writing-related modules.
+Org module itself is loaded lazily in org buffers."
+  (require 'ews)
+  (add-hook 'org-mode-hook (lambda () (require 'init-org))))
 
-;; important: tree-sitter
-(require 'init-treesit)
+(defun riven/load-session-modules ()
+  "Load session management modules."
+  (require 'init-session))
 
-;; IDE (deferred: lsp-bridge is heavy, load on emacs-startup-hook)
-;;(require 'init-eglot)
-;;(require 'init-citre)
+(defun riven/load-tooling-modules ()
+  "Load commonly used tooling modules."
+  (require 'init-terminal))
 
-;; init git (deferred: load after startup for faster initial display)
-;; init env (deferred)
-;; init project (deferred)
-;; init gpt (deferred)
-;; init agent-shell (required before keybindings - has agent-shell-leader-def)
-(require 'init-agent-shell)
+(defun riven/load-keymap-modules ()
+  "Load keymap aggregation module."
+  (require 'init-keybindings))
 
-;; Languages (deferred: load on emacs-startup-hook)
-;; Writing
-(require 'ews)
-(add-hook 'org-mode-hook (lambda () (require 'init-org)))
-
-;; Session management (load early for auto-save)
-(require 'init-session)
-
-;; Tools (deferred)
-;; Terminal kept in main path - commonly used
-(require 'init-terminal)
-
-;; Deferred modules: load after startup to reduce time-to-first-frame
 (defun riven/load-deferred-modules ()
-  "Load modules deferred to emacs-startup-hook for faster startup."
+  "Load deferred modules on `emacs-startup-hook`."
   (require 'init-lsp-bridge)
   (require 'init-vc)
   (require 'init-debugger)
-  (require 'init-git-hunk)
   (require 'init-envrc)
   (require 'init-project)
   (require 'init-gpt)
@@ -90,9 +100,15 @@
   (require 'init-feed)
   (require 'init-lookup)
   (require 'init-reader))
-(add-hook 'emacs-startup-hook #'riven/load-deferred-modules 90)
 
-;; keybindings
-(require 'init-keybindings)
+;; Keep startup behavior: immediate modules now, heavy modules deferred.
+(riven/load-core-modules)
+(riven/load-ui-modules)
+(riven/load-ai-modules)
+(riven/load-writing-modules)
+(riven/load-session-modules)
+(riven/load-tooling-modules)
+(add-hook 'emacs-startup-hook #'riven/load-deferred-modules 90)
+(riven/load-keymap-modules)
 
 (put 'narrow-to-region 'disabled nil)

@@ -1,0 +1,146 @@
+;; -*- coding: utf-8; lexical-binding: t -*-
+;;; init-theme.el --- config theme
+
+;; use-package with package.el:
+(use-package dashboard
+  :vc (:url "https://github.com/emacs-dashboard/emacs-dashboard")
+  :commands (dashboard-open)
+  :config
+  (setq dashboard-banner-logo-title "Welcome to RivenEmacs")
+  ;; Set the banner
+  (setq dashboard-startup-banner 'official)
+  ;; Content is not centered by default. To center, set
+  (setq dashboard-center-content t)
+  ;; vertically center content
+  (setq dashboard-vertically-center-content t)
+  ;; To disable shortcut "jump" indicators for each section, set
+  (setq dashboard-show-shortcuts t)
+  ;; Set projects backend to project-el (built-in) instead of projectile
+  (setq dashboard-projects-backend 'project-el)
+  (setq dashboard-items '((recents   . 6)
+                          (bookmarks . 5)
+                          (projects  . 5)
+                          (agenda    . 5)
+                          (registers . 5)))
+  (dashboard-setup-startup-hook))
+
+;; Use idle timer to delay dashboard loading for better startup performance
+;; Only open dashboard when no files were specified on command line
+(when (and (= 1 (length command-line-args))  ; Only emacs binary in args
+           (not (member "-f" command-line-args))  ; Not running function
+           (not (member "--funcall" command-line-args))  ; Not running function
+           (not (member "-l" command-line-args))  ; Not loading file
+           (not (member "--load" command-line-args))  ; Not loading file
+           (not (member "-e" command-line-args))  ; Not evaluating expression
+           (not (member "--eval" command-line-args))  ; Not evaluating expression
+           (not (member "-t" command-line-args))  ; Not running terminal
+           (not (member "--terminal" command-line-args)))  ; Not running terminal
+  (run-with-idle-timer rivenEmacs-dashboard-delay nil #'dashboard-open))
+
+;; load theme and config
+;; (load-theme 'modus-vivendi t)
+;; (load-theme 'modus-operandi-tritanopia t)
+(load-theme 'modus-vivendi-tritanopia t)
+
+(setq modus-themes-italic-constructs t
+      modus-themes-bold-constructs t
+      modus-themes-mixed-fonts t
+      modus-themes-variable-pitch-ui t
+      modus-themes-custom-auto-reload t
+      modus-themes-headings
+      '((underline-link border)
+        (underline-link-visited border)
+        (underline-link-symbolic border)))
+
+
+(use-package doom-modeline
+  :vc (:url "https://github.com/seagle0128/doom-modeline" :rev "master")
+  :hook (after-init . doom-modeline-mode)
+  :config
+  (setq doom-modeline-buffer-file-name-style 'truncate-upto-project
+        doom-modeline-major-mode-icon t
+        doom-modeline-minor-modes nil
+        doom-modeline-buffer-encoding nil
+        doom-modeline-word-count nil
+        doom-modeline-enable-word-count nil
+        doom-modeline-vcs-max-length 24)
+  ;; Don’t compact font caches during GC.
+  (setq inhibit-compacting-font-caches t))
+
+
+(defun riven/apply-theme-face-overrides ()
+  "Apply one-time face overrides after theme loading."
+  (set-face-attribute 'font-lock-comment-face nil :slant 'italic)
+  (set-face-attribute 'font-lock-keyword-face nil :weight 'semi-bold :slant 'normal)
+  (set-face-attribute 'font-lock-function-name-face nil :weight 'semi-bold :slant 'normal)
+  (set-face-attribute 'line-number-current-line nil :weight 'bold))
+
+(riven/apply-theme-face-overrides)
+
+
+(use-package rainbow-delimiters
+  :hook ((prog-mode . rainbow-delimiters-mode)))
+
+
+
+;; This assumes you've installed the package via MELPA.
+(use-package ligature
+  :vc (:url "https://github.com/mickeynp/ligature.el" :rev "master")
+  :hook (prog-mode . ligature-mode)
+  :config
+  ;; Enable the "www" ligature in every possible major mode
+  (ligature-set-ligatures t '("www"))
+  ;; Enable traditional ligature support in eww-mode, if the
+  ;; `variable-pitch' face supports it
+  (ligature-set-ligatures 'eww-mode '("ff" "fi" "ffi"))
+  ;; Enable all Cascadia Code ligatures in programming modes
+  (ligature-set-ligatures 'prog-mode '("|||>" "<|||" "<==>" "<!--" "####" "~~>" "***" "||=" "||>"
+                                       ":::" "::=" "=:=" "===" "==>" "=!=" "=>>" "=<<" "=/=" "!=="
+                                       "!!." ">=>" ">>=" ">>>" ">>-" ">->" "->>" "-->" "---" "-<<"
+                                       "<~~" "<~>" "<*>" "<||" "<|>" "<$>" "<==" "<=>" "<=<" "<->"
+                                       "<--" "<-<" "<<=" "<<-" "<<<" "<+>" "</>" "###" "#_(" "..<"
+                                       "..." "+++" "/==" "///" "_|_" "www" "&&" "^=" "~~" "~@" "~="
+                                       "~>" "~-" "**" "*>" "*/" "||" "|}" "|]" "|=" "|>" "|-" "{|"
+                                       "[|" "]#" "::" ":=" ":>" ":<" "$>" "==" "=>" "!=" "!!" ">:"
+                                       ">=" ">>" ">-" "-~" "-|" "->" "--" "-<" "<~" "<*" "<|" "<:"
+                                       "<$" "<=" "<>" "<-" "<<" "<+" "</" "#{" "#[" "#:" "#=" "#!"
+                                       "##" "#(" "#?" "#_" "%%" ".=" ".-" ".." ".?" "+>" "++" "?:"
+                                       "?=" "?." "??" ";;" "/*" "/=" "/>" "//" "__" "~~" "(*" "*)"
+                                       "\\\\" "://")))
+  
+
+(use-package spacious-padding
+  :ensure t
+  :if (display-graphic-p)
+  ;; :hook after-init
+  :hook (after-init . spacious-padding-mode)
+  :custom
+  (spacious-padding-widths
+   '( :internal-border-width 8
+      :header-line-width 4
+      :mode-line-width 2
+      :tab-width 4
+      :right-divider-width 2
+      :scroll-bar-width 4
+      :fringe-width 8)))
+
+
+;; beautiful compilation buffer
+(use-package fancy-compilation
+  :commands (fancy-compilation-mode))
+
+(with-eval-after-load 'compile
+  (fancy-compilation-mode))
+
+;; change line number color
+(with-eval-after-load 'modus-themes
+  (set-face-foreground 'line-number (modus-themes-get-color-value 'fg-dim)))
+
+;; Show file path in header line (first line)
+(setq-default header-line-format
+              '((:propertize (:eval (when buffer-file-name
+                                      (abbreviate-file-name buffer-file-name)))
+                 face (:height 0.9 :foreground "gray60"))))
+
+(provide 'init-theme)
+;;; init-theme.el ends here
