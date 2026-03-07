@@ -20,6 +20,15 @@
   :type 'integer
   :group 'rivenEmacs)
 
+(defvar-local riven/gptel-review-origin-buffer nil
+  "Original buffer associated with current review buffer.")
+
+(defvar-local riven/gptel-review-start-marker nil
+  "Start marker of original selected region.")
+
+(defvar-local riven/gptel-review-end-marker nil
+  "End marker of original selected region.")
+
 (defun riven/gptel--trim-input (text)
   "Trim TEXT to `rivenEmacs-gptel-max-input-chars`."
   (if (> (length text) rivenEmacs-gptel-max-input-chars)
@@ -49,6 +58,183 @@
     (call-interactively #'gptel-send))
    (t
     (user-error "gptel is unavailable; install gptel first"))))
+
+(defun riven/gptel--ensure-request-api ()
+  "Ensure `gptel-request` is available."
+  (or (fboundp 'gptel-request)
+      (progn
+        (require 'gptel-request nil t)
+        (fboundp 'gptel-request))
+      (progn
+        (require 'gptel nil t)
+        (fboundp 'gptel-request))))
+
+(defun riven/gptel--review-content ()
+  "Return current review buffer content as plain string."
+  (string-trim-right (buffer-substring-no-properties (point-min) (point-max))))
+
+(defun riven/gptel-review-quit ()
+  "Close current gptel review buffer."
+  (interactive)
+  (let ((buf (current-buffer))
+        (win (get-buffer-window (current-buffer))))
+    (when (window-live-p win)
+      (delete-window win))
+    (kill-buffer buf)))
+
+(defun riven/gptel-review-accept-insert ()
+  "Accept review result and insert below selected region in original buffer."
+  (interactive)
+  (unless (and (buffer-live-p riven/gptel-review-origin-buffer)
+               (markerp riven/gptel-review-end-marker))
+    (user-error "Original buffer or region markers are not available"))
+  (let ((content (riven/gptel--review-content)))
+    (when (string-empty-p content)
+      (user-error "Review buffer is empty"))
+    (with-current-buffer riven/gptel-review-origin-buffer
+      (save-excursion
+        (goto-char riven/gptel-review-end-marker)
+        (unless (or (bolp)
+                    (eq (char-before) ?\n))
+          (insert "\n"))
+        (insert content)
+        (unless (eq (char-before) ?\n)
+          (insert "\n"))))
+    (message "Inserted generated content at selected region bottom")
+    (riven/gptel-review-quit)))
+
+(defun riven/gptel-review-accept-replace ()
+  "Accept review result and replace selected region in original buffer."
+  (interactive)
+  (unless (and (buffer-live-p riven/gptel-review-origin-buffer)
+               (markerp riven/gptel-review-start-marker)
+               (markerp riven/gptel-review-end-marker))
+    (user-error "Original buffer or region markers are not available"))
+  (let ((content (riven/gptel--review-content)))
+    (when (string-empty-p content)
+      (user-error "Review buffer is empty"))
+    (with-current-buffer riven/gptel-review-origin-buffer
+      (save-excursion
+        (goto-char riven/gptel-review-start-marker)
+        (delete-region riven/gptel-review-start-marker riven/gptel-review-end-marker)
+        (insert content)))
+    (message "Replaced selected region with generated content")
+    (riven/gptel-review-quit)))
+
+(defvar riven/gptel-review-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "q") #'riven/gptel-review-quit)
+    (define-key map (kbd "y") #'riven/gptel-review-accept-insert)
+    (define-key map (kbd "r") #'riven/gptel-review-accept-replace)
+    map)
+  "Keymap for `riven/gptel-review-mode`.")
+
+(define-derived-mode riven/gptel-review-mode special-mode "GPT-Review"
+  "Major mode for reviewing generated content before applying.
+
+Key bindings:
+- `q`: close review buffer
+- `y`: insert content below selected region in original buffer
+- `r`: replace selected region in original buffer")
+
+(defun riven/gptel--show-review-buffer (buffer-name content origin start end)
+  "Show generated CONTENT in review BUFFER-NAME with ORIGIN and region START/END."
+  (let ((buf (get-buffer-create buffer-name)))
+    (with-current-buffer buf
+      (let ((inhibit-read-only t))
+        (erase-buffer)
+        (insert content)
+        (goto-char (point-min))
+        (riven/gptel-review-mode)
+        (setq-local riven/gptel-review-origin-buffer origin)
+        (setq-local riven/gptel-review-start-marker start)
+        (setq-local riven/gptel-review-end-marker end)))
+    (display-buffer
+     buf
+     '((display-buffer-in-side-window)
+       (side . right)
+       (slot . 0)
+       (window-width . 0.3)))))
+
+(defun riven/gptel--request-review (prompt buffer-name origin start end)
+  "Send PROMPT and show response in side review BUFFER-NAME.
+ORIGIN, START and END identify the original region to apply result."
+  (unless (riven/gptel--ensure-request-api)
+    (user-error "gptel-request is unavailable; ensure gptel package is installed"))
+  (let ((loading-buf (get-buffer-create buffer-name)))
+    (with-current-buffer loading-buf
+      (let ((inhibit-read-only t))
+        (erase-buffer)
+        (insert "Waiting for model response...\n\n")
+        (insert "q: close    y: insert below selection    r: replace selection")
+        (goto-char (point-min))
+        (riven/gptel-review-mode)
+        (setq-local riven/gptel-review-origin-buffer origin)
+        (setq-local riven/gptel-review-start-marker start)
+        (setq-local riven/gptel-review-end-marker end)))
+    (display-buffer
+     loading-buf
+     '((display-buffer-in-side-window)
+       (side . right)
+       (slot . 0)
+       (window-width . 0.3))))
+  (gptel-request
+   prompt
+   :stream nil
+   :callback
+   (lambda (response info)
+     (cond
+      ((stringp response)
+       (riven/gptel--show-review-buffer
+        buffer-name
+        response
+        origin
+        start
+        end))
+      ((eq response 'abort)
+       (message "[gptel-review] request aborted"))
+      ((null response)
+       (message "[gptel-review] request failed: %s"
+                (or (plist-get info :status) "unknown error")))
+      (t
+       (message "[gptel-review] unexpected response: %s" response))))))
+
+(defun riven/gptel-translate-region-review (target-language)
+  "Translate selected region into TARGET-LANGUAGE and open review buffer."
+  (interactive "sTranslate to language (e.g. en, zh-CN, ja): ")
+  (unless (use-region-p)
+    (user-error "Please select a region first"))
+  (let* ((origin (current-buffer))
+         (start (copy-marker (region-beginning)))
+         (end (copy-marker (region-end) t))
+         (text (buffer-substring-no-properties start end))
+         (prompt (format "Translate the text to %s.\nKeep meaning accurate and tone natural.\n\nText:\n%s"
+                         target-language
+                         (riven/gptel--trim-input text))))
+    (riven/gptel--request-review
+     prompt
+     "*GPT Translation Review*"
+     origin
+     start
+     end)))
+
+(defun riven/gptel-summarize-region-review ()
+  "Summarize selected region and open review buffer."
+  (interactive)
+  (unless (use-region-p)
+    (user-error "Please select a region first"))
+  (let* ((origin (current-buffer))
+         (start (copy-marker (region-beginning)))
+         (end (copy-marker (region-end) t))
+         (text (buffer-substring-no-properties start end))
+         (prompt (format "Summarize the following content in concise bullet points.\n\nContent:\n%s"
+                         (riven/gptel--trim-input text))))
+    (riven/gptel--request-review
+     prompt
+     "*GPT Summary Review*"
+     origin
+     start
+     end)))
 
 (defun riven/gptel--git-diff (cached)
   "Return git diff text for current repo.

@@ -19,7 +19,13 @@
   :ensure t
   :defer 2
   :config
-  (dolist (var '("SSH_AUTH_SOCK" "SSH_AGENT_PID" "GPG_AGENT_INFO" "LANG" "LC_CTYPE" "NIX_SSL_CERT_FILE" "NIX_PATH" "GROQ_API_KEY" "DEEPSEEK_API_KEY" "ANTHROPIC_AUTH_TOKEN" "ANTHROPIC_BASE_URL"))
+  (dolist (var '("SSH_AUTH_SOCK" "SSH_AGENT_PID" "GPG_AGENT_INFO"
+                 "LANG" "LC_CTYPE" "NIX_SSL_CERT_FILE" "NIX_PATH"
+                 "HTTP_PROXY" "HTTPS_PROXY"
+                 "GROQ_API_KEY" "DEEPSEEK_API_KEY" "OPENAI_API_KEY"
+                 "ANTHROPIC_AUTH_TOKEN" "ANTHROPIC_BASE_URL"
+                 "BRAVE_API_KEY" "TAVILY_API_KEY"
+                 "GITHUB_TOKEN" "GITHUB_PERSONAL_ACCESS_TOKEN"))
     (add-to-list 'exec-path-from-shell-variables var))
   (exec-path-from-shell-initialize))
 
