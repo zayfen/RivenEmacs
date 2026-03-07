@@ -190,6 +190,14 @@ install_lsp() {
     warn "python3 not found; skip ruff install"
   fi
 
+  if has_cmd emacs-lsp-booster; then
+    ok "emacs-lsp-booster already installed"
+  elif has_cmd cargo; then
+    run_cmd cargo install --locked emacs-lsp-booster
+  else
+    warn "cargo not found; skip emacs-lsp-booster install (needed for eglot acceleration)"
+  fi
+
   if has_cmd rustup; then
     run_cmd rustup component add rust-analyzer || true
   elif [[ "$PLATFORM" == "macos" ]]; then
@@ -379,7 +387,8 @@ doctor() {
 
   echo
   echo "[LSP - recommended]"
-  check_cmd ruff optional "Python lint target in lsp-bridge"
+  check_cmd emacs-lsp-booster optional "Eglot JSON-RPC acceleration wrapper"
+  check_cmd ruff optional "Python lint target in eglot workflows"
   check_cmd pyright-langserver optional "Pyright backend for Python"
   check_cmd typescript-language-server optional "TypeScript language server"
   check_cmd vscode-eslint-language-server optional "ESLint language server"
@@ -460,7 +469,7 @@ core:
   emacs, git, rg(ripgrep), fd/fdfind, node, npm, python3
 
 lsp/tooling:
-  ruff, pyright-langserver, typescript-language-server,
+  emacs-lsp-booster, ruff, pyright-langserver, typescript-language-server,
   vscode-eslint-language-server, vue-language-server, vtsls,
   tailwindcss-language-server, rust-analyzer, clangd
 

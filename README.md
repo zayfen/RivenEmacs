@@ -41,12 +41,15 @@ bash scripts/riven-deps.sh install --all
 
 # Install AI + MCP stack only
 bash scripts/riven-deps.sh install --ai --mcp
+
+# Install spell-check runtime for jinx
+bash scripts/riven-deps.sh install --spell
 ```
 
 ### Fix Examples
 
 ```bash
-# Default fix groups: core + lsp + ai + mcp + markdown
+# Default fix groups: core + lsp + ai + mcp + markdown + spell
 bash scripts/riven-deps.sh fix
 
 # Only prompt and write env vars (no package install)
@@ -62,11 +65,37 @@ bash scripts/riven-deps.sh fix --profile ~/.zshrc
 ## Dependency Groups
 
 - `core`: `emacs`, `git`, `ripgrep`, `fd`, `node`, `npm`, `python3`
-- `lsp`: `ruff`, `pyright`, `typescript-language-server`, `vtsls`, `vue-language-server`, etc.
+- `lsp`: `ruff`, `pyright`, `typescript-language-server`, `vtsls`, `vue-language-server`, `emacs-lsp-booster`, etc.
 - `ai`: `cursor-agent-acp`, `claude`, `opencode`
 - `mcp`: filesystem/memory/sequential-thinking/everything/playwright/browser-use/brave/tavily MCP tools
 - `markdown`: `go-grip`
+- `spell`: `enchant` + `hunspell` (required by `jinx`)
 - `extra`: `docker` and extra quality-of-life tooling
+
+## LSP & Completion Stack (方案1)
+
+- LSP client: `eglot` (enabled for modes in `rivenEmacs-lsp-modes`)
+- Completion UI: `vertico + consult + orderless + corfu + cape`
+- Performance booster: `emacs-lsp-booster` (auto-enabled when executable exists in `PATH`)
+- ElDoc behavior: single-line minibuffer display with a short idle delay (`eldoc-idle-delay 0.15`)
+- Cursor-line stability: Eglot code-action hints are shown in mode-line (not margin/nearby)
+- `lsp-bridge` files are kept in repo, but no longer loaded by default in `init.el`
+
+## Modern Plugin Stack
+
+- Formatting: `apheleia` (manual format key: `C-S-i`, region or whole buffer)
+- Completion actions: `embark` + `embark-consult` (`C-.`, `C-;`, `C-h B`)
+- Code completion: `corfu + cape` (with `orderless`, wider popup for coding buffers)
+- Candidate docs: `corfu-popupinfo` (`M-h` to open candidate documentation popup)
+- Tree-sitter UX: `treesit-auto` (prompted grammar install + modern remapping)
+- Spell check: `jinx` (`M-$` correct, `C-M-$` set languages)
+
+## Diagnostics & Documentation UX
+
+- `C-c c e`: open buffer diagnostics and focus the Flymake diagnostics window
+- After `C-c c e`, press `C-g` in the source code buffer to close that diagnostics window quickly
+- `C-c c k`: open ElDoc documentation and focus the ElDoc documentation window
+- Flymake keeps underlines in buffer and echoes current-line diagnostics in minibuffer
 
 ## Environment Variables
 
@@ -111,7 +140,7 @@ emacs --batch -l init.el --eval "(message \"All modules loaded\")"
 
 ## Tree-sitter Configuration
 
-RivenEmacs includes tree-sitter support for enhanced syntax highlighting. By default, tree-sitter grammars are not automatically installed to avoid startup delays and network issues.
+RivenEmacs includes `treesit-auto` for automatic mode remapping and prompted grammar installation.
 
 ### Manual Installation
 

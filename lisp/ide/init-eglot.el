@@ -53,16 +53,6 @@ Return non-nil when advices are installed."
       (advice-add 'eglot--cmd :around #'riven/eglot-booster--eglot-cmd))
     t))
 
-(defconst riven/eldoc-jitter-prone-modes
-  '(js-ts-mode typescript-ts-mode tsx-ts-mode)
-  "Major modes where Eldoc can cause visible cursor-line jitter.")
-
-(defun riven/disable-eldoc-in-ts-js ()
-  "Disable Eldoc in JS/TS buffers to avoid line-height jitter on cursor line."
-  (when (and (fboundp 'eldoc-mode)
-             (apply #'derived-mode-p riven/eldoc-jitter-prone-modes))
-    (eldoc-mode -1)))
-
 (defun smarter-yas-expand-next-field ()
   "Try `yas-expand`, then move to next field if no expansion happened."
   (interactive)
@@ -91,25 +81,30 @@ Return non-nil when advices are installed."
   :init
   (dolist (mode rivenEmacs-lsp-modes)
     (add-hook (intern (format "%s-hook" mode)) #'eglot-ensure))
-  (dolist (mode riven/eldoc-jitter-prone-modes)
-    (add-hook (intern (format "%s-hook" mode)) #'riven/disable-eldoc-in-ts-js))
-  ;; Eglot can rewire Eldoc after server attach; disable again as a local safeguard.
-  (add-hook 'eglot-managed-mode-hook #'riven/disable-eldoc-in-ts-js)
   :bind (:map eglot-mode-map
               ("M-?" . xref-find-references))
   :custom
+  ;; Built-in ElDoc behavior is enough; keep it compact and predictable.
+  (eldoc-echo-area-use-multiline-p nil)
+  (eldoc-idle-delay 0.15)
   (eglot-sync-connect nil)
   (eglot-autoshutdown t)
   (eglot-report-progress nil)
   (eglot-send-changes-idle-time 0.2)
   (eglot-extend-to-xref t)
+  ;; Avoid cursor-line height jitter from code-action overlays in margin/nearby.
+  ;; Keep hints in mode-line only to preserve stable line metrics in all languages.
+  (eglot-code-action-indications '(mode-line))
+  ;; Use ASCII indicator to avoid emoji fallback fonts affecting glyph height.
+  (eglot-code-action-indicator "*")
   (eglot-events-buffer-config '(:size 0 :format short))
   :config
   (keymap-global-set "M-." #'xref-find-definitions)
   (keymap-global-set "M-," #'xref-go-back)
   (keymap-global-set "M-?" #'xref-find-references)
-  (unless (riven/eglot-booster-enable)
-    (message "[eglot] emacs-lsp-booster not found, fallback to plain eglot")))
+  (when rivenEmacs-eglot-use-booster
+    (unless (riven/eglot-booster-enable)
+      (message "[eglot] emacs-lsp-booster not found, fallback to plain eglot"))))
 
 (provide 'init-eglot)
 ;;; init-eglot.el ends here

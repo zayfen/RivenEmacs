@@ -1,6 +1,7 @@
 # Project specific
 /private/
 /local/
+/lisp/local/
 /eln-cache/
 .directory
 /test/
@@ -64,4 +65,3 @@ flycheck_*.el
 # End of https://www.toptal.com/developers/gitignore/api/emacs
 /recentf
 .aider*
-

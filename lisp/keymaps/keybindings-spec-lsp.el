@@ -33,7 +33,19 @@
   (interactive)
   (cond
    ((fboundp 'eldoc-doc-buffer)
-    (call-interactively 'eldoc-doc-buffer))
+    (condition-case nil
+        (progn
+          (call-interactively 'eldoc-doc-buffer)
+          ;; After opening docs, move focus into the Eldoc buffer window.
+          (when (and (boundp 'eldoc--doc-buffer)
+                     (buffer-live-p eldoc--doc-buffer))
+            (let ((win (get-buffer-window eldoc--doc-buffer t)))
+              (when (window-live-p win)
+                (select-window win)))))
+      (error
+       (if (fboundp 'eldoc-print-current-symbol-info)
+           (call-interactively 'eldoc-print-current-symbol-info)
+         (user-error "No documentation command available")))))
    ((fboundp 'eldoc-print-current-symbol-info)
     (call-interactively 'eldoc-print-current-symbol-info))
    (t

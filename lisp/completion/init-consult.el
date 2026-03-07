@@ -158,26 +158,32 @@ This is a fallback for broken/missing autoload files in package metadata."
   (corfu-on-exact-match 'insert)
   (corfu-auto t)
   (corfu-auto-delay 0.12)
-  (corfu-auto-prefix 1)
+  (corfu-auto-prefix 3)
   (corfu-cycle t)
   (corfu-count 14)
   (corfu-preselect 'prompt)
-  (corfu-preview-current nil)
+  (corfu-preview-current t)
   (corfu-min-width 48)
   (corfu-max-width 120)
   (corfu-scroll-margin 2)
   :bind (:map corfu-map
               ("M-P" . corfu-scroll-down)
-              ("M-N" . corfu-scroll-up)
-              ("TAB" . corfu-complete)
-              ([tab] . corfu-complete)
-              ([backtab] . corfu-previous))
+              ("M-N" . corfu-scroll-up))
   :config
   (global-corfu-mode 1))
 
 (use-package corfu-popupinfo
   :after corfu
   :ensure nil
+  :init
+  (defun riven/corfu-popupinfo-safe-show (orig-fn &rest args)
+    "Call ORIG-FN with ARGS, suppressing known JSON type errors."
+    (condition-case err
+        (apply orig-fn args)
+      (wrong-type-argument
+       (if (eq (nth 1 err) 'json-value-p)
+           nil
+         (signal (car err) (cdr err))))))
   :bind (:map corfu-map
               ("M-h" . corfu-popupinfo-documentation))
   :custom
@@ -185,6 +191,8 @@ This is a fallback for broken/missing autoload files in package metadata."
   (corfu-popupinfo-max-width 100)
   (corfu-popupinfo-max-height 14)
   :config
+  (unless (advice-member-p #'riven/corfu-popupinfo-safe-show #'corfu-popupinfo--show)
+    (advice-add 'corfu-popupinfo--show :around #'riven/corfu-popupinfo-safe-show))
   (corfu-popupinfo-mode 1))
 
 (use-package cape

@@ -90,7 +90,7 @@ Org module itself is loaded lazily in org buffers."
 
 (defun riven/load-deferred-modules ()
   "Load deferred modules on `emacs-startup-hook`."
-  (require 'init-lsp-bridge)
+  (require 'init-eglot)
   (require 'init-vc)
   (require 'init-debugger)
   (require 'init-envrc)
