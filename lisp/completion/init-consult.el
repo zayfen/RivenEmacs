@@ -195,15 +195,20 @@ This is a fallback for broken/missing autoload files in package metadata."
     (advice-add 'corfu-popupinfo--show :around #'riven/corfu-popupinfo-safe-show))
   (corfu-popupinfo-mode 1))
 
+;; Drop stale cape CAPF entries when cape is unavailable.
+(dolist (capf '(cape-file cape-dabbrev cape-keyword cape-symbol))
+  (unless (fboundp capf)
+    (setq completion-at-point-functions (delq capf completion-at-point-functions))))
+
 (use-package cape
   :ensure t
-  :init
-  ;; Keep LSP completion first and append generic CAPFs as fallbacks.
-  (add-hook 'completion-at-point-functions #'cape-file t)
-  (add-hook 'completion-at-point-functions #'cape-dabbrev t)
-  (add-hook 'completion-at-point-functions #'cape-keyword t)
-  (add-hook 'completion-at-point-functions #'cape-symbol t)
   :config
+  ;; Keep LSP completion first and append generic CAPFs as fallbacks.
+  (dolist (capf '(cape-file cape-dabbrev cape-keyword cape-symbol))
+    ;; Remove stale CAPF symbols to avoid `void-function` errors when cape is missing.
+    (setq completion-at-point-functions (delq capf completion-at-point-functions))
+    (when (fboundp capf)
+      (add-hook 'completion-at-point-functions capf t)))
   (with-eval-after-load 'eglot
     (advice-add 'eglot-completion-at-point :around #'cape-wrap-buster)))
 
