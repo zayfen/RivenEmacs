@@ -53,6 +53,41 @@
   :type 'boolean
   :group 'rivenEmacs)
 
+(defcustom rivenEmacs-mcp-enable-browser-server t
+  "Whether to enable the Playwright browser MCP server."
+  :type 'boolean
+  :group 'rivenEmacs)
+
+(defcustom rivenEmacs-mcp-enable-browser-use-server t
+  "Whether to enable the browser-use MCP server."
+  :type 'boolean
+  :group 'rivenEmacs)
+
+(defcustom rivenEmacs-mcp-enable-brave-search-server t
+  "Whether to enable the Brave Search MCP server."
+  :type 'boolean
+  :group 'rivenEmacs)
+
+(defcustom rivenEmacs-mcp-enable-tavily-server t
+  "Whether to enable the Tavily MCP server."
+  :type 'boolean
+  :group 'rivenEmacs)
+
+(defcustom rivenEmacs-mcp-brave-api-key-env "BRAVE_API_KEY"
+  "Environment variable name containing Brave Search API key."
+  :type 'string
+  :group 'rivenEmacs)
+
+(defcustom rivenEmacs-mcp-tavily-api-key-env "TAVILY_API_KEY"
+  "Environment variable name containing Tavily API key."
+  :type 'string
+  :group 'rivenEmacs)
+
+(defcustom rivenEmacs-mcp-browser-headless t
+  "Whether to run Playwright MCP in headless mode."
+  :type 'boolean
+  :group 'rivenEmacs)
+
 (defcustom rivenEmacs-mcp-memory-file
   (expand-file-name "mcp-memory.jsonl" user-emacs-directory)
   "Storage file used by the MCP memory server."
@@ -83,6 +118,46 @@
     `(:command "npx"
       :args ("-y" ,npm-package)
       :env (:NPM_CONFIG_REGISTRY "https://registry.npmjs.org"))))
+
+(defun riven/gptel--mcp-browser-server-spec ()
+  "Return Playwright browser MCP server config."
+  (let ((extra-args (append (when rivenEmacs-mcp-browser-headless '("--headless"))
+                            '("--isolated" "--output-mode" "stdout"))))
+    (if-let* ((bin (executable-find "playwright-mcp")))
+        `("browser" . (:command ,bin :args ,extra-args))
+      `("browser" . (:command "npx"
+                     :args ,(append '("-y" "@playwright/mcp") extra-args)
+                     :env (:NPM_CONFIG_REGISTRY "https://registry.npmjs.org"))))))
+
+(defun riven/gptel--mcp-browser-use-server-spec ()
+  "Return browser-use MCP server config."
+  (if-let* ((uvx-bin (executable-find "uvx")))
+      `("browser-use" . (:command ,uvx-bin :args ("browser-use" "--mcp")))
+    (if-let* ((browser-use-bin (executable-find "browser-use")))
+        `("browser-use" . (:command ,browser-use-bin :args ("--mcp")))
+      `("browser-use" . (:command "uvx" :args ("browser-use" "--mcp"))))))
+
+(defun riven/gptel--mcp-brave-search-server-spec ()
+  "Return Brave Search MCP server config, or nil when API key is missing."
+  (let ((api-key (getenv rivenEmacs-mcp-brave-api-key-env)))
+    (unless (string-empty-p (or api-key ""))
+      (if-let* ((bin (executable-find "mcp-server-brave-search")))
+          `("brave-search" . (:command ,bin :env (:BRAVE_API_KEY ,api-key)))
+        `("brave-search" . (:command "npx"
+                            :args ("-y" "@modelcontextprotocol/server-brave-search")
+                            :env (:NPM_CONFIG_REGISTRY "https://registry.npmjs.org"
+                                  :BRAVE_API_KEY ,api-key)))))))
+
+(defun riven/gptel--mcp-tavily-server-spec ()
+  "Return Tavily MCP server config, or nil when API key is missing."
+  (let ((api-key (getenv rivenEmacs-mcp-tavily-api-key-env)))
+    (unless (string-empty-p (or api-key ""))
+      (if-let* ((bin (executable-find "tavily-mcp")))
+          `("tavily" . (:command ,bin :env (:TAVILY_API_KEY ,api-key)))
+        `("tavily" . (:command "npx"
+                      :args ("-y" "tavily-mcp")
+                      :env (:NPM_CONFIG_REGISTRY "https://registry.npmjs.org"
+                            :TAVILY_API_KEY ,api-key)))))))
 
 (defun riven/gptel-mcp-popular-servers ()
   "Return popular MCP servers config for mcp.el."
@@ -123,6 +198,22 @@
                                    "@modelcontextprotocol/server-github")
                                   `(:env (:GITHUB_PERSONAL_ACCESS_TOKEN
                                           ,github-token)))))))))
+    (when rivenEmacs-mcp-enable-browser-server
+      (setq servers
+            (append servers (list (riven/gptel--mcp-browser-server-spec)))))
+    (when rivenEmacs-mcp-enable-browser-use-server
+      (setq servers
+            (append servers (list (riven/gptel--mcp-browser-use-server-spec)))))
+    (when rivenEmacs-mcp-enable-brave-search-server
+      (if-let* ((brave-spec (riven/gptel--mcp-brave-search-server-spec)))
+          (setq servers (append servers (list brave-spec)))
+        (message "[gptel-mcp] %s is missing; skipping brave-search server"
+                 rivenEmacs-mcp-brave-api-key-env)))
+    (when rivenEmacs-mcp-enable-tavily-server
+      (if-let* ((tavily-spec (riven/gptel--mcp-tavily-server-spec)))
+          (setq servers (append servers (list tavily-spec)))
+        (message "[gptel-mcp] %s is missing; skipping tavily server"
+                 rivenEmacs-mcp-tavily-api-key-env)))
     servers))
 
 (defun riven/gptel-mcp-connect-popular ()

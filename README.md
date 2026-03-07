@@ -2,90 +2,126 @@
 
 A highly modular and performance-optimized Emacs configuration designed for modern development workflows.
 
-## Requirements
+## Quick Start
 
-### Core Dependencies
+```bash
+# 1) Check current machine health (deps + env + batch init)
+bash scripts/riven-deps.sh doctor
 
-- **Emacs 28+** with native compilation support
-- **Python 3** for various language servers and tools
-- **Node.js** for JavaScript/TypeScript development
-- **Git** for version control integration
+# 2) Auto-fix missing deps and prompt for missing env vars
+bash scripts/riven-deps.sh fix
 
-### Optional Dependencies
+# 3) Verify again
+bash scripts/riven-deps.sh doctor
+```
 
-#### Markdown Preview
-- `pip install grip` (recommended)
-- Alternative: `cargo install mdopen` or `go install github.com/chrishrb/go-grip@latest`
+## Dependency Script
 
-#### macOS Specific
-- `brew install coreutils` (for enhanced dired functionality)
+RivenEmacs ships a dependency management script:
 
-#### Language Servers
-- **Python**: `pip install python-lsp-server` or `pip install pyright`
-- **JavaScript/TypeScript**: `npm install -g typescript-language-server`
-- **Rust**: `rustup component add rust-analyzer`
-- **C/C++**: Install `clangd`
+```bash
+bash scripts/riven-deps.sh --help
+```
 
-## Configuration
+### Commands
 
-### Environment Variables
+- `install`: Install dependency groups.
+- `doctor`: Check dependencies, environment variables, and `emacs --batch -l init.el` runtime loading.
+- `fix`: Install missing dependencies and interactively prompt for missing environment variables.
+- `list`: Print dependency groups and tracked env vars.
 
-You can customize RivenEmacs behavior using environment variables:
+### Install Examples
 
-- `DEFAULT_WORKSPACE`: Default workspace directory (default: `~/`)
-- `HTTP_PROXY`/`http_proxy`: HTTP proxy server
-- `HTTPS_PROXY`/`https_proxy`: HTTPS proxy server
-- `GROQ_API_KEY`: API key for Groq AI services
-- `DEEPSEEK_API_KEY`: API key for DeepSeek AI services
+```bash
+# Default install groups: core + lsp
+bash scripts/riven-deps.sh install
 
-### Customization
+# Install all groups
+bash scripts/riven-deps.sh install --all
 
-Use `M-x customize-group RET rivenEmacs RET` to customize configuration through Emacs' built-in customization interface.
+# Install AI + MCP stack only
+bash scripts/riven-deps.sh install --ai --mcp
+```
 
-## Features
+### Fix Examples
 
-- **Performance Optimized**: Fast startup with lazy loading
-- **Modular Design**: Easy to extend and customize
-- **Modern LSP Integration**: Full IDE experience with lsp-bridge
-- **AI Integration**: GPT integration for code assistance
-- **Multiple Language Support**: Web, Rust, Python, and more
-- **Tree-sitter Integration**: Enhanced syntax highlighting and parsing
+```bash
+# Default fix groups: core + lsp + ai + mcp + markdown
+bash scripts/riven-deps.sh fix
+
+# Only prompt and write env vars (no package install)
+bash scripts/riven-deps.sh fix --env-only
+
+# Only install deps (no env prompt)
+bash scripts/riven-deps.sh fix --deps-only
+
+# Write env vars to a specific profile file
+bash scripts/riven-deps.sh fix --profile ~/.zshrc
+```
+
+## Dependency Groups
+
+- `core`: `emacs`, `git`, `ripgrep`, `fd`, `node`, `npm`, `python3`
+- `lsp`: `ruff`, `pyright`, `typescript-language-server`, `vtsls`, `vue-language-server`, etc.
+- `ai`: `cursor-agent-acp`, `claude`, `opencode`
+- `mcp`: filesystem/memory/sequential-thinking/everything/playwright/browser-use/brave/tavily MCP tools
+- `markdown`: `go-grip`
+- `extra`: `docker` and extra quality-of-life tooling
+
+## Environment Variables
+
+The script tracks and can prompt to set these variables:
+
+- `DEFAULT_WORKSPACE`
+- `DEEPSEEK_API_KEY`
+- `GROQ_API_KEY`
+- `ANTHROPIC_AUTH_TOKEN`
+- `ANTHROPIC_BASE_URL`
+- `OPENAI_API_KEY`
+- `BRAVE_API_KEY`
+- `TAVILY_API_KEY`
+- `HTTP_PROXY` / `HTTPS_PROXY`
+
+## AI & MCP Notes
+
+- GPT/MCP configuration lives in [lisp/ai/init-gpt.el](lisp/ai/init-gpt.el).
+- MCP servers can be verified in Emacs with:
+
+```elisp
+M-x riven/gptel-mcp-verify
+```
+
+If `BRAVE_API_KEY` or `TAVILY_API_KEY` is missing, corresponding MCP servers are skipped automatically.
+
+## Manual Build/Lint/Test Commands
+
+```bash
+# Check configuration syntax (all files)
+emacs --batch -l init.el --eval "(message \"Config loaded successfully\")"
+
+# Byte compile a single file
+emacs --batch -f batch-byte-compile lisp/init-config.el
+
+# Byte compile all configuration files
+emacs --batch -f batch-byte-compile lisp/*.el
+
+# Load init.el and test basic functionality
+emacs --batch -l init.el --eval "(message \"All modules loaded\")"
+```
 
 ## Tree-sitter Configuration
 
-RivenEmacs includes tree-sitter support for enhanced syntax highlighting. By default, tree-sitter grammars are **not** automatically installed to avoid startup delays and network issues.
+RivenEmacs includes tree-sitter support for enhanced syntax highlighting. By default, tree-sitter grammars are not automatically installed to avoid startup delays and network issues.
 
 ### Manual Installation
 
-To install tree-sitter grammars manually:
-
 ```elisp
-;; Install all supported grammars
 M-x auto-install-treesit-grammars
-
-;; Install only essential grammars (recommended)
 M-x install-essential-treesit-grammars
-```
-
-### Automatic Installation
-
-To enable automatic installation on startup:
-
-```elisp
-;; Through customize interface
-M-x customize-group RET rivenEmacs RET
-;; Set "rivenEmacs-auto-install-treesit" to t
-
-;; Or add to your configuration
-(setq rivenEmacs-auto-install-treesit t)
 ```
 
 ### Troubleshooting
 
-If you encounter tree-sitter installation errors:
-
-1. **Network Issues**: Ensure you have internet connectivity and can access GitHub
-2. **Git Authentication**: Some repositories may require git authentication
-3. **Missing Dependencies**: Ensure you have `git`, `gcc`, and build tools installed
-4. **Selective Installation**: Use `M-x install-essential-treesit-grammars` for core languages only
-
+1. Ensure network access for grammar sources.
+2. Ensure build tools are installed (`git`, `gcc`, `make`, etc.).
+3. Prefer `M-x install-essential-treesit-grammars` for a smaller baseline.
