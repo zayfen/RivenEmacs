@@ -97,6 +97,11 @@
   :type 'file
   :group 'rivenEmacs)
 
+(defcustom rivenEmacs-gptel-shell-env-fallback t
+  "Whether to read missing API keys from an interactive login shell."
+  :type 'boolean
+  :group 'rivenEmacs)
+
 (defconst riven/gptel-api-key-env-vars
   '("DEEPSEEK_API_KEY" "OPENAI_API_KEY" "GROQ_API_KEY" "ANTHROPIC_AUTH_TOKEN")
   "Environment variable names used for AI API keys.")
@@ -110,8 +115,23 @@
 (defun riven/gptel--read-env (name)
   "Return env var NAME value when non-empty, else nil."
   (let ((value (getenv name)))
-    (unless (string-empty-p (or value ""))
-      value)))
+    (cond
+     ((not (string-empty-p (or value "")))
+      value)
+     ((and rivenEmacs-gptel-shell-env-fallback
+           (stringp shell-file-name)
+           (file-executable-p shell-file-name)
+           (string-match-p "\\`[A-Za-z_][A-Za-z0-9_]*\\'" name))
+      (with-temp-buffer
+        (let ((status (call-process shell-file-name nil t nil
+                                    "-l" "-i" "-c"
+                                    (format "printenv %s" name))))
+          (when (and (integerp status) (zerop status))
+            (let ((shell-value (string-trim-right (buffer-string))))
+              (unless (string-empty-p shell-value)
+                (setenv name shell-value)
+                shell-value))))))
+     (t nil))))
 
 (defun riven/gptel-configure-api-key ()
   "Configure API key for gptel default backends."
@@ -129,7 +149,10 @@
 (defun riven/gptel-configure-backend ()
   "Set up gptel backend with graceful fallback."
   (riven/gptel--sync-api-key-env-vars)
-  (let ((deepseek-key (getenv "DEEPSEEK_API_KEY")))
+  (let ((deepseek-key
+         (or (riven/gptel--read-env "DEEPSEEK_API_KEY")
+             (ignore-errors (gptel-api-key-from-auth-source "api.deepseek.com" "apikey"))
+             (ignore-errors (gptel-api-key-from-auth-source "api.deepseek.com")))))
     (cond
      ((not (eq rivenEmacs-gptel-backend 'deepseek))
       nil)

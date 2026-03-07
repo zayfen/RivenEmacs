@@ -61,12 +61,12 @@
 
 (defun riven/gptel--ensure-request-api ()
   "Ensure `gptel-request` is available."
-  (or (fboundp 'gptel-request)
-      (progn
-        (require 'gptel-request nil t)
+  (or (progn
+        ;; Load gptel first so use-package config (backend/api key) runs.
+        (require 'gptel nil t)
         (fboundp 'gptel-request))
       (progn
-        (require 'gptel nil t)
+        (require 'gptel-request nil t)
         (fboundp 'gptel-request))))
 
 (defun riven/gptel--review-content ()
@@ -161,6 +161,11 @@ Key bindings:
 ORIGIN, START and END identify the original region to apply result."
   (unless (riven/gptel--ensure-request-api)
     (user-error "gptel-request is unavailable; ensure gptel package is installed"))
+  ;; Re-sync runtime key/backend config right before dispatching a request.
+  (when (fboundp 'riven/gptel-configure-api-key)
+    (riven/gptel-configure-api-key))
+  (when (fboundp 'riven/gptel-configure-backend)
+    (riven/gptel-configure-backend))
   (let ((loading-buf (get-buffer-create buffer-name)))
     (with-current-buffer loading-buf
       (let ((inhibit-read-only t))
@@ -178,26 +183,31 @@ ORIGIN, START and END identify the original region to apply result."
        (side . right)
        (slot . 0)
        (window-width . 0.3))))
-  (gptel-request
-   prompt
-   :stream nil
-   :callback
-   (lambda (response info)
-     (cond
-      ((stringp response)
-       (riven/gptel--show-review-buffer
-        buffer-name
-        response
-        origin
-        start
-        end))
-      ((eq response 'abort)
-       (message "[gptel-review] request aborted"))
-      ((null response)
-       (message "[gptel-review] request failed: %s"
-                (or (plist-get info :status) "unknown error")))
-      (t
-       (message "[gptel-review] unexpected response: %s" response))))))
+  (condition-case err
+      (gptel-request
+       prompt
+       :stream nil
+       :callback
+       (lambda (response info)
+         (cond
+          ((stringp response)
+           (riven/gptel--show-review-buffer
+            buffer-name
+            response
+            origin
+            start
+            end))
+          ((eq response 'abort)
+           (message "[gptel-review] request aborted"))
+          ((null response)
+           (message "[gptel-review] request failed: %s"
+                    (or (plist-get info :status) "unknown error")))
+          (t
+           (message "[gptel-review] unexpected response: %s" response)))))
+    (user-error
+     (if (string-match-p "gptel-api-key" (error-message-string err))
+         (user-error "Missing API key in Emacs runtime; set DEEPSEEK_API_KEY then restart Emacs")
+       (signal (car err) (cdr err))))))
 
 (defun riven/gptel-translate-region-review (target-language)
   "Translate selected region into TARGET-LANGUAGE and open review buffer."
