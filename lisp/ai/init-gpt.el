@@ -15,6 +15,8 @@
 (declare-function gptel-make-deepseek "gptel-openai-extras" (&rest args))
 (declare-function gptel-auto-scroll "gptel" (&rest args))
 (declare-function gptel-end-of-response "gptel" (&rest args))
+(declare-function gptel-api-key-from-auth-source "gptel" (&optional host user port))
+(declare-function exec-path-from-shell-copy-envs "exec-path-from-shell" (variables))
 (declare-function gptel-mcp-connect "gptel-integrations"
                   (&optional servers server-callback interactive))
 (declare-function mcp-hub-start-all-server "mcp-hub" (&optional callback servers syncp))
@@ -27,6 +29,7 @@
 (declare-function gptel-translate-region "gptel-extensions" (&optional arg))
 (defvar gptel-model)
 (defvar gptel-backend)
+(defvar gptel-api-key)
 (defvar gptel--known-tools)
 (defvar mcp-hub-servers)
 
@@ -94,8 +97,38 @@
   :type 'file
   :group 'rivenEmacs)
 
+(defconst riven/gptel-api-key-env-vars
+  '("DEEPSEEK_API_KEY" "OPENAI_API_KEY" "GROQ_API_KEY" "ANTHROPIC_AUTH_TOKEN")
+  "Environment variable names used for AI API keys.")
+
+(defun riven/gptel--sync-api-key-env-vars ()
+  "Sync AI API key env vars from shell when possible."
+  (when (require 'exec-path-from-shell nil t)
+    (when (fboundp 'exec-path-from-shell-copy-envs)
+      (exec-path-from-shell-copy-envs riven/gptel-api-key-env-vars))))
+
+(defun riven/gptel--read-env (name)
+  "Return env var NAME value when non-empty, else nil."
+  (let ((value (getenv name)))
+    (unless (string-empty-p (or value ""))
+      value)))
+
+(defun riven/gptel-configure-api-key ()
+  "Configure API key for gptel default backends."
+  (riven/gptel--sync-api-key-env-vars)
+  (let ((openai-key (riven/gptel--read-env "OPENAI_API_KEY")))
+    (cond
+     ((not (string-empty-p (or openai-key "")))
+      (setq gptel-api-key openai-key))
+     ((ignore-errors
+        (not (string-empty-p (or (gptel-api-key-from-auth-source) ""))))
+      nil)
+     (t
+      (message "[gptel] Missing API key: set OPENAI_API_KEY (or auth-source entry gptel-api-key).")))))
+
 (defun riven/gptel-configure-backend ()
   "Set up gptel backend with graceful fallback."
+  (riven/gptel--sync-api-key-env-vars)
   (let ((deepseek-key (getenv "DEEPSEEK_API_KEY")))
     (cond
      ((not (eq rivenEmacs-gptel-backend 'deepseek))
@@ -105,7 +138,7 @@
      ((not (fboundp 'gptel-make-deepseek))
       (message "[gptel] gptel-make-deepseek unavailable; keeping default backend."))
      ((string-empty-p (or deepseek-key ""))
-      (message "[gptel] DEEPSEEK_API_KEY is empty; keeping default backend."))
+      (message "[gptel] DEEPSEEK_API_KEY is empty; using default backend."))
      (t
       (setq gptel-model 'deepseek-chat
             gptel-backend
@@ -249,6 +282,7 @@
   :config
   (add-hook 'gptel-post-stream-hook #'gptel-auto-scroll)
   (add-hook 'gptel-post-response-functions #'gptel-end-of-response)
+  (riven/gptel-configure-api-key)
   (riven/gptel-configure-backend)
   (require 'gptel-integrations nil t))
 
