@@ -53,6 +53,16 @@ Return non-nil when advices are installed."
       (advice-add 'eglot--cmd :around #'riven/eglot-booster--eglot-cmd))
     t))
 
+(defconst riven/eldoc-jitter-prone-modes
+  '(js-ts-mode typescript-ts-mode tsx-ts-mode)
+  "Major modes where Eldoc can cause visible cursor-line jitter.")
+
+(defun riven/disable-eldoc-in-ts-js ()
+  "Disable Eldoc in JS/TS buffers to avoid line-height jitter on cursor line."
+  (when (and (fboundp 'eldoc-mode)
+             (apply #'derived-mode-p riven/eldoc-jitter-prone-modes))
+    (eldoc-mode -1)))
+
 (defun smarter-yas-expand-next-field ()
   "Try `yas-expand`, then move to next field if no expansion happened."
   (interactive)
@@ -81,6 +91,10 @@ Return non-nil when advices are installed."
   :init
   (dolist (mode rivenEmacs-lsp-modes)
     (add-hook (intern (format "%s-hook" mode)) #'eglot-ensure))
+  (dolist (mode riven/eldoc-jitter-prone-modes)
+    (add-hook (intern (format "%s-hook" mode)) #'riven/disable-eldoc-in-ts-js))
+  ;; Eglot can rewire Eldoc after server attach; disable again as a local safeguard.
+  (add-hook 'eglot-managed-mode-hook #'riven/disable-eldoc-in-ts-js)
   :bind (:map eglot-mode-map
               ("M-?" . xref-find-references))
   :custom

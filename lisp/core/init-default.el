@@ -132,6 +132,14 @@ that directory."
  warning-frame-parameters nil           ;To stop Emacs from displaying warnings in a separate frame and instead show them in the echo area (minibuffer)
  )
 
+;; Emacs 31+ may warn about missing lexical-binding cookie in third-party
+;; ELPA files. Keep startup clean by suppressing this specific warning type.
+(add-to-list 'warning-inhibit-types '(files missing-lexbind-cookie))
+(when (boundp 'warning-suppress-types)
+  (add-to-list 'warning-suppress-types '(files missing-lexbind-cookie)))
+(when (boundp 'warning-suppress-log-types)
+  (add-to-list 'warning-suppress-log-types '(files missing-lexbind-cookie)))
+
 ;; Never mix tabs and spaces. Never use tabs, period.
 ;; We need the setq-default here because this becomes
 ;; a buffer-local variable when set.

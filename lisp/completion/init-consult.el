@@ -25,6 +25,7 @@ This is a fallback for broken/missing autoload files in package metadata."
 
 (riven/ensure-elpa-package-load-path 'corfu)
 (riven/ensure-elpa-package-load-path 'cape)
+(add-to-list 'load-path (expand-file-name "elpa/vertico/extensions" user-emacs-directory))
 
 (use-package consult
   :vc (:url "https://github.com/minad/consult")
@@ -91,10 +92,10 @@ This is a fallback for broken/missing autoload files in package metadata."
   (vertico-cycle t)
   (vertico-resize nil)
   :init
-  (add-to-list 'load-path (concat repo-dir "vertico/extensions"))
   (vertico-mode))
 
 (use-package vertico-multiform
+  :if (locate-library "vertico-multiform")
   :after vertico
   :ensure nil
   :config
@@ -124,6 +125,8 @@ This is a fallback for broken/missing autoload files in package metadata."
 (use-package emacs
   :custom
   (enable-recursive-minibuffers t)
+  (completion-cycle-threshold 3)
+  (completion-cycling t)
   (read-extended-command-predicate #'command-completion-default-include-p)
   :init
   (setq completion-ignore-case t
@@ -152,6 +155,7 @@ This is a fallback for broken/missing autoload files in package metadata."
   :demand t
   :custom
   (tab-always-indent 'complete)
+  (corfu-on-exact-match 'insert)
   (corfu-auto t)
   (corfu-auto-delay 0.12)
   (corfu-auto-prefix 1)
@@ -165,11 +169,23 @@ This is a fallback for broken/missing autoload files in package metadata."
   :bind (:map corfu-map
               ("M-P" . corfu-scroll-down)
               ("M-N" . corfu-scroll-up)
-              ("TAB" . corfu-next)
-              ([tab] . corfu-next)
+              ("TAB" . corfu-complete)
+              ([tab] . corfu-complete)
               ([backtab] . corfu-previous))
   :config
   (global-corfu-mode 1))
+
+(use-package corfu-popupinfo
+  :after corfu
+  :ensure nil
+  :bind (:map corfu-map
+              ("M-h" . corfu-popupinfo-documentation))
+  :custom
+  (corfu-popupinfo-delay '(0.25 . 0.1))
+  (corfu-popupinfo-max-width 100)
+  (corfu-popupinfo-max-height 14)
+  :config
+  (corfu-popupinfo-mode 1))
 
 (use-package cape
   :ensure t

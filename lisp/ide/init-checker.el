@@ -7,6 +7,49 @@
   :commands flymake-mode
   :hook (prog-mode . flymake-mode)
   :config
+  (defvar-local riven/flymake-last-echo-line nil
+    "Last line number used for Flymake minibuffer echo.")
+
+  (defvar-local riven/flymake-last-echo-text nil
+    "Last Flymake diagnostic text shown in minibuffer.")
+
+  (defun riven/flymake-current-line-message ()
+    "Return summarized Flymake diagnostics for current line, or nil."
+    (let* ((diags (flymake-diagnostics (line-beginning-position) (line-end-position)))
+           (texts (delete-dups
+                   (delq nil (mapcar #'flymake-diagnostic-text diags)))))
+      (when texts
+        (if (= (length texts) 1)
+            (car texts)
+          (format "%s (+%d more)" (car texts) (1- (length texts)))))))
+
+  (defun riven/flymake-echo-current-line ()
+    "Display current line Flymake diagnostic in minibuffer."
+    (when (and flymake-mode
+               (not (active-minibuffer-window))
+               (not (derived-mode-p 'flymake-diagnostics-buffer-mode
+                                    'flymake-project-diagnostics-mode)))
+      (let* ((line (line-number-at-pos))
+             (text (riven/flymake-current-line-message))
+             (same-line (equal line riven/flymake-last-echo-line))
+             (same-text (equal text riven/flymake-last-echo-text))
+             (had-text riven/flymake-last-echo-text))
+        (unless (and same-line same-text)
+          (setq riven/flymake-last-echo-line line
+                riven/flymake-last-echo-text text)
+          (let ((message-log-max nil))
+            (cond
+             (text (message "%s" text))
+             (had-text (message nil))))))))
+
+  (defun riven/flymake-toggle-echo-hook ()
+    "Toggle minibuffer diagnostic echo hook with `flymake-mode'."
+    (if flymake-mode
+        (add-hook 'post-command-hook #'riven/flymake-echo-current-line nil t)
+      (remove-hook 'post-command-hook #'riven/flymake-echo-current-line t)))
+
+  (add-hook 'flymake-mode-hook #'riven/flymake-toggle-echo-hook)
+
   ;; 键绑定重新映射
   (define-key flymake-mode-map [remap next-error] #'flymake-goto-next-error)
   (define-key flymake-mode-map [remap previous-error] #'flymake-goto-prev-error)
@@ -33,10 +76,9 @@
 
   ;; 将自定义函数应用到 Flymake 的 mode-line
   (setq flymake-mode-line-format '(" " (:eval (my-flymake-mode-line))))
-
-  ;; show diagnostic
-  (when (>= emacs-major-version 31)
-    (setopt flymake-show-diagnostics-at-end-of-line 'fancy))
+  ;; Keep diagnostics as underlines only. Detailed messages are shown
+  ;; via Flymake overlay help-echo when hovering with mouse.
+  (setopt flymake-show-diagnostics-at-end-of-line nil)
 
   :custom
   (flymake-fringe-indicator-position 'left-fringe)
