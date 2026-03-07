@@ -4,6 +4,8 @@
   '(("." gptel "Console")
     ("m" gptel-menu "Menu")
     ("=" gptel-send "Send")
+    ("M" riven/gptel-mcp-connect-popular "MCP Connect")
+    ("V" riven/gptel-mcp-verify "MCP Verify")
     ("r" gptel-rewrite "Rewrite")
     ("t" gptel-translate-region "Translate")
     ("?" gptel-extensions-ask-document "Ask Document")

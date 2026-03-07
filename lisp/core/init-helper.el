@@ -1,11 +1,29 @@
 ;; -*- coding: utf-8; lexical-binding: t -*-
 
 (require 'url)
+(require 'project)
+(require 'package-vc nil t)
+
+(declare-function consult-ripgrep "consult" (dir &optional initial))
+(declare-function consult-fd "consult" (&optional dir initial))
+(declare-function consult-line "consult" (&optional initial start))
+(declare-function dirvish-copy-file-path "dirvish" (&optional arg))
+(declare-function projectile-project-root "projectile")
+(declare-function w32-shell-execute "w32fns.c" (operation document &optional parameters show-flag))
+
+(defvar package-vc-selected-packages)
 
 (defun get-project-root ()
-  (if (fboundp 'projectile-project-root)
-      (projectile-project-root)
-    (project-root (project-current))))
+  "Return current project root, or `default-directory` outside projects."
+  (cond
+   ((fboundp 'projectile-project-root)
+    (or (ignore-errors (projectile-project-root))
+        default-directory))
+   ((fboundp 'project-current)
+    (if-let* ((project (project-current nil)))
+        (project-root project)
+      default-directory))
+   (t default-directory)))
 
 ;; Ripgrep the current word from project root
 (defun consult-ripgrep-at-point ()
@@ -15,7 +33,10 @@
 ;; Ripgrep the selected region from project root
 (defun consult-ripgrep-region ()
   (interactive)
-  (consult-ripgrep (get-project-root) (buffer-substring-no-properties (region-beginning) (region-end))))
+  (unless (use-region-p)
+    (user-error "No active region"))
+  (consult-ripgrep (get-project-root)
+                   (buffer-substring-no-properties (region-beginning) (region-end))))
 
 ;; enhance ripgrep
 (defun consult-ripgrep-ex ()
@@ -45,7 +66,7 @@
 
 
 (defun +remove-invalidate-buffers ()
-  "Remove invalidate buffers"
+  "Kill unmodified file buffers whose files no longer exist."
   (interactive)
   (mapc (lambda (buf)
           (with-current-buffer buf
