@@ -73,6 +73,8 @@ that directory."
  recentf-max-saved-items 50
  ;; Ignore case when searching recentf files
  recentf-case-fold-search t
+ ;; Keep raw absolute paths; avoids costly path handlers in consult/recentf flows.
+ recentf-filename-handlers nil
  ;; Exclude some files from being remembered by recentf
  recentf-exclude
  `(,(rx (* any)

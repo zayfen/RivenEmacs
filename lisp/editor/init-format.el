@@ -23,15 +23,23 @@
                              (thing-at-point 'line))))))
 
 
-(use-package format-all
-  :vc (:url "https://github.com/lassik/emacs-format-all-the-code")
-  :commands format-all-mode
-  ;; :hook (prog-mode . format-all-mode) ;; dont want format code on save
-  :bind ("C-S-i" . format-all-region-or-buffer)
+(defun riven/apheleia-format-dwim ()
+  "Format current region if active, otherwise format the whole buffer."
+  (interactive)
+  (if (and (use-region-p) (fboundp 'apheleia-format-region))
+      (apheleia-format-region (region-beginning) (region-end))
+    (apheleia-format-buffer)))
+
+(use-package apheleia
+  :ensure t
+  :commands (apheleia-format-buffer apheleia-format-region)
+  :bind ("C-S-i" . riven/apheleia-format-dwim)
   :config
-  (setq-default format-all-formatters
-                '(("C"     (astyle "--mode=c"))
-                  ("Shell" (shfmt "-i" "4" "-ci")))))
+  ;; Keep shell formatting options consistent with previous setup.
+  (setf (alist-get 'riven/shfmt apheleia-formatters)
+        '("shfmt" "-i" "4" "-ci"))
+  (setf (alist-get 'sh-mode apheleia-mode-alist) 'riven/shfmt)
+  (setf (alist-get 'bash-ts-mode apheleia-mode-alist) 'riven/shfmt))
 
 
 ;; 开启 ESLint 的自动修复模式：需要预先在全局安装 eslint_d 包

@@ -10,7 +10,8 @@
   :demand t
   :vc (:url "https://github.com/victorhge/iedit")
   :bind
-  (:map iedit-mode-occurrence-keymap
+  (("C-;" . iedit-mode)
+   :map iedit-mode-occurrence-keymap
         (("M-n" . iedit-next-occurrence)
          ("M-p" . iedit-prev-occurrence))))
 
@@ -67,10 +68,33 @@
   :vc (:url "https://github.com/tarsius/hl-todo")
   :hook (prog-mode . hl-todo-mode))
 
+(defun riven/goggles-mode-maybe ()
+  "Enable `goggles-mode` only when the package is available."
+  (when (fboundp 'goggles-mode)
+    (goggles-mode 1)))
+
 (use-package goggles
   :vc (:url "https://github.com/minad/goggles" :branch "main")
-  :hook ((prog-mode text-mode) . goggles-mode)
+  :hook ((prog-mode text-mode) . riven/goggles-mode-maybe)
   :config
   (setq-default goggles-pulse t))
+
+(defun riven/jinx-available-p ()
+  "Return non-nil when the Enchant backend is available for jinx."
+  (or (executable-find "enchant-2")
+      (executable-find "enchant-lsmod-2")
+      (executable-find "enchant")))
+
+(unless (riven/jinx-available-p)
+  (message "jinx disabled: install enchant + hunspell to enable spell checking."))
+
+(use-package jinx
+  :if (riven/jinx-available-p)
+  :hook ((text-mode . jinx-mode)
+         (prog-mode . jinx-mode))
+  :bind (("M-$" . jinx-correct)
+         ("C-M-$" . jinx-languages))
+  :custom
+  (jinx-languages "en_US"))
 
 (provide 'init-editor)

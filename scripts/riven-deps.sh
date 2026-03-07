@@ -38,9 +38,9 @@ ENV_SPECS=(
 usage() {
   cat <<'EOF'
 Usage:
-  scripts/riven-deps.sh install [--core] [--lsp] [--ai] [--mcp] [--markdown] [--extra] [--all]
+  scripts/riven-deps.sh install [--core] [--lsp] [--ai] [--mcp] [--markdown] [--spell] [--extra] [--all]
   scripts/riven-deps.sh doctor
-  scripts/riven-deps.sh fix [--core] [--lsp] [--ai] [--mcp] [--markdown] [--extra] [--all] [--deps-only] [--env-only] [--profile FILE]
+  scripts/riven-deps.sh fix [--core] [--lsp] [--ai] [--mcp] [--markdown] [--spell] [--extra] [--all] [--deps-only] [--env-only] [--profile FILE]
   scripts/riven-deps.sh list
 
 Commands:
@@ -55,12 +55,13 @@ Install groups:
   --ai        Agent CLI dependencies
   --mcp       MCP server/tool dependencies for gptel
   --markdown  Markdown live preview dependency (go-grip)
+  --spell     Spell-check dependencies for jinx (enchant/hunspell)
   --extra     Optional quality-of-life tools (docker/clangd)
   --all       Install all groups
 
 Notes:
   - install default groups: --core --lsp
-  - fix default groups: --core --lsp --ai --mcp --markdown
+  - fix default groups: --core --lsp --ai --mcp --markdown --spell
 EOF
 }
 
@@ -262,6 +263,21 @@ install_markdown() {
   fi
 }
 
+install_spell() {
+  log "Installing spell-check dependencies for jinx..."
+  if [[ "$PLATFORM" == "macos" ]]; then
+    ensure_brew
+    brew_install enchant
+    brew_install hunspell
+  else
+    ensure_apt
+    run_cmd sudo apt-get update
+    apt_install enchant-2
+    apt_install hunspell
+    apt_install hunspell-en-us
+  fi
+}
+
 install_extra() {
   log "Installing optional extra dependencies..."
   if [[ "$PLATFORM" == "macos" ]]; then
@@ -395,6 +411,12 @@ doctor() {
   echo "[Feature-specific optional]"
   check_cmd go-grip optional "Markdown grip-mode live preview backend"
   check_cmd go optional "Install go-grip automatically"
+  if has_cmd enchant-2 || has_cmd enchant-lsmod-2 || has_cmd enchant; then
+    ok "enchant backend (jinx spell-check backend)"
+  else
+    warn "enchant backend missing (jinx spell-check backend)"
+  fi
+  check_cmd hunspell optional "Dictionary backend for jinx/enchant"
   check_cmd zstd optional "undo-fu-session compression optimization"
   check_cmd docker optional "docker.el workflows"
   check_cmd cmake optional "tree-sitter/vterm native builds"
@@ -451,6 +473,9 @@ mcp:
   playwright-mcp, browser-use, uvx,
   mcp-server-brave-search, tavily-mcp
 
+spell:
+  enchant-2(or enchant-lsmod-2/enchant), hunspell
+
 environment variables:
   DEFAULT_WORKSPACE, DEEPSEEK_API_KEY, GROQ_API_KEY,
   ANTHROPIC_AUTH_TOKEN, ANTHROPIC_BASE_URL,
@@ -468,13 +493,15 @@ run_install_groups() {
   local want_ai="$3"
   local want_mcp="$4"
   local want_markdown="$5"
-  local want_extra="$6"
+  local want_spell="$6"
+  local want_extra="$7"
 
   (( want_core )) && install_core
   (( want_lsp )) && install_lsp
   (( want_ai )) && install_ai
   (( want_mcp )) && install_mcp
   (( want_markdown )) && install_markdown
+  (( want_spell )) && install_spell
   (( want_extra )) && install_extra
 
   ok "Install steps finished."
@@ -486,6 +513,7 @@ install_main() {
   local want_ai=0
   local want_mcp=0
   local want_markdown=0
+  local want_spell=0
   local want_extra=0
 
   if [[ $# -eq 0 ]]; then
@@ -499,6 +527,7 @@ install_main() {
         --ai) want_ai=1 ;;
         --mcp) want_mcp=1 ;;
         --markdown) want_markdown=1 ;;
+        --spell) want_spell=1 ;;
         --extra) want_extra=1 ;;
         --all)
           want_core=1
@@ -506,6 +535,7 @@ install_main() {
           want_ai=1
           want_mcp=1
           want_markdown=1
+          want_spell=1
           want_extra=1
           ;;
         *)
@@ -518,7 +548,7 @@ install_main() {
     done
   fi
 
-  run_install_groups "$want_core" "$want_lsp" "$want_ai" "$want_mcp" "$want_markdown" "$want_extra"
+  run_install_groups "$want_core" "$want_lsp" "$want_ai" "$want_mcp" "$want_markdown" "$want_spell" "$want_extra"
 }
 
 shell_single_quote() {
@@ -650,6 +680,7 @@ fix_main() {
   local want_ai=0
   local want_mcp=0
   local want_markdown=0
+  local want_spell=0
   local want_extra=0
   local do_deps=1
   local do_env=1
@@ -663,6 +694,7 @@ fix_main() {
       --ai) want_ai=1; group_selected=1 ;;
       --mcp) want_mcp=1; group_selected=1 ;;
       --markdown) want_markdown=1; group_selected=1 ;;
+      --spell) want_spell=1; group_selected=1 ;;
       --extra) want_extra=1; group_selected=1 ;;
       --all)
         want_core=1
@@ -670,6 +702,7 @@ fix_main() {
         want_ai=1
         want_mcp=1
         want_markdown=1
+        want_spell=1
         want_extra=1
         group_selected=1
         ;;
@@ -699,9 +732,10 @@ fix_main() {
       want_ai=1
       want_mcp=1
       want_markdown=1
+      want_spell=1
     fi
 
-    run_install_groups "$want_core" "$want_lsp" "$want_ai" "$want_mcp" "$want_markdown" "$want_extra"
+    run_install_groups "$want_core" "$want_lsp" "$want_ai" "$want_mcp" "$want_markdown" "$want_spell" "$want_extra"
   fi
 
   if (( do_env )); then

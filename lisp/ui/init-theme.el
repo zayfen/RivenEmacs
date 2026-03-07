@@ -73,9 +73,26 @@
   (set-face-attribute 'font-lock-comment-face nil :slant 'italic)
   (set-face-attribute 'font-lock-keyword-face nil :weight 'semi-bold :slant 'normal)
   (set-face-attribute 'font-lock-function-name-face nil :weight 'semi-bold :slant 'normal)
-  (set-face-attribute 'line-number-current-line nil :weight 'bold))
+  (let* ((dark-mode (eq (frame-parameter nil 'background-mode) 'dark))
+         (line-number-fg (if dark-mode "#6e7681" "#9aa0a6"))
+         (line-number-current-fg (if dark-mode "#c3ccd7" "#4f5660")))
+    (set-face-attribute 'line-number nil
+                        :foreground line-number-fg
+                        :background 'unspecified
+                        :weight 'normal)
+    (set-face-attribute 'line-number-current-line nil
+                        :foreground line-number-current-fg
+                        :background 'unspecified
+                        :weight 'semi-bold)))
+
+(defun riven/reapply-theme-face-overrides (&rest _)
+  "Reapply face overrides after theme changes."
+  (riven/apply-theme-face-overrides))
 
 (riven/apply-theme-face-overrides)
+
+(unless (advice-member-p #'riven/reapply-theme-face-overrides 'load-theme)
+  (advice-add 'load-theme :after #'riven/reapply-theme-face-overrides))
 
 
 (use-package rainbow-delimiters
@@ -131,10 +148,6 @@
 
 (with-eval-after-load 'compile
   (fancy-compilation-mode))
-
-;; change line number color
-(with-eval-after-load 'modus-themes
-  (set-face-foreground 'line-number (modus-themes-get-color-value 'fg-dim)))
 
 ;; Show file path in header line (first line)
 (setq-default header-line-format

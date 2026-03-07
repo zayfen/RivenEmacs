@@ -43,9 +43,9 @@
       ("t" git-timemachine-toggle "Time machine")
       ("TAB" diff-hl-show-hunk "Show hunk")))
 
-    ("k" "Kill"
-     (("a" sp-splice-sexp "Delete Around")
-      ("A" sp-rewrap-sexp "Delete Around and Rewrap")
+    ("e" "Edit"
+     (("u" sp-splice-sexp "Delete Around")
+      ("U" sp-rewrap-sexp "Delete Around and Rewrap")
       ("k" sp-kill-whole-line "Kill line(s) (smart)")
       ("r" vr/replace "Replace")
       ("s" sp-delete-sexp "Delete Sexp")

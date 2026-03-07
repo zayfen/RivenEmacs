@@ -41,6 +41,14 @@
         (angular . ("https://github.com/dlvandenberg/tree-sitter-angular"))
         (swift . ("https://github.com/alex-pinkus/tree-sitter-swift"))))
 
+(use-package treesit-auto
+  :ensure t
+  :demand t
+  :custom
+  (treesit-auto-install 'prompt)
+  :config
+  (global-treesit-auto-mode))
+
 (defun install-treesit-language-grammars ()
   "Install tree-sitter language grammars."
   (interactive)

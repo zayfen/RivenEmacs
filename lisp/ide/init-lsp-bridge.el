@@ -70,6 +70,7 @@
               ("M-P" . lsp-bridge-popup-documentation-scroll-down)
               ("M-N" . lsp-bridge-popup-documentation-scroll-up))
   :bind (:map acm-mode-map
+              ("M-d" . acm-doc-toggle)
               ("M-P" . acm-doc-scroll-down)
               ("M-N" . acm-doc-scroll-up))
   :bind (:map lsp-bridge-peek-keymap
@@ -79,8 +80,12 @@
   :custom
   (acm-enable-icon t)
   (acm-enable-yas t)
-  (acm-enable-doc t)
+  ;; Disable auto doc popup to avoid covering completion menu.
+  (acm-enable-doc nil)
   (acm-enable-doc-markdown-render t)
+  (acm-doc-frame-boundary 'display)
+  ;; Increase candidate text width to avoid narrow completion popup.
+  (acm-backend-lsp-candidate-max-length 120)
   (acm-enable-path t)
   (acm-backend-yas-match-by-trigger-keyword t)
   (acm-enable-preview t)

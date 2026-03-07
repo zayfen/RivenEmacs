@@ -52,6 +52,18 @@
   (advice-add #'register-preview :override #'consult-register-window)
   (setq xref-show-xrefs-function #'consult-xref
         xref-show-definitions-function #'consult-xref)
+  :config
+  ;; Reduce lag while moving candidates in consult-buffer.
+  (consult-customize consult-buffer consult-project-buffer
+                     :preview-key '(:debounce 0.35 any))
+  ;; File candidates are expensive to preview continuously.
+  (dolist (source '(consult-source-recent-file
+                    consult-source-project-recent-file
+                    consult-source-project-recent-file-hidden
+                    consult-source-project-root
+                    consult-source-project-root-hidden))
+    (when (boundp source)
+      (setf (plist-get (symbol-value source) :preview-key) nil)))
   :custom
   (consult-buffer-filter '("\` "
                            "\`\*dashboard\*\'"
@@ -88,8 +100,7 @@
         '((consult-imenu buffer indexed)
           (execute-extended-command unobtrusive)))
   (setq vertico-multiform-categories
-        '((file grid)
-          (consult-grep buffer))))
+        '((consult-grep buffer))))
 
 ;; `vertico-directory` may be unavailable in some environments.
 ;; Bind safe fallbacks to avoid minibuffer DEL errors.
@@ -137,8 +148,27 @@
   :vc (:url "https://github.com/minad/marginalia")
   :bind (:map minibuffer-local-map
               ("M-A" . marginalia-cycle))
+  :config
+  ;; Prioritize cheap file annotations to keep consult-buffer file source smooth.
+  (let ((file-entry (assq 'file marginalia-annotator-registry)))
+    (when file-entry
+      (setcdr file-entry '(builtin marginalia-annotate-file none))))
+  (let ((project-file-entry (assq 'project-file marginalia-annotator-registry)))
+    (when project-file-entry
+      (setcdr project-file-entry '(builtin marginalia-annotate-project-file none))))
   :init
   (marginalia-mode))
+
+(use-package embark
+  :bind (("C-." . embark-act)
+         ("C-c ;" . embark-dwim)
+         ("C-h B" . embark-bindings))
+  :init
+  (setq prefix-help-command #'embark-prefix-help-command))
+
+(use-package embark-consult
+  :after (embark consult)
+  :hook (embark-collect-mode . consult-preview-at-point-mode))
 
 (use-package prescient
   :config (prescient-persist-mode))
