@@ -19,45 +19,44 @@
 
 (add-hook 'after-init-hook #'riven/keybindings-config)
 
-(defun riven/lsp-bridge-register-code-prefix-which-key ()
+(defun riven/eglot-register-code-prefix-which-key ()
   "Register human-readable which-key labels for `C-c c` code group."
   (when (fboundp 'which-key-add-keymap-based-replacements)
-    (apply #'which-key-add-keymap-based-replacements
-           lsp-bridge-mode-map
+    (let ((replacements
            (append
             '("C-c c" "Code")
             (cl-mapcan
              (lambda (entry)
                (pcase-let ((`(,key ,_cmd ,wk) entry))
                  (list (format "C-c c %s" key) wk)))
-             riven/keybindings-lsp-spec)))))
+             riven/keybindings-lsp-spec))))
+      (condition-case nil
+          (apply #'which-key-add-keymap-based-replacements
+                 eglot-mode-map
+                 replacements)
+        (wrong-type-argument
+         (apply #'which-key-add-keymap-based-replacements
+                'eglot-mode-map
+                replacements))))))
 
-(defun riven/lsp-bridge-install-code-prefix-fallback ()
-  "Install a stable `C-c c` code prefix in `lsp-bridge-mode-map`."
+(defun riven/eglot-install-code-prefix-fallback ()
+  "Install a stable `C-c c` code prefix in `eglot-mode-map`."
   (let ((prefix-map (make-sparse-keymap)))
     (dolist (entry riven/keybindings-lsp-spec)
       (pcase-let ((`(,key ,cmd ,wk) entry))
-        (define-key prefix-map (kbd key) `(menu-item ,wk ,cmd))))
-    (define-key lsp-bridge-mode-map (kbd "C-c c") (cons "Code" prefix-map))))
+        (ignore wk)
+        (define-key prefix-map (kbd key) cmd)))
+    (define-key eglot-mode-map (kbd "C-c c") prefix-map)))
 
-(defun riven/lsp-bridge-keybindings ()
-  "Set up lsp-bridge mode keybindings."
-  (when (featurep 'lsp-bridge)
-    (riven/keybindings-invoke-definer
-     'leader-def
-     (append (list :keymaps 'lsp-bridge-mode-map
-                   :infix "c"
-                   "" '(:ignore t :wk "Code"))
-             (cl-mapcan
-              (lambda (entry)
-                (pcase-let ((`(,key ,cmd ,wk) entry))
-                  (list key `(,cmd :wk ,wk))))
-              riven/keybindings-lsp-spec)))
-    ;; Keep group prefix available even if dynamic leader injection is skipped.
-    (riven/lsp-bridge-install-code-prefix-fallback)
-    (riven/lsp-bridge-register-code-prefix-which-key)))
+(defun riven/eglot-keybindings ()
+  "Set up Eglot mode keybindings."
+  (when (featurep 'eglot)
+    ;; Avoid `general` dynamic keymap delay path here; it can treat
+    ;; keymap values as symbols and raise `wrong-type-argument symbolp`.
+    (riven/eglot-install-code-prefix-fallback)
+    (riven/eglot-register-code-prefix-which-key)))
 
-(with-eval-after-load 'lsp-bridge
-  (riven/lsp-bridge-keybindings))
+(with-eval-after-load 'eglot
+  (riven/eglot-keybindings))
 
 (provide 'init-keybindings)

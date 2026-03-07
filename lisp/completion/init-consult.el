@@ -9,6 +9,23 @@
 
 ;;; Code:
 
+(defun riven/ensure-elpa-package-load-path (package)
+  "Ensure PACKAGE version directory in ELPA is present in `load-path`.
+This is a fallback for broken/missing autoload files in package metadata."
+  (let ((library (symbol-name package)))
+    (unless (locate-library library)
+      (let* ((elpa-root (if (boundp 'package-user-dir)
+                            package-user-dir
+                          (expand-file-name "elpa" user-emacs-directory)))
+             (pattern (format "^%s-[0-9]" (regexp-quote library)))
+             (candidates (and (file-directory-p elpa-root)
+                              (directory-files elpa-root t pattern t))))
+        (when candidates
+          (add-to-list 'load-path (car (sort candidates #'string>))))))))
+
+(riven/ensure-elpa-package-load-path 'corfu)
+(riven/ensure-elpa-package-load-path 'cape)
+
 (use-package consult
   :vc (:url "https://github.com/minad/consult")
   :bind (;; C-c bindings in `mode-specific-map'
@@ -55,7 +72,7 @@
   :config
   ;; Reduce lag while moving candidates in consult-buffer.
   (consult-customize consult-buffer consult-project-buffer
-                     :preview-key '(:debounce 0.35 any))
+                     :preview-key '(:debounce 0.2 any))
   ;; File candidates are expensive to preview continuously.
   (dolist (source '(consult-source-recent-file
                     consult-source-project-recent-file
@@ -65,22 +82,8 @@
     (when (boundp source)
       (setf (plist-get (symbol-value source) :preview-key) nil)))
   :custom
-  (consult-buffer-filter '("\` "
-                           "\`\*dashboard\*\'"
-                           "\`\*img-cache\*\'"
-                           "\`\*Warnings\*\'"
-                           "\`\*Native-compile-Log\*\'"
-                           "\`\*Async-native-compile-log\*\'"
-                           "\`\*flymake-popon\*\'"
-                           "\`\*Messages\*\'"
-                           "\`\*scratch\*\'"
-                           "\`\*lsp-bridge"
-                           "\`\*Completions\*\'"
-                           "\`\*Flymake log\*\'"
-                           "\`\*Semantic SymRef\*\'"
-                           "\`\*vc\*\'"
-                           "\`newsrc-dribble\'"
-                           "\`\*tramp/.*\*\'")))
+  (consult-buffer-filter '("\\` "
+                           "\\`\\*.*\\*\\'")))
 
 (use-package vertico
   :vc (:url "https://github.com/minad/vertico")
@@ -143,6 +146,42 @@
   (completion-styles '(orderless basic))
   (completion-category-defaults nil)
   (completion-category-overrides '((file (styles partial-completion)))))
+
+(use-package corfu
+  :ensure t
+  :demand t
+  :custom
+  (tab-always-indent 'complete)
+  (corfu-auto t)
+  (corfu-auto-delay 0.12)
+  (corfu-auto-prefix 1)
+  (corfu-cycle t)
+  (corfu-count 14)
+  (corfu-preselect 'prompt)
+  (corfu-preview-current nil)
+  (corfu-min-width 48)
+  (corfu-max-width 120)
+  (corfu-scroll-margin 2)
+  :bind (:map corfu-map
+              ("M-P" . corfu-scroll-down)
+              ("M-N" . corfu-scroll-up)
+              ("TAB" . corfu-next)
+              ([tab] . corfu-next)
+              ([backtab] . corfu-previous))
+  :config
+  (global-corfu-mode 1))
+
+(use-package cape
+  :ensure t
+  :init
+  ;; Keep LSP completion first and append generic CAPFs as fallbacks.
+  (add-hook 'completion-at-point-functions #'cape-file t)
+  (add-hook 'completion-at-point-functions #'cape-dabbrev t)
+  (add-hook 'completion-at-point-functions #'cape-keyword t)
+  (add-hook 'completion-at-point-functions #'cape-symbol t)
+  :config
+  (with-eval-after-load 'eglot
+    (advice-add 'eglot-completion-at-point :around #'cape-wrap-buster)))
 
 (use-package marginalia
   :vc (:url "https://github.com/minad/marginalia")

@@ -84,8 +84,6 @@
   (acm-enable-doc nil)
   (acm-enable-doc-markdown-render t)
   (acm-doc-frame-boundary 'display)
-  ;; Increase candidate text width to avoid narrow completion popup.
-  (acm-backend-lsp-candidate-max-length 120)
   (acm-enable-path t)
   (acm-backend-yas-match-by-trigger-keyword t)
   (acm-enable-preview t)
@@ -94,7 +92,7 @@
   (acm-enable-quick-access t)
   (acm-backend-search-file-words-candidate-min-length 3)
 
-  (lsp-bridge-enable-log nil)
+  (lsp-bridge-enable-log t)
   (lsp-bridge-enable-diagnostics nil)
   (lsp-bridge-code-action-enable-popup-menu nil)
   (lsp-bridge-find-def-fallback-function #'xref-find-definitions)
