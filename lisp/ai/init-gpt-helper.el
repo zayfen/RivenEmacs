@@ -142,6 +142,17 @@ Key bindings:
 - `y`: insert content below selected region in original buffer
 - `r`: replace selected region in original buffer")
 
+(defun riven/gptel--display-review-window (buffer)
+  "Display review BUFFER in right side window and focus it."
+  (when-let* ((win
+               (display-buffer
+                buffer
+                '((display-buffer-in-side-window)
+                  (side . right)
+                  (slot . 0)
+                  (window-width . 0.3)))))
+    (select-window win)))
+
 (defun riven/gptel--show-review-buffer (buffer-name content origin start end)
   "Show generated CONTENT in review BUFFER-NAME with ORIGIN and region START/END."
   (let ((buf (get-buffer-create buffer-name)))
@@ -154,12 +165,7 @@ Key bindings:
         (setq-local riven/gptel-review-origin-buffer origin)
         (setq-local riven/gptel-review-start-marker start)
         (setq-local riven/gptel-review-end-marker end)))
-    (display-buffer
-     buf
-     '((display-buffer-in-side-window)
-       (side . right)
-       (slot . 0)
-       (window-width . 0.3)))))
+    (riven/gptel--display-review-window buf)))
 
 (defun riven/gptel--request-review (prompt buffer-name origin start end)
   "Send PROMPT and show response in side review BUFFER-NAME.
@@ -182,12 +188,7 @@ ORIGIN, START and END identify the original region to apply result."
         (setq-local riven/gptel-review-origin-buffer origin)
         (setq-local riven/gptel-review-start-marker start)
         (setq-local riven/gptel-review-end-marker end)))
-    (display-buffer
-     loading-buf
-     '((display-buffer-in-side-window)
-       (side . right)
-       (slot . 0)
-       (window-width . 0.3))))
+    (riven/gptel--display-review-window loading-buf))
   (condition-case err
       (gptel-request
        prompt
