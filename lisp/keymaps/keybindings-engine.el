@@ -30,9 +30,13 @@
   "Invoke DEFINER with ARGS, supporting both macros and functions."
   (cond
    ((and (symbolp definer) (macrop definer))
-    ;; Macros receive forms, so pass each runtime value as a quoted literal.
+    ;; Macros receive forms: keep scalar args as-is, quote list payloads only.
     (eval (cons definer
-                (mapcar (lambda (arg) (list 'quote arg)) args))))
+                (mapcar (lambda (arg)
+                          (if (listp arg)
+                              (list 'quote arg)
+                            arg))
+                        args))))
    ((or (functionp definer)
         (and (symbolp definer) (fboundp definer)))
     (apply definer args))
