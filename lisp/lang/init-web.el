@@ -1,39 +1,28 @@
 ;; -*- coding: utf-8; lexical-binding: t -*-
 ;;; init-web.el --- web config
 
+(defun riven/web-mode-setup ()
+  "Common setup for `web-mode' buffers."
+  (emmet-mode 1)
+  (local-unset-key (kbd "C-c C-l")))
+
 (use-package emmet-mode
   :ensure t
-  :defer t)
-
-(defun my-web-mode-hook ()
-  "Hooks for Web-mode."
-  (setq web-mode-markup-indent-offset 2)
-  (setq web-mode-code-indent-offset 2)
-  (setq web-mode-css-indent-offset 2)
-  (setq web-mode-style-padding 0)
-  (setq web-mode-script-padding 0))
+  :commands (emmet-mode))
 
 (use-package web-mode
   :ensure t
-  :mode ("\\.html\\'" "\\.ejs\\'")
-  :commands web-mode
-  :config
-  (setq web-mode-enable-auto-closing t) ;)
-  (setq web-mode-enable-auto-quoting nil) ; this fixes the quote problem I mentioned
-  (add-hook 'web-mode-hook  'my-web-mode-hook)
-  (setq tab-width 2)
-  (add-hook 'web-mode-hook  'emmet-mode)
-  (add-hook 'web-mode-hook
-            (lambda()
-              (local-unset-key (kbd "C-c C-l")))))
+  :mode ("\\.html\\'" "\\.ejs\\'" "\\.vue\\'")
+  :hook (web-mode . riven/web-mode-setup)
+  :custom
+  (web-mode-enable-auto-closing t)
+  (web-mode-enable-auto-quoting nil)
+  (web-mode-markup-indent-offset 2)
+  (web-mode-code-indent-offset 2)
+  (web-mode-css-indent-offset 2)
+  (web-mode-style-padding 0)
+  (web-mode-script-padding 0))
 
-;; Define vue-mode
-(define-derived-mode vue-mode web-mode "Vue"
-  "Major mode for Vue.js files.")
-
-;; Associate .vue files with vue-mode
-(add-to-list 'auto-mode-alist '("\\.vue\\'" . vue-mode))
-(add-hook 'vue-mode-hook 'my-web-mode-hook)
 (add-to-list 'auto-mode-alist '("\\.ts$" . typescript-ts-mode))
 (add-to-list 'auto-mode-alist '("\\.tsx$" . tsx-ts-mode))
 (add-to-list 'auto-mode-alist '("\\.js$" . js-ts-mode))

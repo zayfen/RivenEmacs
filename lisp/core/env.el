@@ -1,10 +1,9 @@
 ;; -*- lexical-binding: t; -*-
 
 (defconst root-dir
-  (abbreviate-file-name
-   (file-name-directory
-    (directory-file-name
-     (file-name-directory (file-truename load-file-name))))))
+  (file-name-as-directory
+   (abbreviate-file-name
+    (expand-file-name "../.." (file-name-directory (file-truename load-file-name))))))
 
 (defconst lisp-dir (concat root-dir "lisp/"))
 (defconst local-dir (concat root-dir "local/"))

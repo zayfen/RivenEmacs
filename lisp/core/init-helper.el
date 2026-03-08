@@ -6,7 +6,6 @@
 
 (declare-function consult-ripgrep "consult" (dir &optional initial))
 (declare-function consult-fd "consult" (&optional dir initial))
-(declare-function consult-line "consult" (&optional initial start))
 (declare-function dirvish-copy-file-path "dirvish" (&optional arg))
 (declare-function projectile-project-root "projectile")
 (declare-function w32-shell-execute "w32fns.c" (operation document &optional parameters show-flag))
@@ -45,6 +44,18 @@
       (consult-ripgrep-region)
     (consult-ripgrep-at-point)))
 
+(defun riven/xref-find-definitions-or-search ()
+  "Jump to definition with Xref, fallback to project ripgrep at point."
+  (interactive)
+  (condition-case err
+      (call-interactively #'xref-find-definitions)
+    (xref--not-found-error
+     (if (fboundp 'consult-ripgrep)
+         (consult-ripgrep-at-point)
+       (message "%s" (error-message-string err))))
+    (error
+     (signal (car err) (cdr err)))))
+
 (defun my-select-inside-quotes ()
   "grab text between double straight quotes on each side of cursor."
   (interactive)
@@ -76,12 +87,6 @@
                 (kill-buffer buf))))
         (buffer-list)))
 
-
-(defun consult-line-ex ()
-  (interactive)
-  (if (use-region-p)
-      (consult-line (buffer-substring-no-properties (region-beginning) (region-end)))
-    (consult-line)))
 
 (defun +consult-fd-in-home ()
   "Find file in home directory."

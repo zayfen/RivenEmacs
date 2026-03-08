@@ -1,11 +1,6 @@
 ;; -*- coding: utf-8; lexical-binding: t -*-
 ;;; init-vc.el --- Git and version control
 
-(eval-and-compile
-  (let ((current-file (or load-file-name byte-compile-current-file buffer-file-name)))
-    (when current-file
-      (add-to-list 'load-path (file-name-directory current-file)))))
-
 (use-package magit
   :custom
   (magit-diff-refine-hunk t)
@@ -39,55 +34,8 @@
   :custom
   (git-timemachine-show-minibuffer-details t))
 
-
-(defvar git-hunk-mode-map
-  (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "n") #'git-hunk-next)
-    (define-key map (kbd "p") #'git-hunk-previous)
-    (define-key map (kbd "r") #'git-hunk-revert)
-    (define-key map (kbd "s") #'git-hunk-stage)
-    (define-key map (kbd "C-g") #'git-hunk-exit)
-    map)
-  "Keymap for `git-hunk-mode'.")
-
-(define-minor-mode git-hunk-mode
-  "Minor mode for navigating and manipulating git hunks."
-  :lighter " GitHunk"
-  :keymap git-hunk-mode-map)
-
-(defun git-hunk-next ()
-  "Jump to the next git hunk."
-  (interactive)
-  (diff-hl-next-hunk))
-
-(defun git-hunk-previous ()
-  "Jump to the previous git hunk."
-  (interactive)
-  (diff-hl-previous-hunk))
-
-(defun git-hunk-revert ()
-  "Revert the current git hunk."
-  (interactive)
-  (diff-hl-revert-hunk))
-
-(defun git-hunk-stage ()
-  "Stage the current git hunk."
-  (interactive)
-  (diff-hl-stage-current-hunk))
-
-(defun git-hunk-exit ()
-  "Exit git hunk mode."
-  (interactive)
-  (git-hunk-mode -1))
-
-(defun git-hunk-toggle-mode ()
-  "Toggle `git-hunk-mode'."
-  (interactive)
-  (if git-hunk-mode
-      (git-hunk-mode -1)
-    (git-hunk-mode 1)))
-
-(global-set-key (kbd "C-c h") #'git-hunk-toggle-mode)
+(defalias 'git-hunk-toggle-mode #'diff-hl-show-hunk)
+(keymap-global-set "C-c h" #'diff-hl-show-hunk)
 
 
 (use-package git-modes

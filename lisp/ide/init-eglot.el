@@ -1,10 +1,5 @@
 ;;; -*- coding: utf-8; lexical-binding: t -*-
 
-(eval-and-compile
-  (let ((current-file (or load-file-name byte-compile-current-file buffer-file-name)))
-    (when current-file
-      (add-to-list 'load-path (file-name-directory current-file)))))
-
 (require 'init-config)
 
 (defun smarter-yas-expand-next-field ()
@@ -16,6 +11,36 @@
     (when (and (eq old-point (point))
                (eq old-tick (buffer-chars-modified-tick)))
       (ignore-errors (yas-next-field)))))
+
+(defun riven/eglot-python-contact ()
+  "Return preferred Eglot server contact for Python."
+  (cond
+   ((executable-find "basedpyright-langserver")
+    '("basedpyright-langserver" "--stdio"))
+   ((executable-find "pyright-langserver")
+    '("pyright-langserver" "--stdio"))
+   ((executable-find "ruff")
+    '("ruff" "server"))
+   (t '("pylsp"))))
+
+(defun riven/eglot-configure-python-server ()
+  "Configure Python language server selection for Eglot."
+  (when (boundp 'eglot-server-programs)
+    (let ((contact (riven/eglot-python-contact)))
+      (setf (alist-get 'python-mode eglot-server-programs nil nil #'eq) contact)
+      (setf (alist-get 'python-ts-mode eglot-server-programs nil nil #'eq) contact))))
+
+(defun riven/eglot-client-capabilities-no-file-watch (orig-fn server)
+  "Call ORIG-FN for SERVER, disabling dynamic file-watch registration."
+  (let* ((caps (funcall orig-fn server))
+         (workspace (plist-get caps :workspace))
+         (watch (and (listp workspace)
+                     (plist-get workspace :didChangeWatchedFiles))))
+    (when (listp watch)
+      (setq watch (plist-put watch :dynamicRegistration :json-false))
+      (setq workspace (plist-put workspace :didChangeWatchedFiles watch))
+      (setq caps (plist-put caps :workspace workspace)))
+    caps))
 
 (use-package yasnippet
   :ensure t
@@ -33,6 +58,11 @@
 (use-package eglot
   :ensure nil
   :init
+  (with-eval-after-load 'eglot
+    (unless (advice-member-p #'riven/eglot-client-capabilities-no-file-watch
+                             #'eglot-client-capabilities)
+      (advice-add #'eglot-client-capabilities :around
+                  #'riven/eglot-client-capabilities-no-file-watch)))
   (dolist (mode rivenEmacs-lsp-modes)
     (add-hook (intern (format "%s-hook" mode)) #'eglot-ensure))
   :bind (:map eglot-mode-map
@@ -53,7 +83,8 @@
   (eglot-code-action-indicator "*")
   (eglot-events-buffer-config '(:size 0 :format short))
   :config
-  (keymap-global-set "M-." #'xref-find-definitions)
+  (riven/eglot-configure-python-server)
+  (keymap-global-set "M-." #'riven/xref-find-definitions-or-search)
   (keymap-global-set "M-," #'xref-go-back)
   (keymap-global-set "M-?" #'xref-find-references))
 

@@ -1,55 +1,26 @@
 ;;; keybindings-spec-lsp.el --- LSP keybinding specs -*- lexical-binding: t; -*-
 
-(defun riven/eglot-code-actions ()
-  "Run Eglot code actions at point."
+(defun riven/eglot-format-dispatch ()
+  "Format current buffer via the available Eglot command."
   (interactive)
-  (require 'eglot nil t)
-  (if (fboundp 'eglot-code-actions)
-      (call-interactively 'eglot-code-actions)
-    (user-error "Eglot code actions are unavailable")))
-
-(defun riven/eglot-format-buffer ()
-  "Format current buffer with Eglot if available."
-  (interactive)
-  (require 'eglot nil t)
   (cond
    ((fboundp 'eglot-format-buffer)
-    (call-interactively 'eglot-format-buffer))
+    (call-interactively #'eglot-format-buffer))
    ((fboundp 'eglot-format)
-    (call-interactively 'eglot-format))
+    (call-interactively #'eglot-format))
    (t
-    (user-error "Eglot format is unavailable"))))
+    (user-error "Eglot format command is unavailable"))))
 
-(defun riven/eglot-find-implementation ()
-  "Find implementation with Eglot, fallback to xref definitions."
-  (interactive)
-  (require 'eglot nil t)
-  (if (fboundp 'eglot-find-implementation)
-      (call-interactively 'eglot-find-implementation)
-    (call-interactively 'xref-find-definitions)))
-
-(defun riven/eglot-show-documentation ()
-  "Show symbol documentation in a dedicated buffer."
+(defun riven/eglot-find-type-definition-dispatch ()
+  "Find type definition with Eglot, fallback to xref definitions."
   (interactive)
   (cond
-   ((fboundp 'eldoc-doc-buffer)
-    (condition-case nil
-        (progn
-          (call-interactively 'eldoc-doc-buffer)
-          ;; After opening docs, move focus into the Eldoc buffer window.
-          (when (and (boundp 'eldoc--doc-buffer)
-                     (buffer-live-p eldoc--doc-buffer))
-            (let ((win (get-buffer-window eldoc--doc-buffer t)))
-              (when (window-live-p win)
-                (select-window win)))))
-      (error
-       (if (fboundp 'eldoc-print-current-symbol-info)
-           (call-interactively 'eldoc-print-current-symbol-info)
-         (user-error "No documentation command available")))))
-   ((fboundp 'eldoc-print-current-symbol-info)
-    (call-interactively 'eldoc-print-current-symbol-info))
+   ((fboundp 'eglot-find-typeDefinition)
+    (call-interactively #'eglot-find-typeDefinition))
+   ((fboundp 'eglot-find-type-definition)
+    (call-interactively #'eglot-find-type-definition))
    (t
-    (user-error "No documentation command available"))))
+    (call-interactively #'xref-find-definitions))))
 
 (defvar riven/flymake-diagnostics-quick-close-mode-map
   (let ((map (make-sparse-keymap)))
@@ -99,33 +70,31 @@
             (select-window win))))
     (user-error "Flymake diagnostics command is unavailable")))
 
-(defun riven/eglot-rename ()
-  "Rename symbol with Eglot."
+(defun riven/eldoc-doc-buffer-focus ()
+  "Show ElDoc documentation buffer and move point to its window."
   (interactive)
-  (require 'eglot nil t)
-  (if (fboundp 'eglot-rename)
-      (call-interactively 'eglot-rename)
-    (user-error "Eglot rename is unavailable")))
-
-(defun riven/eglot-find-type-definition ()
-  "Find type definition with Eglot, fallback to xref definitions."
-  (interactive)
-  (require 'eglot nil t)
-  (if (fboundp 'eglot-find-typeDefinition)
-      (call-interactively 'eglot-find-typeDefinition)
-    (call-interactively 'xref-find-definitions)))
+  (unless (and (boundp 'eldoc--doc-buffer)
+               (buffer-live-p eldoc--doc-buffer))
+    (when (fboundp 'eldoc-print-current-symbol-info)
+      (call-interactively #'eldoc-print-current-symbol-info)))
+  (call-interactively #'eldoc-doc-buffer)
+  (when (and (boundp 'eldoc--doc-buffer)
+             (buffer-live-p eldoc--doc-buffer))
+    (let ((win (get-buffer-window eldoc--doc-buffer t)))
+      (when (window-live-p win)
+        (select-window win)))))
 
 (defvar riven/keybindings-lsp-spec
-  '(("a" riven/eglot-code-actions "Code Actions")
+  '(("a" eglot-code-actions "Code Actions")
     ("e" riven/flymake-show-buffer-diagnostics-focus "Diagnostic List")
-    ("d" xref-find-definitions "Find Definition")
-    ("f" riven/eglot-format-buffer "Format Buffer")
-    ("i" riven/eglot-find-implementation "Find Implementation")
-    ("k" riven/eglot-show-documentation "Show Documentation")
+    ("d" riven/xref-find-definitions-or-search "Find Definition")
+    ("f" riven/eglot-format-dispatch "Format Buffer")
+    ("i" eglot-find-implementation "Find Implementation")
+    ("k" riven/eldoc-doc-buffer-focus "Show Documentation")
     ("p" xref-find-definitions-other-window "Peek Definition")
     ("q" eslint-fix "Quick Fix (ESLint)")
-    ("r" riven/eglot-rename "Rename Symbol")
-    ("t" riven/eglot-find-type-definition "Find Type Definition")
+    ("r" eglot-rename "Rename Symbol")
+    ("t" riven/eglot-find-type-definition-dispatch "Find Type Definition")
     ("?" xref-find-references "Find References"))
   "Declarative specs for lsp keybindings.")
 

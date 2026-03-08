@@ -1,10 +1,5 @@
 ;; -*- coding: utf-8; lexical-binding: t -*-
 
-(eval-and-compile
-  (let ((current-file (or load-file-name byte-compile-current-file buffer-file-name)))
-    (when current-file
-      (add-to-list 'load-path (file-name-directory current-file)))))
-
 (require 'cl-lib)
 (require 'keybindings-engine)
 
@@ -30,17 +25,12 @@
                (pcase-let ((`(,key ,_cmd ,wk) entry))
                  (list (format "C-c c %s" key) wk)))
              riven/keybindings-lsp-spec))))
-      (condition-case nil
-          (apply #'which-key-add-keymap-based-replacements
-                 eglot-mode-map
-                 replacements)
-        (wrong-type-argument
-         (apply #'which-key-add-keymap-based-replacements
-                'eglot-mode-map
-                replacements))))))
+      (apply #'which-key-add-keymap-based-replacements
+             eglot-mode-map
+             replacements))))
 
-(defun riven/eglot-install-code-prefix-fallback ()
-  "Install a stable `C-c c` code prefix in `eglot-mode-map`."
+(defun riven/eglot-install-code-prefix ()
+  "Install `C-c c` code prefix in `eglot-mode-map`."
   (let ((prefix-map (make-sparse-keymap)))
     (dolist (entry riven/keybindings-lsp-spec)
       (pcase-let ((`(,key ,cmd ,wk) entry))
@@ -51,9 +41,7 @@
 (defun riven/eglot-keybindings ()
   "Set up Eglot mode keybindings."
   (when (featurep 'eglot)
-    ;; Avoid `general` dynamic keymap delay path here; it can treat
-    ;; keymap values as symbols and raise `wrong-type-argument symbolp`.
-    (riven/eglot-install-code-prefix-fallback)
+    (riven/eglot-install-code-prefix)
     (riven/eglot-register-code-prefix-which-key)))
 
 (with-eval-after-load 'eglot
