@@ -1,5 +1,7 @@
 ;; -*- coding: utf-8; lexical-binding: t -*-
 
+(setq load-prefer-newer t)
+
 (let* ((riven/root-dir (file-name-directory (file-truename (or load-file-name (buffer-file-name)))))
        (riven/lisp-dir (expand-file-name "lisp" riven/root-dir)))
   (add-to-list 'load-path riven/lisp-dir)

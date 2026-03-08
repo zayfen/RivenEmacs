@@ -1,36 +1,43 @@
 ;; -*- coding: utf-8; lexical-binding: t -*-
 
-(eval-and-compile
-  (let ((current-file (or load-file-name byte-compile-current-file buffer-file-name)))
-    (when current-file
-      (add-to-list 'load-path (file-name-directory current-file)))))
-
 ;;; init-consult.el --- consult + vertico completion stack
 
 ;;; Code:
 
+(defun riven/consult-elpa-roots ()
+  "Return candidate ELPA roots for package fallback loading."
+  (let* ((current-file (or load-file-name byte-compile-current-file buffer-file-name))
+         (repo-elpa (and current-file
+                         (expand-file-name "../../elpa" (file-name-directory current-file))))
+         (roots (delq nil
+                      (list (and (boundp 'package-user-dir) package-user-dir)
+                            (and (boundp 'user-emacs-directory)
+                                 (expand-file-name "elpa" user-emacs-directory))
+                            (and (boundp 'repo-dir) repo-dir)
+                            repo-elpa))))
+    (delete-dups roots)))
+
 (defun riven/ensure-elpa-package-load-path (package)
-  "Ensure PACKAGE version directory in ELPA is present in `load-path`.
-This is a fallback for broken/missing autoload files in package metadata."
+  "Ensure PACKAGE directory in known ELPA roots is in `load-path`."
   (let ((library (symbol-name package)))
     (unless (locate-library library)
-      (let* ((elpa-root (if (boundp 'package-user-dir)
-                            package-user-dir
-                          (expand-file-name "elpa" user-emacs-directory)))
-             (pattern (format "^%s-[0-9]" (regexp-quote library)))
-             (versioned (and (file-directory-p elpa-root)
-                             (directory-files elpa-root t pattern t)))
-             (plain-dir (expand-file-name library elpa-root))
-             (candidates (append versioned
-                                 (when (file-directory-p plain-dir)
-                                   (list plain-dir)))))
-        (when candidates
-          (add-to-list 'load-path (car (sort (delete-dups candidates) #'string>))))))))
+      (let* ((pattern (format "^%s\\(?:-[0-9].*\\)?\\'" (regexp-quote library)))
+             (selected nil))
+        (dolist (root (riven/consult-elpa-roots))
+          (when (and (not selected) (file-directory-p root))
+            (let ((dirs (directory-files root t pattern t)))
+              (when dirs
+                (setq selected (car (sort dirs #'string>)))))))
+        (when selected
+          (add-to-list 'load-path selected))))))
 
-(riven/ensure-elpa-package-load-path 'corfu)
-(riven/ensure-elpa-package-load-path 'cape)
-(riven/ensure-elpa-package-load-path 'nerd-icons-corfu)
-(add-to-list 'load-path (expand-file-name "elpa/vertico/extensions" user-emacs-directory))
+(mapc #'riven/ensure-elpa-package-load-path
+      '(consult vertico orderless corfu cape marginalia embark embark-consult prescient nerd-icons-corfu))
+
+(dolist (root (riven/consult-elpa-roots))
+  (let ((vertico-ext (expand-file-name "vertico/extensions" root)))
+    (when (file-directory-p vertico-ext)
+      (add-to-list 'load-path vertico-ext))))
 
 (defun riven/corfu-nerd-icons-formatter (metadata)
   "Return a Corfu margin formatter using nerd-icons with a fallback icon.
@@ -69,7 +76,7 @@ METADATA is passed through to `nerd-icons-corfu-formatter` when kind data exists
 (use-package consult
   :vc (:url "https://github.com/minad/consult")
   :bind (;; C-c bindings in `mode-specific-map'
-         ("C-s" . consult-line-ex)
+         ("C-s" . consult-line)
          ([remap Info-search] . consult-info)
          ;; C-x bindings in `ctl-x-map'
          ("C-x M-:" . consult-complex-command)
@@ -110,17 +117,32 @@ METADATA is passed through to `nerd-icons-corfu-formatter` when kind data exists
   (setq xref-show-xrefs-function #'consult-xref
         xref-show-definitions-function #'consult-xref)
   :config
-  ;; Reduce lag while moving candidates in consult-buffer.
-  (consult-customize consult-buffer consult-project-buffer
-                     :preview-key '(:debounce 0.2 any))
-  ;; File candidates are expensive to preview continuously.
-  (dolist (source '(consult-source-recent-file
+  ;; Keep lightweight sources on auto preview, but use manual preview for
+  ;; expensive file/bookmark sources to keep candidate movement responsive.
+  (when (fboundp 'consult--customize-put)
+    (consult--customize-put
+     '(consult-buffer consult-project-buffer)
+     :preview-key
+     '"M-.")
+    (consult--customize-put
+     '(consult-source-bookmark
+       consult-source-file-register
+       consult-source-recent-file
+       consult-source-project-recent-file
+       consult-source-project-recent-file-hidden)
+     :preview-key
+     '"M-."))
+  ;; Restore file source states and pin them to manual preview trigger.
+  (dolist (source '(consult-source-file-register
+                    consult-source-recent-file
                     consult-source-project-recent-file
-                    consult-source-project-recent-file-hidden
-                    consult-source-project-root
-                    consult-source-project-root-hidden))
+                    consult-source-project-recent-file-hidden))
     (when (boundp source)
-      (setf (plist-get (symbol-value source) :preview-key) nil)))
+      (setf (plist-get (symbol-value source) :preview-key) "M-.")
+      (setf (plist-get (symbol-value source) :state) #'consult--file-state)))
+  (when (boundp 'consult-source-bookmark)
+    (setf (plist-get (symbol-value 'consult-source-bookmark) :preview-key) "M-.")
+    (setf (plist-get (symbol-value 'consult-source-bookmark) :state) #'consult--bookmark-state))
   :custom
   (consult-buffer-filter '("\\` "
                            "\\`\\*.*\\*\\'")))
@@ -130,7 +152,7 @@ METADATA is passed through to `nerd-icons-corfu-formatter` when kind data exists
   :custom
   (vertico-cycle t)
   (vertico-resize nil)
-  :init
+  :config
   (vertico-mode))
 
 (use-package vertico-multiform
@@ -138,10 +160,12 @@ METADATA is passed through to `nerd-icons-corfu-formatter` when kind data exists
   :after vertico
   :ensure nil
   :config
+  (require 'vertico-buffer nil t)
+  (require 'vertico-indexed nil t)
+  (require 'vertico-unobtrusive nil t)
   (vertico-multiform-mode)
   (setq vertico-multiform-commands
-        '((consult-imenu buffer indexed)
-          (execute-extended-command unobtrusive)))
+        '((consult-imenu buffer indexed)))
   (setq vertico-multiform-categories
         '((consult-grep buffer))))
 
@@ -230,15 +254,6 @@ METADATA is passed through to `nerd-icons-corfu-formatter` when kind data exists
 (use-package corfu-popupinfo
   :after corfu
   :ensure nil
-  :init
-  (defun riven/corfu-popupinfo-safe-show (orig-fn &rest args)
-    "Call ORIG-FN with ARGS, suppressing known JSON type errors."
-    (condition-case err
-        (apply orig-fn args)
-      (wrong-type-argument
-       (if (eq (nth 1 err) 'json-value-p)
-           nil
-         (signal (car err) (cdr err))))))
   :bind (:map corfu-map
               ("M-h" . corfu-popupinfo-documentation))
   :custom
@@ -246,14 +261,7 @@ METADATA is passed through to `nerd-icons-corfu-formatter` when kind data exists
   (corfu-popupinfo-max-width 100)
   (corfu-popupinfo-max-height 14)
   :config
-  (unless (advice-member-p #'riven/corfu-popupinfo-safe-show #'corfu-popupinfo--show)
-    (advice-add 'corfu-popupinfo--show :around #'riven/corfu-popupinfo-safe-show))
   (corfu-popupinfo-mode 1))
-
-;; Drop stale cape CAPF entries when cape is unavailable.
-(dolist (capf '(cape-file cape-dabbrev cape-keyword cape-symbol))
-  (unless (fboundp capf)
-    (setq completion-at-point-functions (delq capf completion-at-point-functions))))
 
 (use-package cape
   :ensure t
@@ -269,18 +277,18 @@ METADATA is passed through to `nerd-icons-corfu-formatter` when kind data exists
 
 (use-package marginalia
   :vc (:url "https://github.com/minad/marginalia")
+  :demand t
   :bind (:map minibuffer-local-map
               ("M-A" . marginalia-cycle))
   :config
-  ;; Prioritize cheap file annotations to keep consult-buffer file source smooth.
+  (marginalia-mode)
+  ;; Avoid expensive file metadata stats in large recent-file lists.
   (let ((file-entry (assq 'file marginalia-annotator-registry)))
     (when file-entry
-      (setcdr file-entry '(builtin marginalia-annotate-file none))))
+      (setcdr file-entry '(none))))
   (let ((project-file-entry (assq 'project-file marginalia-annotator-registry)))
     (when project-file-entry
-      (setcdr project-file-entry '(builtin marginalia-annotate-project-file none))))
-  :init
-  (marginalia-mode))
+      (setcdr project-file-entry '(none)))))
 
 (use-package embark
   :bind (("C-." . embark-act)
