@@ -7,52 +7,6 @@
 
 (require 'init-config)
 
-(defcustom rivenEmacs-eglot-use-booster t
-  "Whether to enable `emacs-lsp-booster` acceleration for Eglot."
-  :type 'boolean
-  :group 'rivenEmacs)
-
-(defun riven/eglot-booster-available-p ()
-  "Return non-nil when `emacs-lsp-booster` is available for local projects."
-  (and rivenEmacs-eglot-use-booster
-       (executable-find "emacs-lsp-booster")
-       (not (file-remote-p default-directory))))
-
-(defun riven/eglot-booster--jsonrpc-json-read (old-fn &rest args)
-  "Decode booster bytecode payload, otherwise delegate to OLD-FN with ARGS."
-  (let ((start (point)))
-    (or
-     (when (eq (following-char) ?#)
-       (condition-case nil
-           (let ((bytecode (read (current-buffer))))
-             (when (byte-code-function-p bytecode)
-               (funcall bytecode)))
-         (error
-          (goto-char start)
-          nil)))
-     (apply old-fn args))))
-
-(defun riven/eglot-booster--eglot-cmd (old-fn contact)
-  "Prefix CONTACT command from OLD-FN with `emacs-lsp-booster` when possible."
-  (let ((command (funcall old-fn contact)))
-    (if (and (riven/eglot-booster-available-p)
-             (listp command)
-             (stringp (car command))
-             (not (string-equal (file-name-nondirectory (car command))
-                                "emacs-lsp-booster")))
-        (cons "emacs-lsp-booster" command)
-      command)))
-
-(defun riven/eglot-booster-enable ()
-  "Enable `emacs-lsp-booster` advices for Eglot/jsonrpc.
-Return non-nil when advices are installed."
-  (when (riven/eglot-booster-available-p)
-    (unless (advice-member-p #'riven/eglot-booster--jsonrpc-json-read #'jsonrpc--json-read)
-      (advice-add 'jsonrpc--json-read :around #'riven/eglot-booster--jsonrpc-json-read))
-    (unless (advice-member-p #'riven/eglot-booster--eglot-cmd #'eglot--cmd)
-      (advice-add 'eglot--cmd :around #'riven/eglot-booster--eglot-cmd))
-    t))
-
 (defun smarter-yas-expand-next-field ()
   "Try `yas-expand`, then move to next field if no expansion happened."
   (interactive)
@@ -101,10 +55,15 @@ Return non-nil when advices are installed."
   :config
   (keymap-global-set "M-." #'xref-find-definitions)
   (keymap-global-set "M-," #'xref-go-back)
-  (keymap-global-set "M-?" #'xref-find-references)
-  (when rivenEmacs-eglot-use-booster
-    (unless (riven/eglot-booster-enable)
-      (message "[eglot] emacs-lsp-booster not found, fallback to plain eglot"))))
+  (keymap-global-set "M-?" #'xref-find-references))
+
+(use-package eglot-booster
+  :vc (:url "https://github.com/jdtsmith/eglot-booster" :branch "main")
+  :after eglot
+  :config
+  ;; Disable bytecode mode for eglot-booster to preserve proper UTF-8 encoding
+  (setq eglot-booster-io-only t)
+  (eglot-booster-mode))
 
 (provide 'init-eglot)
 ;;; init-eglot.el ends here
