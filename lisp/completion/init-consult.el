@@ -18,14 +18,53 @@ This is a fallback for broken/missing autoload files in package metadata."
                             package-user-dir
                           (expand-file-name "elpa" user-emacs-directory)))
              (pattern (format "^%s-[0-9]" (regexp-quote library)))
-             (candidates (and (file-directory-p elpa-root)
-                              (directory-files elpa-root t pattern t))))
+             (versioned (and (file-directory-p elpa-root)
+                             (directory-files elpa-root t pattern t)))
+             (plain-dir (expand-file-name library elpa-root))
+             (candidates (append versioned
+                                 (when (file-directory-p plain-dir)
+                                   (list plain-dir)))))
         (when candidates
-          (add-to-list 'load-path (car (sort candidates #'string>))))))))
+          (add-to-list 'load-path (car (sort (delete-dups candidates) #'string>))))))))
 
 (riven/ensure-elpa-package-load-path 'corfu)
 (riven/ensure-elpa-package-load-path 'cape)
+(riven/ensure-elpa-package-load-path 'nerd-icons-corfu)
 (add-to-list 'load-path (expand-file-name "elpa/vertico/extensions" user-emacs-directory))
+
+(defun riven/corfu-nerd-icons-formatter (metadata)
+  "Return a Corfu margin formatter using nerd-icons with a fallback icon.
+METADATA is passed through to `nerd-icons-corfu-formatter` when kind data exists."
+  (if (and (fboundp 'nerd-icons-corfu-formatter)
+           (plist-get completion-extra-properties :company-kind))
+      (nerd-icons-corfu-formatter metadata)
+    (let ((fallback (when (fboundp 'nerd-icons-codicon)
+                      (nerd-icons-codicon "nf-cod-code" :face 'font-lock-warning-face)))
+          (space (propertize " " 'display '(space :width 1))))
+      (when fallback
+        (lambda (_cand)
+          (concat " " fallback space))))))
+
+(defun riven/corfu-enable-nerd-icons ()
+  "Load `nerd-icons-corfu` and enable its formatter for Corfu margins."
+  (if (require 'nerd-icons-corfu nil t)
+      (add-to-list 'corfu-margin-formatters #'riven/corfu-nerd-icons-formatter)
+    (message "[corfu] nerd-icons-corfu extension unavailable")))
+
+(defun riven/corfu-insert-index-from-key ()
+  "Insert Corfu candidate selected by `M-0..M-9` key without pressing RET.
+`M-1`..`M-9` insert candidate 1..9 in the current page. `M-0` inserts 10."
+  (interactive)
+  (let* ((base-key (event-basic-type last-command-event))
+         (digit (- base-key ?0))
+         (slot (if (zerop digit) 10 digit))
+         (target (+ corfu--scroll (1- slot)))
+         (page-end (+ corfu--scroll corfu-count)))
+    (if (and (>= target 0) (< target corfu--total) (< target page-end))
+        (progn
+          (corfu--goto target)
+          (corfu-insert))
+      (message "[corfu] index %d out of current page range" slot))))
 
 (use-package consult
   :vc (:url "https://github.com/minad/consult")
@@ -158,19 +197,35 @@ This is a fallback for broken/missing autoload files in package metadata."
   (corfu-on-exact-match 'insert)
   (corfu-auto t)
   (corfu-auto-delay 0.12)
-  (corfu-auto-prefix 3)
+  (corfu-auto-prefix 2)
   (corfu-cycle t)
-  (corfu-count 14)
-  (corfu-preselect 'prompt)
+  (corfu-count 9)
+  (corfu-preselect 'first)
   (corfu-preview-current t)
   (corfu-min-width 48)
   (corfu-max-width 120)
   (corfu-scroll-margin 2)
   :bind (:map corfu-map
+              ("M-0" . riven/corfu-insert-index-from-key)
+              ("M-1" . riven/corfu-insert-index-from-key)
+              ("M-2" . riven/corfu-insert-index-from-key)
+              ("M-3" . riven/corfu-insert-index-from-key)
+              ("M-4" . riven/corfu-insert-index-from-key)
+              ("M-5" . riven/corfu-insert-index-from-key)
+              ("M-6" . riven/corfu-insert-index-from-key)
+              ("M-7" . riven/corfu-insert-index-from-key)
+              ("M-8" . riven/corfu-insert-index-from-key)
+              ("M-9" . riven/corfu-insert-index-from-key)
               ("M-P" . corfu-scroll-down)
               ("M-N" . corfu-scroll-up))
   :config
-  (global-corfu-mode 1))
+  (global-corfu-mode 1)
+  (if (require 'corfu-indexed nil t)
+      (progn
+        (setq corfu-indexed-start 1)
+        (corfu-indexed-mode 1))
+    (message "[corfu] corfu-indexed extension unavailable"))
+  (riven/corfu-enable-nerd-icons))
 
 (use-package corfu-popupinfo
   :after corfu
