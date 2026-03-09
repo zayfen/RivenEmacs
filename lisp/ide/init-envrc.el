@@ -2,6 +2,7 @@
 
 (use-package envrc
   :vc (:url "https://github.com/purcell/envrc")
+  :if (executable-find "direnv")
   :hook (after-init . envrc-global-mode))
 
 

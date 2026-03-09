@@ -89,16 +89,26 @@
 ;; ESLint 支持
 (use-package flymake-eslint
   :ensure t
-  :hook ((js-mode . flymake-eslint-enable)
-         (js-ts-mode . flymake-eslint-enable)
-         (jsx-mode . flymake-eslint-enable)
-         (typescript-mode . flymake-eslint-enable)
-         (typescript-ts-mode . flymake-eslint-enable)
-         (tsx-ts-mode . flymake-eslint-enable)
-         (web-mode . flymake-eslint-enable)
-         (vue-mode . flymake-eslint-enable))
+  :hook ((js-mode . +flymake-eslint-enable-safe)
+         (js-ts-mode . +flymake-eslint-enable-safe)
+         (jsx-mode . +flymake-eslint-enable-safe)
+         (typescript-mode . +flymake-eslint-enable-safe)
+         (typescript-ts-mode . +flymake-eslint-enable-safe)
+         (tsx-ts-mode . +flymake-eslint-enable-safe)
+         (web-mode . +flymake-eslint-enable-safe)
+         (vue-mode . +flymake-eslint-enable-safe))
   :config
-  ;; 设置 ESLint 可执行文件
+  (defun +flymake-eslint-enable-safe ()
+    "Enable flymake-eslint only when an eslint executable is available."
+    (when (or (executable-find (or flymake-eslint-executable-name "eslint"))
+              (let* ((root (locate-dominating-file
+                            (or (buffer-file-name) default-directory)
+                            "node_modules"))
+                     (local (when root
+                              (expand-file-name "node_modules/.bin/eslint" root))))
+                (and local (file-executable-p local))))
+      (flymake-eslint-enable)))
+
   (when (executable-find "oxlint")
     (setq flymake-eslint-executable-name "oxlint"))
 

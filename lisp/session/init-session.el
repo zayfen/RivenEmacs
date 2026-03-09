@@ -100,30 +100,34 @@ Returns t if the current session should be auto-saved."
   ;; Predicate for auto-save
   (easysession-save-mode-predicate #'rivenEmacs-session-default-predicate)
 
-  ;; Exclude certain hooks from running during session restore
+  ;; Exclude hooks that trigger slow analysis during session restore
   (easysession-find-file-exclude-hook-regexp
-   "flymake\\|eldoc\\|lsp\\|eglot")
+   "flymake\\|eldoc\\|lsp\\|eglot\\|treesit\\|tree-sitter\\|flycheck")
 
   :init
   ;; Ensure session directory exists
   (rivenEmacs-session-ensure-directory)
 
-  ;; Load session on startup (after all other packages)
+  ;; Load session after idle time so UI is immediately responsive.
+  ;; Using idle timer instead of emacs-startup-hook avoids blocking
+  ;; the initial frame render when there are many buffers to restore.
   (add-hook 'emacs-startup-hook
             (lambda ()
-              (when rivenEmacs-session-default-session
-                (easysession-load-including-geometry
-                 rivenEmacs-session-default-session)))
+              (run-with-idle-timer
+               0.5 nil
+               (lambda ()
+                 (when rivenEmacs-session-default-session
+                   (easysession-load-including-geometry
+                    rivenEmacs-session-default-session)))))
             102)
 
   (add-hook 'easysession-before-load-hook #'easysession-reset)
   (add-hook 'easysession-new-session-hook #'easysession-reset)
 
-  ;; Automatically save all buffers without prompting the user
-  (add-hook 'easysession-before-reset-hook #'(lambda()
-                                               (save-some-buffers t)))
+  (add-hook 'easysession-before-reset-hook
+            (lambda () (save-some-buffers t)))
 
-  ;; Enable auto-save mode
+  ;; Enable auto-save mode after session is loaded
   (add-hook 'emacs-startup-hook #'easysession-save-mode 103)
 
   :config
