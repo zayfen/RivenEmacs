@@ -52,6 +52,12 @@ METADATA is passed through to `nerd-icons-corfu-formatter` when kind data exists
         (lambda (_cand)
           (concat " " fallback space))))))
 
+(use-package nerd-icons-corfu
+  :ensure t
+  :after corfu
+  :config
+  (add-to-list 'corfu-margin-formatters #'riven/corfu-nerd-icons-formatter))
+
 (defun riven/corfu-enable-nerd-icons ()
   "Load `nerd-icons-corfu` and enable its formatter for Corfu margins."
   (if (require 'nerd-icons-corfu nil t)

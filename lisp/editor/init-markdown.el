@@ -84,94 +84,14 @@
          ("g" . grip-mode)))
 
 ;; Markdown Live Commands - C-c l
-(use-package markdown-mode
-  :after general
-  :config
-  ;; Create a definer for markdown live commands
-  (general-create-definer markdown-live-def
-    :prefix "C-c l"
-    :keymaps 'markdown-mode-map)
-  
-  ;; Define markdown live command groups
-  (markdown-live-def
-    "" '(:ignore t :wk "Markdown Live")
-    ;; Text formatting
-    "b" '(markdown-insert-bold :wk "Bold")
-    "i" '(markdown-insert-italic :wk "Italic")
-    "c" '(markdown-insert-code :wk "Inline Code")
-    "s" '(markdown-insert-strike-through :wk "Strikethrough")
-    ;; Headers
-    "h" '(:ignore t :wk "Headers")
-    "h1" '(markdown-insert-header-1 :wk "Header 1")
-    "h2" '(markdown-insert-header-2 :wk "Header 2") 
-    "h3" '(markdown-insert-header-3 :wk "Header 3")
-    "h4" '(markdown-insert-header-4 :wk "Header 4")
-    "h5" '(markdown-insert-header-5 :wk "Header 5")
-    "h6" '(markdown-insert-header-6 :wk "Header 6")
-    "ha" '(markdown-insert-header-dwim :wk "Auto Header")
-    ;; Lists
-    "l" '(:ignore t :wk "Lists")
-    "lu" '(markdown-insert-list-item :wk "List Item")
-    "lo" '(markdown-insert-ordered-list-item :wk "Ordered List")
-    "lt" '(markdown-insert-gfm-checkbox :wk "Task List")
-    "li" '(markdown-insert-list-item-at-level :wk "List at Level")
-    ;; Links and images
-    "L" '(:ignore t :wk "Links")
-    "Ll" '(markdown-insert-link :wk "Insert Link")
-    "Lu" '(markdown-insert-link-dwim :wk "Smart Link")
-    "Li" '(markdown-insert-image :wk "Insert Image")
-    "Lw" '(markdown-insert-wiki-link :wk "Wiki Link")
-    "Lr" '(markdown-insert-reference-link :wk "Ref Link")
-    ;; Code blocks
-    "C" '(:ignore t :wk "Code")
-    "Cb" '(markdown-insert-gfm-code-block :wk "Code Block")
-    "Ci" '(markdown-insert-code :wk "Inline Code")
-    "Cf" '(markdown-insert-code-block-with-fence :wk "Fenced Code")
-    "Cl" '(markdown-insert-gfm-code-block-with-lang :wk "Code with Lang")
-    ;; Tables
-    "t" '(:ignore t :wk "Tables")
-    "tt" '(markdown-insert-table :wk "Insert Table")
-    "ta" '(markdown-table-align :wk "Align Table")
-    "tr" '(markdown-table-insert-row :wk "Insert Row")
-    "tc" '(markdown-table-insert-column :wk "Insert Column")
-    "td" '(markdown-table-delete-row :wk "Delete Row")
-    "tD" '(markdown-table-delete-column :wk "Delete Column")
-    "tm" '(markdown-table-move-row :wk "Move Row")
-    "tM" '(markdown-table-move-column :wk "Move Column")
-    ;; Horizontal rules and breaks
-    "-" '(markdown-insert-hr :wk "Horizontal Rule")
-    "_" '(markdown-insert-line-break :wk "Line Break")
-    ;; Preview and export
-    "p" '(:ignore t :wk "Preview/Export")
-    "pp" '(grip-mode :wk "Live Preview")
-    "pe" '(markdown-export :wk "Export")
-    "po" '(markdown-open :wk "Open Output")
-    "pv" '(markdown-live-preview-mode :wk "Live Preview Mode")
-    "pw" '(markdown-export-and-preview :wk "Export & Preview")
-    ;; Movement and navigation
-    "n" '(:ignore t :wk "Navigation")
-    "np" '(markdown-previous-link :wk "Prev Link")
-    "nn" '(markdown-next-link :wk "Next Link")
-    "nf" '(markdown-follow-link-at-point :wk "Follow Link")
-    "nb" '(markdown-back-to-heading :wk "Back to Heading")
-    "nf" '(markdown-next-heading :wk "Next Heading")
-    "np" '(markdown-previous-heading :wk "Prev Heading")
-    ;; Toggles and settings
-    "T" '(:ignore t :wk "Toggles")
-    "Tw" '(markdown-toggle-wiki-links :wk "Wiki Links")
-    "Tl" '(markdown-toggle-url-hiding :wk "Hide URLs")
-    "Ti" '(markdown-toggle-inline-images :wk "Inline Images")
-    "Tm" '(markdown-toggle-markup-hiding :wk "Hide Markup")
-    "Tf" '(markdown-fontify-buffer-wiki-links :wk "Fontify Wiki"))
-  
-  ;; Additional useful functions
+(with-eval-after-load 'markdown-mode
   (defun markdown-insert-header-dwim ()
     "Insert header based on context (DWIM - Do What I Mean)."
     (interactive)
     (if (markdown-at-heading-p)
         (markdown-demote-heading)
       (markdown-insert-header-1)))
-  
+
   (defun markdown-insert-link-dwim ()
     "Smart link insertion based on context."
     (interactive)
@@ -180,12 +100,68 @@
           (delete-region (region-beginning) (region-end))
           (markdown-insert-link nil link-text))
       (markdown-insert-link)))
-  
+
   (defun markdown-insert-gfm-code-block-with-lang ()
     "Insert GFM code block with language prompt."
     (interactive)
     (let ((lang (read-string "Language: " "python")))
-      (markdown-insert-gfm-code-block lang))))
+      (markdown-insert-gfm-code-block lang)))
+
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "b") #'markdown-insert-bold)
+    (define-key map (kbd "i") #'markdown-insert-italic)
+    (define-key map (kbd "c") #'markdown-insert-code)
+    (define-key map (kbd "s") #'markdown-insert-strike-through)
+    ;; Headers
+    (define-key map (kbd "h 1") #'markdown-insert-header-1)
+    (define-key map (kbd "h 2") #'markdown-insert-header-2)
+    (define-key map (kbd "h 3") #'markdown-insert-header-3)
+    (define-key map (kbd "h 4") #'markdown-insert-header-4)
+    (define-key map (kbd "h 5") #'markdown-insert-header-5)
+    (define-key map (kbd "h 6") #'markdown-insert-header-6)
+    (define-key map (kbd "h a") #'markdown-insert-header-dwim)
+    ;; Lists
+    (define-key map (kbd "l u") #'markdown-insert-list-item)
+    (define-key map (kbd "l o") #'markdown-insert-ordered-list-item)
+    (define-key map (kbd "l t") #'markdown-insert-gfm-checkbox)
+    ;; Links
+    (define-key map (kbd "L l") #'markdown-insert-link)
+    (define-key map (kbd "L u") #'markdown-insert-link-dwim)
+    (define-key map (kbd "L i") #'markdown-insert-image)
+    (define-key map (kbd "L w") #'markdown-insert-wiki-link)
+    (define-key map (kbd "L r") #'markdown-insert-reference-link)
+    ;; Code
+    (define-key map (kbd "C b") #'markdown-insert-gfm-code-block)
+    (define-key map (kbd "C i") #'markdown-insert-code)
+    (define-key map (kbd "C l") #'markdown-insert-gfm-code-block-with-lang)
+    ;; Tables
+    (define-key map (kbd "t t") #'markdown-insert-table)
+    (define-key map (kbd "t a") #'markdown-table-align)
+    (define-key map (kbd "t r") #'markdown-table-insert-row)
+    (define-key map (kbd "t c") #'markdown-table-insert-column)
+    (define-key map (kbd "t d") #'markdown-table-delete-row)
+    (define-key map (kbd "t D") #'markdown-table-delete-column)
+    ;; Misc
+    (define-key map (kbd "-") #'markdown-insert-hr)
+    (define-key map (kbd "_") #'markdown-insert-line-break)
+    ;; Preview
+    (define-key map (kbd "p p") #'grip-mode)
+    (define-key map (kbd "p e") #'markdown-export)
+    (define-key map (kbd "p o") #'markdown-open)
+    (define-key map (kbd "p v") #'markdown-live-preview-mode)
+    ;; Navigation
+    (define-key map (kbd "n n") #'markdown-next-link)
+    (define-key map (kbd "n N") #'markdown-next-heading)
+    (define-key map (kbd "n f") #'markdown-follow-link-at-point)
+    (define-key map (kbd "n b") #'markdown-back-to-heading)
+    (define-key map (kbd "n p") #'markdown-previous-link)
+    (define-key map (kbd "n P") #'markdown-previous-heading)
+    ;; Toggles
+    (define-key map (kbd "T w") #'markdown-toggle-wiki-links)
+    (define-key map (kbd "T l") #'markdown-toggle-url-hiding)
+    (define-key map (kbd "T i") #'markdown-toggle-inline-images)
+    (define-key map (kbd "T m") #'markdown-toggle-markup-hiding)
+    (define-key markdown-mode-map (kbd "C-c l") map)))
 
 (provide 'init-markdown)
 ;;; init-markdown.el ends here

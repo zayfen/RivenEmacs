@@ -4,16 +4,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(ace-window acp agent-shell aggressive-indent-mode apheleia avy cape cargo color-rg consult corfu crux dape deadgrep
-                devdocs diff-hl dirvish docker dockerfile-mode doom-modeline dumb-jump easysession eat eglot-booster
-                elfeed elfeed-goodies embark embark-consult emmet-mode envrc expand-region fancy-compilation fanyi
-                flymake-eslint flymake-quickdef general git-modes git-timemachine goggles goto-last-change
-                gpt-extensions gptel grip-mode hl-todo hydra iedit jinx kotlin-ts-mode ligature link-hint magit
-                magit-todos marginalia markdown-mode mcp orderless pet plz prescient pyvenv quickrun rainbow-delimiters
-                reader shell-maker smartparens spacious-padding sudo-edit super-save swift-mode symbol-overlay
-                treesit-auto treesit-fold undo-fu undo-fu-session vertico visual-regexp vscode-icon vterm vundo web-mode
-                yasnippet yasnippet-snippets))
+ '(package-selected-packages nil)
  '(package-vc-selected-packages
    '((reader :url "https://codeberg.org/divyaranjan/emacs-reader" :make "all")
      (gpt-extensions :url "https://github.com/kamushadenes/gptel-extensions.el")
