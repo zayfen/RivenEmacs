@@ -61,6 +61,7 @@
 (load (expand-file-name "lisp/env.el" (file-name-directory (file-truename (or load-file-name (buffer-file-name))))) nil t)
 
 (setq user-emacs-directory local-dir)
+(setq package-user-dir repo-dir)
 (setq load-path (append (list lisp-dir) load-path))
 (setq load-path (append (list repo-dir) load-path))
 

@@ -26,78 +26,64 @@
               (and (symbolp cmd) (fboundp cmd)))
     (message "[keybindings] missing command: %s" (riven/keybindings--symbol-name-safe cmd))))
 
-(defun riven/keybindings-invoke-definer (definer args)
-  "Invoke DEFINER with ARGS, supporting both macros and functions."
-  (cond
-   ((and (symbolp definer) (macrop definer))
-    ;; Macros receive forms: keep scalar args as-is, quote list payloads only.
-    (eval (cons definer
-                (mapcar (lambda (arg)
-                          (if (listp arg)
-                              (list 'quote arg)
-                            arg))
-                        args))))
-   ((or (functionp definer)
-        (and (symbolp definer) (fboundp definer)))
-    (apply definer args))
-   (t
-    (message "[keybindings] invalid definer: %s" definer))))
-
-(defun riven/keybindings-apply-simple-spec (definer namespace title spec)
-  "Apply SPEC with DEFINER under NAMESPACE/TITLE."
-  (riven/keybindings-invoke-definer
-   definer
-   (append (list "" `(:ignore t :wk ,title))
-           (cl-mapcan
-            (lambda (entry)
-              (pcase-let ((`(,key ,cmd ,wk) entry))
-                (riven/keybindings--register namespace key cmd)
-                (riven/keybindings--warn-missing-command cmd)
-                (list key `(,cmd :wk ,wk))))
-            spec))))
+(defun riven/keybindings--bind-and-describe (full-key cmd wk)
+  "Bind FULL-KEY to CMD in global map and register WK description."
+  (keymap-global-set full-key cmd)
+  (when (and wk (fboundp 'which-key-add-key-based-replacements))
+    (which-key-add-key-based-replacements full-key wk)))
 
 (defun riven/keybindings-apply-leader-spec ()
-  "Apply `leader-def` groups from declarative spec."
+  "Apply leader groups from declarative spec using C-c prefix."
   (dolist (group riven/keybindings-leader-spec)
     (pcase-let ((`(,prefix ,title ,bindings) group))
-      (riven/keybindings-invoke-definer
-       'leader-def
-       (append (list :infix prefix "" `(:ignore t :wk ,title))
-               (cl-mapcan
-                (lambda (entry)
-                  (pcase-let ((`(,key ,cmd ,wk) entry))
-                    (riven/keybindings--register (format "leader-%s" prefix) key cmd)
-                    (riven/keybindings--warn-missing-command cmd)
-                    (list key `(,cmd :wk ,wk))))
-                bindings))))))
+      (when (fboundp 'which-key-add-key-based-replacements)
+        (which-key-add-key-based-replacements (concat "C-c " prefix) title))
+      (dolist (entry bindings)
+        (pcase-let ((`(,key ,cmd ,wk) entry))
+          (riven/keybindings--register (format "leader-%s" prefix) key cmd)
+          (riven/keybindings--warn-missing-command cmd)
+          (riven/keybindings--bind-and-describe
+           (concat "C-c " prefix " " key) cmd wk))))))
+
+(defun riven/keybindings-apply-simple-spec (prefix namespace title spec)
+  "Bind SPEC keys under C-c PREFIX, registering TITLE and descriptions."
+  (when (fboundp 'which-key-add-key-based-replacements)
+    (which-key-add-key-based-replacements (concat "C-c " prefix) title))
+  (dolist (entry spec)
+    (pcase-let ((`(,key ,cmd ,wk) entry))
+      (riven/keybindings--register namespace key cmd)
+      (riven/keybindings--warn-missing-command cmd)
+      (riven/keybindings--bind-and-describe
+       (concat "C-c " prefix " " key) cmd wk))))
 
 (defun riven/keybindings-apply-open-query-ai ()
   "Apply open/query/ai specs."
-  (riven/keybindings-apply-simple-spec 'open-leader-def "open" "Open" riven/keybindings-open-spec)
-  (riven/keybindings-apply-simple-spec 'query-leader-def "query" "Query" riven/keybindings-query-spec)
-  (riven/keybindings-apply-simple-spec 'ai-leader-def "ai" "AI" riven/keybindings-ai-spec)
-
-  (when (fboundp 'agent-shell-leader-def)
-    (riven/keybindings-apply-simple-spec 'agent-shell-leader-def "agent" "Agent" riven/keybindings-agent-spec)))
+  (riven/keybindings-apply-simple-spec "o" "open" "Open" riven/keybindings-open-spec)
+  (riven/keybindings-apply-simple-spec "q" "query" "Query" riven/keybindings-query-spec)
+  (riven/keybindings-apply-simple-spec "a" "ai" "AI" riven/keybindings-ai-spec)
+  (when (fboundp 'agent-shell)
+    (when (fboundp 'which-key-add-key-based-replacements)
+      (which-key-add-key-based-replacements "C-c =" "Agent"))
+    (dolist (entry riven/keybindings-agent-spec)
+      (pcase-let ((`(,key ,cmd ,wk) entry))
+        (riven/keybindings--register "agent" key cmd)
+        (riven/keybindings--warn-missing-command cmd)
+        (riven/keybindings--bind-and-describe (concat "C-c = " key) cmd wk)))))
 
 (defun riven/keybindings-apply-navigate ()
   "Apply M-g navigation spec."
-  (riven/keybindings-invoke-definer
-   'navigate-leader-def
-   (cl-mapcan
-    (lambda (entry)
-      (pcase-let ((`(,key ,cmd ,wk) entry))
-        (riven/keybindings--register "navigate" key cmd)
-        (riven/keybindings--warn-missing-command cmd)
-        (list key `(,cmd :wk ,wk))))
-    riven/keybindings-navigate-spec)))
+  (when (fboundp 'which-key-add-key-based-replacements)
+    (which-key-add-key-based-replacements "M-g" "Navigate"))
+  (dolist (entry riven/keybindings-navigate-spec)
+    (pcase-let ((`(,key ,cmd ,wk) entry))
+      (riven/keybindings--register "navigate" key cmd)
+      (riven/keybindings--warn-missing-command cmd)
+      (keymap-global-set (concat "M-g " key) cmd)
+      (when (and wk (fboundp 'which-key-add-key-based-replacements))
+        (which-key-add-key-based-replacements (concat "M-g " key) wk)))))
 
 (defun riven/keybindings-apply-default-cleanups ()
-  "Apply one-time non-declarative key cleanup."
-  (leader-def
-    "\!" '(:ignore t :wk "Checker(Flymake)")
-    "&" '(:ignore t :wk "Yasnippet")
-    "@" '(:ignore t :wk "Hideshow"))
+  "Apply one-time key cleanup."
   (keymap-global-unset "M-g TAB")
   (keymap-global-unset "M-g M-g"))
 

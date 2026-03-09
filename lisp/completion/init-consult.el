@@ -149,6 +149,7 @@ METADATA is passed through to `nerd-icons-corfu-formatter` when kind data exists
 
 (use-package vertico
   :vc (:url "https://github.com/minad/vertico")
+  :demand t
   :custom
   (vertico-cycle t)
   (vertico-resize nil)
@@ -182,6 +183,7 @@ METADATA is passed through to `nerd-icons-corfu-formatter` when kind data exists
     (define-key vertico-map (kbd "DEL") #'backward-delete-char-untabify)))
 
 (use-package savehist
+  :demand t
   :init
   (savehist-mode))
 
@@ -208,6 +210,7 @@ METADATA is passed through to `nerd-icons-corfu-formatter` when kind data exists
   (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode))
 
 (use-package orderless
+  :demand t
   :custom
   (completion-styles '(orderless basic))
   (completion-category-defaults nil)
@@ -281,14 +284,7 @@ METADATA is passed through to `nerd-icons-corfu-formatter` when kind data exists
   :bind (:map minibuffer-local-map
               ("M-A" . marginalia-cycle))
   :config
-  (marginalia-mode)
-  ;; Avoid expensive file metadata stats in large recent-file lists.
-  (let ((file-entry (assq 'file marginalia-annotator-registry)))
-    (when file-entry
-      (setcdr file-entry '(none))))
-  (let ((project-file-entry (assq 'project-file marginalia-annotator-registry)))
-    (when project-file-entry
-      (setcdr project-file-entry '(none)))))
+  (marginalia-mode))
 
 (use-package embark
   :bind (("C-." . embark-act)
@@ -302,6 +298,7 @@ METADATA is passed through to `nerd-icons-corfu-formatter` when kind data exists
   :hook (embark-collect-mode . consult-preview-at-point-mode))
 
 (use-package prescient
+  :demand t
   :config (prescient-persist-mode))
 
 (provide 'init-consult)

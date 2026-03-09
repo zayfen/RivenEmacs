@@ -2,10 +2,10 @@
 
 (use-package general
   :vc (:url "https://github.com/noctuid/general.el")
+  :demand t
   :config
 
   (setq general-keymap-global-map global-map) ; Set the keymap for general.el as global-map
-	(general-auto-unbind-keys t); Other configurations specific to your needs...
 
   (general-create-definer leader-def
     :prefix "C-c")
