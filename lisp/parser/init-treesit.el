@@ -43,16 +43,17 @@
 
 (use-package treesit-auto
   :ensure t
-  :demand t
   :custom
   (treesit-auto-install 'prompt)
+  ;; Only manage these languages
+  (treesit-auto-langs '(bash c cpp cmake css elisp go html javascript json make ocaml python php typescript tsx ruby rust sql vue yaml toml zig haskell kotlin java lua dockerfile angular))
   :config
   (global-treesit-auto-mode))
 
 (defun install-treesit-language-grammars ()
   "Install tree-sitter language grammars."
   (interactive)
-  (dolist (lang '(bash c cpp cmake css elisp go html javascript json make ocaml python php typescript tsx ruby rust sql vue yaml toml zig haskell kotlin java lua dockerfile elixir heex angular))
+  (dolist (lang '(bash c cpp cmake css elisp go html javascript json make ocaml python php typescript tsx ruby rust sql vue yaml toml zig haskell kotlin java lua dockerfile angular))
     (unless (treesit-language-available-p lang)
       (condition-case err
           (treesit-install-language-grammar lang)

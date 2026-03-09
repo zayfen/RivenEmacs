@@ -1,5 +1,26 @@
 ;;; early-init.el --- early initialization tweaks -*- lexical-binding: t; -*-
 
+;; begin - treesit cache to avoid repeated checks
+;; (defvar riven/treesit-cache (make-hash-table :test 'eq))
+
+;; (defun riven/treesit-cached-check (orig-fn lang &rest args)
+;;   "Cache wrapper for treesit check functions."
+;;   (if (hash-table-p riven/treesit-cache)
+;;       (or (gethash lang riven/treesit-cache)
+;;           (let* ((start-time (current-time))
+;;                  (result (apply orig-fn lang args)))
+;;             (puthash lang result riven/treesit-cache)
+;;             (message "[treesit] %s -> %s (%.3fs)"
+;;                      lang
+;;                      (if result "✓" "✗")
+;;                      (float-time (time-since start-time)))
+;;             result))
+;;     (apply orig-fn lang args)))
+
+;; ;; Only advice treesit-language-available-p (the main one used by treesit-auto)
+;; (advice-add 'treesit-language-available-p :around #'riven/treesit-cached-check)
+;; end
+
 (setq
  package-enable-at-startup t            ;; set to true, so need not to call package-initialize any more.
  use-package-verbose 1
