@@ -134,7 +134,8 @@ that directory."
 
 ;; Emacs 31+ may warn about missing lexical-binding cookie in third-party
 ;; ELPA files. Keep startup clean by suppressing this specific warning type.
-(add-to-list 'warning-inhibit-types '(files missing-lexbind-cookie))
+(when (boundp 'warning-inhibit-types)
+  (add-to-list 'warning-inhibit-types '(files missing-lexbind-cookie)))
 (when (boundp 'warning-suppress-types)
   (add-to-list 'warning-suppress-types '(files missing-lexbind-cookie)))
 (when (boundp 'warning-suppress-log-types)

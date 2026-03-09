@@ -4,7 +4,7 @@
  package-enable-at-startup t            ;; set to true, so need not to call package-initialize any more.
  use-package-verbose 1
  ;; Defer loading packages by default, use `:demand' to force loading a package
- use-package-always-defer t
+ use-package-always-defer t 
  use-package-always-ensure t
  gc-cons-threshold most-positive-fixnum
  gc-cons-percentage 0.6
@@ -82,6 +82,14 @@
 (setq package-archives '(("gnu"    . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
                          ("nongnu" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/")
                          ("melpa"  . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")))
+
+;; Auto-refresh package archives if index is missing (e.g., after deleting elpa/)
+(defun riven/package-refresh-if-missing ()
+  "Refresh package archives if archive-contents is missing."
+  (unless (file-exists-p (concat repo-dir "archives/melpa/archive-contents"))
+    (message "Package index missing, refreshing...")
+    (package-refresh-contents)))
+(add-hook 'after-init-hook #'riven/package-refresh-if-missing 5)
 
 (when (featurep 'native-compile)
   (setq
