@@ -19,7 +19,7 @@
 (declare-function exec-path-from-shell-copy-envs "exec-path-from-shell" (variables))
 (declare-function gptel-mcp-connect "gptel-integrations"
                   (&optional servers server-callback interactive))
-(declare-function mcp-hub-start-all-server "mcp-hub" (&optional callback servers syncp))
+(declare-function mcp-hub-start-all-server "mcp-hub" ())
 (declare-function gptel-extensions-refactor "gptel-extensions" (&optional arg))
 (declare-function gptel-extensions-ask-document "gptel-extensions" (&optional arg))
 (declare-function gptel-rewrite-article "gptel-extensions" (&optional arg))
@@ -223,10 +223,14 @@
   (set-file-modes rivenEmacs-mcp-memory-file #o600)
   (let ((servers
          `(("filesystem" .
-            ,(append (riven/gptel--mcp-command-spec
-                      "mcp-server-filesystem"
-                      "@modelcontextprotocol/server-filesystem")
-                     `(:roots ,rivenEmacs-mcp-filesystem-roots)))
+            ,(let ((spec (riven/gptel--mcp-command-spec
+                          "mcp-server-filesystem"
+                          "@modelcontextprotocol/server-filesystem")))
+               (if (executable-find "mcp-server-filesystem")
+                   (append spec `(:args ,rivenEmacs-mcp-filesystem-roots))
+                 (plist-put spec :args
+                            (append '("-y" "@modelcontextprotocol/server-filesystem")
+                                    rivenEmacs-mcp-filesystem-roots)))))
            ("memory" .
             ,(append (riven/gptel--mcp-command-spec
                       "mcp-server-memory"
@@ -279,7 +283,7 @@
     (user-error "mcp.el is unavailable"))
   (unless (require 'gptel-integrations nil t)
     (user-error "gptel integrations are unavailable"))
-  (gptel-mcp-connect (mapcar #'car mcp-hub-servers) 'sync))
+  (gptel-mcp-connect))
 
 (defun riven/gptel-mcp-verify ()
   "Verify MCP integration and return status plist."
@@ -309,6 +313,8 @@
   (riven/gptel-configure-backend)
   (require 'gptel-integrations nil t))
 
+;; MCP integration using lizqwerscott/mcp.el
+;; Repository: https://github.com/lizqwerscott/mcp.el
 (use-package mcp
   :vc (:url "https://github.com/lizqwerscott/mcp.el" :branch "master")
   :after gptel
@@ -317,8 +323,13 @@
   (mcp-hub-servers (riven/gptel-mcp-popular-servers))
   :config
   (require 'mcp-hub)
+  ;; Compatibility shim: gptel-integrations calls with 3 args, but mcp.el expects 0
+  (advice-add 'mcp-hub-start-all-server :around
+              (lambda (orig-fn &rest _args)
+                (funcall orig-fn)))
   (when rivenEmacs-gptel-mcp-auto-connect
     (add-hook 'after-init-hook #'riven/gptel-mcp-connect-popular)))
+
 
 (use-package gpt-extensions
   :vc (:url "https://github.com/kamushadenes/gptel-extensions.el")
