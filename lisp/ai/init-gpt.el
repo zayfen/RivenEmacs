@@ -20,6 +20,7 @@
 (declare-function gptel-mcp-connect "gptel-integrations"
                   (&optional servers server-callback interactive))
 (declare-function mcp-hub-start-all-server "mcp-hub" ())
+(declare-function mcp--status "mcp" (connection))
 (declare-function gptel-extensions-refactor "gptel-extensions" (&optional arg))
 (declare-function gptel-extensions-ask-document "gptel-extensions" (&optional arg))
 (declare-function gptel-rewrite-article "gptel-extensions" (&optional arg))
@@ -32,6 +33,7 @@
 (defvar gptel-api-key)
 (defvar gptel--known-tools)
 (defvar mcp-hub-servers)
+(defvar mcp-server-connections)
 
 (defcustom rivenEmacs-gptel-backend 'deepseek
   "Preferred backend for gptel."
@@ -276,14 +278,38 @@
                  rivenEmacs-mcp-tavily-api-key-env)))
     servers))
 
+(defun riven/gptel--mcp-all-connected-p ()
+  "Return non-nil when all configured MCP servers are connected."
+  (and (boundp 'mcp-server-connections)
+       (boundp 'mcp-hub-servers)
+       (cl-every (lambda (server)
+                   (when-let* ((conn (gethash (car server) mcp-server-connections)))
+                     (equal (mcp--status conn) 'connected)))
+                 mcp-hub-servers)))
+
+(defun riven/gptel--mcp-wait-and-register (deadline)
+  "Poll until servers are ready (up to DEADLINE), then register tools."
+  (cond
+   ((riven/gptel--mcp-all-connected-p)
+    (gptel-mcp-connect)
+    (message "[gptel-mcp] Tools registered from %d MCP servers."
+             (length mcp-hub-servers)))
+   ((time-less-p deadline (current-time))
+    (message "[gptel-mcp] Timed out waiting for MCP servers; registering available tools.")
+    (gptel-mcp-connect))
+   (t
+    (run-with-timer 1 nil #'riven/gptel--mcp-wait-and-register deadline))))
+
 (defun riven/gptel-mcp-connect-popular ()
-  "Connect configured MCP servers and register tools into gptel."
+  "Start MCP servers and register their tools into gptel."
   (interactive)
   (unless (require 'mcp-hub nil t)
     (user-error "mcp.el is unavailable"))
   (unless (require 'gptel-integrations nil t)
     (user-error "gptel integrations are unavailable"))
-  (gptel-mcp-connect))
+  (mcp-hub-start-all-server)
+  (let ((deadline (time-add (current-time) 30)))
+    (riven/gptel--mcp-wait-and-register deadline)))
 
 (defun riven/gptel-mcp-verify ()
   "Verify MCP integration and return status plist."
@@ -323,10 +349,14 @@
   (mcp-hub-servers (riven/gptel-mcp-popular-servers))
   :config
   (require 'mcp-hub)
-  ;; Compatibility shim: gptel-integrations calls with 3 args, but mcp.el expects 0
+  ;; Compatibility shim: gptel-integrations calls (fn callback server-names syncp),
+  ;; but mcp.el's mcp-hub-start-all-server accepts no args.  We must still invoke
+  ;; the callback so gptel can register tools after servers start.
   (advice-add 'mcp-hub-start-all-server :around
-              (lambda (orig-fn &rest _args)
-                (funcall orig-fn)))
+              (lambda (orig-fn &optional callback &rest _ignored)
+                (funcall orig-fn)
+                (when (functionp callback)
+                  (run-with-timer 1 nil callback))))
   (when rivenEmacs-gptel-mcp-auto-connect
     (add-hook 'after-init-hook #'riven/gptel-mcp-connect-popular)))
 
