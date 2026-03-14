@@ -52,6 +52,23 @@ Requires: npm i -g @vue/language-server"
                    (:typescript (:tsdk ,tsdk)
                     :vue (:hybridMode :json-false)))))))
 
+(defun riven/eglot-kotlin-contact ()
+  "Return preferred Eglot server contact for Kotlin, or nil if none found.
+Tries kotlin-lsp first, then falls back to kotlin-language-server."
+  (cond
+   ((executable-find "kotlin-lsp")
+    '("kotlin-lsp" "--stdio"))
+   ((executable-find "kotlin-language-server")
+    '("kotlin-language-server"))))
+
+(defun riven/eglot-configure-kotlin-server ()
+  "Configure Kotlin language server selection for Eglot.
+Only registers if a Kotlin LSP executable is found on PATH."
+  (when (boundp 'eglot-server-programs)
+    (when-let* ((contact (riven/eglot-kotlin-contact)))
+      (setf (alist-get 'kotlin-mode eglot-server-programs nil nil #'eq) contact)
+      (setf (alist-get 'kotlin-ts-mode eglot-server-programs nil nil #'eq) contact))))
+
 (defun riven/eglot-client-capabilities-no-file-watch (orig-fn server)
   "Call ORIG-FN for SERVER, disabling dynamic file-watch registration."
   (let* ((caps (funcall orig-fn server))
@@ -111,6 +128,7 @@ Requires: npm i -g @vue/language-server"
   :config
   (riven/eglot-configure-python-server)
   (riven/eglot-configure-vue-server)
+  (riven/eglot-configure-kotlin-server)
   (setq-default jsonrpc-default-request-timeout 30)
   (keymap-global-set "M-." #'riven/xref-find-definitions-or-search)
   (keymap-global-set "M-," #'xref-go-back)
