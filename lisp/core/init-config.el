@@ -58,13 +58,13 @@
     js-ts-mode
     typescript-ts-mode
     tsx-ts-mode
+    vue-ts-mode
     rust-ts-mode rust-mode
     c-ts-mode c-mode
     c++-ts-mode c++-mode
     java-ts-mode java-mode
     kotlin-ts-mode
     php-ts-mode php-mode
-    web-mode vue-mode
     css-ts-mode css-mode
     html-ts-mode html-mode)
   "List of modes where LSP should be enabled."

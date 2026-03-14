@@ -6,13 +6,14 @@
   (emmet-mode 1)
   (local-unset-key (kbd "C-c C-l")))
 
+
 (use-package emmet-mode
   :ensure t
   :commands (emmet-mode))
 
 (use-package web-mode
   :ensure t
-  :mode ("\\.html\\'" "\\.ejs\\'" "\\.vue\\'")
+  :mode ("\\.html\\'" "\\.ejs\\'")
   :hook (web-mode . riven/web-mode-setup)
   :custom
   (web-mode-enable-auto-closing t)
@@ -22,6 +23,12 @@
   (web-mode-css-indent-offset 2)
   (web-mode-style-padding 0)
   (web-mode-script-padding 0))
+
+(use-package vue-ts-mode
+  :vc (:url "https://github.com/8uff3r/vue-ts-mode" :branch "main")
+  :mode "\\.vue\\'"
+  :hook (vue-ts-mode . eglot-ensure))
+
 
 (add-to-list 'auto-mode-alist '("\\.ts$" . typescript-ts-mode))
 (add-to-list 'auto-mode-alist '("\\.tsx$" . tsx-ts-mode))

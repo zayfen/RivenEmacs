@@ -96,7 +96,7 @@
          (typescript-ts-mode . +flymake-eslint-enable-safe)
          (tsx-ts-mode . +flymake-eslint-enable-safe)
          (web-mode . +flymake-eslint-enable-safe)
-         (vue-mode . +flymake-eslint-enable-safe))
+         (vue-ts-mode . +flymake-eslint-enable-safe))
   :config
   (defun +flymake-eslint-enable-safe ()
     "Enable flymake-eslint only when an eslint executable is available."

@@ -30,6 +30,28 @@
       (setf (alist-get 'python-mode eglot-server-programs nil nil #'eq) contact)
       (setf (alist-get 'python-ts-mode eglot-server-programs nil nil #'eq) contact))))
 
+(defun riven/eglot-configure-vue-server ()
+  "Register vue-language-server (Volar) for `vue-ts-mode' in Eglot.
+Requires: npm i -g @vue/language-server"
+  (when (boundp 'eglot-server-programs)
+    (when-let* ((bin (or (executable-find "vue-language-server")
+                         (car (sort (file-expand-wildcards
+                                     (expand-file-name "~/.nvm/versions/node/*/bin/vue-language-server"))
+                                    #'string>))))
+                (tsdk (or (when-let* ((proj (and (fboundp 'project-current) (project-current)))
+                                      (root (project-root proj))
+                                      (path (expand-file-name "node_modules/typescript/lib" root)))
+                            (when (file-directory-p path) path))
+                          (car (sort (file-expand-wildcards
+                                      (expand-file-name "~/.nvm/versions/node/*/lib/node_modules/typescript/lib"))
+                                     #'string>))
+                          "")))
+      (setf (alist-get 'vue-ts-mode eglot-server-programs nil nil #'eq)
+            `(,bin "--stdio"
+                   :initializationOptions
+                   (:typescript (:tsdk ,tsdk)
+                    :vue (:hybridMode :json-false)))))))
+
 (defun riven/eglot-client-capabilities-no-file-watch (orig-fn server)
   "Call ORIG-FN for SERVER, disabling dynamic file-watch registration."
   (let* ((caps (funcall orig-fn server))
@@ -72,6 +94,7 @@
   (eldoc-echo-area-use-multiline-p nil)
   (eldoc-idle-delay 0.15)
   (eglot-sync-connect nil)
+  (eglot-connect-timeout 30)
   (eglot-autoshutdown t)
   (eglot-report-progress nil)
   (eglot-send-changes-idle-time 0.2)
@@ -82,8 +105,13 @@
   ;; Use ASCII indicator to avoid emoji fallback fonts affecting glyph height.
   (eglot-code-action-indicator "*")
   (eglot-events-buffer-config '(:size 0 :format short))
+  ;; on-type formatting makes a synchronous blocking request to the server,
+  ;; causing Emacs to freeze on characters like `;' and RET.
+  ;; (eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider))
   :config
   (riven/eglot-configure-python-server)
+  (riven/eglot-configure-vue-server)
+  (setq-default jsonrpc-default-request-timeout 30)
   (keymap-global-set "M-." #'riven/xref-find-definitions-or-search)
   (keymap-global-set "M-," #'xref-go-back)
   (keymap-global-set "M-?" #'xref-find-references))

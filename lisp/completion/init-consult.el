@@ -282,6 +282,17 @@ METADATA is passed through to `nerd-icons-corfu-formatter` when kind data exists
     (when (fboundp capf)
       (add-hook 'completion-at-point-functions capf t)))
   (with-eval-after-load 'eglot
+    ;; When eglot activates, pin the CAPF order: LSP first, dabbrev/file as fallback.
+    (add-hook 'eglot-managed-mode-hook
+              (lambda ()
+                (when (bound-and-true-p eglot--managed-mode)
+                  (setq-local completion-at-point-functions
+                              (list #'eglot-completion-at-point
+                                    #'cape-dabbrev
+                                    #'cape-file)))))
+    ;; cape-wrap-buster calls the CAPF and wraps the result; it must be used
+    ;; as :around advice so it is evaluated lazily at completion time, not
+    ;; eagerly at setup time.  This ensures fresh LSP results on each keystroke.
     (advice-add 'eglot-completion-at-point :around #'cape-wrap-buster)))
 
 (use-package marginalia
