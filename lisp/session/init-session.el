@@ -117,7 +117,7 @@ Returns t if the current session should be auto-saved."
                0.5 nil
                (lambda ()
                  (when rivenEmacs-session-default-session
-                   (easysession-load-including-geometry
+                   (easysession-load
                     rivenEmacs-session-default-session)))))
             102)
 
