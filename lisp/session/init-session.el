@@ -1,57 +1,46 @@
-;;; init-session.el --- Session management with easysession -*- lexical-binding: t; -*-
+;;; init-session.el --- Session management with desktop.el -*- lexical-binding: t; -*-
 
 ;;; Commentary:
-;; Session management module for RivenEmacs using easysession.
-;; Provides persistent session saving/loading including buffers,
-;; window configurations, tab-bar state, and frame geometry.
-;;
-;; Uses easysession's built-in commands:
-;; - easysession-switch-to: Switch to another session
-;; - easysession-save-as: Save current session with a name
-;; - easysession-save: Save current session
-;; - easysession-load: Load a session (without geometry)
-;; - easysession-load-including-geometry: Load with frame geometry
-;; - easysession-delete: Delete a session
-;; - easysession-rename: Rename current session
-;; - easysession-get-current-session-name: Get current session name
+;; Session management module for RivenEmacs using Emacs' built-in desktop.el.
+;; It persists buffers, point, window/frame state, and selected global history
+;; without the named session index maintained by external session packages.
 
 ;;; Code:
 
 (require 'init-config)
+(require 'desktop)
 
 ;; ============================================================================
 ;; Customization Variables
 ;; ============================================================================
 
 (defcustom rivenEmacs-session-directory
-  (expand-file-name "sessions/" user-emacs-directory)
-  "Directory where session files are stored."
+  (expand-file-name "desktop/"
+                    (if (boundp 'local-dir)
+                        local-dir
+                      (expand-file-name "local/" user-emacs-directory)))
+  "Directory where the built-in desktop session file is stored."
   :type 'directory
   :group 'rivenEmacs)
 
 (defcustom rivenEmacs-session-auto-save-interval
-  (* 5 60)
-  "Interval in seconds between automatic session saves.
-Set to nil to disable timer-based autosaving."
+  30
+  "Idle seconds before automatically saving the desktop session.
+Set to nil or 0 to disable timer-based desktop autosaving."
   :type '(choice integer (const nil))
-  :group 'rivenEmacs)
-
-(defcustom rivenEmacs-session-default-session
-  "main"
-  "Default session name to load on startup."
-  :type 'string
   :group 'rivenEmacs)
 
 (defcustom rivenEmacs-session-save-geometry
   t
-  "Whether to save and restore frame geometry (position and size)."
+  "Whether to save and restore frame geometry and window state."
   :type 'boolean
   :group 'rivenEmacs)
 
-(defcustom rivenEmacs-session-show-in-modeline
-  t
-  "Whether to display current session name in the mode line."
-  :type 'boolean
+(defcustom rivenEmacs-session-restore-eager
+  5
+  "Number of buffers to restore immediately before lazy restoration.
+Set to t to restore all buffers eagerly."
+  :type '(choice integer (const t))
   :group 'rivenEmacs)
 
 ;; ============================================================================
@@ -59,127 +48,120 @@ Set to nil to disable timer-based autosaving."
 ;; ============================================================================
 
 (defun rivenEmacs-session-ensure-directory ()
-  "Ensure the session directory exists."
+  "Ensure `rivenEmacs-session-directory' exists."
   (unless (file-directory-p rivenEmacs-session-directory)
     (make-directory rivenEmacs-session-directory t)))
 
-(defun rivenEmacs-session-default-predicate ()
-  "Default predicate for auto-saving sessions.
-Returns t if the current session should be auto-saved."
-  (and (boundp 'easysession--current-session-name)
-       easysession--current-session-name
-       (not (string-prefix-p "temp-" easysession--current-session-name))))
+(defun rivenEmacs-session-file ()
+  "Return the full path of the active desktop session file."
+  (expand-file-name desktop-base-file-name rivenEmacs-session-directory))
 
-;; ============================================================================
-;; Easysession Configuration
-;; ============================================================================
-
-(use-package easysession
-  :ensure t
-  :commands (easysession-switch-to
-             easysession-save-as
-             easysession-save
-             easysession-load
-             easysession-load-including-geometry
-             easysession-delete
-             easysession-rename
-             easysession-save-mode
-             easysession-get-current-session-name)
-
-  :custom
-  ;; Session storage location
-  (easysession-directory rivenEmacs-session-directory)
-
-  ;; Auto-save configuration
-  (easysession-save-interval rivenEmacs-session-auto-save-interval)
-
-  ;; Mode line display
-  (easysession-mode-line-misc-info rivenEmacs-session-show-in-modeline)
-  (easysession-save-mode-lighter-show-session-name t)
-
-  ;; Predicate for auto-save
-  (easysession-save-mode-predicate #'rivenEmacs-session-default-predicate)
-
-  ;; Exclude hooks that trigger slow analysis during session restore
-  (easysession-find-file-exclude-hook-regexp
-   "flymake\\|eldoc\\|lsp\\|eglot\\|treesit\\|tree-sitter\\|flycheck")
-
-  :init
-  ;; Ensure session directory exists
+(defun rivenEmacs-session-save ()
+  "Save the current desktop session."
+  (interactive)
   (rivenEmacs-session-ensure-directory)
+  (desktop-save rivenEmacs-session-directory)
+  (message "Desktop session saved in %s"
+           (abbreviate-file-name rivenEmacs-session-directory)))
 
-  ;; Load session after idle time so UI is immediately responsive.
-  ;; Using idle timer instead of emacs-startup-hook avoids blocking
-  ;; the initial frame render when there are many buffers to restore.
-  (add-hook 'emacs-startup-hook
-            (lambda ()
-              (run-with-idle-timer
-               0.5 nil
-               (lambda ()
-                 (when rivenEmacs-session-default-session
-                   (easysession-load
-                    rivenEmacs-session-default-session)))))
-            102)
+(defun rivenEmacs-session-load ()
+  "Load the desktop session from `rivenEmacs-session-directory'."
+  (interactive)
+  (rivenEmacs-session-ensure-directory)
+  (if (file-exists-p (rivenEmacs-session-file))
+      (desktop-read rivenEmacs-session-directory)
+    (message "No desktop session file found in %s"
+             (abbreviate-file-name rivenEmacs-session-directory))))
 
-  (add-hook 'easysession-before-load-hook #'easysession-reset)
-  (add-hook 'easysession-new-session-hook #'easysession-reset)
+(defun rivenEmacs-session-reload ()
+  "Clear current buffers and reload the desktop session."
+  (interactive)
+  (desktop-clear)
+  (rivenEmacs-session-load))
 
-  (add-hook 'easysession-before-reset-hook
-            (lambda () (save-some-buffers t)))
+(defun rivenEmacs-session-clear ()
+  "Clear the current desktop without deleting the saved session file."
+  (interactive)
+  (desktop-clear)
+  (message "Desktop session cleared"))
 
-  ;; Enable auto-save mode after session is loaded
-  (add-hook 'emacs-startup-hook #'easysession-save-mode 103)
+(defun rivenEmacs-session-delete ()
+  "Delete the saved desktop session file."
+  (interactive)
+  (let ((session-file (rivenEmacs-session-file)))
+    (when (or (not (file-exists-p session-file))
+              (yes-or-no-p (format "Delete desktop session %s? "
+                                   (abbreviate-file-name session-file))))
+      (when (file-exists-p session-file)
+        (delete-file session-file))
+      (desktop-release-lock rivenEmacs-session-directory)
+      (when (and desktop-dirname
+                 (equal (file-name-as-directory (expand-file-name rivenEmacs-session-directory))
+                        (file-name-as-directory (expand-file-name desktop-dirname))))
+        (setq desktop-dirname nil))
+      (message "Desktop session deleted"))))
 
-  :config
-  ;; Hook to ensure directory exists before saving
-  (add-hook 'easysession-before-save-hook #'rivenEmacs-session-ensure-directory))
+(defun rivenEmacs-session-current ()
+  "Show the active desktop session file."
+  (interactive)
+  (message "Desktop session: %s"
+           (abbreviate-file-name
+            (or (and desktop-dirname (desktop-full-file-name))
+                (rivenEmacs-session-file)))))
 
 ;; ============================================================================
-;; Hooks for Enhanced Session Management
+;; Desktop Configuration
 ;; ============================================================================
 
-(defun rivenEmacs-session-setup-empty ()
-  "Set up a minimal environment when creating a new session."
-  (when (and (boundp 'tab-bar-mode) tab-bar-mode)
-    (tab-bar-close-other-tabs))
-  (delete-other-windows)
-  (scratch-buffer))
+(rivenEmacs-session-ensure-directory)
 
-(add-hook 'easysession-new-session-hook #'rivenEmacs-session-setup-empty)
+(setq desktop-dirname rivenEmacs-session-directory
+      desktop-path (list rivenEmacs-session-directory)
+      desktop-save t
+      desktop-auto-save-timeout rivenEmacs-session-auto-save-interval
+      desktop-restore-frames rivenEmacs-session-save-geometry
+      desktop-restore-eager rivenEmacs-session-restore-eager
+      desktop-load-locked-desktop 'check-pid
+      desktop-lazy-verbose nil
+      desktop-files-not-to-save
+      (rx (or
+           (: string-start "/" (* (not (any "/:"))) ":")
+           (: "/"
+              (or ".cache" ".git" "cache" "eln-cache" "node_modules")
+              (* anychar))
+           (: (or "/rsync" "/ssh" "/sudo" "/sudoedit" "/tmp" "/yadm")
+              (* anychar))))
+      desktop-buffers-not-to-save
+      (rx string-start
+          (or " "
+              "*Completions*"
+              "*Compile-Log*"
+              "*Flymake"
+              "*Messages*"
+              "*Warnings*")))
+
+(add-to-list 'desktop-modes-not-to-save 'dired-mode)
+(add-to-list 'desktop-modes-not-to-save 'help-mode)
+(add-to-list 'desktop-modes-not-to-save 'special-mode)
+
+(desktop-save-mode 1)
 
 ;; ============================================================================
 ;; Keybindings
 ;; ============================================================================
 
-;; Global prefix "C-c s" for session management
-;; Uses easysession's built-in commands directly
 (defvar rivenEmacs-session-map
   (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "s") #'easysession-switch-to)
-    (define-key map (kbd "S") #'easysession-save-as)
-    (define-key map (kbd "l") #'easysession-load)
-    (define-key map (kbd "L") #'easysession-load-including-geometry)
-    (define-key map (kbd "d") #'easysession-delete)
-    (define-key map (kbd "r") #'easysession-rename)
-    (define-key map (kbd ".") #'easysession-save)
-    (define-key map (kbd "c") #'easysession-get-current-session-name)
+    (define-key map (kbd "s") #'rivenEmacs-session-save)
+    (define-key map (kbd "l") #'rivenEmacs-session-load)
+    (define-key map (kbd "r") #'rivenEmacs-session-reload)
+    (define-key map (kbd "c") #'rivenEmacs-session-current)
+    (define-key map (kbd "k") #'rivenEmacs-session-clear)
+    (define-key map (kbd "d") #'rivenEmacs-session-delete)
     map)
-  "Keymap for session management commands under C-c s prefix.
-Uses easysession's built-in commands.
+  "Keymap for built-in desktop session commands under `C-c s'.")
 
-\<rivenEmacs-session-map>
-\[easysession-switch-to] - Switch to session
-\[easysession-save-as] - Save as new session
-\[easysession-load] - Load session (without geometry)
-\[easysession-load-including-geometry] - Load with geometry
-\[easysession-delete] - Delete session
-\[easysession-rename] - Rename session
-\[easysession-save] - Save current session
-\[easysession-get-current-session-name] - Show current session")
-
-;; Bind the prefix map to C-c s
 (define-key global-map (kbd "C-c s") rivenEmacs-session-map)
-
 
 ;; ============================================================================
 ;; Provide Module

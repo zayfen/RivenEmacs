@@ -23,14 +23,12 @@
 
 (defvar riven/keybindings-leader-spec-session
   '(("s" "Session"
-     (("s" easysession-switch-to "Switch session")
-      ("S" easysession-save-as "Save as new")
-      ("l" easysession-load "Load session")
-      ("L" easysession-load-including-geometry "Load with geometry")
-      ("d" easysession-delete "Delete session")
-      ("r" easysession-rename "Rename session")
-      ("." easysession-save "Save current")
-      ("c" easysession-get-current-session-name "Current session"))))
+     (("s" rivenEmacs-session-save "Save session")
+      ("l" rivenEmacs-session-load "Load session")
+      ("r" rivenEmacs-session-reload "Reload session")
+      ("c" rivenEmacs-session-current "Current session")
+      ("k" rivenEmacs-session-clear "Clear session")
+      ("d" rivenEmacs-session-delete "Delete session"))))
   "Session declarative specs for `leader-def` groups.")
 
 (provide 'keybindings-spec-org)
