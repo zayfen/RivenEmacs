@@ -13,6 +13,8 @@
 (require 'init-gpt-helper)
 
 (declare-function gptel-make-deepseek "gptel-openai-extras" (&rest args))
+(declare-function gptel-make-openai "gptel-openai" (name &rest args))
+(declare-function gptel-make-openai-responses "gptel-openai-responses" (name &rest args))
 (declare-function gptel-auto-scroll "gptel" (&rest args))
 (declare-function gptel-end-of-response "gptel" (&rest args))
 (declare-function gptel-api-key-from-auth-source "gptel" (&optional host user port))
@@ -35,10 +37,36 @@
 (defvar mcp-hub-servers)
 (defvar mcp-server-connections)
 
-(defcustom rivenEmacs-gptel-backend 'deepseek
+(defcustom rivenEmacs-gptel-backend 'zayfen
   "Preferred backend for gptel."
-  :type '(choice (const :tag "DeepSeek" deepseek)
+  :type '(choice (const :tag "Zayfen (OpenAI-compatible)" zayfen)
+                 (const :tag "DeepSeek" deepseek)
                  (const :tag "Use gptel default backend" default))
+  :group 'rivenEmacs)
+
+(defcustom rivenEmacs-zayfen-host "api.zayfen.com"
+  "Host (without protocol) for the Zayfen OpenAI-compatible endpoint."
+  :type 'string
+  :group 'rivenEmacs)
+
+(defcustom rivenEmacs-zayfen-chat-models
+  '(deepseek-v4-flash deepseek-v4-pro glm-5 glm-5-turbo)
+  "Chat-Completions models exposed by the Zayfen backend.
+These models are served via /v1/chat/completions."
+  :type '(repeat symbol)
+  :group 'rivenEmacs)
+
+(defcustom rivenEmacs-zayfen-responses-models
+  '((gpt-5.4 :capabilities (tool-use json responses-api))
+    (gpt-5.5 :capabilities (tool-use json responses-api)))
+  "Responses-API models exposed by the Zayfen backend.
+These models are served via /v1/responses."
+  :type '(repeat (choice symbol (cons symbol plist)))
+  :group 'rivenEmacs)
+
+(defcustom rivenEmacs-zayfen-default-model 'deepseek-v4-pro
+  "Default model used with the Zayfen Chat-Completions backend."
+  :type 'symbol
   :group 'rivenEmacs)
 
 (defcustom rivenEmacs-gptel-mcp-auto-connect nil
@@ -105,7 +133,7 @@
   :group 'rivenEmacs)
 
 (defconst riven/gptel-api-key-env-vars
-  '("DEEPSEEK_API_KEY" "OPENAI_API_KEY" "GROQ_API_KEY" "ANTHROPIC_AUTH_TOKEN")
+  '("ZAYFEN_API_KEY" "DEEPSEEK_API_KEY" "OPENAI_API_KEY" "ANTHROPIC_AUTH_TOKEN")
   "Environment variable names used for AI API keys.")
 
 (defun riven/gptel--sync-api-key-env-vars ()
@@ -148,16 +176,60 @@
      (t
       (message "[gptel] Missing API key: set OPENAI_API_KEY (or auth-source entry gptel-api-key).")))))
 
-(defun riven/gptel-configure-backend ()
-  "Set up gptel backend with graceful fallback."
-  (riven/gptel--sync-api-key-env-vars)
+(defun riven/gptel--zayfen-api-key ()
+  "Resolve the Zayfen API key from env or auth-source."
+  (or (riven/gptel--read-env "ZAYFEN_API_KEY")
+      (ignore-errors
+        (gptel-api-key-from-auth-source rivenEmacs-zayfen-host "apikey"))
+      (ignore-errors
+        (gptel-api-key-from-auth-source rivenEmacs-zayfen-host))))
+
+(defun riven/gptel--configure-zayfen-backend ()
+  "Configure the Zayfen OpenAI-compatible backends.
+
+Registers two backends sharing the same host:
+- \"Zayfen\"           via /v1/chat/completions (deepseek, glm, ...)
+- \"Zayfen-Responses\" via /v1/responses        (gpt-5.x reasoning models)
+
+The default `gptel-backend' is set to the Chat-Completions one.
+Switch backend/model interactively via `gptel-menu'."
+  (let ((key (riven/gptel--zayfen-api-key)))
+    (cond
+     ((not (require 'gptel nil t))
+      (message "[gptel] gptel not available; cannot register Zayfen backend."))
+     ((not (fboundp 'gptel-make-openai))
+      (message "[gptel] gptel-make-openai unavailable; keeping default backend."))
+     ((string-empty-p (or key ""))
+      (message "[gptel] ZAYFEN_API_KEY is empty; using default backend."))
+     (t
+      (let ((chat-backend
+             (gptel-make-openai "Zayfen"
+               :host rivenEmacs-zayfen-host
+               :protocol "https"
+               :endpoint "/v1/chat/completions"
+               :stream t
+               :key key
+               :models rivenEmacs-zayfen-chat-models)))
+        (when (and rivenEmacs-zayfen-responses-models
+                   (require 'gptel-openai-responses nil t)
+                   (fboundp 'gptel-make-openai-responses))
+          (gptel-make-openai-responses "Zayfen-Responses"
+            :host rivenEmacs-zayfen-host
+            :protocol "https"
+            :endpoint "/v1/responses"
+            :stream t
+            :key key
+            :models rivenEmacs-zayfen-responses-models))
+        (setq gptel-model rivenEmacs-zayfen-default-model
+              gptel-backend chat-backend))))))
+
+(defun riven/gptel--configure-deepseek-backend ()
+  "Configure the official DeepSeek backend."
   (let ((deepseek-key
          (or (riven/gptel--read-env "DEEPSEEK_API_KEY")
              (ignore-errors (gptel-api-key-from-auth-source "api.deepseek.com" "apikey"))
              (ignore-errors (gptel-api-key-from-auth-source "api.deepseek.com")))))
     (cond
-     ((not (eq rivenEmacs-gptel-backend 'deepseek))
-      nil)
      ((not (require 'gptel-openai-extras nil t))
       (message "[gptel] gptel-openai-extras not found; keeping default backend."))
      ((not (fboundp 'gptel-make-deepseek))
@@ -168,6 +240,14 @@
       (setq gptel-model 'deepseek-chat
             gptel-backend
             (gptel-make-deepseek "DeepSeek" :stream t :key deepseek-key))))))
+
+(defun riven/gptel-configure-backend ()
+  "Set up gptel backend with graceful fallback."
+  (riven/gptel--sync-api-key-env-vars)
+  (pcase rivenEmacs-gptel-backend
+    ('zayfen   (riven/gptel--configure-zayfen-backend))
+    ('deepseek (riven/gptel--configure-deepseek-backend))
+    (_ nil)))
 
 (defun riven/gptel--mcp-command-spec (binary npm-package)
   "Build MCP server command plist from BINARY or NPM-PACKAGE fallback."

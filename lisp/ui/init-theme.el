@@ -2,40 +2,40 @@
 ;;; init-theme.el --- config theme
 
 ;; use-package with package.el:
-(use-package dashboard
-  :vc (:url "https://github.com/emacs-dashboard/emacs-dashboard")
-  :commands (dashboard-open)
-  :config
-  (setq dashboard-banner-logo-title "Welcome to RivenEmacs")
-  ;; Set the banner
-  (setq dashboard-startup-banner 'official)
-  ;; Content is not centered by default. To center, set
-  (setq dashboard-center-content t)
-  ;; vertically center content
-  (setq dashboard-vertically-center-content t)
-  ;; To disable shortcut "jump" indicators for each section, set
-  (setq dashboard-show-shortcuts t)
-  ;; Set projects backend to project-el (built-in) instead of projectile
-  (setq dashboard-projects-backend 'project-el)
-  (setq dashboard-items '((recents   . 6)
-                          (bookmarks . 5)
-                          (projects  . 5)
-                          (agenda    . 5)
-                          (registers . 5)))
-  (dashboard-setup-startup-hook))
+;; (use-package dashboard
+;;   :vc (:url "https://github.com/emacs-dashboard/emacs-dashboard")
+;;   :commands (dashboard-open)
+;;   :config
+;;   (setq dashboard-banner-logo-title "Welcome to RivenEmacs")
+;;   ;; Set the banner
+;;   (setq dashboard-startup-banner 'official)
+;;   ;; Content is not centered by default. To center, set
+;;   (setq dashboard-center-content t)
+;;   ;; vertically center content
+;;   (setq dashboard-vertically-center-content t)
+;;   ;; To disable shortcut "jump" indicators for each section, set
+;;   (setq dashboard-show-shortcuts t)
+;;   ;; Set projects backend to project-el (built-in) instead of projectile
+;;   (setq dashboard-projects-backend 'project-el)
+;;   (setq dashboard-items '((recents   . 6)
+;;                           (bookmarks . 5)
+;;                           (projects  . 5)
+;;                           (agenda    . 5)
+;;                           (registers . 5)))
+;;   (dashboard-setup-startup-hook))
 
 ;; Use idle timer to delay dashboard loading for better startup performance
 ;; Only open dashboard when no files were specified on command line
-(when (and (= 1 (length command-line-args))  ; Only emacs binary in args
-           (not (member "-f" command-line-args))  ; Not running function
-           (not (member "--funcall" command-line-args))  ; Not running function
-           (not (member "-l" command-line-args))  ; Not loading file
-           (not (member "--load" command-line-args))  ; Not loading file
-           (not (member "-e" command-line-args))  ; Not evaluating expression
-           (not (member "--eval" command-line-args))  ; Not evaluating expression
-           (not (member "-t" command-line-args))  ; Not running terminal
-           (not (member "--terminal" command-line-args)))  ; Not running terminal
-  (run-with-idle-timer rivenEmacs-dashboard-delay nil #'dashboard-open))
+;; (when (and (= 1 (length command-line-args))  ; Only emacs binary in args
+;;            (not (member "-f" command-line-args))  ; Not running function
+;;            (not (member "--funcall" command-line-args))  ; Not running function
+;;            (not (member "-l" command-line-args))  ; Not loading file
+;;            (not (member "--load" command-line-args))  ; Not loading file
+;;            (not (member "-e" command-line-args))  ; Not evaluating expression
+;;            (not (member "--eval" command-line-args))  ; Not evaluating expression
+;;            (not (member "-t" command-line-args))  ; Not running terminal
+;;            (not (member "--terminal" command-line-args)))  ; Not running terminal
+;;   (run-with-idle-timer rivenEmacs-dashboard-delay nil #'dashboard-open))
 
 (defun riven/theme-ensure-elpa-package-load-path (package)
   "Ensure PACKAGE directory under ELPA is available in `load-path`."
