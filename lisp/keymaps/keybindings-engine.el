@@ -6,6 +6,11 @@
 (defvar riven/keybindings--seen (make-hash-table :test #'equal)
   "Internal table for duplicate key detection.")
 
+(defvar riven/keybindings-owned-c-c-prefixes
+  '("!" "=" "a" "b" "c" "e" "f" "g" "n" "o" "p" "q" "s" "t" "w" "x")
+  "Top-level `C-c' prefixes owned by RivenEmacs keybinding specs.
+This includes retired prefixes so config reloads remove stale bindings.")
+
 (defun riven/keybindings--symbol-name-safe (sym)
   (if (symbolp sym) (symbol-name sym) (format "%s" sym)))
 
@@ -25,6 +30,12 @@
   (unless (or (keywordp cmd)
               (and (symbolp cmd) (fboundp cmd)))
     (message "[keybindings] missing command: %s" (riven/keybindings--symbol-name-safe cmd))))
+
+(defun riven/keybindings-reset-owned-prefixes ()
+  "Clear RivenEmacs-owned global `C-c' prefixes before applying specs."
+  (clrhash riven/keybindings--seen)
+  (dolist (prefix riven/keybindings-owned-c-c-prefixes)
+    (keymap-global-unset (concat "C-c " prefix) t)))
 
 (defun riven/keybindings--bind-and-describe (full-key cmd wk)
   "Bind FULL-KEY to CMD in global map and register WK description."
@@ -56,11 +67,8 @@
       (riven/keybindings--bind-and-describe
        (concat "C-c " prefix " " key) cmd wk))))
 
-(defun riven/keybindings-apply-open-query-ai ()
-  "Apply open/query/ai specs."
-  (riven/keybindings-apply-simple-spec "o" "open" "Open" riven/keybindings-open-spec)
-  (riven/keybindings-apply-simple-spec "q" "query" "Query" riven/keybindings-query-spec)
-  (riven/keybindings-apply-simple-spec "a" "ai" "AI" riven/keybindings-ai-spec)
+(defun riven/keybindings-apply-agent-spec ()
+  "Apply the dedicated Agent spec under `C-c ='."
   (riven/keybindings-apply-simple-spec "=" "agent" "Agent"
                                        riven/keybindings-agent-spec))
 

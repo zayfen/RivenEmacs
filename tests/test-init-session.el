@@ -60,15 +60,15 @@
   (should-not (boundp 'rivenEmacs-session-map)))
 
 (ert-deftest rivenEmacs-session-test-declarative-keybindings ()
-  "Session commands are bound under `C-c s' by the declarative engine."
+  "Session commands are bound under `C-c x' by the declarative engine."
   (cl-letf (((symbol-function 'riven/keybindings--warn-missing-command) #'ignore))
     (riven/keybindings-apply-leader-spec))
-  (dolist (entry '(("C-c s s" . rivenEmacs-session-save)
-                   ("C-c s l" . rivenEmacs-session-load)
-                   ("C-c s r" . rivenEmacs-session-reload)
-                   ("C-c s c" . rivenEmacs-session-current)
-                   ("C-c s k" . rivenEmacs-session-clear)
-                   ("C-c s d" . rivenEmacs-session-delete)))
+  (dolist (entry '(("C-c x s" . rivenEmacs-session-save)
+                   ("C-c x l" . rivenEmacs-session-load)
+                   ("C-c x r" . rivenEmacs-session-reload)
+                   ("C-c x c" . rivenEmacs-session-current)
+                   ("C-c x k" . rivenEmacs-session-clear)
+                   ("C-c x d" . rivenEmacs-session-delete)))
     (should (eq (key-binding (kbd (car entry))) (cdr entry)))))
 
 (ert-deftest rivenEmacs-session-test-excludes-heavy-session-state ()

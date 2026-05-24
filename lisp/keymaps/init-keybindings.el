@@ -7,8 +7,9 @@
 
 (defun riven/keybindings-config ()
   "Apply all RivenEmacs keybindings from declarative specs."
+  (riven/keybindings-reset-owned-prefixes)
   (riven/keybindings-apply-leader-spec)
-  (riven/keybindings-apply-open-query-ai)
+  (riven/keybindings-apply-agent-spec)
   (riven/keybindings-apply-navigate)
   (riven/keybindings-apply-default-cleanups)
   (keymap-global-set "M-*" #'ai-code-menu))

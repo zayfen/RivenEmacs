@@ -22,6 +22,13 @@
    (t
     (call-interactively #'xref-find-definitions))))
 
+(defun riven/eglot-find-declaration-dispatch ()
+  "Find declaration with Eglot, fallback to Xref definitions."
+  (interactive)
+  (if (fboundp 'eglot-find-declaration)
+      (call-interactively #'eglot-find-declaration)
+    (call-interactively #'xref-find-definitions)))
+
 (defvar riven/flymake-diagnostics-quick-close-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "C-g") #'riven/flymake-close-diagnostics-or-keyboard-quit)
@@ -85,17 +92,15 @@
         (select-window win)))))
 
 (defvar riven/keybindings-lsp-spec
-  '(("a" eglot-code-actions "Code Actions")
-    ("e" riven/flymake-show-buffer-diagnostics-focus "Diagnostic List")
-    ("d" riven/xref-find-definitions-or-search "Find Definition")
-    ("f" riven/eglot-format-dispatch "Format Buffer")
+  '(("d" riven/xref-find-definitions-or-search "Find Definition")
+    ("D" riven/eglot-find-declaration-dispatch "Find Declaration")
+    ("r" xref-find-references "Find References")
     ("i" eglot-find-implementation "Find Implementation")
-    ("k" riven/eldoc-doc-buffer-focus "Show Documentation")
-    ("p" xref-find-definitions-other-window "Peek Definition")
-    ("q" eslint-fix "Quick Fix (ESLint)")
-    ("r" eglot-rename "Rename Symbol")
     ("t" riven/eglot-find-type-definition-dispatch "Find Type Definition")
-    ("?" xref-find-references "Find References"))
-  "Declarative specs for lsp keybindings.")
+    ("a" eglot-code-actions "Code Actions")
+    ("f" riven/eglot-format-dispatch "Format Buffer")
+    ("R" eglot-rename "Rename Symbol")
+    ("q" quickrun "Quickrun"))
+  "Declarative specs for Eglot-local code keybindings.")
 
 (provide 'keybindings-spec-lsp)
