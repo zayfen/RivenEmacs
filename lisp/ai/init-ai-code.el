@@ -33,6 +33,7 @@
   :init
   (autoload 'ai-code-set-backend "ai-code-backends" nil t)
   :custom
+  (ai-code-backends-infra-terminal-backend 'ghostel)
   (ai-code-menu-layout 'two-columns)
   (ai-code-auto-test-type 'ask-me)
   :config
