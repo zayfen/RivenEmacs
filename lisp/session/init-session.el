@@ -31,8 +31,10 @@ Set to nil or 0 to disable timer-based desktop autosaving."
   :group 'rivenEmacs)
 
 (defcustom rivenEmacs-session-save-geometry
-  t
-  "Whether to save and restore frame geometry and window state."
+  nil
+  "Whether to save and restore frame geometry and window state.
+Keep this nil by default so desktop restore does not create extra Emacs frames
+on startup."
   :type 'boolean
   :group 'rivenEmacs)
 
@@ -120,6 +122,7 @@ Set to t to restore all buffers eagerly."
       desktop-save t
       desktop-auto-save-timeout rivenEmacs-session-auto-save-interval
       desktop-restore-frames rivenEmacs-session-save-geometry
+      desktop-globals-to-save (delq 'desktop-saved-frameset desktop-globals-to-save)
       desktop-restore-eager rivenEmacs-session-restore-eager
       desktop-load-locked-desktop 'check-pid
       desktop-lazy-verbose nil

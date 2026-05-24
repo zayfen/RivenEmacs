@@ -43,8 +43,13 @@
 
 (ert-deftest rivenEmacs-session-test-default-values ()
   (should (equal rivenEmacs-session-auto-save-interval 30))
-  (should rivenEmacs-session-save-geometry)
+  (should-not rivenEmacs-session-save-geometry)
   (should (equal rivenEmacs-session-restore-eager 5)))
+
+(ert-deftest rivenEmacs-session-test-does-not-restore-frames ()
+  "Desktop restores buffers without restoring saved frames."
+  (should-not desktop-restore-frames)
+  (should-not (memq 'desktop-saved-frameset desktop-globals-to-save)))
 
 (ert-deftest rivenEmacs-session-test-session-file ()
   (should (equal (rivenEmacs-session-file)

@@ -1,6 +1,5 @@
 ;; -*- coding: utf-8; lexical-binding: t -*-
 
-
 (use-package which-key
   :demand t
   :custom

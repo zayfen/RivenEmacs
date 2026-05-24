@@ -12,6 +12,7 @@
   (riven/keybindings-apply-agent-spec)
   (riven/keybindings-apply-navigate)
   (riven/keybindings-apply-default-cleanups)
+  (riven/keybindings-configure-which-key-display)
   (keymap-global-set "M-*" #'ai-code-menu))
 
 (add-hook 'after-init-hook #'riven/keybindings-config)

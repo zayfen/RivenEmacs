@@ -7,12 +7,38 @@
   "Internal table for duplicate key detection.")
 
 (defvar riven/keybindings-owned-c-c-prefixes
-  '("!" "=" "a" "b" "c" "e" "f" "g" "n" "o" "p" "q" "s" "t" "w" "x")
+  '("!" "^" "=" "a" "b" "c" "e" "f" "g" "n" "o" "p" "q" "s" "t" "w" "x")
   "Top-level `C-c' prefixes owned by RivenEmacs keybinding specs.
 This includes retired prefixes so config reloads remove stale bindings.")
 
+(defconst riven/keybindings-c-c-which-key-groups
+  '(("C-c =" . "Agent")
+    ("C-c &" . "+Yas")
+    ("C-c a" . "AI")
+    ("C-c c" . "Code")
+    ("C-c e" . "Error")
+    ("C-c f" . "File")
+    ("C-c g" . "Git")
+    ("C-c n" . "Note")
+    ("C-c p" . "Project")
+    ("C-c s" . "Search")
+    ("C-c t" . "Tool")
+    ("C-c w" . "Window")
+    ("C-c x" . "Session"))
+  "Top-level `C-c' group keys and labels shown by which-key.")
+
+(defconst riven/keybindings-c-c-which-key-filter
+  '(("\\`C-c [^ ]+\\'" . nil) . riven/keybindings-c-c-which-key-group-p)
+  "Which-key replacement that hides non-group top-level `C-c' entries.")
+
 (defun riven/keybindings--symbol-name-safe (sym)
   (if (symbolp sym) (symbol-name sym) (format "%s" sym)))
+
+(defun riven/keybindings-c-c-which-key-group-p (binding)
+  "Return BINDING when it is a structured top-level `C-c' group."
+  (when-let* (((consp binding))
+              (group (assoc (car binding) riven/keybindings-c-c-which-key-groups)))
+    (cons (car binding) (cdr group))))
 
 (defun riven/keybindings--register (namespace key cmd)
   "Register KEY/CMD in NAMESPACE and warn on duplicates."
@@ -88,5 +114,12 @@ This includes retired prefixes so config reloads remove stale bindings.")
   "Apply one-time key cleanup."
   (keymap-global-unset "M-g TAB")
   (keymap-global-unset "M-g M-g"))
+
+(defun riven/keybindings-configure-which-key-display ()
+  "Configure which-key labels and filtering for RivenEmacs prefixes."
+  (when (boundp 'which-key-replacement-alist)
+    (add-to-list 'which-key-replacement-alist riven/keybindings-c-c-which-key-filter))
+  (when (fboundp 'which-key-add-key-based-replacements)
+    (which-key-add-key-based-replacements "C-c &" '("+Yas" . "+Yas"))))
 
 (provide 'keybindings-engine)

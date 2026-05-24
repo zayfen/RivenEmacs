@@ -86,6 +86,11 @@
                    ("C-c s d" . rivenEmacs-session-delete)))
     (should-not (eq (key-binding (kbd (car entry))) (cdr entry)))))
 
+(ert-deftest riven/structured-keybindings-remove-unused-control-c-caret ()
+  "The unused `C-c ^' prefix is not left behind as an empty prefix map."
+  (riven/test-apply-structured-keybindings)
+  (should-not (lookup-key mode-specific-map (kbd "^"))))
+
 (ert-deftest riven/structured-keybindings-clear-stale-owned-prefixes ()
   "Reapplying keybindings clears stale commands from retired owned prefixes."
   (dolist (entry '(("C-c b l" . ibuffer-list-buffers)
@@ -93,6 +98,7 @@
                    ("C-c q d" . devdocs-lookup)
                    ("C-c s d" . rivenEmacs-session-delete)
                    ("C-c ! l" . flymake-show-buffer-diagnostics)
+                   ("C-c ^" . ignore)
                    ("C-c e u" . sp-splice-sexp)))
     (keymap-global-set (car entry) (cdr entry)))
   (riven/test-apply-structured-keybindings)
@@ -101,8 +107,25 @@
                    ("C-c q d" . devdocs-lookup)
                    ("C-c s d" . rivenEmacs-session-delete)
                    ("C-c ! l" . flymake-show-buffer-diagnostics)
+                   ("C-c ^" . ignore)
                    ("C-c e u" . sp-splice-sexp)))
     (should-not (eq (key-binding (kbd (car entry))) (cdr entry)))))
+
+(ert-deftest riven/structured-keybindings-yas-prefix-uses-plus-yas-label ()
+  "`C-c &' is labelled as +Yas for which-key."
+  (require 'which-key)
+  (riven/test-apply-structured-keybindings)
+  (should (assoc "C-c &" which-key--prefix-title-alist))
+  (should (equal (cdr (assoc "C-c &" which-key--prefix-title-alist)) "+Yas")))
+
+(ert-deftest riven/structured-keybindings-c-c-top-level-hides-non-groups ()
+  "`C-c' top-level which-key entries only show structured groups."
+  (require 'which-key)
+  (riven/test-apply-structured-keybindings)
+  (let ((embark-entry (which-key--maybe-replace '("C-c ;" . "embark-dwim")))
+        (file-entry (which-key--maybe-replace '("C-c f" . "prefix"))))
+    (should-not embark-entry)
+    (should (equal file-entry '("C-c f" . "File")))))
 
 (ert-deftest riven/structured-keybinding-helper-commands-are-interactive ()
   "Helper commands used by specs exist and are interactive."
