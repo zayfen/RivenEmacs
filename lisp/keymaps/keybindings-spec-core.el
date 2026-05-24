@@ -76,7 +76,7 @@
       ("f" eslint-fix "Fix with ESLint")))
 
     ("t" "Tool"
-     (("t" eat "Terminal")
+     (("t" ghostel "Terminal")
       ("d" docker "Docker")
       ("r" reader-open-doc "Reader")
       ("n" elfeed "News")

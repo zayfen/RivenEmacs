@@ -1,6 +1,12 @@
 ;; -*- coding: utf-8; lexical-binding: t -*-
 ;;; init-terminal.el --- Terminal
 
+(use-package ghostel
+  :vc (:url "https://github.com/dakra/ghostel"
+       :lisp-dir "lisp"
+       :rev :newest)
+  :commands (ghostel ghostel-other-window))
+
 (use-package eat
   :vc (:url "https://codeberg.org/akib/emacs-eat")
   :commands (eat eat-line-mode eat-semi-char-mode)
