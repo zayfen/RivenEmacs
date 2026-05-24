@@ -147,23 +147,6 @@ Set to t to restore all buffers eagerly."
 (desktop-save-mode 1)
 
 ;; ============================================================================
-;; Keybindings
-;; ============================================================================
-
-(defvar rivenEmacs-session-map
-  (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "s") #'rivenEmacs-session-save)
-    (define-key map (kbd "l") #'rivenEmacs-session-load)
-    (define-key map (kbd "r") #'rivenEmacs-session-reload)
-    (define-key map (kbd "c") #'rivenEmacs-session-current)
-    (define-key map (kbd "k") #'rivenEmacs-session-clear)
-    (define-key map (kbd "d") #'rivenEmacs-session-delete)
-    map)
-  "Keymap for built-in desktop session commands under `C-c s'.")
-
-(define-key global-map (kbd "C-c s") rivenEmacs-session-map)
-
-;; ============================================================================
 ;; Provide Module
 ;; ============================================================================
 

@@ -31,7 +31,7 @@
 - init-consult, init-vertico, init-crux, init-editor
 - init-dired, init-format, init-jump, init-editorconfig, init-checker, init-pair, init-fold, init-markdown
 - init-treesit
-- init-agent-shell（keybindings 依赖 agent-shell-leader-def）
+- init-agent-shell（注册 agent 命令，transport 依赖保持延迟）
 - init-session, init-terminal
 - init-keybindings
 
@@ -58,11 +58,11 @@
 ### 4.2 init-keybindings.el
 
 - 新增 `riven/lsp-bridge-keybindings`，在 `with-eval-after-load 'lsp-bridge` 中设置 SPC c 键位
-- 在 `keybindings-config` 开头添加 `(require 'agent-shell nil t)` 确保 agent-shell-leader-def 存在
+- 通过声明式 keybinding 引擎注册 `C-c =`，不再为设置快捷键提前加载 `agent-shell`
 
 ### 4.3 init-agent-shell.el
 
-- 为 agent-shell 的 use-package 添加 `:after general`，避免 `general-create-definer` 未定义错误
+- 延迟加载 `acp` 与 `shell-maker`，并移除已不再使用的 `general` 前缀定义器
 
 ## 5. 权衡说明
 

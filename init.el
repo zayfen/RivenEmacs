@@ -98,6 +98,7 @@ Org module itself is loaded lazily in org buffers."
   (require 'init-envrc)
   (require 'init-project)
   (require 'init-gpt)
+  (require 'init-ai-code)
   (require 'init-web)
   (require 'init-rust)
   (require 'init-python)

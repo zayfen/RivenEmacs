@@ -82,13 +82,4 @@
   (interactive)
   (call-interactively #'magit-status))
 
-(defun riven/agent-shell-dispatch ()
-  "Start agent-shell or show transient when session exists."
-  (interactive)
-  (if (and (fboundp 'agent-shell-buffers)
-           (agent-shell-buffers))
-      (when (fboundp 'agent-shell-transient)
-        (agent-shell-transient))
-    (call-interactively #'agent-shell)))
-
 (provide 'init-agent-shell-commands)

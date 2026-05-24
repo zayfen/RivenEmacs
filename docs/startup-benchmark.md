@@ -25,4 +25,4 @@
 
 1. **延迟加载**：将 init-lsp-bridge、init-vc、init-debugger、init-git-hunk、init-envrc、init-project、init-gpt、init-web、init-rust、init-python、init-java、init-swift、init-docker、init-quickrun、init-feed、init-lookup、init-reader 移至 `emacs-startup-hook`
 2. **LSP 键位**：lsp-bridge 的 SPC c 键位改为 `with-eval-after-load 'lsp-bridge` 中设置
-3. **agent-shell 依赖**：为 agent-shell 添加 `:after general`，并在 keybindings-config 中确保 agent-shell 已加载
+3. **agent-shell 依赖**：`C-c =` 由声明式 keybinding 引擎注册，`acp` 与 `shell-maker` 仅在 agent 工作流调用时加载

@@ -3,6 +3,7 @@
 (require 'ert)
 (require 'init-config)
 (require 'init-session)
+(require 'keybindings-engine)
 
 (ert-deftest rivenEmacs-session-test-directory-setup ()
   (should (stringp rivenEmacs-session-directory))
@@ -54,23 +55,21 @@
   (should (featurep 'init-session))
   (should (featurep 'init-config)))
 
-(ert-deftest rivenEmacs-session-test-keymap-exists ()
-  (should (boundp 'rivenEmacs-session-map))
-  (should (keymapp rivenEmacs-session-map)))
+(ert-deftest rivenEmacs-session-test-has-no-private-keymap ()
+  "Session commands are owned by the declarative keybinding configuration."
+  (should-not (boundp 'rivenEmacs-session-map)))
 
-(ert-deftest rivenEmacs-session-test-global-keybinding ()
-  (let ((binding (lookup-key global-map (kbd "C-c s"))))
-    (should binding)
-    (should (keymapp binding))))
-
-(ert-deftest rivenEmacs-session-test-keymap-bindings ()
-  (let ((map rivenEmacs-session-map))
-    (should (eq (lookup-key map (kbd "s")) #'rivenEmacs-session-save))
-    (should (eq (lookup-key map (kbd "l")) #'rivenEmacs-session-load))
-    (should (eq (lookup-key map (kbd "r")) #'rivenEmacs-session-reload))
-    (should (eq (lookup-key map (kbd "c")) #'rivenEmacs-session-current))
-    (should (eq (lookup-key map (kbd "k")) #'rivenEmacs-session-clear))
-    (should (eq (lookup-key map (kbd "d")) #'rivenEmacs-session-delete))))
+(ert-deftest rivenEmacs-session-test-declarative-keybindings ()
+  "Session commands are bound under `C-c s' by the declarative engine."
+  (cl-letf (((symbol-function 'riven/keybindings--warn-missing-command) #'ignore))
+    (riven/keybindings-apply-leader-spec))
+  (dolist (entry '(("C-c s s" . rivenEmacs-session-save)
+                   ("C-c s l" . rivenEmacs-session-load)
+                   ("C-c s r" . rivenEmacs-session-reload)
+                   ("C-c s c" . rivenEmacs-session-current)
+                   ("C-c s k" . rivenEmacs-session-clear)
+                   ("C-c s d" . rivenEmacs-session-delete)))
+    (should (eq (key-binding (kbd (car entry))) (cdr entry)))))
 
 (ert-deftest rivenEmacs-session-test-excludes-heavy-session-state ()
   (should (memq 'dired-mode desktop-modes-not-to-save))

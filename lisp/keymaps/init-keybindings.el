@@ -3,14 +3,15 @@
 (require 'cl-lib)
 (require 'keybindings-engine)
 
+(autoload 'ai-code-menu "ai-code" nil t)
+
 (defun riven/keybindings-config ()
   "Apply all RivenEmacs keybindings from declarative specs."
-  (require 'agent-shell nil t)
   (riven/keybindings-apply-leader-spec)
   (riven/keybindings-apply-open-query-ai)
   (riven/keybindings-apply-navigate)
   (riven/keybindings-apply-default-cleanups)
-  (keymap-global-set "M-*" #'riven/agent-shell-dispatch))
+  (keymap-global-set "M-*" #'ai-code-menu))
 
 (add-hook 'after-init-hook #'riven/keybindings-config)
 

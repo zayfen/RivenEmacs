@@ -3,17 +3,15 @@
 (require 'init-prompt-template nil t)
 
 (use-package acp
-  :vc (:url "https://github.com/xenodium/acp.el" :branch "main"))
+  :vc (:url "https://github.com/xenodium/acp.el" :branch "main")
+  :defer t)
 
 (use-package shell-maker
-  :vc (:url "https://github.com/xenodium/shell-maker" :branch "main"))
+  :vc (:url "https://github.com/xenodium/shell-maker" :branch "main")
+  :defer t)
 
 (use-package agent-shell
   :vc (:url "https://github.com/xenodium/agent-shell" :branch "main")
-  :after general
-  :init
-  (general-create-definer agent-shell-leader-def
-    :prefix "C-c =")
   :commands (agent-shell agent-shell-new-shell agent-shell-toggle
              agent-shell-send-region agent-shell-send-current-file
              agent-shell-send-screenshot agent-shell-clear-buffer
@@ -21,7 +19,7 @@
              agent-shell-interrupt riven/start-claude-code
              riven/start-open-code riven/start-cursor-acp
              riven/agent-shell-diagnose riven/install-claude-code
-             riven/install-cursor-agent-acp))
+             riven/install-cursor-agent-acp agent-shell-setup))
 
 (defun riven/agent-executable-exists-p (executable)
   "Return non-nil when EXECUTABLE exists in PATH."

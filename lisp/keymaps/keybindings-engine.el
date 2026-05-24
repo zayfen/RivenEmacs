@@ -61,14 +61,8 @@
   (riven/keybindings-apply-simple-spec "o" "open" "Open" riven/keybindings-open-spec)
   (riven/keybindings-apply-simple-spec "q" "query" "Query" riven/keybindings-query-spec)
   (riven/keybindings-apply-simple-spec "a" "ai" "AI" riven/keybindings-ai-spec)
-  (when (fboundp 'agent-shell)
-    (when (fboundp 'which-key-add-key-based-replacements)
-      (which-key-add-key-based-replacements "C-c =" "Agent"))
-    (dolist (entry riven/keybindings-agent-spec)
-      (pcase-let ((`(,key ,cmd ,wk) entry))
-        (riven/keybindings--register "agent" key cmd)
-        (riven/keybindings--warn-missing-command cmd)
-        (riven/keybindings--bind-and-describe (concat "C-c = " key) cmd wk)))))
+  (riven/keybindings-apply-simple-spec "=" "agent" "Agent"
+                                       riven/keybindings-agent-spec))
 
 (defun riven/keybindings-apply-navigate ()
   "Apply M-g navigation spec."

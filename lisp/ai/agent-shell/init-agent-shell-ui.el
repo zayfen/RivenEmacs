@@ -141,6 +141,7 @@
     ("t" "Toggle" agent-shell-toggle)
     ("d" "Diagnose" riven/agent-shell-diagnose)]
    ["Install"
+    ("is" "Setup/upgrade" agent-shell-setup)
     ("i1" "Claude Code" riven/install-claude-code)
     ("i2" "Open Code" riven/install-opencode)
     ("i3" "Cursor ACP" riven/install-cursor-agent-acp)]]

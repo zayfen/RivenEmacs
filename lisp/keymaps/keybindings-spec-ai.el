@@ -1,7 +1,8 @@
 ;;; keybindings-spec-ai.el --- AI/agent keybinding specs -*- lexical-binding: t; -*-
 
 (defvar riven/keybindings-ai-spec
-  '(("." gptel "Console")
+  '(("A" ai-code-menu "AI Code")
+    ("." gptel "Console")
     ("m" gptel-menu "Menu")
     ("=" gptel-send "Send")
     ("M" riven/gptel-mcp-connect-popular "MCP Connect")
@@ -19,7 +20,8 @@
   '(("=" agent-shell "Start/Reuse Agent Shell")
     ("1" riven/start-claude-code "Start Claude Code")
     ("2" riven/start-open-code "Start Open Code")
-    ("3" riven/start-cursor-acp "Start Cursor ACP"))
-  "Declarative specs for `agent-shell-leader-def`.")
+    ("3" riven/start-cursor-acp "Start Cursor ACP")
+    ("s" agent-shell-setup "Setup/Upgrade Agent Shell"))
+  "Declarative specs for commands under `C-c ='.")
 
 (provide 'keybindings-spec-ai)
