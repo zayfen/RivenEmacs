@@ -16,10 +16,10 @@
   "Declarative specs for commands under `C-c a'.")
 
 (defvar riven/keybindings-agent-spec
-  '(("=" agent-shell "Start/Reuse Agent Shell")
-    ("1" riven/start-claude-code "Start Claude Code")
-    ("2" riven/start-open-code "Start Open Code")
-    ("3" riven/start-cursor-acp "Start Cursor ACP")
+  '(("=" ai-code-menu "AI Code Menu")
+    ("1" ai-code-claude-code "Claude Code")
+    ("2" ai-code-opencode "Open Code")
+    ("3" ai-code-cursor-cli "Cursor CLI")
     ("s" agent-shell-setup "Setup/Upgrade Agent Shell"))
   "Declarative specs for commands under `C-c ='.")
 
