@@ -1,5 +1,5 @@
-;;; init-vertico.el --- compatibility shim for merged completion stack -*- lexical-binding: t; -*-
+;;; init-vertico.el --- compatibility shim for minibuffer stack -*- lexical-binding: t; -*-
 
-(require 'init-consult)
+(require 'init-minibuffer)
 
 (provide 'init-vertico)

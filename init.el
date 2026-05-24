@@ -33,6 +33,21 @@
 
 (load (expand-file-name "lisp/env.el" (file-name-directory (file-truename (or load-file-name (buffer-file-name))))) nil t)
 
+(setq user-emacs-directory local-dir
+      package-user-dir repo-dir
+      package-archives '(("gnu"    . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
+                         ("nongnu" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/")
+                         ("melpa"  . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")))
+
+(unless (fboundp 'riven/initialize-package-system)
+  (defun riven/initialize-package-system ()
+    "Initialize package.el after RivenEmacs package directories are configured."
+    (require 'package)
+    (unless package--initialized
+      (package-initialize))))
+
+(riven/initialize-package-system)
+
 (defun setup-proxy ()
   "Setup network proxy using configuration management."
   (interactive)
@@ -52,8 +67,9 @@
   (require 'init-undo)
   (require 'init-autosave)
   (require 'init-which-key)
-  (require 'init-general)
   (require 'init-hydra)
+  (require 'init-minibuffer)
+  (require 'init-completion-ui)
   (require 'init-consult)
   (require 'init-vertico)
   (require 'init-crux)

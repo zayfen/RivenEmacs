@@ -15,7 +15,7 @@
 |------|------|------|
 | GC 策略 | 已优化 | `gc-cons-threshold` 启动期设为 `most-positive-fixnum`，`emacs-startup-hook` 恢复为 16MB |
 | file-name-handler-alist | 已优化 | 启动期置空，恢复逻辑在 `config:restore-post-init-settings` |
-| package-archives | 正常 | 使用清华镜像，无重复 `package-initialize` |
+| package-archives | 正常 | 使用清华镜像，并显式初始化 package.el，保证 batch 与交互启动都能发现仓库内 `elpa/` 包 |
 | native-comp | 已优化 | `native-comp-jit-compilation nil`，eln 缓存重定向到 local-dir |
 | minibuffer GC | 已优化 | minibuffer 进入/退出时临时提高 GC 阈值 |
 
@@ -27,11 +27,11 @@
 
 - init-use-package, init-config, init-default, init-helper
 - init-theme, init-font, init-undo, init-autosave
-- init-which-key, init-general, init-hydra
-- init-consult, init-vertico, init-crux, init-editor
+- init-which-key, init-hydra
+- init-minibuffer, init-completion-ui, init-consult, init-vertico, init-crux, init-editor
 - init-dired, init-format, init-jump, init-editorconfig, init-checker, init-pair, init-fold, init-markdown
 - init-treesit
-- init-agent-shell（注册 agent 命令，transport 依赖保持延迟）
+- init-agent-shell（注册 agent autoload，transport、安装与启动辅助命令保持延迟）
 - init-session, init-terminal
 - init-keybindings
 
@@ -63,14 +63,29 @@
 ### 4.3 init-agent-shell.el
 
 - 延迟加载 `acp` 与 `shell-maker`，并移除已不再使用的 `general` 前缀定义器
+- `agent-shell-setup`、`riven/start-*`、安装命令和 session 辅助命令改为 autoload，启动时不再 eager require install/commands 模块
+
+### 4.4 package 与 command lazy-load
+
+- `early-init.el` 新增 `riven/initialize-package-system`，直接 `emacs --batch -l init.el` 也复用同一初始化逻辑
+- 删除 `init-general.el`，移除仅用于 which-key 分组的 debugger `leader-def` 占位；Dape 保留自身的 `C-c d` 前缀
+- `iedit`、`sudo-edit`、`vterm` 改为 `:commands` 加载，避免启动期载入少用命令包
+
+### 4.5 completion 模块拆分
+
+- `init-minibuffer.el` 负责 Vertico、Orderless、Savehist、Marginalia、Prescient 和 ELPA fallback 路径
+- `init-completion-ui.el` 负责 Corfu、Cape、popupinfo、completion icon formatter
+- `init-consult.el` 只保留 Consult 与 Embark 配置，并继续 require 这两个基础模块作为兼容入口
+- `init-vertico.el` 保留为旧入口 shim，只加载 `init-minibuffer`
 
 ## 5. 权衡说明
 
 - **首次使用延迟模块**：LSP、Git、AI、Docker 等首次调用时，可能需等待 emacs-startup-hook 完成加载（通常 <1 秒）
 - **键位**：SPC c（LSP 代码操作）在 lsp-bridge 加载后才生效，与 LSP 启动时机一致
+- **package 初始化成本**：batch benchmark 数字可能略高，因为现在真实初始化仓库内 `elpa/` 包；收益是 CI/命令行加载结果与交互启动一致，不再出现已安装包的伪缺失错误
 
 ## 6. 后续可优化方向
 
 1. 使用 `esup` 或 `benchmark-init` 做更细粒度 profiling，针对 TOP 耗时文件进一步优化
-2. 将 init-consult、init-vertico 等补全相关模块评估是否可延迟
-3. 评估 `exec-path-from-shell` 是否可仅在 GUI 模式下初始化
+2. 评估 `exec-path-from-shell` 是否可仅在 GUI 模式下初始化
+3. 针对第三方包在 Emacs 31 下的 obsolete macro warning 做单独清理或 warning 策略

@@ -105,6 +105,14 @@
                          ("nongnu" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/")
                          ("melpa"  . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")))
 
+(defun riven/initialize-package-system ()
+  "Initialize package.el after RivenEmacs package directories are configured."
+  (require 'package)
+  (unless package--initialized
+    (package-initialize)))
+
+(riven/initialize-package-system)
+
 ;; Auto-refresh package archives if index is missing (e.g., after deleting elpa/)
 (defun riven/package-refresh-if-missing ()
   "Refresh package archives if archive-contents is missing."
@@ -124,8 +132,3 @@
   ;; Set the right directory to store the native compilation cache to avoid
   ;; messing with "~/.emacs.d/".
   (startup-redirect-eln-cache (concat local-dir "eln/")))
-
-
-;;dont need (package-initialize) on emacs27+
-(when (< emacs-major-version 27)
-  (package-initialize))

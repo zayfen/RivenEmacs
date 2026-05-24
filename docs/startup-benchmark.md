@@ -18,6 +18,7 @@
 | 场景 | 耗时 | 变化 |
 |------|------|------|
 | RivenEmacs 主路径加载 | **~0.52 秒** | **约 -7%** |
+| package 初始化与 lazy command 清理后 | **~0.77 秒** | 显式初始化已安装包，消除 batch 伪缺包错误 |
 
 延迟加载的模块在 `emacs-startup-hook` 中加载，不阻塞首帧显示。
 
@@ -26,3 +27,6 @@
 1. **延迟加载**：将 init-lsp-bridge、init-vc、init-debugger、init-git-hunk、init-envrc、init-project、init-gpt、init-web、init-rust、init-python、init-java、init-swift、init-docker、init-quickrun、init-feed、init-lookup、init-reader 移至 `emacs-startup-hook`
 2. **LSP 键位**：lsp-bridge 的 SPC c 键位改为 `with-eval-after-load 'lsp-bridge` 中设置
 3. **agent-shell 依赖**：`C-c =` 由声明式 keybinding 引擎注册，`acp` 与 `shell-maker` 仅在 agent 工作流调用时加载
+4. **package 初始化**：`early-init.el` 与直接 `-l init.el` 路径都会显式初始化 package.el，确保仓库内 `elpa/` 包在 batch 检查中可见
+5. **lazy command 清理**：移除剩余 `general.el` 启动依赖，并将 `iedit`、`sudo-edit`、`vterm`、agent-shell 安装/启动辅助命令改为按命令加载
+6. **补全模块拆分**：将原 `init-consult.el` 拆为 `init-minibuffer`、`init-completion-ui`、`init-consult` 三个职责清晰的模块，保留 `init-vertico` 兼容 shim

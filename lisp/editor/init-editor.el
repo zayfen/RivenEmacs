@@ -7,8 +7,8 @@
   :bind ("C-=" . er/expand-region))
 
 (use-package iedit
-  :demand t
   :vc (:url "https://github.com/victorhge/iedit")
+  :commands (iedit-mode iedit-next-occurrence iedit-prev-occurrence)
   :bind
   (("C-;" . iedit-mode)
    :map iedit-mode-occurrence-keymap
@@ -25,7 +25,8 @@
   :ensure t
   :commands (link-hint-open-link))
 
-(use-package sudo-edit)
+(use-package sudo-edit
+  :commands (sudo-edit sudo-edit-find-file))
 
 (use-package visual-regexp
   :commands (vr/replace))

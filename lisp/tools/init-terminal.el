@@ -10,6 +10,7 @@
 (add-hook 'eshell-load-hook #'eat-eshell-mode)
 
 (use-package vterm
+  :commands (vterm vterm-other-window)
   :custom
   (vterm-shell (cond
                  ((file-exists-p "/opt/homebrew/bin/zsh") "/opt/homebrew/bin/zsh")

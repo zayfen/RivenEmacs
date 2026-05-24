@@ -44,11 +44,7 @@
   ;; (add-hook 'dape-start-hook (lambda () (save-some-buffers t t)))
 
   ;; Projectile users
-  (setq dape-cwd-fn 'get-project-root)
-  (leader-def
-    :infix "d"
-    "" '(:ignore t :wk "Debugger"))
-  )
+  (setq dape-cwd-fn 'get-project-root))
 
 
 
