@@ -111,12 +111,12 @@
                    ("C-c e u" . sp-splice-sexp)))
     (should-not (eq (key-binding (kbd (car entry))) (cdr entry)))))
 
-(ert-deftest riven/structured-keybindings-yas-prefix-uses-plus-yas-label ()
-  "`C-c &' is labelled as +Yas for which-key."
+(ert-deftest riven/structured-keybindings-yas-prefix-uses-yas-label ()
+  "`C-c &' is labelled as Yas for which-key."
   (require 'which-key)
   (riven/test-apply-structured-keybindings)
   (should (assoc "C-c &" which-key--prefix-title-alist))
-  (should (equal (cdr (assoc "C-c &" which-key--prefix-title-alist)) "+Yas")))
+  (should (equal (cdr (assoc "C-c &" which-key--prefix-title-alist)) "Yas")))
 
 (ert-deftest riven/structured-keybindings-c-c-top-level-hides-non-groups ()
   "`C-c' top-level which-key entries only show structured groups."

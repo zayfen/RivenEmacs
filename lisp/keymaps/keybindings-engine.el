@@ -13,7 +13,7 @@ This includes retired prefixes so config reloads remove stale bindings.")
 
 (defconst riven/keybindings-c-c-which-key-groups
   '(("C-c =" . "Agent")
-    ("C-c &" . "+Yas")
+    ("C-c &" . "Yas")
     ("C-c a" . "AI")
     ("C-c c" . "Code")
     ("C-c e" . "Error")
@@ -120,6 +120,6 @@ This includes retired prefixes so config reloads remove stale bindings.")
   (when (boundp 'which-key-replacement-alist)
     (add-to-list 'which-key-replacement-alist riven/keybindings-c-c-which-key-filter))
   (when (fboundp 'which-key-add-key-based-replacements)
-    (which-key-add-key-based-replacements "C-c &" '("+Yas" . "+Yas"))))
+    (which-key-add-key-based-replacements "C-c &" '("Yas" . "Yas"))))
 
 (provide 'keybindings-engine)
