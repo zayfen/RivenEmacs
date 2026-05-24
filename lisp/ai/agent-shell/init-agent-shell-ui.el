@@ -10,19 +10,29 @@
   (interactive)
   (let ((results '())
         (need-claude nil)
+        (need-codex nil)
         (need-cursor nil))
     (push (format "agent-shell package: %s"
                   (if (featurep 'agent-shell) "✓ 已加载" "✗ 未加载"))
           results)
     (push "" results)
 
-    (push "=== Claude Code ===" results)
+    (push "=== Claude Code ACP ===" results)
     (push (format "Function: %s"
                   (if (fboundp 'agent-shell-anthropic-start-claude-code) "✓ 可用" "✗ 不可用"))
           results)
-    (let ((has-claude (riven/agent-executable-exists-p "claude")))
+    (let ((has-claude (riven/agent-executable-exists-p "claude-agent-acp")))
       (push (format "Executable: %s" (if has-claude "✓ 已安装" "✗ 未安装")) results)
       (setq need-claude (not has-claude)))
+    (push "" results)
+
+    (push "=== Codex ACP ===" results)
+    (push (format "Function: %s"
+                  (if (fboundp 'agent-shell-openai-start-codex) "✓ 可用" "✗ 不可用"))
+          results)
+    (let ((has-codex (riven/agent-executable-exists-p "codex-acp")))
+      (push (format "Executable: %s" (if has-codex "✓ 已安装" "✗ 未安装")) results)
+      (setq need-codex (not has-codex)))
     (push "" results)
 
     (push "=== Cursor ACP ===" results)
@@ -48,17 +58,25 @@
 提示: ✓ = 可用, ✗ = 不可用
 
 ")
-          (when (or need-claude need-cursor)
+          (when (or need-claude need-codex need-cursor)
             (insert "=== 快速安装 ===
 
 ")
             (when need-claude
-              (insert-button "安装 Claude Code"
+              (insert-button "安装 Claude Code ACP"
                              'action (lambda (_)
-                                       (riven/install-claude-code)
+                                       (riven/install-claude-agent-acp)
                                        (riven/agent-shell-diagnose))
                              'follow-link t)
-              (insert " (需要 Homebrew, 仅 macOS)
+              (insert " (需要 npm)
+"))
+            (when need-codex
+              (insert-button "安装 Codex ACP"
+                             'action (lambda (_)
+                                       (riven/install-codex-acp)
+                                       (riven/agent-shell-diagnose))
+                             'follow-link t)
+              (insert " (需要 npm)
 "))
             (when need-cursor
               (insert-button "安装 Cursor ACP"
@@ -73,7 +91,11 @@
           (insert "=== 手动安装命令 ===
 
 ")
-          (insert "Claude Code (macOS):  brew install anthropics/claude/claude
+          (insert "Claude Code ACP:      npm install -g @zed-industries/claude-agent-acp
+")
+          (insert "Codex CLI:            npm install -g @openai/codex
+")
+          (insert "Codex ACP:            npm install -g @zed-industries/codex-acp
 ")
           (insert "Cursor ACP:           npm install -g @blowmage/cursor-agent-acp
 ")
@@ -142,9 +164,11 @@
     ("d" "Diagnose" riven/agent-shell-diagnose)]
    ["Install"
     ("is" "Setup/upgrade" agent-shell-setup)
-    ("i1" "Claude Code" riven/install-claude-code)
-    ("i2" "Open Code" riven/install-opencode)
-    ("i3" "Cursor ACP" riven/install-cursor-agent-acp)]]
+    ("i1" "Claude ACP" riven/install-claude-agent-acp)
+    ("i2" "Codex" riven/install-codex)
+    ("i3" "Codex ACP" riven/install-codex-acp)
+    ("i4" "Open Code" riven/install-opencode)
+    ("i5" "Cursor ACP" riven/install-cursor-agent-acp)]]
   [:if riven/agent-shell-buffer-exists-p
    ["Send"
     ("sr" "Send region/file" riven/agent-shell-send-dwim-or-file)

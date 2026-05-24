@@ -4,16 +4,16 @@
 (require 'init-agent-shell-install)
 
 (defun riven/start-claude-code ()
-  "Start Claude Code, prompting install when unavailable."
+  "Start Claude Code ACP, prompting install when unavailable."
   (interactive)
   (cond
    ((not (fboundp 'agent-shell-anthropic-start-claude-code))
     (message "Claude Code not available in agent-shell. Please update agent-shell package."))
-   ((not (riven/agent-executable-exists-p "claude"))
-    (if (riven/prompt-install-agent "Claude Code" #'riven/install-claude-code)
-        (when (riven/agent-executable-exists-p "claude")
+   ((not (riven/agent-executable-exists-p "claude-agent-acp"))
+    (if (riven/prompt-install-agent "Claude Code ACP" #'riven/install-claude-agent-acp)
+        (when (riven/agent-executable-exists-p "claude-agent-acp")
           (agent-shell-anthropic-start-claude-code))
-      (message "已取消 Claude Code 安装。")))
+      (message "已取消 Claude Code ACP 安装。")))
    (t (agent-shell-anthropic-start-claude-code))))
 
 (defun riven/start-open-code ()

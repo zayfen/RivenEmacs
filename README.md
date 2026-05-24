@@ -66,7 +66,7 @@ bash scripts/riven-deps.sh fix --profile ~/.zshrc
 
 - `core`: `emacs`, `git`, `ripgrep`, `fd`, `node`, `npm`, `python3`
 - `lsp`: `ruff`, `pyright`, `typescript-language-server`, `vtsls`, `vue-language-server`, `emacs-lsp-booster`, etc.
-- `ai`: `cursor-agent-acp`, `claude`, `opencode`
+- `ai`: `cursor-agent-acp`, `codex`, `codex-acp`, `claude-agent-acp`, `claude`, `opencode`
 - `mcp`: filesystem/memory/sequential-thinking/everything/playwright/browser-use/brave/tavily MCP tools
 - `markdown`: `go-grip`
 - `spell`: `enchant` + `hunspell` (required by `jinx`)

@@ -19,7 +19,9 @@
              agent-shell-interrupt riven/start-claude-code
              riven/start-open-code riven/start-cursor-acp
              riven/agent-shell-diagnose riven/install-claude-code
-             riven/install-cursor-agent-acp agent-shell-setup))
+             riven/install-claude-agent-acp riven/install-codex
+             riven/install-codex-acp riven/install-cursor-agent-acp
+             agent-shell-setup))
 
 (defun riven/agent-executable-exists-p (executable)
   "Return non-nil when EXECUTABLE exists in PATH."

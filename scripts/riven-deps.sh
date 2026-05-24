@@ -217,8 +217,11 @@ install_ai() {
   log "Installing AI agent dependencies..."
   if has_cmd npm; then
     npm_global_install @blowmage/cursor-agent-acp
+    npm_global_install @openai/codex
+    npm_global_install @zed-industries/codex-acp
+    npm_global_install @zed-industries/claude-agent-acp
   else
-    warn "npm not found; skip cursor-agent-acp"
+    warn "npm not found; skip npm AI agent dependencies"
   fi
 
   if [[ "$PLATFORM" == "macos" ]]; then
@@ -401,6 +404,9 @@ doctor() {
   echo
   echo "[AI Agent - optional]"
   check_cmd cursor-agent-acp optional "Cursor ACP agent CLI"
+  check_cmd codex optional "OpenAI Codex CLI"
+  check_cmd codex-acp optional "Codex ACP adapter"
+  check_cmd claude-agent-acp optional "Claude Code ACP adapter"
   check_cmd claude optional "Claude Code CLI"
   check_cmd opencode optional "OpenCode CLI"
 
@@ -474,7 +480,7 @@ lsp/tooling:
   tailwindcss-language-server, rust-analyzer, clangd
 
 ai agents:
-  cursor-agent-acp, claude, opencode
+  cursor-agent-acp, codex, codex-acp, claude-agent-acp, claude, opencode
 
 mcp:
   mcp-server-filesystem, mcp-server-memory,

@@ -4,6 +4,9 @@
 
 (autoload 'agent-shell-setup "init-agent-shell-install" nil t)
 (autoload 'riven/install-cursor-agent-acp "init-agent-shell-install" nil t)
+(autoload 'riven/install-codex "init-agent-shell-install" nil t)
+(autoload 'riven/install-codex-acp "init-agent-shell-install" nil t)
+(autoload 'riven/install-claude-agent-acp "init-agent-shell-install" nil t)
 (autoload 'riven/install-claude-code "init-agent-shell-install" nil t)
 (autoload 'riven/install-opencode "init-agent-shell-install" nil t)
 (autoload 'riven/start-claude-code "init-agent-shell-commands" nil t)
