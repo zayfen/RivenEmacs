@@ -30,20 +30,12 @@
   `(cl-letf (((symbol-function 'riven/keybindings--warn-missing-command) #'ignore))
      ,@body))
 
-(ert-deftest riven/keybindings-config-does-not-require-agent-shell ()
-  "Setting keybindings must not load agent-shell eagerly."
-  (let ((agent-shell-requested nil)
-        (original-require (symbol-function 'require)))
-    (cl-letf (((symbol-function 'require)
-               (lambda (feature &optional filename noerror)
-                 (if (eq feature 'agent-shell)
-                     (progn
-                       (setq agent-shell-requested t)
-                       nil)
-                   (funcall original-require feature filename noerror)))))
-      (riven/test-with-quiet-keybinding-diagnostics
-       (riven/keybindings-config)))
-    (should-not agent-shell-requested)))
+(ert-deftest riven/keybindings-agent-spec-uses-ai-code-only ()
+  "Dedicated agent keys should route through ai-code, not agent-shell."
+  (should-not
+   (cl-some (lambda (entry)
+              (memq (cadr entry) '(agent-shell agent-shell-setup)))
+            riven/keybindings-agent-spec)))
 
 (ert-deftest riven/ai-code-menu-is-primary-global-entry ()
   "The primary AI coding key invokes `ai-code-menu'."
@@ -51,12 +43,15 @@
    (riven/keybindings-config))
   (should (eq (key-binding (kbd "M-*")) #'ai-code-menu)))
 
-(ert-deftest riven/agent-bindings-do-not-depend-on-loaded-package ()
-  "Direct agent keys remain configured before agent-shell is loaded."
+(ert-deftest riven/agent-bindings-use-ai-code-entrypoints ()
+  "Dedicated agent keys expose ai-code entrypoints only."
   (riven/test-with-quiet-keybinding-diagnostics
    (riven/keybindings-config))
-  (should (eq (key-binding (kbd "C-c = =")) #'agent-shell))
-  (should (eq (key-binding (kbd "C-c = s")) #'agent-shell-setup)))
+  (should (eq (key-binding (kbd "C-c = =")) #'ai-code-menu))
+  (should (eq (key-binding (kbd "C-c = 1")) #'ai-code-claude-code))
+  (should (eq (key-binding (kbd "C-c = 2")) #'ai-code-opencode))
+  (should (eq (key-binding (kbd "C-c = 3")) #'ai-code-cursor-cli))
+  (should-not (key-binding (kbd "C-c = s"))))
 
 (ert-deftest riven/early-init-initializes-package-system ()
   "Startup initializes package.el so installed ELPA packages are discoverable."
@@ -87,6 +82,53 @@
     (should (string-match-p "general\\.el" output))
     (should (string-match-p "vterm\\.el" output))))
 
+(ert-deftest riven/c-x-d-opens-dirvish-on-first-use ()
+  "`C-x d' should open a Dirvish-backed Dired session immediately."
+  (let* ((init-file (expand-file-name "init.el" riven/test-repo-root))
+         (result (riven/test-run-emacs-batch
+                  "--batch"
+                  "-l" init-file
+                  "--eval"
+                  "(let ((binding (key-binding (kbd \"C-x d\"))))
+                     (when (eq binding 'dirvish)
+                       (call-interactively binding))
+                     (message \"c-x-d-binding=%S major=%S dirvish-session=%S\"
+                              binding
+                              major-mode
+                              (and (fboundp 'dirvish-curr)
+                                   (not (null (dirvish-curr))))))"))
+         (status (car result))
+         (output (cdr result)))
+    (should (= status 0))
+    (should (string-match-p "c-x-d-binding=dirvish" output))
+    (should (string-match-p "major=dired-mode" output))
+    (should (string-match-p "dirvish-session=t" output))))
+
+(ert-deftest riven/dired-prefers-homebrew-gls-outside-exec-path ()
+  "Dired should find Homebrew gls even before shell PATH sync runs."
+  (skip-unless (file-executable-p "/opt/homebrew/bin/gls"))
+  (let* ((init-file (expand-file-name "init.el" riven/test-repo-root))
+         (result (riven/test-run-emacs-batch
+                  "--batch"
+                  "--eval"
+                  "(setq exec-path
+                         (seq-remove
+                          (lambda (dir)
+                            (and dir (string-match-p \"/opt/homebrew/bin\" dir)))
+                          exec-path))"
+                  "-l" init-file
+                  "--eval"
+                  "(progn
+                     (require 'dired)
+                     (message \"insert-directory-program=%S dired-listing-switches=%S\"
+                              insert-directory-program
+                              dired-listing-switches))"))
+         (status (car result))
+         (output (cdr result)))
+    (should (= status 0))
+    (should (string-match-p "insert-directory-program=\"/opt/homebrew/bin/gls\"" output))
+    (should (string-match-p "--group-directories-first" output))))
+
 (defun riven/test-find-use-package-form (relative-path package)
   "Find the `use-package' form for PACKAGE in RELATIVE-PATH."
   (with-temp-buffer
@@ -102,27 +144,26 @@
                 (throw 'found form))))
         (end-of-file nil)))))
 
-(ert-deftest riven/agent-shell-bootstrap-dependencies-are-deferred ()
-  "Startup declarations do not eagerly load agent transport dependencies."
-  (dolist (package '(acp shell-maker))
-    (let ((form (riven/test-find-use-package-form
-                 "lisp/ai/agent-shell/init-agent-shell-core.el" package)))
-      (should form)
-      (should (eq (cadr (memq :defer form)) t)))))
-
-(ert-deftest riven/agent-shell-has-no-obsolete-general-keybinding-coupling ()
-  "Agent bootstrap does not retain the retired general.el definer."
-  (let ((text (riven/test-read-repo-file
-               "lisp/ai/agent-shell/init-agent-shell-core.el")))
-    (should-not (string-match-p "agent-shell-leader-def" text))
-    (should-not (string-match-p ":after general" text))))
-
-(ert-deftest riven/agent-shell-dispatch-is-retired ()
-  "The superseded global dispatcher is no longer defined."
+(ert-deftest riven/agent-shell-startup-module-is-retired ()
+  "The active startup path should not require the retired agent-shell module."
   (should-not
-   (string-match-p "(defun riven/agent-shell-dispatch"
-                   (riven/test-read-repo-file
-                    "lisp/ai/agent-shell/init-agent-shell-commands.el"))))
+   (string-match-p "(require 'init-agent-shell)"
+                   (riven/test-read-repo-file "init.el"))))
+
+(ert-deftest riven/agent-shell-integration-files-are-removed ()
+  "Retired agent-shell modules should not remain in the active lisp tree."
+  (dolist (path '("lisp/ai/agent-shell/init-agent-shell.el"
+                  "lisp/ai/agent-shell/init-agent-shell-core.el"
+                  "lisp/ai/agent-shell/init-agent-shell-install.el"
+                  "lisp/ai/agent-shell/init-agent-shell-commands.el"
+                  "lisp/ai/agent-shell/init-agent-shell-ui.el"))
+    (should-not (file-exists-p (expand-file-name path riven/test-repo-root)))))
+
+(ert-deftest riven/ai-code-default-backend-is-codex ()
+  "ai-code should default directly to the Codex backend."
+  (let ((text (riven/test-read-repo-file "lisp/ai/init-ai-code.el")))
+    (should (string-match-p "(defcustom rivenEmacs-ai-code-backend 'codex" text))
+    (should-not (string-match-p "(const :tag \"agent-shell\" agent-shell)" text))))
 
 (ert-deftest riven/general-startup-dependency-is-retired ()
   "Declarative keybindings no longer need the general.el startup module."
@@ -162,15 +203,6 @@
     (should (string-match-p "(provide 'init-consult)" consult-text))
     (should (string-match-p "(require 'init-minibuffer)" consult-text))
     (should (string-match-p "(require 'init-completion-ui)" consult-text))))
-
-(ert-deftest riven/agent-shell-aggregator-stays-lightweight ()
-  "The agent-shell aggregator should not eagerly load command/install modules."
-  (let ((text (riven/test-read-repo-file
-               "lisp/ai/agent-shell/init-agent-shell.el")))
-    (should-not (string-match-p "(require 'init-agent-shell-install)" text))
-    (should-not (string-match-p "(require 'init-agent-shell-commands)" text))
-    (should (string-match-p "(autoload 'agent-shell-setup" text))
-    (should (string-match-p "(autoload 'riven/start-claude-code" text))))
 
 (ert-deftest riven/keybinding-compatibility-shims-are-removed ()
   "Unreferenced split keybinding shims are not retained."

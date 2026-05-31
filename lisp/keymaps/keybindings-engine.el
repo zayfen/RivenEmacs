@@ -94,8 +94,8 @@ This includes retired prefixes so config reloads remove stale bindings.")
        (concat "C-c " prefix " " key) cmd wk))))
 
 (defun riven/keybindings-apply-agent-spec ()
-  "Apply the dedicated Agent spec under `C-c ='."
-  (riven/keybindings-apply-simple-spec "=" "agent" "Agent"
+  "Apply the dedicated AI coding agent spec under `C-c ='."
+  (riven/keybindings-apply-simple-spec "=" "agent" "AI Code"
                                        riven/keybindings-agent-spec))
 
 (defun riven/keybindings-apply-navigate ()

@@ -1,14 +1,13 @@
 ;;; init-ai-code.el --- AI Code Interface configuration -*- lexical-binding: t; -*-
 
 ;;; Commentary:
-;; Unified AI coding workflow built on top of the existing agent-shell setup.
+;; Unified AI coding workflow for CLI-based coding agents.
 
 ;;; Code:
 
-(defcustom rivenEmacs-ai-code-backend 'agent-shell
+(defcustom rivenEmacs-ai-code-backend 'codex
   "Preferred backend for `ai-code'."
-  :type '(choice (const :tag "agent-shell" agent-shell)
-                 (const :tag "OpenAI Codex CLI" codex)
+  :type '(choice (const :tag "OpenAI Codex CLI" codex)
                  (const :tag "Claude Code" claude-code)
                  (const :tag "Opencode" opencode)
                  (const :tag "Aider" aider))

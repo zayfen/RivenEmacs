@@ -31,7 +31,6 @@
 - init-minibuffer, init-completion-ui, init-consult, init-vertico, init-crux, init-editor
 - init-dired, init-format, init-jump, init-editorconfig, init-checker, init-pair, init-fold, init-markdown
 - init-treesit
-- init-agent-shell（注册 agent autoload，transport、安装与启动辅助命令保持延迟）
 - init-session, init-terminal
 - init-keybindings
 
@@ -58,20 +57,15 @@
 ### 4.2 init-keybindings.el
 
 - 新增 `riven/lsp-bridge-keybindings`，在 `with-eval-after-load 'lsp-bridge` 中设置 SPC c 键位
-- 通过声明式 keybinding 引擎注册 `C-c =`，不再为设置快捷键提前加载 `agent-shell`
+- 通过声明式 keybinding 引擎注册 `C-c =`，直接指向 `ai-code` 的编码 agent 入口
 
-### 4.3 init-agent-shell.el
-
-- 延迟加载 `acp` 与 `shell-maker`，并移除已不再使用的 `general` 前缀定义器
-- `agent-shell-setup`、`riven/start-*`、安装命令和 session 辅助命令改为 autoload，启动时不再 eager require install/commands 模块
-
-### 4.4 package 与 command lazy-load
+### 4.3 package 与 command lazy-load
 
 - `early-init.el` 新增 `riven/initialize-package-system`，直接 `emacs --batch -l init.el` 也复用同一初始化逻辑
 - 删除 `init-general.el`，移除仅用于 which-key 分组的 debugger `leader-def` 占位；Dape 保留自身的 `C-c d` 前缀
 - `iedit`、`sudo-edit`、`vterm` 改为 `:commands` 加载，避免启动期载入少用命令包
 
-### 4.5 completion 模块拆分
+### 4.4 completion 模块拆分
 
 - `init-minibuffer.el` 负责 Vertico、Orderless、Savehist、Marginalia、Prescient 和 ELPA fallback 路径
 - `init-completion-ui.el` 负责 Corfu、Cape、popupinfo、completion icon formatter

@@ -81,8 +81,8 @@ Use `condition-case` for graceful fallbacks:
 
 For optional features, check feature availability:
 ```elisp
-(when (featurep 'agent-shell)
-  (with-eval-after-load 'agent-shell ...))
+(when (featurep 'ai-code)
+  (with-eval-after-load 'ai-code ...))
 ```
 
 ### Keybinding Patterns
@@ -136,7 +136,7 @@ Every function needs a docstring. Use `defcustom` for user-configurable options:
 8. **IDE**: `init-lsp-bridge`
 9. **VCS**: `init-vc` → `init-debugger` → `init-git-hunk`
 10. **Env/Project**: `init-envrc` → `init-project`
-11. **AI**: `init-gpt` → `init-agent-shell`
+11. **AI**: `init-gpt` → `init-ai-code`
 12. **Languages**: `init-web` → `init-rust` → `init-python` → `init-java` → `init-swift`
 13. **Writing**: `ews` (org hook), `init-org`
 14. **Tools**: `init-docker` → `init-quickrun` → `init-feed` → `init-lookup` → `init-terminal` → `init-reader`

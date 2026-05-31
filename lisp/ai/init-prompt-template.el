@@ -1,9 +1,9 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
-;;; init-prompt-template.el --- Centralized prompt templates for GPT/Agent operations
+;;; init-prompt-template.el --- Centralized prompt templates for GPT operations
 
 ;;; Commentary:
-;; Central prompt definitions shared by GPT and agent-shell modules.
+;; Central prompt definitions shared by GPT modules.
 
 ;;; Code:
 
@@ -13,7 +13,7 @@
    "Focus on purpose, control flow, and key edge cases.\n"
    "If there are potential bugs or risks, list them clearly.\n\n"
    "Code:\n%s")
-  "Prompt template used by `riven/agent-shell-explain-code`."
+  "Prompt template used for explaining code."
   :type 'string
   :group 'rivenEmacs)
 
@@ -23,7 +23,7 @@
    "Return only the updated code block.\n"
    "Keep naming clear and remove duplication when practical.\n\n"
    "Code:\n%s")
-  "Prompt template used by `riven/agent-shell-refactor-code`."
+  "Prompt template used for refactoring code."
   :type 'string
   :group 'rivenEmacs)
 
@@ -33,7 +33,7 @@
    "Do not change runtime behavior.\n"
    "Prefer explaining intent and non-obvious logic.\n\n"
    "Code:\n%s")
-  "Prompt template used by `riven/agent-shell-add-comments`."
+  "Prompt template used for adding comments to code."
   :type 'string
   :group 'rivenEmacs)
 
@@ -42,7 +42,7 @@
    "Fix the code issues described below.\n"
    "Return a corrected patch or code block.\n\n"
    "Diagnostics:\n%s")
-  "Prompt template used by `riven/agent-shell-fix-errors`."
+  "Prompt template used for fixing code diagnostics."
   :type 'string
   :group 'rivenEmacs)
 

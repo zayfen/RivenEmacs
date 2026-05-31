@@ -84,10 +84,6 @@
   (require 'init-markdown)
   (require 'init-treesit))
 
-(defun riven/load-ai-modules ()
-  "Load AI and agent integration modules needed early."
-  (require 'init-agent-shell))
-
 (defun riven/load-writing-modules ()
   "Load writing-related modules.
 Org module itself is loaded lazily in org buffers."
@@ -129,7 +125,6 @@ Org module itself is loaded lazily in org buffers."
 ;; Keep startup behavior: immediate modules now, heavy modules deferred.
 (riven/load-core-modules)
 (riven/load-ui-modules)
-(riven/load-ai-modules)
 (riven/load-writing-modules)
 (riven/load-session-modules)
 (riven/load-tooling-modules)
