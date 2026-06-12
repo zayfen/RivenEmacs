@@ -82,7 +82,7 @@
 
   :custom
   (flymake-fringe-indicator-position 'left-fringe)
-  (flymake-show-diagnostics-at-end-of-line nil)
+  (flymake-show-diagnostics-at-end-of-line t)
   (flymake-suppress-zero-counters t))
 
 
