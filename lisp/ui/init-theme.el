@@ -37,25 +37,6 @@
 ;;            (not (member "--terminal" command-line-args)))  ; Not running terminal
 ;;   (run-with-idle-timer rivenEmacs-dashboard-delay nil #'dashboard-open))
 
-(defun riven/theme-ensure-elpa-package-load-path (package)
-  "Ensure PACKAGE directory under ELPA is available in `load-path`."
-  (let ((library (symbol-name package)))
-    (unless (locate-library library)
-      (let* ((elpa-root (if (boundp 'package-user-dir)
-                            package-user-dir
-                          (expand-file-name "elpa" user-emacs-directory)))
-             (pattern (format "^%s-[0-9]" (regexp-quote library)))
-             (versioned (and (file-directory-p elpa-root)
-                             (directory-files elpa-root t pattern t)))
-             (plain-dir (expand-file-name library elpa-root))
-             (candidates (append versioned
-                                 (when (file-directory-p plain-dir)
-                                   (list plain-dir)))))
-        (when candidates
-          (add-to-list 'load-path (car (sort (delete-dups candidates) #'string>))))))))
-
-(riven/theme-ensure-elpa-package-load-path 'nerd-icons)
-
 (defun riven/theme-warn-missing-nerd-font ()
   "Warn when configured Nerd Font is missing."
   (unless (find-font (font-spec :name nerd-icons-font-family))
@@ -63,6 +44,9 @@
              nerd-icons-font-family)))
 
 ;; Shared icon backend for UI modules (modeline, completion icons, etc.).
+;; `package-initialize' is called in `early-init.el', so the nerd-icons
+;; load-path entry is already present and the manual `directory-files' scan
+;; that used to live here is unnecessary.
 (use-package nerd-icons
   :if (locate-library "nerd-icons")
   :ensure nil

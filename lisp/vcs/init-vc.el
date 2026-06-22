@@ -23,10 +23,13 @@
   :hook (find-file    . diff-hl-mode)
   :hook (dired-mode   . diff-hl-dired-mode)
   :hook (vc-dir-mode  . diff-hl-dir-mode)
-  :hook (diff-hl-mode . diff-hl-flydiff-mode)
   :custom
   (diff-hl-draw-borders nil)
   :config
+  ;; NOTE: `diff-hl-flydiff-mode' was removed deliberately. It re-runs git on
+  ;; every buffer edit to refresh the gutter, which is the dominant per-keystroke
+  ;; cost in git repos. Plain `diff-hl-mode' refreshes on save and on
+  ;; `magit-pre/post-refresh-hook', which is good enough.
   (add-hook 'magit-pre-refresh-hook #'diff-hl-magit-pre-refresh)
   (add-hook 'magit-post-refresh-hook #'diff-hl-magit-post-refresh))
 

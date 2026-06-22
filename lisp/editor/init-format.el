@@ -1,13 +1,24 @@
 ;;; -*- coding: utf-8; lexical-binding: t -*-
 ;;; init-format.el --- Config for code format -*- lexical-binding: t; -*-
 
+(defcustom riven/aggressive-indent-max-size (* 3000 80)
+  "Buffers larger than this many bytes skip `aggressive-indent-mode'.
+Aggressive indent re-indents on every edit, which is prohibitively expensive
+in large buffers."
+  :type 'integer
+  :group 'rivenEmacs)
+
+(defun riven/maybe-enable-aggressive-indent ()
+  "Enable `aggressive-indent-mode' unless the buffer is too large."
+  (when (< (buffer-size) riven/aggressive-indent-max-size)
+    (aggressive-indent-mode 1)))
+
 (use-package aggressive-indent-mode
   :vc (:url "https://github.com/Malabarba/aggressive-indent-mode")
-  :hook ((json-ts-mode . aggressive-indent-mode)
-         (css-ts-mode . aggressive-indent-mode)
-         (find-file . (lambda ()
-                        (if (> (buffer-size) (* 3000 80))
-                            (aggressive-indent-mode -1)))))
+  ;; Enable inside the specific mode hooks only after the size check, instead
+  ;; of running on every `find-file' and disabling after the fact.
+  :hook ((json-ts-mode . riven/maybe-enable-aggressive-indent)
+         (css-ts-mode  . riven/maybe-enable-aggressive-indent))
   :config
   (add-to-list 'aggressive-indent-excluded-modes 'html-mode)
   (add-to-list 'aggressive-indent-excluded-modes 'tsx-ts-mode)

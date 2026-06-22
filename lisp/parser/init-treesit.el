@@ -120,25 +120,36 @@
         (heex-mode . heex-ts-mode)
         (angular-mode . angular-ts-mode)))
 
+(defcustom riven/treesit-auto-create-modes
+  '(ielm-mode json-mode go-mode java-mode java-ts-mode
+    php-mode php-ts-mode haskell-mode kotlin-mode swift-mode)
+  "Major modes in which to eagerly create a tree-sitter parser.
+Guarded so the `after-change-major-mode-hook' callback does nothing in the
+many buffers (messages, fundamental, special, etc.) that will never use treesit."
+  :type '(repeat symbol)
+  :group 'rivenEmacs)
+
 ;; Auto-create tree-sitter parsers for supported modes
 (defun +treesit-auto-create-parser ()
-  "Auto-create tree-sitter parser for current mode."
-  (let ((lang (pcase major-mode
-                ('ielm-mode 'elisp)
-                ('json-mode 'json)
-                ('go-mode 'go)
-                ('java-mode 'java)
-                ('java-ts-mode 'java)
-                ('php-mode 'php)
-                ('php-ts-mode 'php)
-                ('haskell-mode 'haskell)
-                ('kotlin-mode 'kotlin)
-                ('swift-mode 'swift)
-                (_ nil))))
-    (when (and lang (treesit-language-available-p lang))
-      (condition-case err
-          (treesit-parser-create lang)
-        (error (message "Failed to create tree-sitter parser for %s: %s" lang err))))))
+  "Auto-create tree-sitter parser for current mode.
+No-op unless `major-mode' is in `riven/treesit-auto-create-modes'."
+  (when (memq major-mode riven/treesit-auto-create-modes)
+    (let ((lang (pcase major-mode
+                  ('ielm-mode 'elisp)
+                  ('json-mode 'json)
+                  ('go-mode 'go)
+                  ('java-mode 'java)
+                  ('java-ts-mode 'java)
+                  ('php-mode 'php)
+                  ('php-ts-mode 'php)
+                  ('haskell-mode 'haskell)
+                  ('kotlin-mode 'kotlin)
+                  ('swift-mode 'swift)
+                  (_ nil))))
+      (when (and lang (treesit-language-available-p lang))
+        (condition-case err
+            (treesit-parser-create lang)
+          (error (message "Failed to create tree-sitter parser for %s: %s" lang err)))))))
 
 ;; Add hook to auto-create parsers
 (add-hook 'after-change-major-mode-hook #'+treesit-auto-create-parser)
