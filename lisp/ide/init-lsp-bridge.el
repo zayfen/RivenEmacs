@@ -2,29 +2,11 @@
 
 (require 'init-config)
 
-(use-package yasnippet
-  :ensure t
-  :custom
-  (yas-snippet-dir rivenEmacs-snippets-dir)
-  :hook ((prog-mode LaTeX-mode org-mode markdown-mode) . yas-minor-mode-on)
-  :bind
-  (:map yas-keymap
-        (("TAB" . smarter-yas-expand-next-field)
-         ([(tab)] . smarter-yas-expand-next-field)))
-
-  :config
-  (defun smarter-yas-expand-next-field ()
-    "Try to `yas-expand' then `yas-next-field' at current cursor position."
-    (interactive)
-    (let ((old-point (point))
-          (old-tick (buffer-chars-modified-tick)))
-      (yas-expand)
-      (when (and (eq old-point (point))
-                 (eq old-tick (buffer-chars-modified-tick)))
-        (ignore-errors (yas-next-field))))))
-
-(use-package yasnippet-snippets
-  :ensure t)
+;; Yasnippet configuration lives in `init-eglot' (loaded eagerly at startup),
+;; which defines `smarter-yas-expand-next-field' and registers the snippet dir,
+;; mode hooks, and keybindings. The previous duplicate `use-package yasnippet'
+;; block here redefined `smarter-yas-expand-next-field' inside `:config' and
+;; re-ran the whole setup; it has been removed to avoid double-loading.
 
 (defun lsp-bridge-find-def-return-ex ()
   "Try to go back via \"lsp-bridge-find-def-return\", if error, use \"xref-go-back\" instead."

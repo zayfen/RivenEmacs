@@ -4,41 +4,11 @@
 
 ;;; Code:
 
-(defun riven/completion-elpa-roots ()
-  "Return candidate ELPA roots for package fallback loading."
-  (let* ((current-file (or load-file-name byte-compile-current-file buffer-file-name))
-         (repo-elpa (and current-file
-                         (expand-file-name "../../elpa" (file-name-directory current-file))))
-         (roots (delq nil
-                      (list (and (boundp 'package-user-dir) package-user-dir)
-                            (and (boundp 'user-emacs-directory)
-                                 (expand-file-name "elpa" user-emacs-directory))
-                            (and (boundp 'repo-dir) repo-dir)
-                            repo-elpa))))
-    (delete-dups roots)))
-
-(defun riven/completion-ensure-elpa-package-load-path (package)
-  "Ensure PACKAGE directory in known ELPA roots is in `load-path'."
-  (let ((library (symbol-name package)))
-    (unless (locate-library library)
-      (let* ((pattern (format "^%s\\(?:-[0-9].*\\)?\\'" (regexp-quote library)))
-             (selected nil))
-        (dolist (root (riven/completion-elpa-roots))
-          (when (and (not selected) (file-directory-p root))
-            (let ((dirs (directory-files root t pattern t)))
-              (when dirs
-                (setq selected (car (sort dirs #'string>)))))))
-        (when selected
-          (add-to-list 'load-path selected))))))
-
-(mapc #'riven/completion-ensure-elpa-package-load-path
-      '(consult vertico orderless corfu cape marginalia embark embark-consult
-        prescient nerd-icons-corfu))
-
-(dolist (root (riven/completion-elpa-roots))
-  (let ((vertico-ext (expand-file-name "vertico/extensions" root)))
-    (when (file-directory-p vertico-ext)
-      (add-to-list 'load-path vertico-ext))))
+;; Previously this module manually scanned the ELPA directory tree with
+;; `directory-files' to populate `load-path' for completion packages.
+;; `package-initialize' is invoked in `early-init.el', so every installed
+;; package's directory is already on `load-path'; the manual scan was redundant
+;; startup work and has been removed.
 
 (use-package vertico
   :vc (:url "https://github.com/minad/vertico")
