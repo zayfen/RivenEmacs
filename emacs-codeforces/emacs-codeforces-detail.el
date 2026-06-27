@@ -20,11 +20,11 @@
 (defvar codeforces-problem-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "q") #'quit-window)
-    (define-key map (kbd "r") #'codeforces-start-solving)
+    (define-key map (kbd "a") #'codeforces-start-solving)
     (define-key map (kbd "s") #'codeforces-submit)
-    (define-key map (kbd "S") #'codeforces-refresh-statement)
+    (define-key map (kbd "g") #'codeforces-refresh-statement)
     (define-key map (kbd "o") #'codeforces-open-statement)
-    (define-key map (kbd "R") #'codeforces-poll-latest)
+    (define-key map (kbd "p") #'codeforces-poll-latest)
     map)
   "Keymap for `codeforces-problem-mode'.")
 
@@ -35,11 +35,11 @@ Inherits Org mode (so the statement renders fully) and adds Codeforces
 workflow keys:
   \\{codeforces-problem-mode-map}
 - `q' close the buffer
-- `r' accept the problem (start solving, scaffold the solution file)
+- `a' accept the problem (start solving, scaffold the solution file)
 - `s' submit the current solution and poll the verdict
-- `S' re-fetch the statement from the site
+- `g' re-fetch the statement from the site
 - `o' open the problem page in the browser
-- `R' poll the latest submission status for this problem")
+- `p' poll the latest submission status for this problem")
 (set-keymap-parent codeforces-problem-mode-map org-mode-map)
 
 ;; Declared as `defcustom' in emacs-codeforces.el; defvar here so this module
