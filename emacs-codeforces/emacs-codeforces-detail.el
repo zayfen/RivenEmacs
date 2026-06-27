@@ -63,6 +63,12 @@ workflow keys:
 - `?' show these key bindings")
 (set-keymap-parent codeforces-problem-mode-map org-mode-map)
 
+;; Ensure Org treats $...$ and $$...$$ as LaTeX fragments so they are fontified
+;; (and previewable) rather than shown as literal $ delimiters.
+(with-eval-after-load 'org
+  (unless (memq 'latex (bound-and-true-p org-highlight-latex-and-related))
+    (add-to-list 'org-highlight-latex-and-related 'latex)))
+
 ;; Declared as `defcustom' in emacs-codeforces.el; defvar here so this module
 ;; can be loaded and tested standalone.
 (defvar codeforces-default-language "rust")
@@ -158,7 +164,15 @@ failed, a fallback note with a browser-open pointer is shown instead."
     (insert (+cf--render-status nil))
     ;; Render statement images inline (Codeforces figures become [[url][url]]).
     (when (fboundp 'org-display-inline-images)
-      (org-display-inline-images))))
+      (org-display-inline-images))
+    ;; Preview inline math ($...$) so the $ delimiters don't show as text.
+    ;; org 9.7+ uses `org-latex-preview'; older org uses
+    ;; `org-preview-latex-fragment'.  Both need a LaTeX toolchain to render
+    ;; images, so this is best-effort (ignore-errors).
+    (ignore-errors
+      (cond
+       ((fboundp 'org-latex-preview) (org-latex-preview '(16)))
+       ((fboundp 'org-preview-latex-fragment) (org-preview-latex-fragment))))))
 
 (defun +cf--update-status (text)
   "Replace the Submission Status section in the current buffer with TEXT."
@@ -351,10 +365,14 @@ fallback note with a browser-open pointer (key `o')."
                                    (error-message-string err))
                           nil))))
         (+cf--write-buffer problem statement)))
-    (display-buffer buf
-                    '((display-buffer-in-direction)
-                      (direction . right)
-                      (window-width . 0.5)))
+    (let ((win (display-buffer buf
+                               '((display-buffer-in-direction)
+                                 (direction . right)
+                                 (window-width . 0.5)
+                                 (window . selected)))))
+      ;; Select the new window so the cursor lands in the detail buffer.
+      (when (windowp win)
+        (select-window win)))
     buf))
 
 (provide 'emacs-codeforces-detail)
