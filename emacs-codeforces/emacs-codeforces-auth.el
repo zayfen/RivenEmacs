@@ -16,8 +16,12 @@
 
 ;; Declared as `defcustom' in emacs-codeforces.el; defvar here so this module
 ;; can be loaded and tested standalone.
-(defvar codeforces-home-directory nil
-  "Codeforces workspace root.  Set by `emacs-codeforces.el'.")
+(defvar codeforces-home-directory
+  (expand-file-name "~/.emacs-codeforces/")
+  "Codeforces workspace root.
+Also a `defcustom' in `emacs-codeforces.el'; kept here so this module
+works when loaded standalone (the `defcustom' will not overwrite an
+already-set value).")
 
 (defun +cf--home-dir ()
   "Return the codeforces home directory (as configured)."
