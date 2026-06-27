@@ -1814,3 +1814,34 @@ If any smoke check failed, fix and re-commit. Otherwise the library is complete.
 - Submit via HTTP may be Cloudflare-blocked (mitigated: detect + browser fallback; status poll via API is unaffected).
 - `programTypeId` is scraped live, never hardcoded (Task 6 `+cf--parse-language-options`).
 - Cookie expiry handled by auth validation + clear errors.
+
+---
+
+## Update 2026-06-28: Cloudflare pivot (post-implementation)
+
+Live testing revealed **all** website operations are Cloudflare-blocked (not
+just submit, as the original plan assumed): `/enter`, statement pages, and the
+submit form all return HTTP 403 challenge pages to `curl`/`url.el`. Only the
+public JSON API is reachable, and it needs no auth (`user.status` works with
+just a handle). The plan above was implemented, then reworked per the revised
+spec (`docs/superpowers/specs/2026-06-28-emacs-codeforces-design.md`, "Revision
+2026-06-28" section).
+
+### What changed in the implemented code
+
+| Concern | Original plan | Now (Cloudflare pivot) |
+|---|---|---|
+| Login | store cookie + validate via GET /enter | **store handle only**, no validation |
+| Statement | scrape HTML → Org in buffer | render **API metadata** in Org; full statement via `o` → `browse-url` |
+| Submit | HTTP POST first, browser fallback | **always** `browse-url` (HTTP POST path deleted) |
+| Status poll | `contest.status?submissionId` | `user.status?handle` matched by contestId+time |
+| `programTypeId` scraping | needed for submit | **removed** (browser handles language pick) |
+
+### Verification (live)
+
+- `problemset.problems` → 11263 problems; `dp` tag filter → 2497.
+- `user.status?handle=tourist` → returns submissions with no auth (public).
+- 22/22 unit tests pass; library byte-compiles with 0 errors.
+
+The implemented library matches the revised spec. Tasks 1-10 above are
+historical; the current source of truth is the code in `emacs-codeforces/`.
