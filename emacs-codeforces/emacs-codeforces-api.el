@@ -77,8 +77,26 @@ Returns a list of problem plists."
        (insert-file-contents cache)
        (buffer-string)))))
 
+(defun +cf-fetch-contests ()
+  "Fetch the list of contests via `contest.list'.
+Returns a list of contest plists with :id :name :phase, newest first.
+Used by the problem-list Tab switch to pick a contest."
+  (let ((result (+cf-api-get "contest.list")))
+    ;; Newest first by id.
+    (sort (copy-sequence result)
+          (lambda (a b) (> (plist-get a :id) (plist-get b :id))))))
+
+(defun +cf-fetch-contest-problems (contest-id)
+  "Return the problems of a single contest CONTEST-ID.
+These are a subset of the problemset (filtered by contestId), so this
+reuses the cached `problemset.problems' data — no extra API call."
+  (let ((all (+cf-fetch-problems)))
+    (cl-remove-if-not
+     (lambda (p) (eq (plist-get p :contestId) contest-id))
+     all)))
+
 (defun +cf-fetch-recent-submissions (handle count)
-  "Fetch the COUNT most recent submissions for HANDLE via `user.status'.
+  "Fetch the COUNT most recent submissions for HANDLE via `user.status`.
 Returns a list of submission plists, newest first.  Each has :id :verdict
 (may be nil while queued) :passedTestCount :timeConsumedMillis
 :memoryConsumedBytes :contestId :creationTimeSeconds.  No auth needed."
