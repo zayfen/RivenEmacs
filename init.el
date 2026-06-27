@@ -120,7 +120,8 @@ Org module itself is loaded lazily in org buffers."
   (require 'init-quickrun)
   (require 'init-feed)
   (require 'init-lookup)
-  (require 'init-reader))
+  (require 'init-reader)
+  (require 'init-codeforces))
 
 ;; Keep startup behavior: immediate modules now, heavy modules deferred.
 (riven/load-core-modules)

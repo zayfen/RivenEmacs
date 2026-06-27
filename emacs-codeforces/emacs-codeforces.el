@@ -62,30 +62,6 @@ Nil means use the templates bundled with the library."
   :type '(choice directory (const nil))
   :group 'codeforces)
 
-;;;###autoload
-(defun codeforces-login ()
-  "Log in to Codeforces via session-cookie injection.
-Prompts for a session cookie copied from a browser, validates it, and on
-success creates `codeforces-home-directory'.  See
-`emacs-codeforces-auth.el' for details."
-  (interactive)
-  (require 'emacs-codeforces-auth)
-  (call-interactively #'codeforces-login))
-
-;;;###autoload
-(defun codeforces-logout ()
-  "Clear stored Codeforces credentials."
-  (interactive)
-  (require 'emacs-codeforces-auth)
-  (call-interactively #'codeforces-logout))
-
-;;;###autoload
-(defun codeforces-browse-problems ()
-  "Open the Codeforces problem list buffer."
-  (interactive)
-  (require 'emacs-codeforces-list)
-  (call-interactively #'codeforces-browse-problems))
-
 (provide 'emacs-codeforces)
 
 ;;; emacs-codeforces.el ends here

@@ -13,6 +13,7 @@
 
 ;;; Code:
 
+(require 'cl-lib)
 (require 'url)
 (require 'json)
 
@@ -50,7 +51,7 @@ Preserves an existing query string in URL."
         (json-false nil))
     (json-read-from-string body)))
 
-(defun +cf-http-get (url &key params cookie headers timeout)
+(cl-defun +cf-http-get (url &key params cookie headers timeout)
   "Synchronously GET URL with query PARAMS.
 Returns (HTTP-STATUS . BODY-STRING).  COOKIE, when non-nil, is sent as the
 Cookie header.  HEADERS is an alist of extra headers.  TIMEOUT seconds."
@@ -78,7 +79,7 @@ Cookie header.  HEADERS is an alist of extra headers.  TIMEOUT seconds."
        (setq status 0 body (error-message-string err))))
     (cons status body)))
 
-(defun +cf-http-post (url data-alist &key cookie headers timeout)
+(cl-defun +cf-http-post (url data-alist &key cookie headers timeout)
   "Synchronously POST to URL with form DATA-ALIST (x-www-form-urlencoded).
 COOKIE, HEADERS, TIMEOUT as in `+cf-http-get'.  Returns (STATUS . BODY)."
   (let* ((url-request-method "POST")

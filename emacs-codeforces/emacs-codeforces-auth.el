@@ -29,7 +29,7 @@
 
 (defun +cf--login-page-logged-in-p (html)
   "Return non-nil if the /enter page HTML indicates an active session.
-We detect the 'Logout' link that only appears when authenticated."
+We detect the Logout link that only appears when authenticated."
   (string-match-p "Logout" (or html "")))
 
 (defun +cf--ensure-home-dir ()

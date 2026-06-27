@@ -45,13 +45,13 @@
      (_ (error "Unknown language: %s" language)))
    (+cf--templates-dir)))
 
-(defun +cf--problem-id (problem)
-  "Return \"contestId_index\" for PROBLEM."
+(defun +cf--ws-problem-id (problem)
+  "Return \"contestId_index\" for PROBLEM (used as workspace dir name)."
   (format "%s_%s" (plist-get problem :contestId) (plist-get problem :index)))
 
 (defun +cf--problem-dir (problem)
   "Return the per-problem workspace directory."
-  (expand-file-name (+cf--problem-id problem)
+  (expand-file-name (+cf--ws-problem-id problem)
                     (expand-file-name "workspace" codeforces-home-directory)))
 
 (defun +cf-init-solution (problem language)
@@ -67,7 +67,7 @@ Returns the path to the solution file.  Never overwrites an existing solution."
           (insert-file-contents tpl)
           (goto-char (point-min))
           (while (search-forward "{problem_id}" nil t)
-            (replace-match (+cf--problem-id problem) t t)))))
+            (replace-match (+cf--ws-problem-id problem) t t)))))
     sol))
 
 (provide 'emacs-codeforces-workspace)
