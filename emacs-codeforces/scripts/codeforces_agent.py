@@ -142,7 +142,30 @@ def _node_to_org(node):
 
 
 def _clean(text):
-    """Tidy whitespace while preserving code blocks."""
+    """Tidy whitespace and normalize math delimiters.
+
+    Codeforces delimits inline math with `$$$...$$$` and display math with
+    `$$$$$$...$$$$$$` (MathJax config).  Org/preview expects `$...$` for
+    inline and `$$...$$` for display, so we strip the extra `$`s.
+    Code blocks are protected from this substitution."""
+    # Protect #+begin_src ... #+end_src blocks from any math substitution.
+    blocks = []
+
+    def _stash(m):
+        blocks.append(m.group(0))
+        return "\x00%d\x00" % (len(blocks) - 1)
+
+    text = re.sub(r"#\+begin_src.*?#\+end_src", _stash, text, flags=re.DOTALL)
+
+    # Display math: $$$$$$...$$$$$$ -> $$...$$
+    text = re.sub(r"\${6}([^\n]*?)\${6}", r"$$\1$$", text)
+    # Inline math: $$$...$$$ -> $...$
+    text = re.sub(r"\${3}([^\n]*?)\${3}", r"$\1$", text)
+
+    # Restore code blocks.
+    for i, b in enumerate(blocks):
+        text = text.replace("\x00%d\x00" % i, b)
+
     # Collapse 3+ blank lines to 2.
     text = re.sub(r"\n{3,}", "\n\n", text)
     return text.strip() + "\n"
