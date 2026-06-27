@@ -21,7 +21,7 @@
   (setq super-save-delete-trailing-whitespace 'except-current-line)
   (super-save-exclude '(".gpg"))
   :config
-  (add-to-list 'super-save-triggers 'ace-window)
+  (add-to-list 'super-save-triggers 'switch-window)
   (add-to-list 'super-save-hook-triggers 'find-file-hook))
 
 
