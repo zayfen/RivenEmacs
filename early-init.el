@@ -73,6 +73,12 @@
 
 (advice-add 'tool-bar-setup :override #'ignore)
 
+;; NOTE: these are guarded by `boundp' intentionally — NOT for version
+;; compatibility, but for *load order*. `early-init.el' runs before
+;; `warnings.el' is preloaded, so `warning-suppress-log-types' is still
+;; void here. `warning-suppress-types' happens to be pre-bound, but we
+;; guard both for symmetry and to avoid a `void-variable' crash if the
+;; preload set ever changes.
 (if (boundp 'warning-suppress-log-types)
     (add-to-list 'warning-suppress-log-types '(unlock-file)))
 (if (boundp 'warning-suppress-types)

@@ -57,14 +57,9 @@
   (setq completion-ignore-case t
         read-buffer-completion-ignore-case t
         read-file-name-completion-ignore-case t)
-  (defun crm-indicator (args)
-    (cons (format "[CRM%s] %s"
-                  (replace-regexp-in-string
-                   "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
-                   crm-separator)
-                  (car args))
-          (cdr args)))
-  (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
+  ;; Emacs 31 native `crm-prompt' formats completing-read-multiple prompts
+  ;; (default "[%d] %p"), so the previous manual `crm-indicator' advice is
+  ;; no longer needed.
   (setq minibuffer-prompt-properties
         '(read-only t cursor-intangible t face minibuffer-prompt))
   (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode))
