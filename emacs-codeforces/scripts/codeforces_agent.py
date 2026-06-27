@@ -1,0 +1,348 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""codeforces_agent.py — Codeforces website agent (Cloudflare bypass via curl-cffi).
+
+Subcommands:
+  statement --contest N --index "A"
+      Fetch a problem statement and print it as Org text on stdout.
+
+  submit --contest N --index "A" --lang rust --source-file PATH
+      Submit a solution using the stored cookie; print the submission id.
+
+  login-check
+      Use the stored cookie to visit the submit page; print the handle if
+      authenticated, exit non-zero otherwise.
+
+All network access goes through curl-cffi (browser TLS fingerprint) so it
+passes Cloudflare.  stdout carries the result; stderr carries errors; a
+non-zero exit signals failure.
+"""
+
+import argparse
+import os
+import re
+import sys
+
+SITE = "https://codeforces.com"
+
+# Language -> substring matched against the programTypeId <option> label.
+# Must be kept loose: Codeforces updates compiler versions over time.
+LANG_NEEDLE = {
+    "rust": "Rust",
+    "python": "Python 3",
+    "cpp": "GNU G++",
+    "java": "Java",
+}
+
+
+def _session(cookie=None):
+    """Return a curl-cffi Session that bypasses Cloudflare."""
+    try:
+        from curl_cffi import requests as cffi_requests
+    except ImportError:
+        sys.stderr.write(
+            "codeforces_agent: curl-cffi is not installed. "
+            "Run: pip install curl-cffi\n")
+        sys.exit(3)
+    s = cffi_requests.Session(impersonate="chrome")
+    if cookie:
+        s.headers.update({"Cookie": cookie})
+    return s
+
+
+def _home_dir():
+    return os.path.expanduser(
+        os.environ.get("CODEFORCES_HOME", "~/.emacs-codeforces"))
+
+
+def _cookie_path():
+    return os.path.join(_home_dir(), "cookie")
+
+
+def _read_cookie():
+    p = _cookie_path()
+    if not os.path.exists(p):
+        return None
+    with open(p, "r", encoding="utf-8") as f:
+        return f.read().strip()
+
+
+# --------------------------------------------------------------------------
+# statement: HTML -> Org
+# --------------------------------------------------------------------------
+
+def _node_to_org(node):
+    """Recursively convert a BeautifulSoup node into Org text.
+
+    Handles the Codeforces statement structure: header (title/limits),
+    section-title/property-title subsections, paragraphs, lists, <pre>
+    sample I/O, and inline math (rendered as LaTeX)."""
+    from bs4 import NavigableString, Tag
+
+    if isinstance(node, NavigableString):
+        return str(node)
+    if not isinstance(node, Tag):
+        return ""
+
+    name = node.name
+    classes = node.get("class") or []
+
+    def children_text():
+        return "".join(_node_to_org(c) for c in node.children)
+
+    # --- Codeforces structural classes ---
+    if "section-title" in classes:
+        return "** " + node.get_text(strip=True) + "\n\n"
+    if "property-title" in classes:
+        # "time limit per test" etc. — render as a bold label.
+        return "*" + node.get_text(strip=True) + "* "
+    if name == "title" or (name == "div" and "title" in classes):
+        return "* " + node.get_text(strip=True) + "\n\n"
+    # Each limit property (time/memory/input/output) on its own line.
+    if name == "div" and any(c in classes for c in
+                             ("time-limit", "memory-limit", "input-file",
+                              "output-file")):
+        return children_text().strip() + "  \n"
+    if "input" in classes and name == "div" and node.find("pre"):
+        return "Input:\n" + _node_to_org(node.find("pre"))
+    if "output" in classes and name == "div" and node.find("pre"):
+        return "Output:\n" + _node_to_org(node.find("pre"))
+
+    # --- Standard HTML ---
+    if name == "p":
+        return children_text().strip() + "\n\n"
+    if name == "pre":
+        return "#+begin_src fundamental\n%s\n#+end_src\n\n" % node.get_text().strip()
+    if name in ("ul", "ol"):
+        lines = []
+        idx = 1
+        for li in node.find_all("li", recursive=False):
+            txt = "".join(_node_to_org(c) for c in li.children).strip()
+            bullet = "- " if name == "ul" else "%d. " % idx
+            lines.append(bullet + txt)
+            if name == "ol":
+                idx += 1
+        return "\n".join(lines) + "\n\n"
+    if name == "br":
+        return "  \n"
+    if name in ("b", "strong"):
+        return "*" + children_text() + "*"
+    if name in ("i", "em"):
+        # Inline italic variable — keep as /italic/.
+        return "/" + children_text() + "/"
+    if name == "sub":
+        return "_{" + children_text() + "}"
+    if name == "sup":
+        return "^{" + children_text() + "}"
+    if name == "span":
+        # tex-span wraps math-ish inline; just unwrap.
+        return children_text()
+    # Default: recurse (div, section, etc.)
+    return children_text()
+
+
+def _clean(text):
+    """Tidy whitespace while preserving code blocks."""
+    # Collapse 3+ blank lines to 2.
+    text = re.sub(r"\n{3,}", "\n\n", text)
+    return text.strip() + "\n"
+
+
+def fetch_statement(contest, index):
+    """Fetch problem {contest}/{index} and return Org text."""
+    from bs4 import BeautifulSoup
+
+    url = "%s/problemset/problem/%s/%s" % (SITE, contest, index)
+    s = _session()
+    r = s.get(url, timeout=30)
+    if r.status_code != 200 or "Just a moment" in r.text:
+        sys.stderr.write(
+            "Failed to fetch statement (HTTP %d, possibly Cloudflare).\n"
+            % r.status_code)
+        sys.exit(1)
+
+    soup = BeautifulSoup(r.text, "lxml")
+    stmt = soup.select_one("div.problem-statement")
+    if not stmt:
+        sys.stderr.write("Problem statement div not found on the page.\n")
+        sys.exit(1)
+
+    org = _node_to_org(stmt)
+    sys.stdout.write(_clean(org))
+
+
+# --------------------------------------------------------------------------
+# submit
+# --------------------------------------------------------------------------
+
+def _parse_csrf(html):
+    """Extract the csrf token from a Codeforces page."""
+    m = re.search(r'name="X-Csrf-Token"\s+content="([0-9a-f]+)"', html)
+    if m:
+        return m.group(1)
+    m = re.search(r"data-csrf=['\"]([0-9a-f]+)['\"]", html)
+    if m:
+        return m.group(1)
+    m = re.search(r'name=["\']csrf_token["\']\s+value=["\']([0-9a-f]+)["\']', html)
+    if m:
+        return m.group(1)
+    return None
+
+
+def _parse_language_id(html, lang):
+    """Find the programTypeId whose label matches LANG."""
+    from bs4 import BeautifulSoup
+
+    soup = BeautifulSoup(html, "lxml")
+    sel = soup.select_one("select[name=programTypeId]")
+    if not sel:
+        return None  # Not authenticated (submit form only renders for logged-in users)
+    needle = LANG_NEEDLE.get(lang)
+    if not needle:
+        return None
+    for opt in sel.select("option"):
+        if needle in (opt.get_text() or ""):
+            return opt.get("value")
+    return None
+
+
+def submit(contest, index, lang, source_file):
+    """Submit the solution; print the new submission id."""
+    cookie = _read_cookie()
+    if not cookie:
+        sys.stderr.write("Not logged in: no cookie file. Run codeforces-login.\n")
+        sys.exit(2)
+
+    if not os.path.exists(source_file):
+        sys.stderr.write("Source file not found: %s\n" % source_file)
+        sys.exit(2)
+    with open(source_file, "r", encoding="utf-8") as f:
+        source = f.read()
+
+    s = _session(cookie=cookie)
+
+    # 1. GET the submit page for csrf + language id.
+    page = s.get("%s/problemset/submit" % SITE, timeout=30)
+    if page.status_code != 200 or "Just a moment" in page.text:
+        sys.stderr.write("Cloudflare blocked the submit page (HTTP %d).\n"
+                         % page.status_code)
+        sys.exit(1)
+    csrf = _parse_csrf(page.text)
+    lang_id = _parse_language_id(page.text, lang)
+    if not csrf:
+        sys.stderr.write("Could not find csrf token (cookie may be expired).\n")
+        sys.exit(2)
+    if not lang_id:
+        sys.stderr.write(
+            "Could not find programTypeId for language '%s'. "
+            "Submit form may not be visible (not logged in).\n" % lang)
+        sys.exit(2)
+
+    # 2. POST the solution.
+    data = {
+        "csrf_token": csrf,
+        "action": "submitSolutionFormSubmitted",
+        "submittedProblemIndex": index,
+        "contestId": str(contest),
+        "programTypeId": lang_id,
+        "source": source,
+        "tabSize": "4",
+    }
+    resp = s.post("%s/problemset/submit" % SITE, data=data, timeout=30)
+
+    # 3. Detect outcome.
+    final_url = str(resp.url)
+    if "/my" in final_url or "/status" in final_url:
+        # Success — fetch the newest submission id from the /my page.
+        sub_id = _extract_latest_submission_id(s, contest)
+        if sub_id:
+            sys.stdout.write(sub_id)
+            return
+        # Fallback: redirect happened but id not found; treat as success anyway.
+        sys.stdout.write("OK")
+        return
+
+    # Failure: returned to the form with errors.
+    from bs4 import BeautifulSoup
+    soup = BeautifulSoup(resp.text, "lxml")
+    err = soup.select_one("span.error")
+    msg = err.get_text(strip=True) if err else "unknown error"
+    sys.stderr.write("Submit rejected: %s\n" % msg)
+    sys.exit(1)
+
+
+def _extract_latest_submission_id(session, contest):
+    """GET /contest/{id}/my and parse the newest submission id."""
+    r = session.get("%s/contest/%s/my" % (SITE, contest), timeout=30)
+    if r.status_code != 200:
+        return None
+    # Submission ids appear as data-submission-id or in /submission/<id> links.
+    m = re.search(r'submission/(\d+)', r.text)
+    if m:
+        return m.group(1)
+    m = re.search(r'data-submission-id="(\d+)"', r.text)
+    if m:
+        return m.group(1)
+    return None
+
+
+# --------------------------------------------------------------------------
+# login-check
+# --------------------------------------------------------------------------
+
+def login_check():
+    """Visit the submit page with the stored cookie; print handle if logged in."""
+    cookie = _read_cookie()
+    if not cookie:
+        sys.stderr.write("No cookie stored. Run codeforces-login.\n")
+        sys.exit(2)
+    s = _session(cookie=cookie)
+    r = s.get("%s/problemset/submit" % SITE, timeout=30)
+    if r.status_code != 200 or "Just a moment" in r.text:
+        sys.stderr.write("Cloudflare blocked the request.\n")
+        sys.exit(1)
+    # Logged-in => the language <select> is present.
+    if 'name="programTypeId"' not in r.text:
+        sys.stderr.write("Not logged in (cookie expired or invalid).\n")
+        sys.exit(2)
+    # Best-effort handle from the page.
+    m = re.search(r'userLink[^>]*>([A-Za-z0-9_.-]+)<', r.text)
+    if m:
+        sys.stdout.write(m.group(1))
+    else:
+        sys.stdout.write("OK")
+    return
+
+
+# --------------------------------------------------------------------------
+# CLI
+# --------------------------------------------------------------------------
+
+def main():
+    ap = argparse.ArgumentParser(description="Codeforces website agent")
+    sub = ap.add_subparsers(dest="cmd", required=True)
+
+    p_st = sub.add_parser("statement", help="fetch a problem statement as Org")
+    p_st.add_argument("--contest", required=True)
+    p_st.add_argument("--index", required=True)
+
+    p_su = sub.add_parser("submit", help="submit a solution")
+    p_su.add_argument("--contest", required=True)
+    p_su.add_argument("--index", required=True)
+    p_su.add_argument("--lang", required=True,
+                      choices=list(LANG_NEEDLE.keys()))
+    p_su.add_argument("--source-file", required=True)
+
+    sub.add_parser("login-check", help="verify the stored cookie")
+
+    args = ap.parse_args()
+    if args.cmd == "statement":
+        fetch_statement(args.contest, args.index)
+    elif args.cmd == "submit":
+        submit(args.contest, args.index, args.lang, args.source_file)
+    elif args.cmd == "login-check":
+        login_check()
+
+
+if __name__ == "__main__":
+    main()
