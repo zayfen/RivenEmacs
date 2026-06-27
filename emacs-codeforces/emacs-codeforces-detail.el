@@ -17,6 +17,31 @@
 (require 'emacs-codeforces-auth)
 (require 'emacs-codeforces-agent)
 
+(defvar codeforces-problem-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "q") #'quit-window)
+    (define-key map (kbd "r") #'codeforces-start-solving)
+    (define-key map (kbd "s") #'codeforces-submit)
+    (define-key map (kbd "S") #'codeforces-refresh-statement)
+    (define-key map (kbd "o") #'codeforces-open-statement)
+    (define-key map (kbd "R") #'codeforces-poll-latest)
+    map)
+  "Keymap for `codeforces-problem-mode'.")
+
+;;;###autoload
+(define-derived-mode codeforces-problem-mode org-mode "CF Problem"
+  "Major mode for viewing a Codeforces problem statement.
+Inherits Org mode (so the statement renders fully) and adds Codeforces
+workflow keys:
+  \\{codeforces-problem-mode-map}
+- `q' close the buffer
+- `r' accept the problem (start solving, scaffold the solution file)
+- `s' submit the current solution and poll the verdict
+- `S' re-fetch the statement from the site
+- `o' open the problem page in the browser
+- `R' poll the latest submission status for this problem")
+(set-keymap-parent codeforces-problem-mode-map org-mode-map)
+
 ;; Declared as `defcustom' in emacs-codeforces.el; defvar here so this module
 ;; can be loaded and tested standalone.
 (defvar codeforces-default-language "rust")
@@ -204,6 +229,48 @@ Polls every `codeforces-poll-interval' seconds until a terminal verdict or
     (error "No problem in this buffer"))
   (+cf-open-statement-in-browser +cf--current-problem))
 
+(defun codeforces-refresh-statement ()
+  "Re-fetch the current problem's statement from the site and re-render."
+  (interactive)
+  (unless +cf--current-problem
+    (error "No problem in this buffer"))
+  (let* ((problem +cf--current-problem)
+         (statement (progn
+                      (message "Refreshing statement for %s..." (+cf--problem-id problem))
+                      (condition-case err
+                          (+cf-agent-fetch-statement problem)
+                        (error
+                         (message "Refresh failed: %s" (error-message-string err))
+                         nil)))))
+    (if statement
+        (progn (+cf--write-buffer problem statement)
+               (message "Statement refreshed."))
+      (message "Could not refresh statement."))))
+
+(defun codeforces-poll-latest ()
+  "Poll the latest submission for the current problem and show its status.
+Useful to check a verdict without (re)submitting.  Reads your handle from
+the stored credentials."
+  (interactive)
+  (unless +cf--current-problem
+    (error "No problem in this buffer"))
+  (let* ((problem +cf--current-problem)
+         (handle (+cf--handle)))
+    (unless handle
+      (error "Not logged in.  Run M-x codeforces-login"))
+    (let ((sub (condition-case nil
+                  (+cf-find-problem-submission
+                   handle
+                   (plist-get problem :contestId)
+                   (- (truncate (float-time)) 3600))
+                (error nil))))
+      (if sub
+          (let ((text (+cf--format-verdict sub)))
+            (+cf--update-status text)
+            (message "Latest: %s" text))
+        (+cf--update-status "No recent submission found for this problem.")
+        (message "No recent submission found.")))))
+
 (defun codeforces-submit ()
   "Submit the current problem's solution via the agent and poll the verdict.
 The Python agent (curl-cffi) POSTs the solution using the stored cookie;
@@ -242,19 +309,15 @@ public API for a real-time verdict."
 
 ;;;###autoload
 (defun codeforces-open-problem (problem)
-  "Open PROBLEM (plist) in an Org detail buffer on the right.
+  "Open PROBLEM (plist) in a `codeforces-problem-mode' buffer on the right.
 Fetches the full statement via the Python agent; on agent failure, shows a
 fallback note with a browser-open pointer (key `o')."
   (interactive)
   (let ((buf (get-buffer-create (+cf--buffer-name problem))))
     (with-current-buffer buf
-      (unless (derived-mode-p 'org-mode)
-        (org-mode)
-        (setq buffer-read-only t)
-        (use-local-map (copy-keymap org-mode-map))
-        (local-set-key (kbd "C-c C-c") #'codeforces-start-solving)
-        (local-set-key (kbd "C-c C-s") #'codeforces-submit)
-        (local-set-key (kbd "o") #'codeforces-open-statement))
+      (unless (derived-mode-p 'codeforces-problem-mode)
+        (codeforces-problem-mode)
+        (setq buffer-read-only t))
       (setq +cf--current-problem problem)
       (message "Fetching statement for %s..." (+cf--problem-id problem))
       (let ((statement (condition-case err
