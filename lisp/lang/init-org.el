@@ -11,7 +11,6 @@
          (org-mode . auto-fill-mode))
   :config
   (setq org-startup-indented t
-        org-ellipsis " ▼ "
         org-hide-emphasis-markers t
         org-pretty-entities t
         org-startup-folded 'content
@@ -157,13 +156,6 @@
            (planning :to ,(ts-adjust 'day -1 (get-last-friday))))))
     (org-ql-search org-agenda-files query)))
 
-(custom-set-faces
- '(org-level-1 ((t (:height 1.5 :weight bold))))
- '(org-level-2 ((t (:height 1.4 :weight bold))))
- '(org-level-3 ((t (:height 1.3 :weight bold))))
- '(org-level-4 ((t (:height 1.2 :weight bold))))
- '(org-level-5 ((t (:height 1.1 :weight bold))))
- '(org-level-6 ((t (:height 1.0 :weight bold)))))
 
 (use-package org-transclusion
   :ensure t
@@ -174,6 +166,64 @@
         org-transclusion-add-replace-id-when-create t
         org-transclusion-sync-at-saving t
         org-transclusion-face 'org-block))
+
+;;; Beautification (org-appear + org-modern + olivetti)
+
+;; Reveal hidden Org markers (emphasis, links, sub/superscript) only while
+;; point is on them. Pairs with `org-hide-emphasis-markers' set above.
+(use-package org-appear
+  :ensure t
+  :hook (org-mode . org-appear-mode)
+  :custom
+  (org-appear-autoemphasis t)
+  (org-appear-autolinks t)
+  (org-appear-autosubmarkers t)
+  (org-appear-autoentities t))
+
+;; Modern Org styling: replaces org-superstar/org-bullets. Uses display text
+;; properties (future-proof, performant). Keeps the per-level face sizes set
+;; above.
+;;
+;; NOTE: deliberately leave `org-modern-star' at its default ('fold) rather
+;; than overriding with Unicode bullets. CJK fonts render arbitrary Unicode
+;; symbols (◉ ✸ ✿ ◆ ▶) at inconsistent sizes/widths, which looked broken.
+;; The default fold style (hide leading stars, indent by level) is clean and
+;; consistent across all scripts.
+(use-package org-modern
+  :ensure t
+  :hook ((org-mode . org-modern-mode)
+         (org-agenda-finalize . org-modern-agenda))
+  :config
+  ;; Disable org-modern's tag styling. When `org-modern-tag' is non-nil (the
+  ;; default) it wraps tags in the `org-modern-label' face and inserts display
+  ;; properties around the colon separators, which renders with mismatched font
+  ;; sizes — a big colon followed by tiny tag text. With it disabled, Org falls
+  ;; back to its native `org-tag' face (:weight bold), where the colon and the
+  ;; tag text share one consistent font/size.
+  (set-face-attribute 'org-modern-symbol nil :family "Iosevka")
+  (setq
+   ;; Edit settings
+   org-auto-align-tags nil
+   org-tags-column 0
+   org-catch-invisible-edits 'show-and-error
+   org-special-ctrl-a/e t
+   org-insert-heading-respect-content t
+
+   ;; Org styling, hide markup etc.
+   org-hide-emphasis-markers t
+   org-pretty-entities t
+   org-agenda-tags-column 0
+   org-ellipsis "…")
+  (customize-set-variable 'org-modern-tag nil))
+
+;; Centered writing with a soft text width. `ews-olivetti' in ews.el provides
+;; the distraction-free toggle; this just makes olivetti available + a sane
+;; default width for Org buffers.
+(use-package olivetti
+  :ensure t
+  :custom
+  (olivetti-body-width 100)
+  :hook (org-mode . olivetti-mode))
 
 (provide 'init-org)
 ;;; init-org.el ends here
