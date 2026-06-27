@@ -87,6 +87,23 @@ Returns a list of submission plists, newest first.  Each has :id :verdict
                :from 1
                :count count))
 
+(defun +cf-fetch-submission (contest-id submission-id)
+  "Fetch a single submission's status from `contest.status'.
+CONTEST-ID is the contest number; SUBMISSION-ID is a string or number.
+Returns the matching submission plist (with :verdict :passedTestCount
+:timeConsumedMillis :memoryConsumedBytes), or nil if not found.  No auth
+needed — used by the verdict poller after the agent returns the id."
+  (let* ((result (+cf-api-get "contest.status"
+                              :contestId contest-id
+                              :from 1
+                              :count 100)))
+    (cl-find (if (stringp submission-id)
+                 (string-to-number submission-id)
+               submission-id)
+             result
+             :key (lambda (s) (plist-get s :id))
+             :test #'equal)))
+
 (defun +cf-find-problem-submission (handle contest-id since-time)
   "Find HANDLE's most recent submission for CONTEST-ID at/after SINCE-TIME.
 Returns the submission plist, or nil if none yet.  Used by the verdict poller:

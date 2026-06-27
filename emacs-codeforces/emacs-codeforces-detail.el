@@ -134,33 +134,25 @@ failed, a fallback note with a browser-open pointer is shown instead."
             "PARTIAL" "IDLENESS_LIMIT_EXCEEDED" "CHALLENGED"
             "SKIPPED" "REJECTED" "FAILED")))
 
-(defun +cf--poll-once (handle contest-id since-epoch)
-  "Poll once: find HANDLE's submission for CONTEST-ID at/after SINCE-EPOCH.
+(defun +cf--poll-once (contest-id submission-id)
+  "Poll once: fetch submission CONTEST-ID/SUBMISSION-ID verdict.
 Update the status section; stop when a terminal verdict or poll-timeout."
   (condition-case err
-      (let ((sub (+cf-find-problem-submission handle contest-id since-epoch)))
-        (cond
-         (sub
-          (let ((text (+cf--format-verdict sub))
-                (v (plist-get sub :verdict)))
-            (+cf--update-status text)
-            (when (or (+cf--terminal-verdict-p v)
-                      (> (- (float-time) +cf--poll-start) codeforces-poll-timeout))
-              (+cf--stop-poll)
-              (when (+cf--terminal-verdict-p v)
-                (message "Codeforces: %s" text)))))
-         (t
-          ;; No matching submission yet (user may still be submitting in browser).
-          (+cf--update-status "Waiting for submission to appear…")))
-        (when (> (- (float-time) +cf--poll-start) codeforces-poll-timeout)
+      (let* ((sub (+cf-fetch-submission contest-id submission-id))
+             (text (+cf--format-verdict sub))
+             (v (plist-get sub :verdict)))
+        (+cf--update-status text)
+        (when (or (+cf--terminal-verdict-p v)
+                  (> (- (float-time) +cf--poll-start) codeforces-poll-timeout))
           (+cf--stop-poll)
-          (+cf--update-status "Timed out waiting for the submission. Press C-c C-s to retry.")))
+          (when (+cf--terminal-verdict-p v)
+            (message "Codeforces: %s" text))))
     (error
      (message "Codeforces poll error: %s" (error-message-string err))
      (+cf--stop-poll))))
 
-(defun +cf--start-poll (handle contest-id since-epoch)
-  "Start polling HANDLE's submission for CONTEST-ID at/after SINCE-EPOCH.
+(defun +cf--start-poll (contest-id submission-id)
+  "Start polling submission CONTEST-ID/SUBMISSION-ID.
 Polls every `codeforces-poll-interval' seconds until a terminal verdict or
 `codeforces-poll-timeout' seconds elapse."
   (+cf--stop-poll)
@@ -168,7 +160,7 @@ Polls every `codeforces-poll-interval' seconds until a terminal verdict or
   (setq +cf--poll-timer
         (run-with-timer
          codeforces-poll-interval codeforces-poll-interval
-         #'+cf--poll-once handle contest-id since-epoch)))
+         #'+cf--poll-once contest-id submission-id)))
 
 (defun +cf--solution-file (problem)
   "Return the path to PROBLEM's solution file, or nil."
@@ -213,26 +205,40 @@ Polls every `codeforces-poll-interval' seconds until a terminal verdict or
   (+cf-open-statement-in-browser +cf--current-problem))
 
 (defun codeforces-submit ()
-  "Open the submit page in the browser and start polling the verdict.
-The submit itself happens in the browser (Cloudflare blocks direct Emacs
-POST); Emacs polls the public API for the resulting verdict."
+  "Submit the current problem's solution via the agent and poll the verdict.
+The Python agent (curl-cffi) POSTs the solution using the stored cookie;
+on success it returns the new submission id, which Emacs uses to poll the
+public API for a real-time verdict."
   (interactive)
   (unless +cf--current-problem
     (error "No problem in this buffer"))
   (let* ((problem +cf--current-problem)
-         (handle (+cf--handle)))
-    (unless handle
-      (error "Not logged in.  Run M-x codeforces-login to store your handle"))
-    (let ((sol (+cf--solution-file problem)))
-      (unless sol
-        (error "Run C-c C-c to start solving first")))
-    ;; Open the browser submit page (user pastes + submits there).
-    (+cf-submit-via-browser problem)
-    ;; Poll the public API for the verdict, starting now so we catch the
-    ;; new submission even if the user is slow in the browser.
-    (+cf--update-status "Submit page opened in browser. Polling for verdict…")
-    (let ((since-epoch (truncate (float-time))))
-      (+cf--start-poll handle (plist-get problem :contestId) since-epoch))))
+         (sol (+cf--solution-file problem)))
+    (unless sol
+      (error "Run C-c C-c to start solving first"))
+    (unless +cf--solution-language
+      (error "Language not set"))
+    (unless (+cf--handle)
+      (error "Not logged in.  Run M-x codeforces-login"))
+    (unless (file-exists-p sol)
+      (error "Solution file not found: %s" sol))
+    (+cf--update-status "Submitting via agent…")
+    (condition-case err
+        (let ((sub-id (+cf-agent-submit problem +cf--solution-language sol)))
+          (if (and sub-id (string-match-p "^[0-9]+$" sub-id))
+              (progn
+                (+cf--update-status (format "Submitted as %s. Polling…" sub-id))
+                (+cf--start-poll (plist-get problem :contestId) sub-id))
+            ;; Agent returned non-numeric (e.g. "OK" fallback) — can't poll by id.
+            (+cf--update-status
+             (format "Submitted (%s). Poll the website for the verdict."
+                     (or sub-id "unknown")))))
+      (error
+       (+cf--update-status (format "Submit failed: %s"
+                                   (error-message-string err)))
+       ;; Offer the browser as a fallback on agent failure.
+       (when (y-or-n-p "Open the submit page in the browser instead? ")
+         (+cf-submit-via-browser problem))))))
 
 ;;;###autoload
 (defun codeforces-open-problem (problem)
