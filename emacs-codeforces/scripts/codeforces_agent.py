@@ -22,6 +22,7 @@ import argparse
 import os
 import re
 import sys
+import time
 
 SITE = "https://codeforces.com"
 
@@ -298,8 +299,30 @@ def _parse_language_id(html, lang):
     return None
 
 
+def _submit_url(contest):
+    """Return the submit URL for CONTEST.
+
+    cf-tool routing: contest id < 100000 -> /contest/{id}/submit (works for
+    both live contests and finished-contest practice problems); >= 100000 is a
+    Gym contest -> /gym/{id}/submit."""
+    contest = int(contest)
+    section = "gym" if contest >= 100000 else "contest"
+    return "%s/%s/%s/submit" % (SITE, section, contest)
+
+
+def _submit_page_url(contest):
+    """Return the GET-able submit page (for csrf + language scraping)."""
+    return _submit_url(contest)
+
+
 def submit(contest, index, lang, source_file):
-    """Submit the solution; print the new submission id."""
+    """Submit the solution; print the new submission id.
+
+    Works for both problemset (practice) and contest problems: both route to
+    /contest/{contestId}/submit (or /gym/ for gym ids), since the contestId in
+    the problem object is its original contest.  The submission id is captured
+    via the public user.status API (matched by contest+index+time) rather than
+    scraping /my, to avoid misattribution under rapid resubmits."""
     cookie = _read_cookie()
     if not cookie:
         sys.stderr.write("Not logged in: no cookie file. Run codeforces-login.\n")
@@ -312,9 +335,13 @@ def submit(contest, index, lang, source_file):
         source = f.read()
 
     s = _session(cookie=cookie)
+    submit_page = _submit_page_url(contest)
+
+    # Record the submit time so we can match the new submission in user.status.
+    submit_at = int(time.time())
 
     # 1. GET the submit page for csrf + language id.
-    page = s.get("%s/problemset/submit" % SITE, timeout=30)
+    page = s.get(submit_page, timeout=30)
     if page.status_code != 200 or "Just a moment" in page.text:
         sys.stderr.write("Cloudflare blocked the submit page (HTTP %d).\n"
                          % page.status_code)
@@ -340,18 +367,16 @@ def submit(contest, index, lang, source_file):
         "source": source,
         "tabSize": "4",
     }
-    resp = s.post("%s/problemset/submit" % SITE, data=data, timeout=30)
+    resp = s.post(submit_page, data=data, timeout=30)
 
     # 3. Detect outcome.
     final_url = str(resp.url)
     if "/my" in final_url or "/status" in final_url:
-        # Success — fetch the newest submission id from the /my page.
-        sub_id = _extract_latest_submission_id(s, contest)
-        if sub_id:
-            sys.stdout.write(sub_id)
-            return
-        # Fallback: redirect happened but id not found; treat as success anyway.
-        sys.stdout.write("OK")
+        # Success — capture the submission id via the public API, matched to
+        # this exact problem and time window (more reliable than /my scraping).
+        handle = _handle_from_cookie_session()
+        sub_id = _capture_submission_id(handle, contest, index, submit_at)
+        sys.stdout.write(sub_id if sub_id else "OK")
         return
 
     # Failure: returned to the form with errors.
@@ -363,18 +388,44 @@ def submit(contest, index, lang, source_file):
     sys.exit(1)
 
 
-def _extract_latest_submission_id(session, contest):
-    """GET /contest/{id}/my and parse the newest submission id."""
-    r = session.get("%s/contest/%s/my" % (SITE, contest), timeout=30)
-    if r.status_code != 200:
+def _handle_from_cookie_session():
+    """Return the stored handle (read from the credentials file)."""
+    creds = os.path.join(_home_dir(), "credentials")
+    if not os.path.exists(creds):
         return None
-    # Submission ids appear as data-submission-id or in /submission/<id> links.
-    m = re.search(r'submission/(\d+)', r.text)
-    if m:
-        return m.group(1)
-    m = re.search(r'data-submission-id="(\d+)"', r.text)
-    if m:
-        return m.group(1)
+    with open(creds, "r", encoding="utf-8") as f:
+        for line in f:
+            if line.startswith("handle="):
+                return line.split("=", 1)[1].strip()
+    return None
+
+
+def _capture_submission_id(handle, contest, index, submit_at, tries=10, delay=1.5):
+    """Poll user.status to find the submission just made.
+
+    Matches the newest submission whose problem.contestId == CONTEST and
+    problem.index == INDEX and creationTimeSeconds >= submit_at.  Retries a few
+    times since the submission may take a moment to appear."""
+    if not handle:
+        return None
+    contest = int(contest)
+    index_u = index.upper()
+    for _ in range(tries):
+        url = "%s/api/user.status?handle=%s&from=1&count=10" % (SITE, handle)
+        try:
+            r = _session().get(url, timeout=15)
+            if r.status_code == 200:
+                data = r.json()
+                if data.get("status") == "OK":
+                    for sub in data.get("result", []):
+                        prob = sub.get("problem", {})
+                        if (prob.get("contestId") == contest
+                                and (prob.get("index") or "").upper() == index_u
+                                and sub.get("creationTimeSeconds", 0) >= submit_at):
+                            return str(sub.get("id"))
+        except Exception:
+            pass
+        time.sleep(delay)
     return None
 
 
