@@ -68,7 +68,7 @@ COOKIE is validated by fetching the login page; on success the home directory
 is created.  Interactively, prompts for the cookie (default: current kill)."
   (interactive
    (list (read-string "Codeforces session cookie (paste from browser): "
-                      (current-kill 0 t))))
+                      (ignore-errors (current-kill 0 t)))))
   (message "Validating Codeforces cookie...")
   (+cf--write-credentials cookie)
   (let* ((resp (+cf-http-get (concat +cf-site-base "enter")
