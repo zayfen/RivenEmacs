@@ -71,6 +71,38 @@ def _read_cookie():
 # statement: HTML -> Org
 # --------------------------------------------------------------------------
 
+# Globals set by fetch_statement() so _node_to_org can download images.
+_IMG_SESSION = None
+_IMG_DIR = None
+
+
+def _img_to_file_link(src):
+    """Download SRC (a Codeforces image URL) into _IMG_DIR and return an
+    Org file: link to the cached copy, so org-display-inline-images renders it.
+    Returns a raw [[src]] link (best-effort) if the cache/session is unset."""
+    if not src:
+        return ""
+    try:
+        import hashlib
+        # Stable filename derived from the URL (the path already contains a
+        # content hash on Codeforces' espresso CDN, so this is plenty unique).
+        ext = ".png" if ".png" in src else (".jpg" if ".jpg" in src else ".png")
+        fname = hashlib.md5(src.encode("utf-8")).hexdigest() + ext
+        dest = os.path.join(_IMG_DIR, fname) if _IMG_DIR else None
+        if dest and _IMG_SESSION and not os.path.exists(dest):
+            os.makedirs(_IMG_DIR, exist_ok=True)
+            resp = _IMG_SESSION.get(src, timeout=20)
+            if resp.status_code == 200:
+                with open(dest, "wb") as f:
+                    f.write(resp.content)
+        if dest and os.path.exists(dest):
+            return "[[file:%s]]" % dest
+    except Exception as e:
+        sys.stderr.write("image download failed for %s: %s\n" % (src, e))
+    # Fallback: raw link (may not render inline, but is not lost).
+    return "[[%s]]" % src
+
+
 def _node_to_org(node, math=False):
     """Recursively convert a BeautifulSoup node into Org text.
 
@@ -81,7 +113,10 @@ def _node_to_org(node, math=False):
     When MATH is True we are inside a Codeforces math construct (tex-span,
     sub/sup of a formula), so <i> variables are emitted as plain text and
     sub/sup as LaTeX _{} / ^{} — and the whole construct is wrapped in $...$
-    by the tex-span handler."""
+    by the tex-span handler.
+
+    Images are downloaded to the statement cache (via _IMG_SESSION/_IMG_DIR)
+    and emitted as [[file:...]] so Org can render them inline."""
     from bs4 import NavigableString, Tag
 
     if isinstance(node, NavigableString):
@@ -158,16 +193,14 @@ def _node_to_org(node, math=False):
         # Other spans: just unwrap.
         return children_text()
     if name == "img":
-        # Preserve the image as an Org link so org-display-inline-images can
-        # render it.  Codeforces serves figures from espresso.codeforces.com.
+        # Download the image into the statement cache and emit a [[file:...]]
+        # link so org-display-inline-images can render it (Org only inlines
+        # file:/attachment: links, not http URLs).  No forced newline: Org
+        # displays content-less image links inline within a line.
         src = node.get("src") or ""
-        alt = (node.get("alt") or "").strip()
         if not src:
             return ""
-        # Block images on their own line; inline symbols inline.
-        blockish = any(c in classes for c in ("tex-fragment", "tex-span"))
-        link = "[[%s][%s]]" % (src, alt if alt else src)
-        return (link + "\n\n") if not blockish else link
+        return _img_to_file_link(src)
     # Default: recurse (div, section, etc.)
     return children_text()
 
@@ -204,6 +237,7 @@ def _clean(text):
 
 def fetch_statement(contest, index):
     """Fetch problem {contest}/{index} and return Org text."""
+    global _IMG_SESSION, _IMG_DIR
     from bs4 import BeautifulSoup
 
     url = "%s/problemset/problem/%s/%s" % (SITE, contest, index)
@@ -220,6 +254,10 @@ def fetch_statement(contest, index):
     if not stmt:
         sys.stderr.write("Problem statement div not found on the page.\n")
         sys.exit(1)
+
+    # Set up the image cache so <img> tags download and link locally.
+    _IMG_SESSION = s
+    _IMG_DIR = os.path.join(_home_dir(), "cache", "img", "%s_%s" % (contest, index))
 
     org = _node_to_org(stmt)
     sys.stdout.write(_clean(org))
