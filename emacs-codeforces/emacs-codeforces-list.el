@@ -31,7 +31,7 @@
   "Join TAGS with \", \"."
   (mapconcat #'identity (or tags '("")) ", "))
 
-(defun +cf--problem->entry (p)
+(defun +cf--problem->-entry (p)
   "Convert PROBLEM plist to a tabulated-list entry [id name rating tags] . P."
   (list p
         (vector (+cf--problem-id p)
@@ -102,7 +102,7 @@
                                ("Name" 50 t)
                                ("Rating" 8 t)
                                ("Tags" 40 nil)]
-        tabulated-list-sort-key (cons "ID" . nil)
+        tabulated-list-sort-key (cons "ID" nil)
         tabulated-list-padding 1)
   (tabulated-list-init-header))
 
