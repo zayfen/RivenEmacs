@@ -71,15 +71,23 @@ def _read_cookie():
 # statement: HTML -> Org
 # --------------------------------------------------------------------------
 
-def _node_to_org(node):
+def _node_to_org(node, math=False):
     """Recursively convert a BeautifulSoup node into Org text.
 
     Handles the Codeforces statement structure: header (title/limits),
     section-title/property-title subsections, paragraphs, lists, <pre>
-    sample I/O, and inline math (rendered as LaTeX)."""
+    sample I/O, and inline math (rendered as LaTeX).
+
+    When MATH is True we are inside a Codeforces math construct (tex-span,
+    sub/sup of a formula), so <i> variables are emitted as plain text and
+    sub/sup as LaTeX _{} / ^{} — and the whole construct is wrapped in $...$
+    by the tex-span handler."""
     from bs4 import NavigableString, Tag
 
     if isinstance(node, NavigableString):
+        # In math mode, collapse the thin-space (\u2009) Codeforces inserts.
+        if math:
+            return str(node).replace("\u2009", " ")
         return str(node)
     if not isinstance(node, Tag):
         return ""
@@ -88,7 +96,11 @@ def _node_to_org(node):
     classes = node.get("class") or []
 
     def children_text():
-        return "".join(_node_to_org(c) for c in node.children)
+        return "".join(_node_to_org(c, math) for c in node.children)
+
+    def children_text_plain():
+        """Children rendered without any markup (for math variables)."""
+        return "".join(_node_to_org(c, True) for c in node.children)
 
     # --- Codeforces structural classes ---
     if "section-title" in classes:
@@ -128,14 +140,22 @@ def _node_to_org(node):
     if name in ("b", "strong"):
         return "*" + children_text() + "*"
     if name in ("i", "em"):
-        # Inline italic variable — keep as /italic/.
+        if math:
+            # Math variable: emit bare text (no /.../ ).
+            return children_text_plain()
+        # Prose emphasis: keep as /italic/.
         return "/" + children_text() + "/"
     if name == "sub":
-        return "_{" + children_text() + "}"
+        # Math subscript -> LaTeX _{...}; prose subscript -> Org _{...}.
+        return "_{" + children_text_plain() + "}"
     if name == "sup":
-        return "^{" + children_text() + "}"
+        return "^{" + children_text_plain() + "}"
     if name == "span":
-        # tex-span wraps math-ish inline; just unwrap.
+        # tex-span wraps a semantic-HTML formula (variables + sub/sup).  Render
+        # its content as LaTeX math wrapped in $...$ so Org previews it.
+        if "tex-span" in classes:
+            return "$" + children_text_plain().strip() + "$"
+        # Other spans: just unwrap.
         return children_text()
     if name == "img":
         # Preserve the image as an Org link so org-display-inline-images can
