@@ -56,19 +56,34 @@
   (riven/theme-warn-missing-nerd-font))
 
 ;; load theme and config
-;; (load-theme 'modus-vivendi t)
-;; (load-theme 'modus-operandi-tritanopia t)
-(load-theme 'modus-vivendi-tritanopia t)
-
-(setq modus-themes-italic-constructs t
-      modus-themes-bold-constructs t
-      modus-themes-mixed-fonts t
-      modus-themes-variable-pitch-ui t
-      modus-themes-custom-auto-reload t
-      modus-themes-headings
-      '((underline-link border)
-        (underline-link-visited border)
-        (underline-link-symbolic border)))
+;; Replaced modus-themes with ef-themes (by the same author, Protesilaos).
+;; ef-themes are more vivid/colorful and build on top of modus under the hood,
+;; with best-in-class org-mode faces.
+(use-package ef-themes
+  :ensure t
+  :demand t                                  ; load now — a theme must be active at startup
+  :bind ("<f5>" . ef-themes-toggle)          ; quick light/dark switch
+  :config
+  ;; Set theme user options BEFORE loading the theme. These are defcustoms with
+  ;; custom :set setters, so use `customize-set-variable' (a plain `setq' or
+  ;; `use-package' :custom would not run the setter and the value would be
+  ;; silently ignored — verified).
+  ;; Light/dark pair cycled by `ef-themes-toggle' (<f5>).
+  (customize-set-variable 'ef-themes-to-toggle '(ef-cyprus ef-elea-dark))
+  ;; Heading styling: rainbow per-level + weight gradient, no manual foreground
+  ;; colors (let the theme decide, so it stays consistent on theme switch).
+  ;; Keyed by level (0=document title, 1..6=headings, t=catch-all).
+  (customize-set-variable
+   'ef-themes-headings
+   '((0 . (variable-pitch light 1.4))
+     (1 . (rainbow background bold 1.2))
+     (2 . (rainbow semibold 1.15))
+     (3 . (rainbow semibold 1.1))
+     (t . (rainbow semibold))))
+  ;; Default to the light variant on startup.
+  ;; NOTE: `ef-themes-select' is interactive-only (takes no args); to load a
+  ;; specific theme programmatically, use `load-theme' directly.
+  (load-theme 'ef-cyprus t))
 
 
 (use-package doom-modeline
