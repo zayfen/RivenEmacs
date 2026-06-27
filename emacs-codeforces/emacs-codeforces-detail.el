@@ -15,6 +15,7 @@
 (require 'emacs-codeforces-scrape)
 (require 'emacs-codeforces-workspace)
 (require 'emacs-codeforces-auth)
+(require 'emacs-codeforces-agent)
 
 ;; Declared as `defcustom' in emacs-codeforces.el; defvar here so this module
 ;; can be loaded and tested standalone.
@@ -92,20 +93,22 @@
      (t (format "%s ❌  (passed %s tests)"
                 v (or passed 0))))))
 
-(defun +cf--write-buffer (problem)
-  "Render PROBLEM's metadata into the current Org buffer.
-The full statement is Cloudflare-blocked for direct fetch, so this buffer
-shows the API metadata (name, tags, limits, URL) plus a pointer to open the
-statement in the browser (key `o')."
+(defun +cf--write-buffer (problem &optional statement-org)
+  "Render PROBLEM into the current Org buffer.
+STATEMENT-ORG is the full statement as Org text (from the agent); if nil or
+failed, a fallback note with a browser-open pointer is shown instead."
   (let ((inhibit-read-only t))
     (erase-buffer)
     (insert (+cf--render-header problem))
     (insert (+cf--render-tags problem))
     (insert "** Statement\n")
-    (insert "The full statement renders in the browser (Cloudflare blocks direct fetch).\n")
-    (insert "Press =o= to open it: ")
-    (insert (+cf--problem-url problem))
-    (insert "\n\n")
+    (if (and statement-org (not (string-empty-p statement-org)))
+        (insert statement-org)
+      (insert "Could not fetch the full statement (network/agent error).\n")
+      (insert "Press =o= to open it in the browser: ")
+      (insert (+cf--problem-url problem))
+      (insert "\n"))
+    (insert "\n")
     (insert (+cf--render-status nil))))
 
 (defun +cf--update-status (text)
@@ -190,8 +193,7 @@ Polls every `codeforces-poll-interval' seconds until a terminal verdict or
     (setq +cf--solution-language (+cf--choose-language)))
   (let* ((problem +cf--current-problem)
          (sol (+cf-init-solution problem +cf--solution-language)))
-    ;; Re-render to reflect the "solving" marker.
-    (+cf--write-buffer problem)
+    ;; Note the chosen language in the echo area; the statement stays in place.
     (find-file-other-window sol)
     (message "Solving %s in %s" (+cf--problem-id problem) +cf--solution-language)))
 
@@ -234,7 +236,9 @@ POST); Emacs polls the public API for the resulting verdict."
 
 ;;;###autoload
 (defun codeforces-open-problem (problem)
-  "Open PROBLEM (plist) in an Org detail buffer on the right."
+  "Open PROBLEM (plist) in an Org detail buffer on the right.
+Fetches the full statement via the Python agent; on agent failure, shows a
+fallback note with a browser-open pointer (key `o')."
   (interactive)
   (let ((buf (get-buffer-create (+cf--buffer-name problem))))
     (with-current-buffer buf
@@ -246,7 +250,14 @@ POST); Emacs polls the public API for the resulting verdict."
         (local-set-key (kbd "C-c C-s") #'codeforces-submit)
         (local-set-key (kbd "o") #'codeforces-open-statement))
       (setq +cf--current-problem problem)
-      (+cf--write-buffer problem))
+      (message "Fetching statement for %s..." (+cf--problem-id problem))
+      (let ((statement (condition-case err
+                           (+cf-agent-fetch-statement problem)
+                         (error
+                          (message "Statement fetch failed: %s"
+                                   (error-message-string err))
+                          nil))))
+        (+cf--write-buffer problem statement)))
     (display-buffer buf
                     '((display-buffer-in-direction)
                       (direction . right)

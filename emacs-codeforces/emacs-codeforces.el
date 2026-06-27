@@ -27,6 +27,7 @@
 (require 'emacs-codeforces-workspace)
 (require 'emacs-codeforces-list)
 (require 'emacs-codeforces-detail)
+(require 'emacs-codeforces-agent)
 
 (defgroup codeforces nil
   "Codeforces workflow client."
