@@ -132,12 +132,14 @@ that directory."
  warning-frame-parameters nil           ;To stop Emacs from displaying warnings in a separate frame and instead show them in the echo area (minibuffer)
  )
 
-;; Emacs 31+ may warn about missing lexical-binding cookie in third-party
+;; Emacs 31 may warn about missing lexical-binding cookie in third-party
 ;; ELPA files. Keep startup clean by suppressing this specific warning type.
-(when (boundp 'warning-inhibit-types)
-  (add-to-list 'warning-inhibit-types '(files missing-lexbind-cookie)))
-(when (boundp 'warning-suppress-types)
-  (add-to-list 'warning-suppress-types '(files missing-lexbind-cookie)))
+;; `warning-inhibit-types' and `warning-suppress-types' are pre-dumped in
+;; loaddefs and always bound here; `warning-suppress-log-types' is only
+;; defined inside `warnings.el', which is autoloaded and not yet loaded at
+;; this point, so it must stay guarded to avoid a void-variable error.
+(add-to-list 'warning-inhibit-types '(files missing-lexbind-cookie))
+(add-to-list 'warning-suppress-types '(files missing-lexbind-cookie))
 (when (boundp 'warning-suppress-log-types)
   (add-to-list 'warning-suppress-log-types '(files missing-lexbind-cookie)))
 
@@ -203,8 +205,7 @@ that directory."
 
 (add-hook 'compilation-mode-hook 'visual-line-mode)
 
-(when (fboundp 'minibuffer-depth-indicate-mode)
-  (minibuffer-depth-indicate-mode))
+(minibuffer-depth-indicate-mode)
 
 (recentf-mode 1)
 ;; (desktop-save-mode 1)

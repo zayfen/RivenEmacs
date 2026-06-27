@@ -1,6 +1,13 @@
 ;; -*- coding: utf-8; lexical-binding: t -*-
 ;;; init-treesit.el --- Config for treesit
 
+;;; Commentary:
+;; Emacs 31 provides native tree-sitter major-mode remapping via
+;; `treesit-enabled-modes' and `treesit-major-mode-remap-alist', which
+;; replaces the former `treesit-auto' package and the hand-maintained
+;; `major-mode-remap-alist'. We therefore only keep the grammar source
+;; list, an install helper, and the per-mode parser eager-creation.
+
 ;;; Require
 (require 'treesit)
 
@@ -41,48 +48,54 @@
         (angular . ("https://github.com/dlvandenberg/tree-sitter-angular"))
         (swift . ("https://github.com/alex-pinkus/tree-sitter-swift"))))
 
-(use-package treesit-auto
-  :ensure t
-  :custom
-  (treesit-auto-install 'prompt)
-  ;; Only manage these languages
-  (treesit-auto-langs '(bash c cpp cmake css elisp go html javascript json make ocaml python php typescript tsx ruby rust sql vue yaml toml zig haskell kotlin java lua dockerfile angular))
-  :config
-  (global-treesit-auto-mode))
+;; Emacs 31 native tree-sitter activation. Setting `treesit-enabled-modes'
+;; to t populates `major-mode-remap-alist' from the built-in
+;; `treesit-major-mode-remap-alist' for every available ts-mode, replacing
+;; both the `treesit-auto' package and the former hand-written remap alist.
+;;
+;; NOTE: `treesit-enabled-modes' uses a custom `:set' setter, so it must be
+;; assigned with `customize-set-variable' (or `setopt') — a plain `setq'
+;; sets the value but never runs the remap population.
+(customize-set-variable 'treesit-enabled-modes t)
+
+;; `treesit-auto-install-grammar' (NEWS.31) auto-installs grammars when a
+;; ts-mode turns on without its grammar.
+(setq treesit-auto-install-grammar 'ask)
+
+(defconst riven/treesit-grammar-langs
+  '(bash c cpp cmake css elisp go html javascript json make ocaml
+    python php typescript tsx ruby rust sql vue yaml toml zig haskell
+    kotlin java lua dockerfile elixir heex angular)
+  "Languages whose tree-sitter grammars RivenEmacs manages.")
 
 (defun install-treesit-language-grammars ()
-  "Install tree-sitter language grammars."
+  "Install tree-sitter language grammars.
+Install every grammar in `riven/treesit-grammar-langs' that is not yet
+available. Safe to re-run."
   (interactive)
-  (dolist (lang '(bash c cpp cmake css elisp go html javascript json make ocaml python php typescript tsx ruby rust sql vue yaml toml zig haskell kotlin java lua dockerfile angular))
+  (dolist (lang riven/treesit-grammar-langs)
     (unless (treesit-language-available-p lang)
       (condition-case err
           (treesit-install-language-grammar lang)
         (error (message "Failed to install tree-sitter grammar for %s: %s" lang err))))))
 
-(defun auto-install-treesit-grammars ()
-  "Auto-install tree-sitter grammars for better syntax highlighting."
-  (interactive)
-  (dolist (lang '(bash c cpp cmake css elisp go html javascript json make ocaml python php typescript tsx ruby rust sql vue yaml toml zig haskell kotlin java lua dockerfile elixir heex angular))
-    (unless (treesit-language-available-p lang)
-      (condition-case err
-          (treesit-install-language-grammar lang)
-        (error (message "Failed to install tree-sitter grammar for %s: %s" lang err))))))
+(defalias 'auto-install-treesit-grammars #'install-treesit-language-grammars
+  "Backwards-compatible alias for `install-treesit-language-grammars'.")
 
 (defun treesit-needs-install-p ()
-  "Check if any tree-sitter grammars need to be installed."
-  (let ((langs-to-check '(bash c cpp cmake css elisp go html javascript json make ocaml python php typescript tsx ruby rust sql vue yaml toml zig haskell kotlin java lua dockerfile elixir heex angular)))
-    (cl-some (lambda (lang) (not (treesit-language-available-p lang))) langs-to-check)))
+  "Return non-nil if any managed tree-sitter grammar is not yet installed."
+  (cl-some (lambda (lang) (not (treesit-language-available-p lang)))
+           riven/treesit-grammar-langs))
 
-;; Optional: Install tree-sitter grammars on first startup
-;; You can manually run M-x auto-install-treesit-grammars to install
-;; Or set rivenEmacs-auto-install-treesit to t in customize
+;; Optional: Install tree-sitter grammars on first startup.
+;; You can manually run M-x install-treesit-language-grammars to install,
+;; or set rivenEmacs-auto-install-treesit to t in customize.
 (when rivenEmacs-auto-install-treesit
   (add-hook 'emacs-startup-hook
             (lambda ()
               (when (treesit-needs-install-p)
-                (auto-install-treesit-grammars)))))
+                (install-treesit-language-grammars)))))
 
-;; Install essential grammars only on demand
 (defun install-essential-treesit-grammars ()
   "Install essential tree-sitter grammars for common languages."
   (interactive)
@@ -91,34 +104,6 @@
       (condition-case err
           (treesit-install-language-grammar lang)
         (error (message "Failed to install tree-sitter grammar for %s: %s" lang err))))))
-
-(setq major-mode-remap-alist
-      '((c-mode . c-ts-mode)
-        (c++-mode . c++-ts-mode)
-        (css-mode . css-ts-mode)
-        (java-mode . java-ts-mode)
-        (javascript-mode . js-ts-mode)
-        (js-mode . js-ts-mode)
-        (js-json-mode . json-ts-mode)
-        (python-mode . python-ts-mode)
-        (sh-mode . bash-ts-mode)
-        (typescript-mode . typescript-ts-mode)
-        (php-mode . php-ts-mode)
-        (html-mode . html-ts-mode)
-        (yaml-mode . yaml-ts-mode)
-        (dockerfile-mode . dockerfile-ts-mode)
-        (toml-mode . toml-ts-mode)
-        (rust-mode . rust-ts-mode)
-        (ruby-mode . ruby-ts-mode)
-        (cmake-mode . cmake-ts-mode)
-        (haskell-mode . haskell-ts-mode)
-        (kotlin-mode . kotlin-ts-mode)
-        (lua-mode . lua-ts-mode)
-        (make-mode . makefile-ts-mode)
-        (conf-toml-mode . toml-ts-mode)
-        (elixir-mode . elixir-ts-mode)
-        (heex-mode . heex-ts-mode)
-        (angular-mode . angular-ts-mode)))
 
 (defcustom riven/treesit-auto-create-modes
   '(ielm-mode json-mode go-mode java-mode java-ts-mode
