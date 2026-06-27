@@ -155,7 +155,10 @@ failed, a fallback note with a browser-open pointer is shown instead."
       (insert (+cf--problem-url problem))
       (insert "\n"))
     (insert "\n")
-    (insert (+cf--render-status nil))))
+    (insert (+cf--render-status nil))
+    ;; Render statement images inline (Codeforces figures become [[url][url]]).
+    (when (fboundp 'org-display-inline-images)
+      (org-display-inline-images))))
 
 (defun +cf--update-status (text)
   "Replace the Submission Status section in the current buffer with TEXT."

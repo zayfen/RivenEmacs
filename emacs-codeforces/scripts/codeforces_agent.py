@@ -137,6 +137,17 @@ def _node_to_org(node):
     if name == "span":
         # tex-span wraps math-ish inline; just unwrap.
         return children_text()
+    if name == "img":
+        # Preserve the image as an Org link so org-display-inline-images can
+        # render it.  Codeforces serves figures from espresso.codeforces.com.
+        src = node.get("src") or ""
+        alt = (node.get("alt") or "").strip()
+        if not src:
+            return ""
+        # Block images on their own line; inline symbols inline.
+        blockish = any(c in classes for c in ("tex-fragment", "tex-span"))
+        link = "[[%s][%s]]" % (src, alt if alt else src)
+        return (link + "\n\n") if not blockish else link
     # Default: recurse (div, section, etc.)
     return children_text()
 
