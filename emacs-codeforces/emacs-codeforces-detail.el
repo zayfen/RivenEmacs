@@ -25,8 +25,28 @@
     (define-key map (kbd "g") #'codeforces-refresh-statement)
     (define-key map (kbd "o") #'codeforces-open-statement)
     (define-key map (kbd "p") #'codeforces-poll-latest)
+    (define-key map (kbd "?") #'codeforces-problem-help)
     map)
   "Keymap for `codeforces-problem-mode'.")
+
+(defconst codeforces-problem-mode-bindings
+  '((?q . "Close the buffer")
+    (?a . "Accept the problem (start solving)")
+    (?s . "Submit the solution and poll the verdict")
+    (?g . "Re-fetch the statement from the site")
+    (?o . "Open the problem page in the browser")
+    (?p . "Poll the latest submission status"))
+  "Alist of (key-char . description) shown by `codeforces-problem-help'.")
+
+(defun codeforces-problem-help ()
+  "Show the key bindings for `codeforces-problem-mode' in the echo area."
+  (interactive)
+  (message
+   "%s"
+   (mapconcat
+    (lambda (cell)
+      (format "%c  %s" (car cell) (cdr cell)))
+    codeforces-problem-mode-bindings "    ")))
 
 ;;;###autoload
 (define-derived-mode codeforces-problem-mode org-mode "CF Problem"
@@ -39,7 +59,8 @@ workflow keys:
 - `s' submit the current solution and poll the verdict
 - `g' re-fetch the statement from the site
 - `o' open the problem page in the browser
-- `p' poll the latest submission status for this problem")
+- `p' poll the latest submission status for this problem
+- `?' show these key bindings")
 (set-keymap-parent codeforces-problem-mode-map org-mode-map)
 
 ;; Declared as `defcustom' in emacs-codeforces.el; defvar here so this module
