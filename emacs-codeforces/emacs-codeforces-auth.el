@@ -54,8 +54,8 @@ We detect the Logout link that only appears when authenticated."
   (+cf--ensure-home-dir)
   (let ((f (+cf--credentials-file)))
     (with-temp-file f
-      (insert cookie)
-      (set-file-modes f #o600))))
+      (insert cookie))
+    (set-file-modes f #o600)))
 
 (defun codeforces-logged-in-p ()
   "Return non-nil if a credential file exists (does not validate freshness)."
