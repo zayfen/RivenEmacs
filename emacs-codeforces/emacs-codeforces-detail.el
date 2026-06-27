@@ -14,6 +14,7 @@
 (require 'emacs-codeforces-api)
 (require 'emacs-codeforces-scrape)
 (require 'emacs-codeforces-workspace)
+(require 'emacs-codeforces-auth)
 
 ;; Declared as `defcustom' in emacs-codeforces.el; defvar here so this module
 ;; can be loaded and tested standalone.
@@ -82,23 +83,28 @@
         (mem (plist-get sub :memoryConsumedBytes)))
     (cond
      ((null v) "Queued / compiling…")
-     ((eq v 'TESTING)
+     ((equal v "TESTING")
       (format "Running… passed %s tests." (or passed 0)))
-     ((eq v 'OK)
+     ((equal v "OK")
       (format "OK ✅  (%sms, %sMB)"
               (or time 0)
               (/ (or mem 0) 1048576)))
      (t (format "%s ❌  (passed %s tests)"
                 v (or passed 0))))))
 
-(defun +cf--write-buffer (problem body)
-  "Render PROBLEM with BODY (the Org statement) into the current buffer."
+(defun +cf--write-buffer (problem)
+  "Render PROBLEM's metadata into the current Org buffer.
+The full statement is Cloudflare-blocked for direct fetch, so this buffer
+shows the API metadata (name, tags, limits, URL) plus a pointer to open the
+statement in the browser (key `o')."
   (let ((inhibit-read-only t))
     (erase-buffer)
     (insert (+cf--render-header problem))
     (insert (+cf--render-tags problem))
     (insert "** Statement\n")
-    (insert (or body "(could not fetch statement)"))
+    (insert "The full statement renders in the browser (Cloudflare blocks direct fetch).\n")
+    (insert "Press =o= to open it: ")
+    (insert (+cf--problem-url problem))
     (insert "\n\n")
     (insert (+cf--render-status nil))))
 
@@ -119,35 +125,47 @@
 
 (defun +cf--terminal-verdict-p (verdict)
   "Return non-nil if VERDICT is terminal."
-  (memq verdict '(OK WRONG_ANSWER TIME_LIMIT_EXCEEDED
-                  MEMORY_LIMIT_EXCEEDED RUNTIME_ERROR COMPILATION_ERROR
-                  PARTIAL IDLENESS_LIMIT_EXCEEDED CHALLENGED
-                  SKIPPED REJECTED FAILED)))
+  (member (and verdict (if (symbolp verdict) (symbol-name verdict) verdict))
+          '("OK" "WRONG_ANSWER" "TIME_LIMIT_EXCEEDED"
+            "MEMORY_LIMIT_EXCEEDED" "RUNTIME_ERROR" "COMPILATION_ERROR"
+            "PARTIAL" "IDLENESS_LIMIT_EXCEEDED" "CHALLENGED"
+            "SKIPPED" "REJECTED" "FAILED")))
 
-(defun +cf--poll-once (contest-id submission-id)
-  "Poll once and update the status section; stop when terminal or timed out."
+(defun +cf--poll-once (handle contest-id since-epoch)
+  "Poll once: find HANDLE's submission for CONTEST-ID at/after SINCE-EPOCH.
+Update the status section; stop when a terminal verdict or poll-timeout."
   (condition-case err
-      (let* ((sub (+cf-fetch-submission contest-id submission-id))
-             (text (+cf--format-verdict sub))
-             (v (plist-get sub :verdict)))
-        (+cf--update-status text)
-        (when (or (+cf--terminal-verdict-p v)
-                  (> (- (float-time) +cf--poll-start) codeforces-poll-timeout))
+      (let ((sub (+cf-find-problem-submission handle contest-id since-epoch)))
+        (cond
+         (sub
+          (let ((text (+cf--format-verdict sub))
+                (v (plist-get sub :verdict)))
+            (+cf--update-status text)
+            (when (or (+cf--terminal-verdict-p v)
+                      (> (- (float-time) +cf--poll-start) codeforces-poll-timeout))
+              (+cf--stop-poll)
+              (when (+cf--terminal-verdict-p v)
+                (message "Codeforces: %s" text)))))
+         (t
+          ;; No matching submission yet (user may still be submitting in browser).
+          (+cf--update-status "Waiting for submission to appear…")))
+        (when (> (- (float-time) +cf--poll-start) codeforces-poll-timeout)
           (+cf--stop-poll)
-          (when (+cf--terminal-verdict-p v)
-            (message "Codeforces: %s" text))))
+          (+cf--update-status "Timed out waiting for the submission. Press C-c C-s to retry.")))
     (error
      (message "Codeforces poll error: %s" (error-message-string err))
      (+cf--stop-poll))))
 
-(defun +cf--start-poll (contest-id submission-id)
-  "Start polling submission status every `codeforces-poll-interval' seconds."
+(defun +cf--start-poll (handle contest-id since-epoch)
+  "Start polling HANDLE's submission for CONTEST-ID at/after SINCE-EPOCH.
+Polls every `codeforces-poll-interval' seconds until a terminal verdict or
+`codeforces-poll-timeout' seconds elapse."
   (+cf--stop-poll)
   (setq +cf--poll-start (float-time))
   (setq +cf--poll-timer
         (run-with-timer
          codeforces-poll-interval codeforces-poll-interval
-         #'+cf--poll-once contest-id submission-id)))
+         #'+cf--poll-once handle contest-id since-epoch)))
 
 (defun +cf--solution-file (problem)
   "Return the path to PROBLEM's solution file, or nil."
@@ -173,10 +191,7 @@
   (let* ((problem +cf--current-problem)
          (sol (+cf-init-solution problem +cf--solution-language)))
     ;; Re-render to reflect the "solving" marker.
-    (condition-case nil
-        (+cf--write-buffer problem (+cf-fetch-problem-org problem))
-      (error
-       (message "Could not refresh statement (network); keeping buffer.")))
+    (+cf--write-buffer problem)
     (find-file-other-window sol)
     (message "Solving %s in %s" (+cf--problem-id problem) +cf--solution-language)))
 
@@ -188,34 +203,34 @@
         (buffer-string))
     (error "Solution file not found: %s" path)))
 
+(defun codeforces-open-statement ()
+  "Open the current problem's full statement in the browser."
+  (interactive)
+  (unless +cf--current-problem
+    (error "No problem in this buffer"))
+  (+cf-open-statement-in-browser +cf--current-problem))
+
 (defun codeforces-submit ()
-  "Submit the current problem's solution and start polling.
-Falls back to the browser on Cloudflare."
+  "Open the submit page in the browser and start polling the verdict.
+The submit itself happens in the browser (Cloudflare blocks direct Emacs
+POST); Emacs polls the public API for the resulting verdict."
   (interactive)
   (unless +cf--current-problem
     (error "No problem in this buffer"))
   (let* ((problem +cf--current-problem)
-         (sol (+cf--solution-file problem)))
-    (unless sol
-      (error "Run C-c C-c to start solving first"))
-    (unless +cf--solution-language
-      (error "Language not set"))
-    (let ((source (+cf--read-source sol)))
-      (+cf--update-status "Submitting…")
-      (condition-case err
-          (let ((result (+cf-submit-via-http problem source +cf--solution-language)))
-            (cond
-             ((eq result 'cloudflare)
-              (+cf-submit-via-browser problem +cf--solution-language)
-              (+cf--update-status
-               "Submit blocked by Cloudflare — complete in browser. Polling skipped (no id)."))
-             (t
-              (+cf--update-status
-               (format "Submitted as %s. Polling…" result))
-              (+cf--start-poll (plist-get problem :contestId) result))))
-        (error
-         (+cf--update-status (format "Submit failed: %s"
-                                     (error-message-string err))))))))
+         (handle (+cf--handle)))
+    (unless handle
+      (error "Not logged in.  Run M-x codeforces-login to store your handle"))
+    (let ((sol (+cf--solution-file problem)))
+      (unless sol
+        (error "Run C-c C-c to start solving first")))
+    ;; Open the browser submit page (user pastes + submits there).
+    (+cf-submit-via-browser problem)
+    ;; Poll the public API for the verdict, starting now so we catch the
+    ;; new submission even if the user is slow in the browser.
+    (+cf--update-status "Submit page opened in browser. Polling for verdict…")
+    (let ((since-epoch (truncate (float-time))))
+      (+cf--start-poll handle (plist-get problem :contestId) since-epoch))))
 
 ;;;###autoload
 (defun codeforces-open-problem (problem)
@@ -228,12 +243,10 @@ Falls back to the browser on Cloudflare."
         (setq buffer-read-only t)
         (use-local-map (copy-keymap org-mode-map))
         (local-set-key (kbd "C-c C-c") #'codeforces-start-solving)
-        (local-set-key (kbd "C-c C-s") #'codeforces-submit))
+        (local-set-key (kbd "C-c C-s") #'codeforces-submit)
+        (local-set-key (kbd "o") #'codeforces-open-statement))
       (setq +cf--current-problem problem)
-      (let ((org (condition-case nil
-                     (+cf-fetch-problem-org problem)
-                   (error "(could not fetch statement — check login/network)"))))
-        (+cf--write-buffer problem org)))
+      (+cf--write-buffer problem))
     (display-buffer buf
                     '((display-buffer-in-direction)
                       (direction . right)

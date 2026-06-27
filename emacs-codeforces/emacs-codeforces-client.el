@@ -115,7 +115,8 @@ API status message on failure."
          (resp (+cf-http-get url))
          (status (car resp))
          (json (+cf--parse-json-body (cdr resp))))
-    (if (and (= status 200) (eq (plist-get json :status) 'OK))
+    (if (and (= status 200)
+             (equal (plist-get json :status) "OK"))
         (plist-get json :result)
       (error "Codeforces API %s failed: %s" method
              (or (plist-get json :comment) (cdr resp))))))

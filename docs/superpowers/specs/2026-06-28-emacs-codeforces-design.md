@@ -27,29 +27,49 @@ A single library, loaded with `(require 'emacs-codeforces)`, that lets a user:
 
 ## Background & Key Constraints
 
-The Codeforces surface splits cleanly into two halves, and the architecture
-reflects this split:
+> **Revision 2026-06-28 (after live testing):** Codeforces now sits behind a
+> site-wide Cloudflare "Just a moment..." challenge. **Any** non-browser HTTP
+> client (`curl`, Emacs `url.el`) hitting the *website* (`/enter`, statement
+> pages, submit form) returns HTTP 403 + a Cloudflare challenge page — not the
+> real page. Only the **public JSON API** (`codeforces.com/api/...`) is
+> reachable. This forced a design pivot: every website-only operation (login
+> validation, statement scraping, submit) is delegated to the user's browser
+> via `browse-url`; everything Emacs renders itself comes from the public API.
 
-| Operation | Public JSON API (`codeforces.com/api/...`) | Website HTML (needs session cookie) |
+The operations split like this:
+
+| Operation | Public JSON API (`codeforces.com/api/...`) | Website HTML (needs cookie) |
 |---|---|---|
 | Problem list + tags + rating | ✅ `problemset.problems` (supports `tags=` filter) | — |
-| Full problem statement | ❌ none | ✅ scrape `/problemset/problem/{cid}/{idx}` |
-| Submit code | ❌ none | ⚠️ form POST, **Cloudflare-gated in 2026** |
-| Submission status / verdict | ✅ `contest.status` / `user.status` | — |
-| Login | ❌ no login API (hCaptcha) | ⚠️ `POST /enter` blocked by hCaptcha |
+| Full problem statement | ❌ none | ⚠️ Cloudflare-blocked → open in browser |
+| Submit code | ❌ none | ⚠️ Cloudflare-blocked → open in browser |
+| Submission status / verdict | ✅ `user.status` / `contest.status` (**no auth needed** for public users) | — |
+| Login | ❌ none | ⚠️ Cloudflare-blocked → store cookie only, no validation |
 
 Two load-bearing realities:
 
-1. **No programmatic login.** The `/enter` page has hCaptcha. Login is done by
-   the user copying a browser session cookie into the library (same approach as
-   `cf-tool` and `leetcode.el`).
-2. **Cloudflare on submit (2026).** Codeforces added Cloudflare + AES challenge
-   protection that broke legacy direct-HTTP submit (`cf-tool` now ships a
-   "Browser Mode"). Direct Emacs HTTP POST of a solution may be challenged.
-   Strategy: attempt HTTP POST, detect the challenge, fall back to opening the
-   pre-filled submit page in the user's browser. The status poll (the
-   "real-time result" half of requirement 5) goes through the public API and is
-   **not** affected by Cloudflare, so requirement 5's visible outcome is reliable.
+1. **No programmatic login, no login validation.** The `/enter` page has
+   hCaptcha *and* is now Cloudflare-gated. `codeforces-login` therefore only
+   **stores** the user's session cookie + handle (for the `user.status` poll)
+   without trying to validate it. The cookie is consumed by the browser on
+   submit (the user is already logged in there).
+2. **`user.status` needs no `apiSig`.** Confirmed live: `user.status?handle=X`
+   returns any user's submissions without API keys. Polling our own verdicts is
+   just "store handle at login, poll `user.status` for recent submissions,
+   match by problem/contestId + time."
+
+### What the Cloudflare reality changes vs. the original spec
+
+- **Login** — was "validate via GET /enter detecting Logout link"; now "store
+  cookie + handle, no network call."
+- **Statement** — was "scrape HTML → Org in a buffer"; now "render the API
+  metadata (name, tags, time/memory limits, URL) in Org; the full statement is
+  one key (`o`) away via `browse-url`."
+- **Submit** — was "HTTP POST first, browser fallback on Cloudflare"; now
+  "**always** `browse-url` the submit page" (the HTTP POST path was deleted —
+  it always 403s). The status poll is unchanged and reliable.
+- **Status poll** — was "`contest.status?submissionId`"; now
+  "`user.status?handle=X&from=1&count=5` matched by problem."
 
 ### Reference implementations consulted
 
@@ -129,12 +149,11 @@ All records are plists, consistent across the library.
 
 ```
 ~/.emacs-codeforces/
-├── credentials                  # login state: cookie + handle (chmod 600)
+├── credentials                  # login state: handle + cookie (chmod 600)
 ├── cache/
 │   └── problems.json            # local cache of problemset.problems (+ timestamp)
 └── workspace/
     └── {contestId}_{index}/     # one dir per problem, e.g. 1234_A/
-        ├── problem.org          # statement (HTML→Org, same renderer as detail)
         └── solution.rs          # source (initialized from language template)
 ```
 
@@ -142,29 +161,32 @@ All records are plists, consistent across the library.
 > library name is `emacs-codeforces`, so the directory is `.emacs-codeforces`
 > for consistency. This is the agreed name.
 
-## Auth Flow (requirement 1) — session-cookie injection
+## Auth Flow (requirement 1) — store handle + cookie, no validation
 
-Because `/enter` has hCaptcha, no programmatic login is attempted.
+`/enter` is hCaptcha'd *and* Cloudflare-gated, so no validation is attempted.
+The cookie itself is consumed by the user's browser on submit (the user is
+already logged in there). What Emacs needs locally is the **handle** (for
+`user.status` polling) plus the cookie string (stored for completeness / future
+use), nothing more.
 
 1. `M-x codeforces-login`:
-   - Prompts in minibuffer to paste a session cookie copied from the browser
-     (instructions tell the user where to copy from), defaulting to the
-     clipboard contents.
-   - Writes the cookie string to `~/.emacs-codeforces/credentials` with
-     `set-file-modes` 0600.
-2. **Validate**: with the injected cookie, `GET https://codeforces.com/enter`.
-     The page shows "Logout" when authenticated, the login form when not.
-     Detect "Logout" ⇒ valid.
-3. On valid: create `~/.emacs-codeforces/` (requirement 1's "create directory on
-     successful login"), echo the handle.
-4. On invalid: error and prompt to re-supply the cookie. All network ops wrapped
-     in `condition-case`.
+   - Prompts for the Codeforces **handle** (e.g. `tourist`).
+   - Prompts for the session **cookie** (no default; user pastes from browser).
+   - Writes both to `~/.emacs-codeforces/credentials` as two lines
+     (`handle=...\ncookie=...`), `set-file-modes` 0600.
+2. Creates `~/.emacs-codeforces/` (cache + workspace subdirs) — requirement 1's
+   "create directory on successful login."
+3. That's it — no network call, no validation. Correctness is established the
+   first time the user browses problems (public API works regardless) or polls
+   a submission (which only needs the handle).
 
-**Credential storage**: `credentials` holds `handle` and the full `Cookie:`
-header value (e.g. `JSESSIONID=...; BMH...; ...`). `emacs-codeforces-client.el`
-loads this into the `Cookie` header of every website request. If a scrape later
-gets the login form instead of expected content, the library prompts the user to
-re-login.
+**Why no validation?** Cloudflare returns 403 to all non-browser clients on the
+website, so any `/enter`-based check would always report "invalid" regardless of
+the real cookie. Validation would be actively misleading.
+
+**Credential access**: `+cf--handle` reads `handle=` from `credentials`;
+`+cf--cookie-header` reads `cookie=` (kept for any future direct-website use,
+though submit no longer needs it).
 
 ## Core Interaction Flows
 
@@ -189,7 +211,9 @@ re-login.
 
 ### Problem detail (requirement 3) — `emacs-codeforces-detail.el`
 
-The detail buffer is an **Org mode** buffer rendered from the scraped statement:
+The detail buffer is an **Org mode** buffer rendering the **API metadata**
+(name, tags, limits, URL). The full statement HTML is Cloudflare-blocked for
+direct fetch, so it is one key away in the browser:
 
 ```
 * 1234A - Problem Name                      :codeforces:
@@ -204,21 +228,17 @@ The detail buffer is an **Org mode** buffer rendered from the scraped statement:
 dp, greedy
 
 ** Statement
-<HTML → Org: paragraphs, lists, $...$ and $$...$$ math preserved as LaTeX>
-
-** Input / Output
-<sample I/O as source blocks>
+The full statement is rendered in the browser (Cloudflare blocks direct
+fetch).  Press `o` to open it.
 
 ** Submission Status       ← updated in place during polling
 *No active submission.*
 ```
 
-- **HTML→Org conversion** (`emacs-codeforces-scrape.el`): fetch
-     `/problemset/problem/{cid}/{idx}`, locate `<div class="problem-statement">`,
-     parse with `libxml-parse-html-region` and a hand-written recursive
-     converter: `<p>`→paragraph, `<ul>/<ol>`→list, `<pre>`→`#+begin_src` block,
-     math `$...$` / `$$...$$` preserved verbatim (org renders as LaTeX;
-     RivenEmacs `org-latex-preview` previews it).
+- **Data source**: the `Problem` plist already fetched for the list (from
+     `problemset.problems`) — no extra network call, no Cloudflare exposure.
+- **Key `o`** → `codeforces-open-statement-in-browser`: `browse-url` opens the
+     problem URL (the browser is logged in and past Cloudflare).
 - **Reuse RivenEmacs org beautification**: the detail buffer auto-enables
      `olivetti-mode`, `org-modern-mode`, `org-appear-mode` (if loaded),
      matching `init-org`.
@@ -237,40 +257,35 @@ dp, greedy
      solution file is never overwritten.**
 4. Left window stays on the detail; right window `find-file-other-window` opens
      `solution.<ext>`, cursor positioned inside.
-5. Detail buffer `:Workspace:` property records the solve directory; the
-     headline title becomes `● 1234A - Solving`.
+5. Detail buffer headline title becomes `● 1234A - Solving`.
 
 ### Submit + real-time result (requirement 5) — `C-c C-s` in detail buffer
 
 `C-c C-s` → `codeforces-submit`:
 
-1. Reads the problem's `solution.<ext>` content as `source`.
-2. **Language mapping**: a template-picked Rust solution submits as Rust. To
-     avoid hardcoding `programTypeId`, GET the submit page and scrape
-     `<select name="programTypeId">` `<option>`s, match by "label contains the
-     language name" (e.g. contains `Rust`).
-3. **Submit method** (Cloudflare strategy from §"Background"):
-   - **HTTP POST first**: GET the submit page for `data-csrf`, POST
-       `/problemset/submit?csrf_token=...` with `submittedProblemIndex` /
-       `programTypeId` / `source` / `tabSize` + cookie.
-   - **Detect challenge**: if the response is a Cloudflare challenge page
-       (contains `Just a moment` / `cf-chl`, or status 403/503) → **fall back**:
-       `browse-url` opens the pre-filled submit page; echo prompts "complete the
-       submit in the browser; results are still tracked here".
-   - **On success**: parse the submission id from the success/redirect page.
-4. **Real-time status poll** (core; goes through the public API, unaffected by
-   Cloudflare):
-   - Once a submission id is known, `run-with-timer` polls every
-       `codeforces-poll-interval` seconds (default **2**) calling
-       `contest.status?contestId=X&asBulk=true` and matching the submission by
-       id (public API, no signing, Cloudflare-immune).
+1. Opens the problem's submit page in the browser via `browse-url` (the user is
+   logged in there and past Cloudflare). Emacs **never** POSTs directly — that
+   path always 403s.
+2. Echoes: "Submit page opened in browser. Polling for the verdict…"
+3. **Real-time status poll** (core; goes through the public API, unaffected by
+   Cloudflare, needs no cookie — only the handle):
+   - `run-with-timer` polls every `codeforces-poll-interval` seconds (default
+     **3**) calling `user.status?handle=X&from=1&count=5` and matching the most
+     recent submission for **this problem's contestId** whose
+     `creationTimeSeconds` is at/after the submit click. The first matching
+     submission is the one we track.
    - The detail buffer's `** Submission Status` section updates **in place**:
        `TESTING 12/30 tests…` → final `OK ✅ (124ms, 8MB)` or
        `WRONG_ANSWER on test 14 ❌`.
    - When the verdict reaches a terminal state (`OK`/`WRONG_ANSWER`/
-       `COMPILATION_ERROR`/…) or `TESTING` shows no change for
-       `codeforces-poll-timeout` seconds (default **60**), **stop polling** and
-       update the headline prefix icon (✅/❌).
+       `COMPILATION_ERROR`/…) or no matching submission appears within
+       `codeforces-poll-timeout` seconds (default **90**, generous since the
+       user must finish submitting in the browser), **stop polling** and update
+       the headline prefix icon (✅/❌).
+
+> The poll window starts when `C-c C-s` is pressed (before the browser submit
+> completes), so it reliably catches the new submission even if the user is
+> slow in the browser.
 
 ## Public API (library surface; all `autoload`)
 

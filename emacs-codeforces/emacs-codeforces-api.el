@@ -27,8 +27,9 @@ already-set value).")
   (expand-file-name "cache/problems.json" codeforces-home-directory))
 
 (defun +cf--parse-problems (json-string)
-  "Parse the `problemset.problems' result JSON-STRING into a list of plists.
-The cache JSON wraps the API result as {\"result\":{\"problems\":[...]}}."
+  "Parse the `problemset.problems' response JSON-STRING into a list of plists.
+Accepts either the full {\"status\":...,\"result\":{\"problems\":[...]}} body
+or a bare {\"result\":{\"problems\":[...]}} wrapper."
   (let ((parsed (+cf--parse-json-body json-string)))
     (plist-get (or (plist-get parsed :result) parsed) :problems)))
 
@@ -58,33 +59,44 @@ The cache JSON wraps the API result as {\"result\":{\"problems\":[...]}}."
         #'string<))
 
 (defun +cf-fetch-problems (&optional force)
-  "Fetch the problem list, caching locally.  FORCE re-fetches.
+  "Fetch the problem list, caching the raw response locally.  FORCE re-fetches.
 Returns a list of problem plists."
   (let ((cache (+cf--cache-file)))
     (when (or force (not (file-exists-p cache)))
-      (let* ((raw (+cf-api-get "problemset.problems")))
+      (let* ((resp (+cf-http-get (+cf--merge-query
+                                  (concat +cf-api-base "problemset.problems")
+                                  nil))))
+        (unless (= (car resp) 200)
+          (error "Codeforces API problemset.problems failed (HTTP %s)" (car resp)))
         (make-directory (file-name-directory cache) t)
-        (with-temp-file cache
-          (insert (json-encode `(:result (:problems ,raw)))))))
+        (let ((coding-system-for-write 'utf-8))
+          (with-temp-file cache
+            (insert (cdr resp))))))
     (+cf--parse-problems
      (with-temp-buffer
        (insert-file-contents cache)
        (buffer-string)))))
 
-(defun +cf-fetch-submission (contest-id submission-id)
-  "Fetch a single submission's status from `contest.status'.
-Returns a plist with at least :id :verdict :passedTestCount :timeConsumedMillis
-:memoryConsumedBytes.  :verdict may be nil while queued."
-  (let* ((result (+cf-api-get "contest.status"
-                              :contestId contest-id
-                              :from 1
-                              :count 100))
-         (subs result)
-         (found (cl-find submission-id subs
-                        :key (lambda (s) (plist-get s :id))
-                        :test #'equal)))
-    (or found
-        (error "Submission %s not found in contest %s" submission-id contest-id))))
+(defun +cf-fetch-recent-submissions (handle count)
+  "Fetch the COUNT most recent submissions for HANDLE via `user.status'.
+Returns a list of submission plists, newest first.  Each has :id :verdict
+(may be nil while queued) :passedTestCount :timeConsumedMillis
+:memoryConsumedBytes :contestId :creationTimeSeconds.  No auth needed."
+  (+cf-api-get "user.status"
+               :handle handle
+               :from 1
+               :count count))
+
+(defun +cf-find-problem-submission (handle contest-id since-time)
+  "Find HANDLE's most recent submission for CONTEST-ID at/after SINCE-TIME.
+Returns the submission plist, or nil if none yet.  Used by the verdict poller:
+SINCE-TIME is the epoch seconds when the user pressed submit, so the first
+matching submission is the one being tracked."
+  (cl-find-if
+   (lambda (sub)
+     (and (eq (plist-get sub :contestId) contest-id)
+          (>= (or (plist-get sub :creationTimeSeconds) 0) since-time)))
+   (+cf-fetch-recent-submissions handle 5)))
 
 (provide 'emacs-codeforces-api)
 

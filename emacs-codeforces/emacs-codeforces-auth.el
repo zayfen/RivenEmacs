@@ -1,21 +1,23 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
-;;; emacs-codeforces-auth.el --- Session-cookie login for Codeforces -*- lexical-binding: t; -*-
+;;; emacs-codeforces-auth.el --- Handle storage for Codeforces -*- lexical-binding: t; -*-
 
 ;;; Commentary:
-;; Login is done by injecting a browser session cookie (Codeforces /enter has
-;; hCaptcha, so programmatic username/password login is not feasible).
+;; Login = storing the Codeforces handle (username).  There is no cookie and no
+;; network validation:
 ;;
-;; Flow: `codeforces-login' prompts for the cookie string, writes it to
-;; `credentials' (chmod 600), validates by GETting /enter and detecting the
-;; "Logout" link, and creates `codeforces-home-directory' on success.
+;;   - The website (`/enter`, statement pages, submit form) is behind Cloudflare
+;;     and unreachable from Emacs; submit + full statement are delegated to the
+;;     user's browser (already logged in there).
+;;   - The public JSON API (`problemset.problems`, `user.status`) needs no auth
+;;     at all; `user.status` only needs the handle to know whose submissions to
+;;     poll.
+;;
+;; So the only thing Emacs stores is the handle.  `M-x codeforces-login' writes
+;; it to `~/.emacs-codeforces/credentials' and creates the workspace directory.
 
 ;;; Code:
 
-(require 'emacs-codeforces-client)
-
-;; Declared as `defcustom' in emacs-codeforces.el; defvar here so this module
-;; can be loaded and tested standalone.
 (defvar codeforces-home-directory
   (expand-file-name "~/.emacs-codeforces/")
   "Codeforces workspace root.
@@ -23,18 +25,9 @@ Also a `defcustom' in `emacs-codeforces.el'; kept here so this module
 works when loaded standalone (the `defcustom' will not overwrite an
 already-set value).")
 
-(defun +cf--home-dir ()
-  "Return the codeforces home directory (as configured)."
-  codeforces-home-directory)
-
 (defun +cf--credentials-file ()
   "Return the path to the credentials file under `codeforces-home-directory'."
-  (expand-file-name "credentials" (+cf--home-dir)))
-
-(defun +cf--login-page-logged-in-p (html)
-  "Return non-nil if the /enter page HTML indicates an active session.
-We detect the Logout link that only appears when authenticated."
-  (string-match-p "Logout" (or html "")))
+  (expand-file-name "credentials" codeforces-home-directory))
 
 (defun +cf--ensure-home-dir ()
   "Create `codeforces-home-directory' (and cache/workspace subdirs)."
@@ -42,49 +35,44 @@ We detect the Logout link that only appears when authenticated."
   (make-directory (expand-file-name "workspace" codeforces-home-directory) t))
 
 (defun +cf--read-credentials ()
-  "Return the stored cookie string, or nil if none."
+  "Return the stored handle string, or nil if none."
   (let ((f (+cf--credentials-file)))
     (and (file-exists-p f)
          (with-temp-buffer
            (insert-file-contents f)
            (string-trim (buffer-string))))))
 
-(defun +cf--write-credentials (cookie)
-  "Write COOKIE to the credentials file, mode 0600."
+(defun +cf--write-credentials (handle)
+  "Write HANDLE to the credentials file, mode 0600."
   (+cf--ensure-home-dir)
   (let ((f (+cf--credentials-file)))
     (with-temp-file f
-      (insert cookie))
+      (insert handle))
     (set-file-modes f #o600)))
 
 (defun codeforces-logged-in-p ()
-  "Return non-nil if a credential file exists (does not validate freshness)."
+  "Return non-nil if a handle is stored."
   (and (+cf--read-credentials) t))
 
-(defun +cf--cookie-header ()
-  "Return the current cookie as a Cookie header value, or nil."
+(defun +cf--handle ()
+  "Return the stored Codeforces handle, or nil."
   (+cf--read-credentials))
 
 ;;;###autoload
-(defun codeforces-login (cookie)
-  "Log in to Codeforces using a browser session COOKIE string.
-COOKIE is validated by fetching the login page; on success the home directory
-is created.  Interactively, prompts for the cookie (no default)."
+(defun codeforces-login (handle)
+  "Store Codeforces HANDLE (your username) and create the workspace directory.
+HANDLE is used only by the public API (`user.status') to poll your
+submissions; no cookie is stored and no validation is done.  The browser
+handles login/statement/submit (Cloudflare blocks direct Emacs access)."
   (interactive
-   (list (read-string "Codeforces session cookie (paste from browser): ")))
-  (message "Validating Codeforces cookie...")
-  (+cf--write-credentials cookie)
-  (let* ((resp (+cf-http-get (concat +cf-site-base "enter")
-                             :cookie cookie))
-         (status (car resp))
-         (body (cdr resp)))
-    (if (and (= status 200) (+cf--login-page-logged-in-p body))
-        (progn
-          (+cf--ensure-home-dir)
-          (message "Codeforces login OK.  Workspace: %s" codeforces-home-directory)
-          t)
-      (+cf--write-credentials "")        ; invalidate
-      (error "Codeforces login failed (status %s). Check your cookie." status))))
+   (list (read-string "Codeforces handle (your username, e.g. tourist): ")))
+  (when (string-empty-p handle)
+    (error "Handle cannot be empty"))
+  (+cf--write-credentials handle)
+  (+cf--ensure-home-dir)
+  (message "Codeforces handle stored: %s.  Workspace: %s"
+           handle codeforces-home-directory)
+  handle)
 
 ;;;###autoload
 (defun codeforces-logout ()
