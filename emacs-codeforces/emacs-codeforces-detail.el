@@ -225,26 +225,24 @@ workflow keys:
 
 (defun +cf--select-latex-preview-backend ()
   "Pick an installed Org LaTeX preview backend for this buffer.
-RivenEmacs loads fontspec globally, which requires xelatex/lualatex, so the
-pdflatex-based backends (imagemagick/dvipng) crash.  Prefer our custom
-`xelatex-imagemagick' backend (xelatex + imagemagick convert), which handles
-fontspec and only needs the commonly-installed xelatex + convert.  Buffer-local.
-
-Also sets `org-format-latex-options' :scale to match the current face size so
-the rendered math sits at the same height as surrounding text (the default 1.0
-renders far too small on hi-dpi displays), and raises the convert density for
-crisp output."
+Prefer the fastest available:
+  1. dvipng (latex + dvipng) — fastest, no full xelatex startup; works because
+     RivenEmacs's formula packages (amsmath etc.) don't need fontspec.
+  2. dvisvgm — vector output, slightly slower than dvipng.
+  3. xelatex-imagemagick (our custom) — fallback; slower per fragment due to
+     xelatex startup, but only needs xelatex + convert (commonly installed).
+Buffer-local.  Also scales the rendered math to the live face size."
   (when (boundp 'org-preview-latex-process-alist)
     (let* ((backend-programs
-            '((xelatex-imagemagick "xelatex" "convert")
-              (dvisvgm            "xelatex" "dvisvgm")
-              (dvipng             "latex" "dvipng")))
+            '((dvipng             "latex" "dvipng")
+              (dvisvgm            "latex" "dvisvgm")
+              (xelatex-imagemagick "xelatex" "convert")))
            (prefer
             (cl-find-if
              (lambda (b)
                (let ((req (assq b backend-programs)))
                  (and req (cl-every #'executable-find (cdr req)))))
-             '(xelatex-imagemagick dvisvgm dvipng))))
+             '(dvipng dvisvgm xelatex-imagemagick))))
       (when prefer
         (setq-local org-preview-latex-default-process prefer))))
   ;; Scale the rendered math to the window's font size.  Org renders the LaTeX
@@ -278,19 +276,42 @@ failed, a fallback note with a browser-open pointer is shown instead."
     ;; Render statement images inline (Codeforces figures become [[url][url]]).
     (when (fboundp 'org-display-inline-images)
       (org-display-inline-images))
-    ;; Preview inline math ($...$) so the $ delimiters don't show as text.
-    ;; Choose an installed backend first (Org defaults to dvipng, often missing),
-    ;; then call the version-appropriate preview function.
-    (+cf--select-latex-preview-backend)
-    (cond
-     ((fboundp 'org-latex-preview)
-      (condition-case err
-          (org-latex-preview '(16))
-        (error (message "latex preview error: %s" (error-message-string err)))))
-     ((fboundp 'org-preview-latex-fragment)
-      (condition-case err
-          (org-preview-latex-fragment)
-        (error (message "latex preview error: %s" (error-message-string err))))))))
+    ;; Preview inline math asynchronously so the buffer shows immediately
+    ;; while xelatex compiles each fragment in the background.
+    (+cf--preview-math-async)))
+
+(defvar-local +cf--math-preview-timer nil
+  "Idle timer for the asynchronous math preview, if pending.")
+
+(defun +cf--preview-math-async ()
+  "Schedule an asynchronous LaTeX preview of the current buffer.
+The statement text is shown at once; previews are generated after a short
+idle delay (so the buffer is interactive immediately) and without blocking.
+Safe if the buffer is killed before the timer fires."
+  (+cf--select-latex-preview-backend)
+  (when (timerp +cf--math-preview-timer)
+    (cancel-timer +cf--math-preview-timer))
+  (let ((buf (current-buffer)))
+    (setq +cf--math-preview-timer
+          (run-with-idle-timer
+           0.3 nil
+           (lambda ()
+             (when (buffer-live-p buf)
+               (with-current-buffer buf
+                 (let ((inhibit-read-only t))
+                   (condition-case err
+                       (cond
+                        ((fboundp 'org-latex-preview)
+                         (message "Rendering math previews...")
+                         (org-latex-preview '(16))
+                         (message "Rendering math previews...done"))
+                        ((fboundp 'org-preview-latex-fragment)
+                         (message "Rendering math previews...")
+                         (org-preview-latex-fragment)
+                         (message "Rendering math previews...done")))
+                     (error
+                      (message "latex preview error: %s"
+                               (error-message-string err))))))))))))
 
 (defun +cf--update-status (text)
   "Replace the Submission Status section in the current buffer with TEXT."
