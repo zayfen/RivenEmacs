@@ -145,6 +145,25 @@ workflow keys:
      (t (format "%s ❌  (passed %s tests)"
                 v (or passed 0))))))
 
+(defun +cf--select-latex-preview-backend ()
+  "Pick an installed Org LaTeX preview backend for this buffer.
+Org's default is `dvipng', which is often missing.  Prefer an installed
+backend (imagemagick's `convert' is common) so $...$ actually renders as
+an image instead of leaving literal $ delimiters.  Buffer-local."
+  (when (boundp 'org-preview-latex-process-alist)
+    (let ((prefer (cl-find-if
+                   (lambda (b)
+                     (executable-find
+                      (pcase b
+                        ('dvipng "dvipng")
+                        ('imagemagick "convert")
+                        ('dvisvgm "dvisvgm")
+                        ('xelatex "xelatex")
+                        (_ "false"))))
+                   '(dvipng imagemagick dvisvgm xelatex))))
+      (when prefer
+        (setq-local org-preview-latex-default-process prefer)))))
+
 (defun +cf--write-buffer (problem &optional statement-org)
   "Render PROBLEM into the current Org buffer.
 STATEMENT-ORG is the full statement as Org text (from the agent); if nil or
@@ -166,9 +185,9 @@ failed, a fallback note with a browser-open pointer is shown instead."
     (when (fboundp 'org-display-inline-images)
       (org-display-inline-images))
     ;; Preview inline math ($...$) so the $ delimiters don't show as text.
-    ;; org 9.7+ uses `org-latex-preview'; older org uses
-    ;; `org-preview-latex-fragment'.  Both need a LaTeX toolchain to render
-    ;; images, so this is best-effort (ignore-errors).
+    ;; Choose an installed backend first (Org defaults to dvipng, often missing),
+    ;; then call the version-appropriate preview function.  Best-effort.
+    (+cf--select-latex-preview-backend)
     (ignore-errors
       (cond
        ((fboundp 'org-latex-preview) (org-latex-preview '(16)))
