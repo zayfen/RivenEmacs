@@ -121,20 +121,7 @@ workflow keys:
 - `g' re-fetch the statement from the site
 - `o' open the problem page in the browser
 - `p' poll the latest submission status for this problem
-- `?' show these key bindings"
-  ;; Use a clean pdflatex-compatible LaTeX setup for inline math preview.
-  ;; RivenEmacs globally loads fontspec (which requires xelatex/lualatex), but
-  ;; the default preview backends (imagemagick/dvipng) use pdflatex, so preview
-  ;; fails with "fontspec requires XeTeX".  These buffer-locals keep the
-  ;; statement buffer's preview self-contained with standard packages.
-  (setq-local org-format-latex-header
-              "\\documentclass{article}
-\\usepackage{amsmath}
-\\usepackage{amssymb}
-\\usepackage{amsfonts}")
-  (setq-local org-latex-default-packages-alist nil)
-  (setq-local org-latex-packages-alist
-              '(("" "amsmath" t) ("" "amssymb" t) ("" "amsfonts" t))))
+- `?' show these key bindings")
 (set-keymap-parent codeforces-problem-mode-map org-mode-map)
 
 ;; Ensure Org treats $...$ and $$...$$ as LaTeX fragments so they are fontified
@@ -142,6 +129,23 @@ workflow keys:
 (with-eval-after-load 'org
   (unless (memq 'latex (bound-and-true-p org-highlight-latex-and-related))
     (add-to-list 'org-highlight-latex-and-related 'latex)))
+
+;; Register a math-preview backend that compiles with xelatex (so it works with
+;; RivenEmacs's global fontspec) and converts to PNG via imagemagick.  The
+;; built-in `xelatex' backend requires dvisvgm, which is often missing, whereas
+;; `convert' is usually installed.  This is added once globally (idempotent).
+(with-eval-after-load 'org
+  (unless (assq 'xelatex-imagemagick org-preview-latex-process-alist)
+    (add-to-list
+     'org-preview-latex-process-alist
+     '(xelatex-imagemagick
+       :programs ("xelatex" "convert")
+       :message "you need to install the programs: xelatex and imagemagick."
+       :image-input-type "pdf"
+       :image-output-type "png"
+       :image-size-adjust (1.0 . 1.0)
+       :latex-compiler ("xelatex -interaction nonstopmode -output-directory %o %f")
+       :image-converter ("convert -density %D -trim -antialias %f -quality 100 %O")))))
 
 ;; Declared as `defcustom' in emacs-codeforces.el; defvar here so this module
 ;; can be loaded and tested standalone.
@@ -221,20 +225,21 @@ workflow keys:
 
 (defun +cf--select-latex-preview-backend ()
   "Pick an installed Org LaTeX preview backend for this buffer.
-Org's default is `dvipng', which is often missing.  Prefer an installed
-backend (imagemagick's `convert' is common) so $...$ actually renders as
-an image instead of leaving literal $ delimiters.  Buffer-local."
+RivenEmacs loads fontspec globally, which requires xelatex/lualatex, so the
+pdflatex-based backends (imagemagick/dvipng) crash.  Prefer our custom
+`xelatex-imagemagick' backend (xelatex + imagemagick convert), which handles
+fontspec and only needs the commonly-installed xelatex + convert.  Buffer-local."
   (when (boundp 'org-preview-latex-process-alist)
-    (let ((prefer (cl-find-if
-                   (lambda (b)
-                     (executable-find
-                      (pcase b
-                        ('dvipng "dvipng")
-                        ('imagemagick "convert")
-                        ('dvisvgm "dvisvgm")
-                        ('xelatex "xelatex")
-                        (_ "false"))))
-                   '(dvipng imagemagick dvisvgm xelatex))))
+    (let* ((backend-programs
+            '((xelatex-imagemagick "xelatex" "convert")
+              (dvisvgm            "xelatex" "dvisvgm")
+              (dvipng             "latex" "dvipng")))
+           (prefer
+            (cl-find-if
+             (lambda (b)
+               (let ((req (assq b backend-programs)))
+                 (and req (cl-every #'executable-find (cdr req)))))
+             '(xelatex-imagemagick dvisvgm dvipng))))
       (when prefer
         (setq-local org-preview-latex-default-process prefer)))))
 
