@@ -143,9 +143,9 @@ workflow keys:
        :message "you need to install the programs: xelatex and imagemagick."
        :image-input-type "pdf"
        :image-output-type "png"
-       :image-size-adjust (1.0 . 1.0)
+       :image-size-adjust (1.7 . 1.7)
        :latex-compiler ("xelatex -interaction nonstopmode -output-directory %o %f")
-       :image-converter ("convert -density %D -trim -antialias %f -quality 100 %O")))))
+       :image-converter ("convert -density 200 -trim -antialias %f -quality 100 %O")))))
 
 ;; Declared as `defcustom' in emacs-codeforces.el; defvar here so this module
 ;; can be loaded and tested standalone.
@@ -228,7 +228,12 @@ workflow keys:
 RivenEmacs loads fontspec globally, which requires xelatex/lualatex, so the
 pdflatex-based backends (imagemagick/dvipng) crash.  Prefer our custom
 `xelatex-imagemagick' backend (xelatex + imagemagick convert), which handles
-fontspec and only needs the commonly-installed xelatex + convert.  Buffer-local."
+fontspec and only needs the commonly-installed xelatex + convert.  Buffer-local.
+
+Also sets `org-format-latex-options' :scale to match the current face size so
+the rendered math sits at the same height as surrounding text (the default 1.0
+renders far too small on hi-dpi displays), and raises the convert density for
+crisp output."
   (when (boundp 'org-preview-latex-process-alist)
     (let* ((backend-programs
             '((xelatex-imagemagick "xelatex" "convert")
@@ -241,7 +246,18 @@ fontspec and only needs the commonly-installed xelatex + convert.  Buffer-local.
                  (and req (cl-every #'executable-find (cdr req)))))
              '(xelatex-imagemagick dvisvgm dvipng))))
       (when prefer
-        (setq-local org-preview-latex-default-process prefer)))))
+        (setq-local org-preview-latex-default-process prefer))))
+  ;; Scale the rendered math to the window's font size.  Org renders the LaTeX
+  ;; at 10pt then images it; :scale multiplies that.  Match the live `default'
+  ;; face height (which on hi-dpi is ~150-180), with a floor of 1.5 so the
+  ;; math is never smaller than the surrounding text.
+  (let* ((face-height (face-attribute 'default :height nil t))
+         (scale (cond
+                 ((integerp face-height) (max 1.5 (/ face-height 90.0)))
+                 (t 1.8))))
+    (setq-local org-format-latex-options
+                (plist-put (copy-tree org-format-latex-options)
+                           :scale scale))))
 
 (defun +cf--write-buffer (problem &optional statement-org)
   "Render PROBLEM into the current Org buffer.
