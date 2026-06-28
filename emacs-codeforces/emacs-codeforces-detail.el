@@ -143,7 +143,7 @@ workflow keys:
        :message "you need to install the programs: xelatex and imagemagick."
        :image-input-type "pdf"
        :image-output-type "png"
-       :image-size-adjust (1.7 . 1.7)
+       :image-size-adjust (0.85 . 0.85)
        :latex-compiler ("xelatex -interaction nonstopmode -output-directory %o %f")
        :image-converter ("convert -density 200 -trim -antialias %f -quality 100 %O")))))
 
@@ -249,12 +249,11 @@ crisp output."
         (setq-local org-preview-latex-default-process prefer))))
   ;; Scale the rendered math to the window's font size.  Org renders the LaTeX
   ;; at 10pt then images it; :scale multiplies that.  Match the live `default'
-  ;; face height (which on hi-dpi is ~150-180), with a floor of 1.5 so the
-  ;; math is never smaller than the surrounding text.
+  ;; face height (which on hi-dpi is ~150-180), halved for a tighter inline fit.
   (let* ((face-height (face-attribute 'default :height nil t))
          (scale (cond
-                 ((integerp face-height) (max 1.5 (/ face-height 90.0)))
-                 (t 1.8))))
+                 ((integerp face-height) (max 0.75 (/ face-height 180.0)))
+                 (t 0.9))))
     (setq-local org-format-latex-options
                 (plist-put (copy-tree org-format-latex-options)
                            :scale scale))))
