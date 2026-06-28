@@ -227,6 +227,23 @@ def _clean(text):
     # Inline math: $$$...$$$ -> $...$
     text = re.sub(r"\${3}([^\n]*?)\${3}", r"$\1$", text)
 
+    # MathJax extension commands that plain LaTeX does not define.  Org's
+    # preview backends run real LaTeX, so these would fail to compile and the
+    # formula's $ delimiters would be left as literal text.  Replace with
+    # standard-LaTeX equivalents inside $...$ only (code blocks are stashed).
+    def _mathjax_to_latex(m):
+        inner = m.group(1)
+        inner = re.sub(r"\\lt\b", r"<", inner)
+        inner = re.sub(r"\\gt\b", r">", inner)
+        inner = re.sub(r"\\le\b", r"\\leq ", inner)
+        inner = re.sub(r"\\ge\b", r"\\geq ", inner)
+        inner = re.sub(r"\\dots\b", r"\\ldots ", inner)
+        inner = re.sub(r"\\leqslant\b", r"\\leq ", inner)
+        inner = re.sub(r"\\geqslant\b", r"\\geq ", inner)
+        return "$%s$" % inner
+
+    text = re.sub(r"\$([^$\n]*)\$", _mathjax_to_latex, text)
+
     # Restore code blocks.
     for i, b in enumerate(blocks):
         text = text.replace("\x00%d\x00" % i, b)

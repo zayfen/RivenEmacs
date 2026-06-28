@@ -186,12 +186,17 @@ failed, a fallback note with a browser-open pointer is shown instead."
       (org-display-inline-images))
     ;; Preview inline math ($...$) so the $ delimiters don't show as text.
     ;; Choose an installed backend first (Org defaults to dvipng, often missing),
-    ;; then call the version-appropriate preview function.  Best-effort.
+    ;; then call the version-appropriate preview function.
     (+cf--select-latex-preview-backend)
-    (ignore-errors
-      (cond
-       ((fboundp 'org-latex-preview) (org-latex-preview '(16)))
-       ((fboundp 'org-preview-latex-fragment) (org-preview-latex-fragment))))))
+    (cond
+     ((fboundp 'org-latex-preview)
+      (condition-case err
+          (org-latex-preview '(16))
+        (error (message "latex preview error: %s" (error-message-string err)))))
+     ((fboundp 'org-preview-latex-fragment)
+      (condition-case err
+          (org-preview-latex-fragment)
+        (error (message "latex preview error: %s" (error-message-string err))))))))
 
 (defun +cf--update-status (text)
   "Replace the Submission Status section in the current buffer with TEXT."
