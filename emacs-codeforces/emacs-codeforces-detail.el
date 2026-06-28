@@ -42,11 +42,72 @@
   "Show the key bindings for `codeforces-problem-mode' in the echo area."
   (interactive)
   (message
-   "%s"
-   (mapconcat
-    (lambda (cell)
-      (format "%c  %s" (car cell) (cdr cell)))
-    codeforces-problem-mode-bindings "    ")))
+    "%s"
+    (mapconcat
+      (lambda (cell)
+        (format "%c  %s" (car cell) (cdr cell)))
+      codeforces-problem-mode-bindings "    ")))
+
+(defun codeforces-diagnose-math ()
+  "Diagnostic: report math-fragment recognition and overlay coverage.
+Run this in a problem detail buffer to see why $...$ delimiters may show."
+  (interactive)
+  (let ((frags 0)
+        (covered-fragments 0)
+        (sample-bad nil)
+        (backend (bound-and-true-p org-preview-latex-default-process))
+        (graphic (display-graphic-p))
+        (untrusted (bound-and-true-p untrusted-content))
+        (overlays-with-image 0)
+        (total-dollar-positions 0)
+        (covered-dollar-positions 0))
+    (save-excursion
+      (goto-char (point-min))
+      (while (re-search-forward "\\$" nil t)
+        (cl-incf total-dollar-positions)
+        (let ((o (car (overlays-at (point)))))
+          (when (and o (overlay-get o 'display))
+            (cl-incf covered-dollar-positions))))
+      (setq overlays-with-image
+            (length (delq nil (mapcar (lambda (o)
+                                        (let ((d (overlay-get o 'display)))
+                                          (and (consp d) (eq (car d) 'image))))
+                                      (overlays-in (point-min) (point-max)))))))
+    (let ((parsed (org-element-parse-buffer)))
+      (org-element-map parsed 'latex-fragment
+        (lambda (f) (cl-incf frags))))
+    (message
+     (concat "MATH-DIAGNOSE:\n"
+             "  display-graphic-p: %s\n"
+             "  preview-backend: %s\n"
+             "  untrusted-content: %s\n"
+             "  latex-fragments-recognized: %d\n"
+             "  image-overlays: %d\n"
+             "  total-$-chars: %d\n"
+             "  $-chars-covered-by-overlay: %d\n")
+     graphic backend untrusted frags overlays-with-image
+     total-dollar-positions covered-dollar-positions)
+    ;; Direct render test: create one image and report the result/ error.
+    (let ((value "$y=x^2$")
+          (dir (make-temp-file "cf-latex-" t))
+          (render-err nil)
+          (rendered nil))
+      (condition-case err
+          (let ((movefile (expand-file-name "cf-test.png" dir)))
+            (org-create-formula-image
+             value movefile org-format-latex-options 'forbuffer
+             org-preview-latex-default-process)
+            (setq rendered (file-exists-p movefile)))
+        (error (setq render-err (error-message-string err))))
+      (message
+       "  direct-render: value=%s backend=%s rendered=%s err=%s"
+       value org-preview-latex-default-process rendered
+       (or render-err "none"))
+      ;; Check *Org Preview LaTeX Output* for the actual shell error.
+      (when (get-buffer "*Org Preview LaTeX Output*")
+        (with-current-buffer "*Org Preview LaTeX Output*"
+          (message "  org-preview-log: %s"
+                   (string-trim (buffer-string))))))))
 
 ;;;###autoload
 (define-derived-mode codeforces-problem-mode org-mode "CF Problem"
@@ -60,7 +121,20 @@ workflow keys:
 - `g' re-fetch the statement from the site
 - `o' open the problem page in the browser
 - `p' poll the latest submission status for this problem
-- `?' show these key bindings")
+- `?' show these key bindings"
+  ;; Use a clean pdflatex-compatible LaTeX setup for inline math preview.
+  ;; RivenEmacs globally loads fontspec (which requires xelatex/lualatex), but
+  ;; the default preview backends (imagemagick/dvipng) use pdflatex, so preview
+  ;; fails with "fontspec requires XeTeX".  These buffer-locals keep the
+  ;; statement buffer's preview self-contained with standard packages.
+  (setq-local org-format-latex-header
+              "\\documentclass{article}
+\\usepackage{amsmath}
+\\usepackage{amssymb}
+\\usepackage{amsfonts}")
+  (setq-local org-latex-default-packages-alist nil)
+  (setq-local org-latex-packages-alist
+              '(("" "amsmath" t) ("" "amssymb" t) ("" "amsfonts" t))))
 (set-keymap-parent codeforces-problem-mode-map org-mode-map)
 
 ;; Ensure Org treats $...$ and $$...$$ as LaTeX fragments so they are fontified
