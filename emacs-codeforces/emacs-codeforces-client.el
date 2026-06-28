@@ -27,12 +27,22 @@
   "Default HTTP timeout in seconds.")
 
 (defun +cf--url-encode-alist (alist)
-  "URL-encode ALIST as key=value pairs joined by &."
+  "URL-encode ALIST as key=value pairs joined by &.
+Keys may be symbols or strings."
   (mapconcat
    (lambda (cell)
-     (concat (url-hexify-string (symbol-name (car cell)))
-             "="
-             (url-hexify-string (or (cdr cell) ""))))
+     (let ((key (car cell))
+           (val (cdr cell)))
+       (concat (url-hexify-string
+                (cond ((symbolp key) (symbol-name key))
+                      ((numberp key) (number-to-string key))
+                      (t key)))
+               "="
+               (url-hexify-string (if val
+                                      (if (numberp val)
+                                          (number-to-string val)
+                                        val)
+                                    "")))))
    alist "&"))
 
 (defun +cf--merge-query (url params)

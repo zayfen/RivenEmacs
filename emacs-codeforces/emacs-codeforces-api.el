@@ -131,7 +131,24 @@ matching submission is the one being tracked."
    (lambda (sub)
      (and (eq (plist-get sub :contestId) contest-id)
           (>= (or (plist-get sub :creationTimeSeconds) 0) since-time)))
-   (+cf-fetch-recent-submissions handle 5)))
+   (+cf-fetch-recent-submissions handle 50)))
+
+(defun +cf-find-latest-problem-submission (handle contest-id index)
+  "Find HANDLE's most recent submission for CONTEST-ID/INDEX (the problem).
+Returns the submission plist, or nil if none.  No time limit — this is for the
+`p' (poll-latest) key which checks the latest verdict for a problem regardless
+of when it was submitted.  Queries contest.status scoped to this contest + handle."
+  (let* ((result (+cf-api-get "contest.status"
+                              :contestId contest-id
+                              :handle handle
+                              :from 1
+                              :count 50))
+         (index-u (upcase (or index ""))))
+    (cl-find-if
+     (lambda (sub)
+       (let ((prob (plist-get sub :problem)))
+         (equal (plist-get prob :index) index-u)))
+     result)))
 
 (provide 'emacs-codeforces-api)
 

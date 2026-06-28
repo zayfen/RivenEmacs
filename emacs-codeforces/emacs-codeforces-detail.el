@@ -297,17 +297,17 @@ the stored credentials."
     (unless handle
       (error "Not logged in.  Run M-x codeforces-login"))
     (let ((sub (condition-case nil
-                  (+cf-find-problem-submission
+                  (+cf-find-latest-problem-submission
                    handle
                    (plist-get problem :contestId)
-                   (- (truncate (float-time)) 3600))
+                   (plist-get problem :index))
                 (error nil))))
       (if sub
           (let ((text (+cf--format-verdict sub)))
             (+cf--update-status text)
             (message "Latest: %s" text))
-        (+cf--update-status "No recent submission found for this problem.")
-        (message "No recent submission found.")))))
+        (+cf--update-status "No submission found for this problem.")
+        (message "No submission found.")))))
 
 (defun codeforces-submit ()
   "Submit the current problem's solution via the agent and poll the verdict.
