@@ -27,7 +27,11 @@
 (use-package vue-ts-mode
   :vc (:url "https://github.com/8uff3r/vue-ts-mode" :branch "main")
   :mode "\\.vue\\'"
-  :hook (vue-ts-mode . eglot-ensure))
+  :hook ((vue-ts-mode . eglot-ensure)
+         ;; vue-ts-mode derives from html-mode (text-mode), so the
+         ;; prog-mode-hook line-numbers setup in init-default.el does
+         ;; not apply. Enable line numbers explicitly here.
+         (vue-ts-mode . display-line-numbers-mode)))
 
 
 (add-to-list 'auto-mode-alist '("\\.ts$" . typescript-ts-mode))

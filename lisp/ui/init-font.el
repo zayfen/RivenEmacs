@@ -22,7 +22,7 @@
   "Apply fixed/variable/CJK/emoji font configuration consistently."
   (let* ((size (riven/font-size-default))
          (fixed (or (riven/first-available-font
-                     '("Liga SFMono Nerd Font" "JetBrainsMono Nerd Font" "Menlo" "Monaco"))
+                     '("Intel One Mono" "Liga SFMono Nerd Font" "JetBrainsMono Nerd Font" "Menlo" "Monaco"))
                     "Monospace"))
          (variable (or (riven/first-available-font
                         '("SF Pro Display" "Inter" "Helvetica" "Arial"))
@@ -35,10 +35,18 @@
     (set-face-attribute 'fixed-pitch nil :font fixed :weight 'regular :height (* 10 size))
     (set-face-attribute 'variable-pitch nil :font variable :weight 'regular :height (* 10 size))
 
-    (when (and (display-graphic-p) emoji)
-      (set-fontset-font t 'unicode
-                        (font-spec :family emoji :size size)
-                        nil 'prepend))
+    (setq-default
+     text-rendering-mode 'harfbuzz)
+
+    ;; (set-fontset-font
+    ;;    t 'symbol
+    ;;    (font-spec
+    ;;     :family fixed
+    ;;     :otf '(nil nil (ss01))))
+    ;; (when (and (display-graphic-p)
+    ;;            (string-search "HARFBUZZ" system-configuration-features)
+    ;;            (string= fixed "Intel One Mono"))
+    ;;   )
 
     (when (and (display-graphic-p) cjk)
       (dolist (charset '(kana han symbol cjk-misc bopomofo))
