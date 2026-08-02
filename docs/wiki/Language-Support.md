@@ -1,0 +1,115 @@
+# Language Support
+
+RivenEmacs uses **eglot as the default LSP client** (with `eglot-booster`).
+`lsp-bridge` is kept as a shim but is **not loaded** by `init.el`.
+
+A signature feature: **on-demand server installation**. When you open a file and
+the language server binary is not on `PATH`, eglot prompts in the minibuffer
+with the exact install command; answering `y` installs it (npm/pip/brew/
+composer/rustup) and connects.
+
+---
+
+## How Auto-Install Works
+
+Defined in `lisp/ide/init-eglot.el`. At connect time, eglot calls a
+**function-form contact** which:
+
+1. Checks if the server binary is on `PATH`.
+2. If missing and `rivenEmacs-eglot-auto-install` is non-nil, prompts:
+   ```
+   Eglot: `pyright-langserver' not found. Install (npm i -g pyright)? (y or n)
+   ```
+3. On `y`, runs the install command synchronously, surfacing output in
+   `*eglot server install*` (auto-shown on failure).
+4. Returns the contact list once the binary is available, or errors if the user
+   declines / install fails.
+
+Disable globally: `(setq rivenEmacs-eglot-auto-install nil)`.
+
+---
+
+## Supported Languages
+
+| Language | Modes | Server (priority order) | Install command |
+|----------|-------|------------------------|-----------------|
+| **Python** | `python-mode`, `python-ts-mode` | basedpyright → pyright → ruff → pylsp | `pip install basedpyright` / `npm i -g pyright` / `pip install ruff` / `pip install python-lsp-server` |
+| **Vue** | `vue-ts-mode` | vue-language-server (Volar) + TypeScript | `npm i -g @vue/language-server @vue/language-core` (+ `typescript`) |
+| **Kotlin** | `kotlin-mode`, `kotlin-ts-mode` | kotlin-lsp → kotlin-language-server | `brew install kotlin-language-server` / `npm i -g kotlin-language-server` |
+| **Rust** | `rust-mode`, `rust-ts-mode` | rust-analyzer | `rustup component add rust-analyzer` |
+| **C / C++** | `c-mode`, `c-ts-mode`, `c++-mode`, `c++-ts-mode`, `objc-mode` | clangd | `brew install llvm` |
+| **Java** | `java-mode`, `java-ts-mode` | jdtls | `brew install jdtls` |
+| **JS / TS** | `typescript-ts-mode`, `tsx-ts-mode`, `js-ts-mode` | typescript-language-server | `npm i -g typescript-language-server typescript` |
+| **PHP** | `php-mode`, `php-ts-mode` | phpactor | `composer global require phpactor/phpactor` |
+
+Modes not listed here keep eglot's built-in defaults (no auto-install): Swift
+(sourcekit-lsp), Go (gopls), Ruby, Haskell, Scala, Dart, Elixir, Erlang, …
+— eglot ships contacts for these out of the box.
+
+---
+
+## TypeScript SDK Resolution (Vue / Volar)
+
+Volar needs the path to TypeScript's `lib/` directory. `riven/eglot--vue-tsdk`
+resolves it in this priority order:
+
+1. **Project-local**: `<project>/node_modules/typescript/lib`
+2. **nvm**: `~/.nvm/versions/node/*/lib/node_modules/typescript/lib`
+3. **Active npm global**: `$(npm root -g)/typescript/lib`
+4. **Homebrew Intel**: `/usr/local/lib/node_modules/typescript/lib`
+5. **Homebrew ARM**: `/opt/homebrew/lib/node_modules/typescript/lib`
+
+If none is found, you're prompted to install `typescript` globally; the tsdk is
+re-resolved after install.
+
+---
+
+## Per-Language Modules
+
+Beyond LSP, these modules add language-specific tooling:
+
+| File | Extras |
+|------|--------|
+| `lisp/lang/init-python.el` | `python-ts-mode`, Ruff flymake backend, `pyvenv` (virtualenv), `pet`. Keys `C-c l c/r/t` send buffer/region/run pytest. |
+| `lisp/lang/init-rust.el` | `rust-ts-mode` (indent 2), `cargo` minor mode. |
+| `lisp/lang/init-web.el` | `emmet-mode`, `web-mode` (html/ejs), `vue-ts-mode`, ts/tsx/js auto-mode. React/JSX tree-sitter helpers under `C-c C-e` (`r` rename-tag, `j` jump-to-matching-tag, `d` delete-tag). JSX-aware commenting (`riv/jsx-comment-dwim` on `M-;`). |
+| `lisp/lang/init-java.el` | `kotlin-ts-mode` (indent 2) for `.kt`/`.kts`. Java uses builtin `java-ts-mode` + eglot jdtls. |
+| `lisp/lang/init-swift.el` | `swift-mode`, `find-sourcekit-lsp` locator. |
+
+---
+
+## Tree-sitter
+
+`lisp/parser/init-treesit.el` configures 31 grammar sources. On Emacs 31+ it
+uses the native `treesit-enabled-modes` / `treesit-major-mode-remap-alist`
+(replacing the older `treesit-auto` approach).
+
+Install grammars:
+
+```elisp
+M-x install-essential-treesit-grammars   ;; curated set
+M-x install-treesit-language-grammars     ;; all 31 (alias: auto-install-treesit-grammars)
+```
+
+Or enable auto-install at startup via `rivenEmacs-auto-install-treesit` (default `nil`).
+
+---
+
+## Diagnostics
+
+`lisp/ide/init-checker.el` configures **flymake** (built-in):
+
+- Debounced current-line diagnostic echoed in the minibuffer.
+- Colored mode-line counters (errors/warnings/notes).
+- `flymake-eslint` for JS/TS — auto-detects local or global eslint, prefers
+  `oxlint` when available.
+- `M-x eslint-fix` to apply fixes.
+
+---
+
+## Debugging
+
+`lisp/ide/init-debugger.el` configures **dape** (DAP client) under the `C-c d`
+prefix. Saves/loads breakpoints across sessions, pulses the source line on hit,
+and uses a gud-style window layout. Debug adapter definitions come from the
+`debug-adapters/` git submodule.
