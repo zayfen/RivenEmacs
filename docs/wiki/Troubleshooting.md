@@ -8,14 +8,17 @@ Common problems and fixes.
 
 ### Slow startup / frame takes long to appear
 
-Heavy modules (LSP, AI, languages, tools) load on `emacs-startup-hook` at
-priority 90, *after* the first frame renders. If startup feels slow:
+Heavy modules (LSP, AI, languages, tools) load on `after-init-hook` at depth
+-20: during startup, before desktop restore/keybinding handlers and before the
+first redisplay. They are synchronous startup work (not idle-deferred), so they
+still contribute to startup time. If startup feels slow:
 
 ```bash
 emacs -Q --batch -l benchmark-startup.el
 ```
 
-Compare against the baseline (~0.52 s). See `docs/startup-optimization-report.md`.
+The numbers in `docs/startup-optimization-report.md` are from an older
+configuration; re-run the benchmark locally instead of comparing against them.
 
 ### Packages not installing / ELPA errors
 
@@ -31,8 +34,9 @@ reinstall.
 
 ### `Cannot open load file: ... init-config`
 
-You loaded a module without the `load-path` set up. Always load through
-`init.el`, which recursively adds `lisp/` subdirectories.
+You loaded a module without the `load-path` set up. Load through `init.el` (it
+adds the module subdirectories), or use `scripts/run-tests.sh`, which builds the
+`load-path` from the repository without loading `init.el`.
 
 ---
 
@@ -79,11 +83,34 @@ it with `(interactive project)`. All RivenEmacs contacts use
 `(&optional _interactive _project)` — if you see this, a contact was defined
 without that signature.
 
-### lsp-bridge vs eglot
+### lsp-bridge
 
-`init-lsp-bridge.el` exists as a shim but is **not loaded** by `init.el`.
-Eglot is the default. If old documentation references lsp-bridge commands,
-they won't be available unless you explicitly `(require 'init-lsp-bridge)`.
+`lsp-bridge` is no longer part of RivenEmacs: the `init-lsp-bridge.el` module
+was removed. **Eglot is the only LSP client**; commands and documentation that
+mention `lsp-bridge-*` are historical and do not apply.
+
+---
+
+## Testing
+
+### Tests fail to load modules
+
+Run the tests through the repository runner, which sets `load-path` correctly
+and uses the checked-in sources rather than stale byte-code:
+
+```bash
+scripts/run-tests.sh                          # all ERT + Python unit tests
+scripts/run-tests.sh tests/test-init-terminal.el   # one file
+```
+
+### Nested `emacs -l init.el` tests are skipped
+
+The startup-integration tests that spawn a nested Emacs loading `init.el` are
+opt-in because they may install packages over the network:
+
+```bash
+RIVENEMACS_RUN_INIT_TESTS=1 scripts/run-tests.sh
+```
 
 ---
 

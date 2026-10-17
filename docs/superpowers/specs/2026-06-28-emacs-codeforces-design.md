@@ -1,5 +1,10 @@
 # emacs-codeforces — Design Spec
 
+> **历史设计，勿按此实现。** 实际实现已改为：statement/submit 由
+> `scripts/codeforces_agent.py`（curl-cffi）完成，无 general.el leader 绑定，
+> 凭据为原子 0600 文件，Emacs 向 agent 注入 `CODEFORCES_HOME`，并新增了
+> ERT + Python 单测。以 `emacs-codeforces/` 代码为准。
+
 - **Date:** 2026-06-28
 - **Branch:** `feature/codeforces`
 - **Status:** Approved (pending implementation plan)

@@ -1,5 +1,9 @@
 # Structured Keybinding Migration Design
 
+> **历史设计（迁移已完成），勿按此实现。** 键位现状以
+> `lisp/keymaps/*-spec*.el`、`lisp/keymaps/keybindings-engine.el` 和
+> `docs/wiki/Keybindings.md` 为准；不要重新引入 general.el/SPC。
+
 ## Goal
 
 Redesign RivenEmacs global `C-c` keybindings around a structured

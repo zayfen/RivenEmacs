@@ -1,5 +1,10 @@
 # Structured Keybinding Migration Implementation Plan
 
+> **历史计划（迁移已完成），勿按此实现。** 该计划记录的是从 general.el/SPC
+> 迁移到声明式 `C-c` 引擎的步骤；键位现状以
+> `lisp/keymaps/*-spec*.el` 和 `docs/wiki/Keybindings.md` 为准，不要再添加
+> `leader-def`/general.el 依赖。
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Migrate RivenEmacs global `C-c` keybindings to the approved noun-first `C-c <group> <action>` structure.

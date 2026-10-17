@@ -1,5 +1,11 @@
 # RivenEmacs 启动性能分析与优化报告
 
+> **历史文档，数据与模块清单可能已过期。** 本报告描述 2025-03 的状态
+> （lsp-bridge / general.el / SPC leader 时代、延迟模块在
+> `emacs-startup-hook`）。当前实现已改为声明式 `C-c` 键位、eglot 为唯一
+> LSP、`init-lsp-bridge`/`init-git-hunk`/`init-general` 已删除、延迟模块在
+> `after-init-hook`（depth -20）加载。新工作请以 `AGENTS.md` 与当前代码为准。
+
 **分支**: `perf/emacs-startup-audit`  
 **日期**: 2025-03-07
 
@@ -7,7 +13,7 @@
 
 - **优化前基线**: ~0.56 秒（early-init + init 加载）
 - **优化后**: ~0.52 秒（约 7% 提升）
-- **策略**: 将 15 个重型模块延迟到 `emacs-startup-hook` 加载，首帧更快显示
+- **策略（历史）**: 将 15 个重型模块延迟到 `emacs-startup-hook` 加载，首帧更快显示；当前改为 `after-init-hook` depth -20
 
 ## 2. early-init.el 审查结论
 
@@ -34,10 +40,10 @@
 - init-session, init-terminal
 - init-keybindings
 
-### 3.2 延迟加载（emacs-startup-hook）
+### 3.2 延迟加载（历史：`emacs-startup-hook`；当前为 `after-init-hook` depth -20）
 
-- init-lsp-bridge
-- init-vc, init-debugger, init-git-hunk
+- （已删除）init-lsp-bridge
+- init-vc, init-debugger（init-git-hunk 已删除）
 - init-envrc, init-project
 - init-gpt
 - init-web, init-rust, init-python, init-java, init-swift
@@ -51,18 +57,18 @@
 
 ### 4.1 init.el
 
-- 新增 `riven/load-deferred-modules`，在 `emacs-startup-hook` 中 require 上述延迟模块
+- 新增 `riven/load-deferred-modules`，在 `emacs-startup-hook` 中 require 上述延迟模块（历史；当前为 `after-init-hook` depth -20）
 - 移除主路径中的对应 require
 
 ### 4.2 init-keybindings.el
 
-- 新增 `riven/lsp-bridge-keybindings`，在 `with-eval-after-load 'lsp-bridge` 中设置 SPC c 键位
+- （历史）新增 `riven/lsp-bridge-keybindings`，在 `with-eval-after-load 'lsp-bridge` 中设置 SPC c 键位；lsp-bridge 已删除，键位现由声明式 spec/engine 统一定义
 - 通过声明式 keybinding 引擎注册 `C-c =`，直接指向 `ai-code` 的编码 agent 入口
 
 ### 4.3 package 与 command lazy-load
 
 - `early-init.el` 新增 `riven/initialize-package-system`，直接 `emacs --batch -l init.el` 也复用同一初始化逻辑
-- 删除 `init-general.el`，移除仅用于 which-key 分组的 debugger `leader-def` 占位；Dape 保留自身的 `C-c d` 前缀
+- （历史）删除 `init-general.el`，移除仅用于 which-key 分组的 debugger `leader-def` 占位；Dape 保留自身的 `C-c d` 前缀
 - `iedit`、`sudo-edit`、`vterm` 改为 `:commands` 加载，避免启动期载入少用命令包
 
 ### 4.4 completion 模块拆分
@@ -74,8 +80,8 @@
 
 ## 5. 权衡说明
 
-- **首次使用延迟模块**：LSP、Git、AI、Docker 等首次调用时，可能需等待 emacs-startup-hook 完成加载（通常 <1 秒）
-- **键位**：SPC c（LSP 代码操作）在 lsp-bridge 加载后才生效，与 LSP 启动时机一致
+- **首次使用延迟模块（历史时间点）**：LSP、Git、AI、Docker 等首次调用时，可能需等待延迟加载完成（通常 <1 秒）
+- **键位（历史）**：当时 SPC c（LSP 代码操作）在 lsp-bridge 加载后才生效；现在全部键位由 `C-c` 声明式 spec 定义，并在 `after-init-hook` depth 0 应用
 - **package 初始化成本**：batch benchmark 数字可能略高，因为现在真实初始化仓库内 `elpa/` 包；收益是 CI/命令行加载结果与交互启动一致，不再出现已安装包的伪缺失错误
 
 ## 6. 后续可优化方向

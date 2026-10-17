@@ -9,9 +9,12 @@ only sets up `load-path` and orchestrates module loading in phases.
 ## Startup Flow
 
 ```
-early-init.el ──► init.el ──► core+UI (immediate) ──► deferred (emacs-startup-hook)
-                                  │                          │
-                                  └─► first frame (~0.5s)    └─► LSP, AI, langs, tools
+early-init.el ──► init.el ──► core+UI+writing+session+tooling (immediate)
+                                  │
+                                  └─► after-init-hook
+                                      ├─► deferred modules (depth -20)
+                                      ├─► desktop restore / keybindings (depth 0)
+                                      └─► first redisplay ──► emacs-startup-hook (GC restore)
 ```
 
 ### 1. `early-init.el` — pre-package optimization
@@ -30,11 +33,12 @@ Runs before any package is loaded. Handles:
 
 ### 2. `init.el` — assembly
 
-~135 lines. Does, in order:
+~145 lines. Does, in order:
 
 1. **`load-path` construction** — adds `riven/root-dir`, `riven/lisp-dir`, and
-   recursively every subdirectory of `lisp/` (except `local`). Every module
-   file is reachable by `require`.
+   every first-level subdirectory of `lisp/` plus their immediate
+   subdirectories (except `lisp/local`). Every module file is reachable by
+   `require`.
 2. **`exec-path-from-shell`** — deferred 2 s; imports proxy + AI/MCP API keys
    (`ZAYFEN_API_KEY`, `DEEPSEEK_API_KEY`, `OPENAI_API_KEY`,
    `ANTHROPIC_AUTH_TOKEN`, `BRAVE_API_KEY`, `TAVILY_API_KEY`,
@@ -45,10 +49,15 @@ Runs before any package is loaded. Handles:
 5. **Loader functions** (`riven/load-*-modules`) each `require` a set of
    modules.
 6. **Execution order**:
-   - Core + UI + writing + session + tooling loaded **immediately**.
-   - **Deferred modules** registered on `emacs-startup-hook` at **priority 90**
-     — so the first frame renders before heavy LSP/AI/lang/tool modules load.
-   - **Keybindings** load last, on `after-init-hook` inside `init-keybindings.el`.
+   - Core + UI + writing + session + tooling are required **immediately**.
+   - `init-keybindings` is required last among the immediate modules; it
+     registers the keybinding-applying hook on `after-init-hook` (depth 0).
+   - **Deferred modules** are registered on `after-init-hook` at **depth -20**,
+     so they load during startup before the default-depth `after-init-hook`
+     handlers (desktop session handling, keybinding application) and before the
+     first redisplay. They are synchronous startup work, not idle-deferred;
+     `emacs-startup-hook` (GC restore, plus `rivenEmacs-auto-install-treesit`)
+     runs after them.
 
 ### Loader → module mapping
 
@@ -66,14 +75,17 @@ Runs before any package is loaded. Handles:
 
 ## Lazy-Loading Strategy
 
-The central design principle: **the main path renders the first frame fast**;
-everything heavy loads later.
+The central design principle: **keep the immediate module set small**;
+everything heavy loads later in the same startup process. The deferred modules
+still run synchronously at the front of `after-init-hook` (before desktop
+restore/keybinding handlers and the first redisplay), so they add to startup
+time but no longer delay the initial frame's creation or its first redisplay.
 
 | When it loads | What | How |
 |---------------|------|-----|
 | Immediate | core, UI, completion, editor, treesit | direct `require` |
-| `emacs-startup-hook` (pri 90) | LSP, VCS, AI, languages, tools | `riven/load-deferred-modules` |
-| `after-init-hook` | keybindings | engine applies specs |
+| `after-init-hook` (depth -20) | LSP, VCS, AI, languages, tools | `riven/load-deferred-modules` |
+| `after-init-hook` (depth 0) | keybindings | engine applies specs |
 | First org buffer | `init-org` | `org-mode-hook` |
 | 2 s after init | shell env (API keys, proxy) | `exec-path-from-shell` timer |
 | Connect time | LSP server binary | function-form eglot contact |
@@ -127,5 +139,16 @@ OS predicates: `os/mac`, `os/linux`, `os/bsd`, `os/win`.
 emacs -Q --batch -l benchmark-startup.el
 ```
 
-Baseline after optimization: **~0.52 s** to load (vs ~0.56 s pre-optimization).
-See `docs/startup-benchmark.md` and `docs/startup-optimization-report.md`.
+Baseline numbers are historical; see `docs/startup-benchmark.md` and
+`docs/startup-optimization-report.md` (both are older reports — do not treat
+their numbers as current).
+
+## Testing
+
+```bash
+scripts/run-tests.sh        # ERT suites + Python agent unit tests, offline
+```
+
+The runner builds `load-path` from the repository itself, so it never loads
+`init.el` and never needs the network. See
+**[Development](Development.md)** for details.

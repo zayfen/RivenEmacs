@@ -8,27 +8,32 @@ How to work on RivenEmacs itself. The authoritative conventions source is
 ## Build / Lint / Test
 
 ```bash
-# Check configuration syntax (all files)
-emacs --batch -l init.el --eval "(message \"Config loaded successfully\")"
+# Run the offline test suites (project ERT + emacs-codeforces ERT, then the
+# Python agent unit tests).  Never loads init.el and never needs the network.
+scripts/run-tests.sh
 
-# Byte compile a single file
-emacs --batch -f batch-byte-compile lisp/ide/init-eglot.el
+# Run a single ERT file
+scripts/run-tests.sh tests/test-init-terminal.el
+scripts/run-tests.sh emacs-codeforces/test/emacs-codeforces-auth-test.el
 
-# Byte compile all configuration files
-emacs --batch -f batch-byte-compile lisp/*.el
+# ERT only (skip the Python unit tests)
+scripts/run-tests.sh --no-python
 
-# Load init.el and test basic functionality
-emacs --batch -l init.el --eval "(message \"All modules loaded\")"
+# Python agent unit tests only
+python3 -m unittest discover -s emacs-codeforces/test -v
 
-# Test with clean state (no custom.el)
-emacs -q -l ~/.emacs.d/init.el
+# Byte compile a single module
+emacs --batch -f batch-byte-compile lisp/core/init-config.el
 
-# Run the ERT test suite
-emacs --batch -l ert -l tests/*.el -f ert-run-tests-batch-and-exit
+# Interactive smoke test; may install packages from ELPA (network access)
+emacs -q -l /path/to/RivenEmacs/init.el
 
-# Benchmark startup
+# Benchmark startup (numbers in the reports are historical)
 emacs -Q --batch -l benchmark-startup.el
 ```
+
+> `batch-byte-compile lisp/*.el` is obsolete: configuration modules live in
+> `lisp/<group>/`, so use the per-module form above (or an explicit file list).
 
 ---
 
@@ -122,41 +127,46 @@ Every module file follows this order:
 ## Module Loading Order
 
 When adding a new module, place its `require` in the right loader function (see
-[Architecture](Architecture.md#loader--module-mapping)):
+[Architecture](Architecture.md#loader--module-mapping)). `init.el` currently
+uses:
 
 1. **Core**: `init-use-package` → `init-config` → `init-default` → `init-helper`
-2. **UI**: `init-theme` → `init-font` → `init-undo` → `init-autosave`
-3. **Foundation**: `init-which-key` → `init-hydra`
-4. **Completion**: `init-consult` → `init-minibuffer` → `init-completion-ui` → `init-crux` → `init-editor`
-5. **File/Edit**: `init-dired` → `init-format` → `init-jump` → `init-editorconfig`
-6. **Code**: `init-checker` → `init-pair` → `init-fold` → `init-markdown`
-7. **Parser**: `init-treesit`
-8. **IDE**: `init-eglot`
-9. **VCS**: `init-vc` → `init-git-hunk` → `init-debugger`
-10. **Env/Project**: `init-envrc` → `init-project`
-11. **AI**: `init-gpt` → `init-ai-code`
-12. **Languages**: `init-web` → `init-rust` → `init-python` → `init-java` → `init-swift`
-13. **Writing**: `ews` (org hook), `init-org`
-14. **Tools**: `init-docker` → `init-quickrun` → `init-feed` → `init-lookup` → `init-terminal` → `init-reader`
-15. **Final**: `init-keybindings`
-
-Heavy modules (steps 8–14) go in `riven/load-deferred-modules` (load on
-`emacs-startup-hook`); the rest load immediately.
+2. **UI/editing**: `init-theme` → `init-font` → `init-undo` → `init-autosave`
+   → `init-which-key` → `init-hydra` → `init-minibuffer` →
+   `init-completion-ui` → `init-consult` → `init-vertico` (compatibility shim)
+   → `init-crux` → `init-editor` → `init-dired` → `init-format` →
+   `init-jump` → `init-editorconfig` → `init-checker` → `init-pair` →
+   `init-fold` → `init-markdown` → `init-treesit`
+3. **Writing**: `ews` (immediate) + `init-org` (lazy via `org-mode-hook`)
+4. **Session**: `init-session`
+5. **Tooling**: `init-terminal`
+6. **Keymaps**: `init-keybindings` (registers its `after-init-hook` handler)
+7. **Deferred**: `riven/load-deferred-modules` on `after-init-hook` at depth
+   -20 — eglot, vc, debugger, envrc, project, gpt, ai-code, web, rust, python,
+   java, swift, docker, quickrun, feed, lookup, reader, codeforces.
+   The keybinding specs are then applied by the default-depth `after-init-hook`
+   handler, so every deferred command exists before its spec is validated.
 
 ---
 
 ## Adding a Keybinding
 
 RivenEmacs uses a **declarative keybinding engine** — do **not** bind keys
-inline in modules. Instead, add a spec to the appropriate file in
-`lisp/keymaps/`:
+inline in modules. Instead, add an entry to the matching group in the right
+spec file under `lisp/keymaps/`. A group is `(prefix title bindings)` and each
+binding is a `(key command which-key-label)` triple:
 
 ```elisp
 ;; lisp/keymaps/keybindings-spec-core.el
-("p s" consult-ripgrep "ripgrep in project")
+;; Inside the ("p" "Project" ...) group:
+("s" consult-ripgrep "ripgrep in project")
 ```
 
-Each spec is a `(key command which-key-label)` triple. The engine:
+For a key that does not belong to a `C-c` group, use
+`(keymap-global-set "M-." #'riven/xref-find-definitions-or-search)` in the
+module that owns it (e.g. `lisp/ide/init-eglot.el`).
+
+The engine:
 
 - Clears owned `C-c` prefixes before applying.
 - Registers which-key descriptions.
@@ -206,11 +216,30 @@ When you add a feature that needs an env var, also:
 
 ## Testing
 
-Tests live in `tests/` and use ERT. Run with:
+Tests live in `tests/` (configuration modules) and
+`emacs-codeforces/test/` (both the bundled client's ERT suite and Python
+unit tests for `scripts/codeforces_agent.py`). Run everything with the
+repository runner:
 
 ```bash
-emacs --batch -l ert -l tests/<test-file>.el -f ert-run-tests-batch-and-exit
+scripts/run-tests.sh
 ```
 
+The runner adds the repository, every `lisp/` subdirectory, `tests/` and
+`emacs-codeforces/` to `load-path`, prefers the checked-in sources over stale
+`.elc` files, and never loads `init.el`. It exits non-zero if any suite fails.
+
+- **Default**: all `tests/test-*.el` ERT files, all
+  `emacs-codeforces/test/emacs-codeforces-*-test.el` files, and
+  `python3 -m unittest discover -s emacs-codeforces/test`.
+- **Single file**: `scripts/run-tests.sh <test-file>`.
+- **Opt-in startup tests**: `RIVENEMACS_RUN_INIT_TESTS=1 scripts/run-tests.sh`
+  additionally runs the tests that spawn a nested `emacs -l init.el` (slow and
+  may install packages over the network).
+- **Python only**:
+  `python3 -m unittest discover -s emacs-codeforces/test -v`
+  (bs4-dependent tests are skipped automatically when the optional dependency
+  is missing).
+
 Add tests for any non-trivial logic (the keybinding engine, server resolution,
-Codeforces client, etc.).
+the Codeforces client, the Python agent's pure helpers, etc.).

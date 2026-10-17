@@ -1,5 +1,10 @@
 # Startup Loading Hygiene Implementation Plan
 
+> **历史计划，勿按此实现。** 该计划完成于 general.el 退役前后，其中
+> `init-general`/`init-lsp-bridge`/`init-git-hunk` 模块和
+> `emacs-startup-hook` 延迟加载方案已不再是当前架构；当前延迟模块加载在
+> `after-init-hook`（depth -20），以 `AGENTS.md` 和实际代码为准。
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Make startup package loading deterministic and remove remaining unnecessary eager loads.

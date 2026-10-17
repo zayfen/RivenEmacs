@@ -73,7 +73,12 @@ by the declarative engine at `after-init-hook`.
 
 ### `C-c c` — Code (LSP)
 
-Bound in `eglot-mode-map`, so active in LSP-managed buffers.
+Owned exactly once, by the **global leader spec**
+(`lisp/keymaps/keybindings-spec-core.el`); there is no separate
+`eglot-mode-map` prefix any more. The keys are bound globally and dispatch to
+Eglot/xref commands; the Eglot-specific entries (rename, code actions, …)
+naturally require an Eglot-managed buffer, while the smartparens/quickrun keys
+work everywhere.
 
 | Key | Action |
 |-----|--------|
@@ -217,7 +222,8 @@ Bound in `eglot-mode-map`, so active in LSP-managed buffers.
 | `M-[` | goto-last-change | global |
 | `C-x o/1/2/3/0` | switch-window variants | global |
 | `C-x d` | dirvish | global |
-| `C-h` | diff-hl-show-hunk | prog |
+| `C-c h` | diff-hl-show-hunk | global (visible in which-key) |
+| `C-c ;` | embark-dwim | global (visible in which-key) |
 | `C-c m` | smerge hydra | merge buffers |
 | `C-c C-e` | JSX tag ops (rename/jump/delete) | tsx-ts-mode |
 | `C-c l` | markdown insert/menu hydra | markdown-mode |

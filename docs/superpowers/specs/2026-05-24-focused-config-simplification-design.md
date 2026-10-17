@@ -1,5 +1,9 @@
 # Focused Configuration Simplification Design
 
+> **历史设计，勿按此实现。** 其中提到的 `init-lsp-bridge.el`、
+> `init-git-hunk.el`、general.el/SPC 等均已删除或退役；当前架构见
+> `AGENTS.md` 和 `docs/wiki/Architecture.md`。
+
 **Date:** 2026-05-24
 **Repository:** RivenEmacs
 

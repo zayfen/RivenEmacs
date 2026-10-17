@@ -1,5 +1,10 @@
 # emacs-codeforces Implementation Plan
 
+> **历史计划，勿按此实现。** 实现已经演化：网站抓取/提交走
+> `scripts/codeforces_agent.py`（curl-cffi），没有 general.el leader 绑定，
+> `CODEFORCES_HOME` 由 Emacs 注入，凭据读写为原子 0600 文件。当前状态以
+> `emacs-codeforces/` 代码与 `docs/wiki/Modules.md` 为准。
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Build `emacs-codeforces`, an independent Emacs Lisp library (8 modules) that lets a user log in via session-cookie, browse problems with tag search, view Org-rendered problem statements, and submit solutions with real-time verdict polling — plus a thin RivenEmacs integration module.

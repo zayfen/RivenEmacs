@@ -5,11 +5,12 @@ RivenEmacs 是一套面向现代开发工作流的 Emacs 配置，重点放在�
 ## 核心优势
 
 - **架构清晰**：所有能力按目录分层放在 `lisp/` 下，入口只负责装配，模块只负责自己的领域。
-- **启动快**：`early-init.el` 处理 GC、文件名处理器、native-comp 缓存等启动期优化，重型模块延迟到 `emacs-startup-hook`。
-- **现代 IDE 体验**：默认使用 `eglot`，配合 `eglot-booster`、Tree-sitter、Flymake、Apheleia、Corfu/Cape，覆盖跳转、诊断、格式化、补全和文档。
+- **启动快**：`early-init.el` 处理 GC、文件名处理器、native-comp 缓存等启动期优化，重型模块延迟到 `after-init-hook` 的前部（depth -20，在桌面恢复/键位应用之前、首次 redisplay 之前）加载。
+- **现代 IDE 体验**：默认使用 `eglot`（唯一 LSP 客户端），配合 `eglot-booster`、Tree-sitter、Flymake、Apheleia、Corfu/Cape，覆盖跳转、诊断、格式化、补全和文档。
 - **AI 与 MCP 原生集成**：内置 `gptel`、`ai-code` 和多种 MCP server 配置，支持文件系统、记忆、浏览器、搜索等工具能力。
-- **声明式键位**：键位集中在 `lisp/keymaps/`，由声明式 spec 和引擎生成，便于查重、重载和维护 which-key 分组。
+- **声明式键位**：键位集中在 `lisp/keymaps/`，由声明式 spec 和引擎生成（`C-c` leader，已退役 general.el/SPC），便于查重、重载和维护 which-key 分组。
 - **可复现依赖管理**：`scripts/riven-deps.sh` 可以检查、安装和修复核心依赖、LSP、AI、MCP、拼写和 Markdown 预览工具。
+- **离线测试入口**：`scripts/run-tests.sh` 自动构造 `load-path`，运行项目 ERT、emacs-codeforces ERT 与 Python agent 单测，不加载 `init.el`、不联网。
 - **集中配置入口**：常用变量放在 `rivenEmacs` defgroup 下，可通过 `customize` 或环境变量调整。
 
 ## 快速开始
@@ -23,12 +24,15 @@ bash scripts/riven-deps.sh fix
 
 # 3) 再次验证
 bash scripts/riven-deps.sh doctor
+
+# 4) 运行离线测试（项目 ERT + emacs-codeforces ERT + Python 单测）
+scripts/run-tests.sh
 ```
 
-手动验证配置是否能完整加载：
+手动验证配置是否能完整加载（会按需安装 ELPA 包，可能联网）：
 
 ```bash
-emacs --batch -l init.el --eval "(message \"Config loaded successfully\")"
+emacs -q -l "$(pwd)/init.el" --eval "(message \"Config loaded successfully\")"
 ```
 
 ## 架构总览
@@ -50,10 +54,13 @@ RivenEmacs
 │   ├── lang/                  # Web、Rust、Python、Java、Swift、Org 等语言配置
 │   ├── keymaps/               # 声明式键位 spec、命令和应用引擎
 │   ├── session/               # desktop.el 会话持久化
-│   ├── tools/                 # Docker、Quickrun、Feed、Lookup、Terminal、Reader
+│   ├── tools/                 # Docker、Quickrun、Feed、Lookup、Terminal（ghostel 主）、Reader、Codeforces
 │   └── writing/               # 写作与导出相关配置
+├── emacs-codeforces/          # 内置 Codeforces 客户端（Elisp + Python agent + 测试）
+├── tests/                     # 项目 ERT 测试
 ├── scripts/riven-deps.sh      # 跨平台依赖检查、安装和修复脚本
-└── docs/                      # 性能报告和设计文档
+├── scripts/run-tests.sh       # 离线测试入口（ERT + Python unittest）
+└── docs/                      # 性能报告、wiki 和设计文档
 ```
 
 ### 加载路径
@@ -62,12 +69,12 @@ RivenEmacs
 
 1. **Core**：`init-use-package`、`init-config`、`init-default`、`init-helper`
 2. **UI 与编辑基础**：主题、字体、撤销、自动保存、which-key、补全、编辑器、Dired、格式化、Tree-sitter
-3. **AI 入口**：`gptel`、MCP 与 `ai-code` 在启动完成后延迟加载
-4. **写作与会话**：写作模块、Org 按需加载、`desktop.el` 会话管理
-5. **工具与键位**：终端和声明式键位聚合
-6. **延迟模块**：Eglot、VCS、调试、项目、GPT/MCP、语言和工具模块在 `emacs-startup-hook` 中加载
+3. **写作与会话**：写作模块、Org 按需加载、`desktop.el` 会话管理
+4. **工具与键位**：`init-terminal`，然后 `init-keybindings` 注册键位应用回调
+5. **延迟模块**：Eglot、VCS、调试、项目、GPT/MCP、语言和工具模块在 `after-init-hook`（depth -20）加载，先于桌面恢复与键位实际应用（depth 0），但仍是同步启动工作
+6. **AI 入口**：`gptel`、MCP 与 `ai-code` 同样在延迟阶段加载
 
-这种结构让首帧更快出现，同时保持完整开发环境在启动完成后自动就位。
+这种结构让立即加载路径保持精简；重模块仍在本次启动中同步加载，但保证各自的 hook 在桌面恢复和首次交互前就绪。
 
 ## 特性
 
@@ -84,7 +91,7 @@ RivenEmacs
 - `eglot-booster` 在可用时自动启用，提高 JSON-RPC 传输性能。
 - Python LSP 会按 `basedpyright-langserver`、`pyright-langserver`、`ruff server`、`pylsp` 顺序选择可用实现。
 - Vue、Kotlin 等语言 server 注册逻辑集中在 `lisp/ide/init-eglot.el`。
-- Tree-sitter 由 `treesit-auto` 管理，支持现代 mode remap 和手动 grammar 安装。
+- Tree-sitter 使用 Emacs 31 原生 `treesit-enabled-modes`/mode remap，支持手动 grammar 安装。
 - Flymake 负责诊断，ElDoc 保持单行 minibuffer 文档，减少窗口抖动。
 
 ### AI 与 MCP
@@ -195,22 +202,30 @@ bash scripts/riven-deps.sh fix --profile ~/.zshrc
 ## 常用验证命令
 
 ```bash
-# 检查完整配置加载
-emacs --batch -l init.el --eval "(message \"Config loaded successfully\")"
+# 运行全部离线测试（项目 ERT + emacs-codeforces ERT + Python agent 单测）
+scripts/run-tests.sh
 
-# Byte compile 单个文件
+# 只跑单个 ERT 文件
+scripts/run-tests.sh tests/test-init-terminal.el
+
+# 只跑 ERT（跳过 Python 单测）
+scripts/run-tests.sh --no-python
+
+# 只跑 Python agent 单测
+python3 -m unittest discover -s emacs-codeforces/test -v
+
+# Byte compile 单个模块（配置模块位于 lisp/<分组>/ 下）
 emacs --batch -f batch-byte-compile lisp/core/init-config.el
-
-# Byte compile 全部一级 lisp 文件
-emacs --batch -f batch-byte-compile lisp/*.el
-
-# 测试 init.el 基础加载
-emacs --batch -l init.el --eval "(message \"All modules loaded\")"
 ```
+
+> `emacs --batch -f batch-byte-compile lisp/*.el` 已过时：`lisp/` 顶层只保留
+> `env.el`，所有模块都在 `lisp/<分组>/` 中。
 
 ## Tree-sitter
 
-RivenEmacs 使用 `treesit-auto` 管理 Tree-sitter mode remap 和 grammar 安装提示。
+RivenEmacs 在 Emacs 31 上使用原生 `treesit-enabled-modes` /
+`treesit-major-mode-remap-alist` 管理 Tree-sitter mode remap，并内置 grammar
+源列表与安装命令（旧的 `treesit-auto` 方案已不再使用）。
 
 手动安装 grammar：
 

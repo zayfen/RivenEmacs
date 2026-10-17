@@ -1,7 +1,8 @@
 # Language Support
 
-RivenEmacs uses **eglot as the default LSP client** (with `eglot-booster`).
-`lsp-bridge` is kept as a shim but is **not loaded** by `init.el`.
+RivenEmacs uses **eglot as the only LSP client** (with `eglot-booster`).
+`lsp-bridge` was retired and its module removed; any `lsp-bridge-*` command in
+older notes is historical and unavailable.
 
 A signature feature: **on-demand server installation**. When you open a file and
 the language server binary is not on `PATH`, eglot prompts in the minibuffer

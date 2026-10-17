@@ -1,6 +1,6 @@
 # Modules Reference
 
-All configuration lives under `lisp/`, organized into **16 module groups** by
+All configuration lives under `lisp/`, organized into **15 module groups** by
 concern. Each `.el` file follows the module template (see
 [Development](Development.md)).
 
@@ -64,8 +64,7 @@ concern. Each `.el` file follows the module template (see
 
 | File | Purpose |
 |------|---------|
-| `init-eglot.el` | **Default LSP** — builtin `eglot` + `eglot-booster`. On-demand server install (see [Language-Support](Language-Support.md)). `yasnippet`. Xref: `M-.`/`M-,`/`M-?`. |
-| `init-lsp-bridge.el` | Alternative `lsp-bridge` (kept as shim; **not loaded** by `init.el`). |
+| `init-eglot.el` | **The only LSP client** — builtin `eglot` + `eglot-booster`. On-demand server install (see [Language-Support](Language-Support.md)). `yasnippet`. Xref: `M-.`/`M-,`/`M-?`. |
 | `init-checker.el` | `flymake` (debounced current-line echo in minibuffer, colored mode-line counters), `flymake-eslint` (prefers `oxlint`), `eslint-fix`. |
 | `init-debugger.el` | `dape` (DAP client) under `C-c d`; saves/loads breakpoints, pulses source line. |
 | `init-jump.el` | `switch-window` (`C-x o/1/2/3/0`), `goto-last-change` (`M-[`), `dumb-jump`. |
@@ -77,7 +76,6 @@ concern. Each `.el` file follows the module template (see
 | File | Purpose |
 |------|---------|
 | `init-vc.el` | `magit` (fullcolumn, gravatars, todos), `magit-todos`, `diff-hl` (gutter), `git-timemachine`, `git-modes`, `ediff` (horizontal), `smerge-mode` with `hydra/smerge` (`C-c m`). `C-c h` → diff-hl-show-hunk. |
-| `init-git-hunk.el` | Compatibility shim → requires `init-vc`. |
 
 ## `lisp/ai/` — AI Integration
 
@@ -116,7 +114,7 @@ See **[Architecture §Declarative Keybinding Engine](Architecture.md#declarative
 | `keybindings-spec-lsp.el` | LSP specs. |
 | `keybindings-spec-org.el` | Org/session specs. |
 | `keybindings-commands.el` | Interactive helpers backing specs. |
-| `init-keybindings.el` | Entry point; also installs `C-c c` LSP prefix in `eglot-mode-map`. |
+| `init-keybindings.el` | Entry point; applies all specs from `after-init-hook` and configures which-key groups. |
 
 ## `lisp/session/` — Session Persistence
 
@@ -128,13 +126,13 @@ See **[Architecture §Declarative Keybinding Engine](Architecture.md#declarative
 
 | File | Purpose |
 |------|---------|
-| `init-terminal.el` | `ghostel` (default, `C-c t t`), `eat`, `vterm`. |
+| `init-terminal.el` | `ghostel` is the primary terminal (`C-c t t`); `eat` and `vterm` are declared as fallbacks. `eat` starts in line mode via `eat-exec-hook`. |
 | `init-docker.el` | `dockerfile-mode`, `docker`. |
 | `init-quickrun.el` | `quickrun`. |
 | `init-feed.el` | `elfeed` RSS (~13 preconfigured feeds) + `elfeed-goodies`. |
 | `init-lookup.el` | `devdocs` (per-language doc sets), `fanyi` dictionary. |
 | `init-reader.el` | `reader` (epub/book reader from codeberg). |
-| `init-codeforces.el` | Loads bundled `emacs-codeforces/` library. Commands via `M-x codeforces-*`. |
+| `init-codeforces.el` | Loads bundled `emacs-codeforces/` library. Commands via `M-x codeforces-*` (no default keybindings). |
 
 ## `lisp/writing/` — Writing & Export
 

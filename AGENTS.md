@@ -1,25 +1,40 @@
 # AGENTS.md - RivenEmacs Development Guide
 
-This document provides guidance for AI agents working on RivenEmacs, a highly modular and performance-optimized Emacs configuration.
+This document provides guidance for AI agents working on RivenEmacs, a highly modular and performance-optimized Emacs configuration (target: Emacs 31.1).
 
 ## Build/Lint/Test Commands
 
+`scripts/run-tests.sh` is the canonical test entry point. It builds `load-path`
+from the repository itself, prefers the checked-in sources over stale `.elc`
+files, never loads `init.el`, and needs no network:
+
 ```bash
-# Check configuration syntax (all files)
-emacs --batch -l init.el --eval "(message \"Config loaded successfully\")"
+# Run everything: project ERT + emacs-codeforces ERT + Python agent unit tests
+scripts/run-tests.sh
 
-# Byte compile a single file
-emacs --batch -f batch-byte-compile lisp/init-config.el
+# Run a single ERT file (bare names are resolved in tests/ and emacs-codeforces/test/)
+scripts/run-tests.sh tests/test-init-terminal.el
+scripts/run-tests.sh emacs-codeforces/test/emacs-codeforces-auth-test.el
 
-# Byte compile all configuration files
-emacs --batch -f batch-byte-compile lisp/*.el
+# Skip the Python unit tests
+scripts/run-tests.sh --no-python
 
-# Load init.el and test basic functionality
-emacs --batch -l init.el --eval "(message \"All modules loaded\")"
+# Python agent unit tests only (offline; bs4-only tests are skipped when missing)
+python3 -m unittest discover -s emacs-codeforces/test -v
 
-# Test with clean state (no custom.el)
-emacs -q -l ~/.emacs.d/init.el
+# Opt-in: also run the startup integration tests that spawn `emacs -l init.el`
+# (slow, may install packages over the network)
+RIVENEMACS_RUN_INIT_TESTS=1 scripts/run-tests.sh
+
+# Byte compile a single module (configuration modules live in lisp/<group>/)
+emacs --batch -f batch-byte-compile lisp/core/init-config.el
+
+# Interactive smoke test; may install packages from ELPA and access the network
+emacs -q -l /path/to/RivenEmacs/init.el
 ```
+
+`emacs --batch -f batch-byte-compile lisp/*.el` is obsolete — `lisp/` only
+contains `env.el` at the top level and all modules live in `lisp/<group>/`.
 
 ## Code Style Guidelines
 
@@ -71,12 +86,12 @@ emacs -q -l ~/.emacs.d/init.el
 ### Error Handling
 Use `condition-case` for graceful fallbacks:
 ```elisp
-(defun lsp-bridge-find-def-ex ()
-  "Try lsp-bridge-find-def, with xref fallback."
+(defun riven/find-definition ()
+  "Try Eglot's definition handler, falling back to plain xref."
   (interactive)
   (condition-case err
-      (call-interactively 'lsp-bridge-find-def)
-    (error (call-interactively 'xref-find-definitions))))
+      (call-interactively #'eglot-find-declaration)
+    (error (call-interactively #'xref-find-definitions))))
 ```
 
 For optional features, check feature availability:
@@ -86,16 +101,27 @@ For optional features, check feature availability:
 ```
 
 ### Keybinding Patterns
-Uses `general.el` with leader key (SPC):
-```elisp
-(leader-def
-  :infix "b"
-  "" '(:ignore t :wk "Buffer")
-  "." '(+show-current-buffer-path :wk "Show buffer path"))
+RivenEmacs uses a **declarative keybinding engine with `C-c` as the leader
+prefix**. `general.el` and the old `SPC` leader are retired; do not add
+`leader-def` forms or `general-*` dependencies.
 
-(keymap-global-set "M-." #'lsp-bridge-find-def)
-(keymap-global-set "C-," #'lsp-bridge-find-def-return)
+Keybindings are declared in specs, not inline in feature modules:
+
+```elisp
+;; lisp/keymaps/keybindings-spec-core.el
+(defconst riven/keybindings-leader-spec-core
+  '(("f" "File"
+     (("f" consult-fd "Find file")
+      ("r" consult-recent-file "Recent file")))))
 ```
+
+The engine (`lisp/keymaps/keybindings-engine.el`) applies every spec on
+`after-init-hook`, clears the `C-c` prefixes it owns, registers which-key
+labels, and warns about duplicate keys / missing commands. Add commands that
+back a spec to `lisp/keymaps/keybindings-commands.el`.
+
+Global bindings that are not part of a leader group are set directly, e.g.
+`(keymap-global-set "M-." #'riven/xref-find-definitions-or-search)`.
 
 ### Documentation
 Every function needs a docstring. Use `defcustom` for user-configurable options:
@@ -124,26 +150,78 @@ Every function needs a docstring. Use `defcustom` for user-configurable options:
 - Use `interactive` for user-callable functions
 - Prefer `condition-case` over silent error suppression
 
+## Repository Layout
+
+```
+init.el / early-init.el      # assembly + startup performance only
+lisp/core/                   # env, config, defaults, helper, use-package
+lisp/ui/                     # theme, font, which-key, hydra
+lisp/completion/             # minibuffer/vertico stack, consult, corfu, cape
+lisp/editor/                 # editing, format, pairs, fold, undo, markdown
+lisp/files/                  # dired/dirvish
+lisp/parser/                 # tree-sitter
+lisp/ide/                    # eglot (only LSP client), checker, debugger, jump, envrc, project
+lisp/vcs/                    # magit, diff-hl, git-timemachine, smerge
+lisp/ai/                     # gptel, MCP, ai-code
+lisp/lang/                   # per-language config
+lisp/keymaps/                # declarative keybinding specs + engine
+lisp/session/                # desktop.el session persistence
+lisp/tools/                  # terminal, docker, quickrun, feed, lookup, reader, codeforces
+lisp/writing/                # ews, beamer lecture export
+emacs-codeforces/            # bundled Codeforces client (Elisp + Python agent)
+tests/                       # project ERT suite
+scripts/                     # riven-deps.sh (deps), run-tests.sh (tests)
+```
+
+`lisp/custom.el` was removed: `custom-file` points to `custom.el` at the
+repository root (set in `early-init.el`). Keep Custom-generated state there and
+do not recreate `lisp/custom.el` (it would shadow the built-in `custom`).
+
 ## Module Loading Order
 
-1. **Core**: `init-use-package` → `init-config` → `init-default` → `init-helper`
-2. **UI**: `init-theme` → `init-font` → `init-undo` → `init-autosave`
-3. **Foundation**: `init-which-key` → `init-general` → `init-hydra`
-4. **Completion**: `init-consult` → `init-vertico` → `init-crux` → `init-editor`
-5. **File/Edit**: `init-dired` → `init-format` → `init-jump` → `init-editorconfig`
-6. **Code**: `init-checker` → `init-pair` → `init-fold` → `init-markdown`
-7. **Parser**: `init-treesit`
-8. **IDE**: `init-lsp-bridge`
-9. **VCS**: `init-vc` → `init-debugger` → `init-git-hunk`
-10. **Env/Project**: `init-envrc` → `init-project`
-11. **AI**: `init-gpt` → `init-ai-code`
-12. **Languages**: `init-web` → `init-rust` → `init-python` → `init-java` → `init-swift`
-13. **Writing**: `ews` (org hook), `init-org`
-14. **Tools**: `init-docker` → `init-quickrun` → `init-feed` → `init-lookup` → `init-terminal` → `init-reader`
-15. **Final**: `init-keybindings`
+`init.el` only assembles; feature configuration lives in the modules.
+
+1. **Bootstrap**: `load-path` (repo root, `lisp/`, every first-level subdir of
+   `lisp/` plus its immediate subdirectories, except `lisp/local`),
+   `exec-path-from-shell` (deferred 2 s), `lisp/env.el`, package system.
+2. **Immediate modules** (in this order):
+   - **Core**: `init-use-package` → `init-config` → `init-default` → `init-helper`
+   - **UI/editing**: theme, font, undo, autosave, which-key, hydra, minibuffer,
+     completion-ui, consult, vertico (shim), crux, editor, dired, format, jump,
+     editorconfig, checker, pair, fold, markdown, treesit
+   - **Writing**: `ews` (immediate) + `init-org` (lazy via `org-mode-hook`)
+   - **Session**: `init-session`
+   - **Tooling**: `init-terminal`
+   - **Keymaps**: `init-keybindings` (registers its `after-init-hook` handler)
+3. **Deferred modules** are registered on `after-init-hook` at **depth -20**,
+   so they load during startup at the front of `after-init-hook`, before the
+   default-depth handlers (desktop restore, keybinding application) and before
+   the first redisplay. This is still synchronous startup work (not idle-deferred),
+   so it adds to total startup time; `emacs-startup-hook`, where `early-init.el`
+   restores the normal GC threshold, runs after them:
+   `init-eglot` → `init-vc` → `init-debugger` → `init-envrc` →
+   `init-project` → `init-gpt` → `init-ai-code` → `init-web` → `init-rust` →
+   `init-python` → `init-java` → `init-swift` → `init-docker` →
+   `init-quickrun` → `init-feed` → `init-lookup` → `init-reader` →
+   `init-codeforces`.
+
+## LSP / Terminals
+
+- **LSP**: `eglot` is the only LSP client (see `lisp/ide/init-eglot.el`).
+  `lsp-bridge` was removed; do not reference `lsp-bridge-*` in new code.
+  `rivenEmacs-lsp-modes` in `lisp/core/init-config.el` lists auto-enabled modes.
+- **Terminal**: `ghostel` is the primary terminal (`C-c t t`); `eat` and
+  `vterm` are declared as fallbacks (`lisp/tools/init-terminal.el`).
 
 ## Environment Variables
 
 - `DEFAULT_WORKSPACE`: Default project directory
 - `HTTP_PROXY`/`HTTPS_PROXY`: Network proxy
-- `GROQ_API_KEY`, `DEEPSEEK_API_KEY`, `ANTHROPIC_AUTH_TOKEN`: AI services
+- `GROQ_API_KEY`, `DEEPSEEK_API_KEY`, `OPENAI_API_KEY`, `ANTHROPIC_AUTH_TOKEN`,
+  `ANTHROPIC_BASE_URL`: AI services
+- `BRAVE_API_KEY`, `TAVILY_API_KEY`, `GITHUB_TOKEN`: MCP tool servers
+- `CODEFORCES_HOME`: Optional override of the Codeforces client home directory
+  (Emacs passes it to the bundled Python agent automatically)
+
+See `scripts/riven-deps.sh list` for the authoritative dependency/env list.
+Docs live in `docs/wiki/`; start with `docs/wiki/Development.md`.
