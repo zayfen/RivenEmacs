@@ -20,6 +20,11 @@ Also a `defcustom' in `emacs-codeforces.el'; kept here so this module
 works when loaded standalone (the `defcustom' will not overwrite an
 already-set value).")
 
+(defvar +cf--cookie-history nil
+  "Private minibuffer history for Codeforces session cookies.
+Kept out of `minibuffer-history' so `savehist-mode' never persists a
+session cookie to disk.")
+
 (defun +cf--credentials-file ()
   "Return the path to the credentials file (handle=.../cookie=...)."
   (expand-file-name "credentials" codeforces-home-directory))
@@ -29,9 +34,27 @@ already-set value).")
   (expand-file-name "cookie" codeforces-home-directory))
 
 (defun +cf--ensure-home-dir ()
-  "Create `codeforces-home-directory' (and cache/workspace subdirs)."
+  "Create `codeforces-home-directory' (and cache/workspace subdirs).
+The home directory itself is made private (mode 0700) because it holds
+the session cookie."
   (make-directory (expand-file-name "cache" codeforces-home-directory) t)
-  (make-directory (expand-file-name "workspace" codeforces-home-directory) t))
+  (make-directory (expand-file-name "workspace" codeforces-home-directory) t)
+  (set-file-modes codeforces-home-directory #o700))
+
+(defun +cf--write-private-file (file content)
+  "Atomically write CONTENT to FILE with private (0600) permissions.
+The data is first written to a temporary file in FILE's own directory
+and then renamed into place, so a reader never observes a partial file
+and FILE is created private instead of being chmod'ed after the fact."
+  (let* ((dir (file-name-directory file))
+         (tmp (make-temp-file (expand-file-name ".cf-tmp-" dir))))
+    (unwind-protect
+        (let ((coding-system-for-write 'utf-8-unix))
+          (with-temp-file tmp
+            (insert content))
+          (rename-file tmp file t))
+      (when (file-exists-p tmp)
+        (delete-file tmp)))))
 
 (defun +cf--parse-credentials ()
   "Return an alist ((handle . \"...\") (cookie . \"...\")) from the credentials file."
@@ -65,16 +88,14 @@ already-set value).")
   (alist-get 'cookie (+cf--parse-credentials)))
 
 (defun +cf--write-credentials (handle cookie)
-  "Write HANDLE and COOKIE to the credentials and cookie files (mode 0600)."
+  "Write HANDLE and COOKIE to the credentials and cookie files (mode 0600).
+Both files are written atomically with a private temporary file, so the
+credentials never exist with looser permissions and are never partially
+visible to readers."
   (+cf--ensure-home-dir)
-  (let ((creds (+cf--credentials-file))
-        (cookief (+cf--cookie-file)))
-    (with-temp-file creds
-      (insert (format "handle=%s\ncookie=%s\n" handle cookie)))
-    (set-file-modes creds #o600)
-    (with-temp-file cookief
-      (insert cookie))
-    (set-file-modes cookief #o600)))
+  (+cf--write-private-file (+cf--credentials-file)
+                           (format "handle=%s\ncookie=%s\n" handle cookie))
+  (+cf--write-private-file (+cf--cookie-file) cookie))
 
 ;;;###autoload
 (defun codeforces-login (handle cookie)
@@ -84,7 +105,13 @@ request to codeforces.com (used by the agent to submit).  No validation is
 done here.  Interactively, prompts for both."
   (interactive
    (list (read-string "Codeforces handle (your username, e.g. tourist): ")
-         (read-string "Codeforces session cookie (full Cookie: header from browser): ")))
+         ;; `read-passwd' hides the typed input and never records it in the
+         ;; default `minibuffer-history'; the private history binding is a
+         ;; second line of defence for prompts that do record history.
+         (let ((minibuffer-history-variable '+cf--cookie-history))
+           (unwind-protect
+               (read-passwd "Codeforces session cookie (full Cookie: header from browser): ")
+             (setq +cf--cookie-history nil)))))
   (when (string-empty-p handle)
     (error "Handle cannot be empty"))
   (when (string-empty-p cookie)
@@ -102,6 +129,7 @@ done here.  Interactively, prompts for both."
   (dolist (f (list (+cf--credentials-file) (+cf--cookie-file)))
     (when (file-exists-p f)
       (delete-file f)))
+  (setq +cf--cookie-history nil)
   (message "Codeforces credentials cleared."))
 
 (provide 'emacs-codeforces-auth)

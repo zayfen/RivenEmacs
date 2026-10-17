@@ -18,6 +18,6 @@
   (undo-fu-session-compression (if (executable-find "zstd") 'zst 'gz))
   (undo-fu-session-directory (concat local-dir "undo-fu-session/"))
   :config
-  (global-undo-fu-session-mode 1))
+  (undo-fu-session-global-mode 1))
 
 (provide 'init-undo)

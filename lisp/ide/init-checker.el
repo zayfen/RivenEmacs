@@ -119,6 +119,25 @@ so `flymake-diagnostics' is only consulted when the user pauses."
 
 
 ;; ESLint 支持
+;; `+flymake-eslint-enable-safe' must exist before the mode hooks run, so
+;; define it at top level (a `defun' inside `:config' is never defined when
+;; `use-package-always-defer' is active).  The package is required lazily on
+;; the first JS-like buffer.
+(defun +flymake-eslint-enable-safe ()
+  "Enable flymake-eslint only when an eslint executable is available."
+  (when (require 'flymake-eslint nil t)
+    (when (or (executable-find
+               (or (and (boundp 'flymake-eslint-executable-name)
+                        flymake-eslint-executable-name)
+                   "eslint"))
+              (let* ((root (locate-dominating-file
+                            (or (buffer-file-name) default-directory)
+                            "node_modules"))
+                     (local (when root
+                              (expand-file-name "node_modules/.bin/eslint" root))))
+                (and local (file-executable-p local))))
+      (flymake-eslint-enable))))
+
 (use-package flymake-eslint
   :ensure t
   :hook ((js-mode . +flymake-eslint-enable-safe)
@@ -128,52 +147,48 @@ so `flymake-diagnostics' is only consulted when the user pauses."
          (typescript-ts-mode . +flymake-eslint-enable-safe)
          (tsx-ts-mode . +flymake-eslint-enable-safe)
          (web-mode . +flymake-eslint-enable-safe)
-         (vue-ts-mode . +flymake-eslint-enable-safe))
-  :config
-  (defun +flymake-eslint-enable-safe ()
-    "Enable flymake-eslint only when an eslint executable is available."
-    (when (or (executable-find (or flymake-eslint-executable-name "eslint"))
-              (let* ((root (locate-dominating-file
-                            (or (buffer-file-name) default-directory)
-                            "node_modules"))
-                     (local (when root
-                              (expand-file-name "node_modules/.bin/eslint" root))))
-                (and local (file-executable-p local))))
-      (flymake-eslint-enable)))
+         (vue-ts-mode . +flymake-eslint-enable-safe)))
 
-  (when (executable-find "oxlint")
-    (setq flymake-eslint-executable-name "oxlint"))
+;; These three definitions live at top level (not in `flymake-eslint's
+;; `:config'): `use-package-always-defer' means that config only runs when
+;; the package is actually loaded, and `flymake-quickdef's config never runs
+;; at all because nothing loads it.  Defining them here keeps `eslint-fix'
+;; and friends available on startup.
+(defun get-eslint-path ()
+  "Return the path to the local ESLint executable, or \"eslint\".
+Uses the project-local `node_modules/.bin/eslint' when it exists and is
+executable, otherwise falls back to the global eslint command."
+  (let* ((root (locate-dominating-file
+                (or (buffer-file-name) default-directory)
+                "node_modules"))
+         (eslint (when root
+                   (expand-file-name "node_modules/.bin/eslint" root))))
+    (if (and eslint (file-executable-p eslint))
+        eslint
+      "eslint")))
 
-  (defun get-eslint-path ()
-    "Get the path to the local eslint executable if available, otherwise fall back to global eslint."
-    (let* ((root (locate-dominating-file
-                  (or (buffer-file-name) default-directory)
-                  "node_modules"))
-           (eslint (when root
-                     (expand-file-name "node_modules/.bin/eslint" root))))
-      (if (and eslint (file-executable-p eslint))
-          eslint
-        "eslint")))
+(defun my/use-eslint-from-node-modules ()
+  "Use the project-local ESLint executable when available."
+  (let* ((root (locate-dominating-file
+                (or (buffer-file-name) default-directory)
+                "node_modules"))
+         (eslint
+          (and root
+               (expand-file-name "node_modules/.bin/eslint"
+                                 root))))
+    (when (and eslint (file-executable-p eslint))
+      (setq-local flymake-eslint-executable-name eslint))))
 
-  (defun my/use-eslint-from-node-modules ()
-    "使用项目本地的 ESLint 可执行文件。"
-    (let* ((root (locate-dominating-file
-                  (or (buffer-file-name) default-directory)
-                  "node_modules"))
-           (eslint
-            (and root
-                 (expand-file-name "node_modules/.bin/eslint"
-                                   root))))
-      (when (and eslint (file-executable-p eslint))
-        (setq-local flymake-eslint-executable-name eslint))))
-
-  (add-hook 'flymake-mode-hook #'my/use-eslint-from-node-modules))
+(add-hook 'flymake-mode-hook #'my/use-eslint-from-node-modules)
 
 
 ;; 错误修复支持
 (use-package flymake-quickdef
   :ensure t
-  :after flymake
+  ;; `:demand t' is required: without it `use-package-always-defer' wraps
+  ;; this `:config' in an `eval-after-load' that never fires, so the
+  ;; `flymake-eslint-fix' backend would never be registered.
+  :demand t
   :config
   ;; 定义 ESLint 修复后端
   (flymake-quickdef-backend flymake-eslint-fix
@@ -187,19 +202,38 @@ so `flymake-diagnostics' is only consulted when the user pauses."
     :prep-diagnostic (lambda (_match) (flymake-make-diagnostic
                                        (current-buffer)
                                        (point-min) (point-max)
-                                       :note "ESLint fix applied")))
+                                       :note "ESLint fix applied"))))
 
-  ;; 添加 ESLint 修复命令
-  (defun eslint-fix ()
-    "使用 ESLint 修复当前文件。"
-    (interactive)
-    (let* ((eslint-exec (get-eslint-path)))
-      (if (executable-find eslint-exec)
-          (progn
-            (shell-command (format "%s --fix %s" eslint-exec (buffer-file-name)))
-            (revert-buffer t t)
-            (message "ESLint fix applied"))
-        (message "ESLint not found")))))
+(defun eslint-fix ()
+  "Fix the current file with ESLint.
+Runs the project-local or global ESLint executable with `--fix' and
+shows its output when it exits non-zero.  The buffer must be visiting a
+saved file; save it first so ESLint edits the same content that Emacs
+will reload."
+  (interactive)
+  (let ((file (buffer-file-name)))
+    (unless file
+      (user-error "Buffer is not visiting a file"))
+    (when (buffer-modified-p)
+      (user-error "Save the buffer before running ESLint fix"))
+    (let ((eslint (get-eslint-path)))
+      (unless (executable-find eslint)
+        (user-error "ESLint not found; install it or add it to PATH"))
+      (let ((output (get-buffer-create "*eslint-fix*")))
+        (with-current-buffer output
+          (erase-buffer))
+        (let ((status (condition-case err
+                          (process-file eslint nil output nil "--fix" file)
+                        (error
+                         (user-error "Failed to run ESLint: %s"
+                                     (error-message-string err))))))
+          (if (and (integerp status) (zerop status))
+              (progn
+                (revert-buffer t t t)
+                (message "ESLint fix applied"))
+            (display-buffer output)
+            (user-error "ESLint failed (exit %s); see %s"
+                        status (buffer-name output))))))))
 
 
 ;; 增强的错误显示

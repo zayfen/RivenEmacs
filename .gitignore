@@ -61,6 +61,10 @@ flycheck_*.el
 # network security
 /network-security.data
 
+# Python caches (emacs-codeforces agent/tests)
+__pycache__/
+*.pyc
+
 
 # End of https://www.toptal.com/developers/gitignore/api/emacs
 /recentf

@@ -51,11 +51,13 @@ Signal a user error when the current buffer is not visiting a file."
     (message "Renamed buffer to %s" new-name)))
 
 (defun riven/keybindings-delete-current-file-or-buffer ()
-  "Delete the current file and kill its buffer, or kill a non-file buffer."
+  "Delete the current file and kill its buffer, or kill a non-file buffer.
+When `delete-by-moving-to-trash' is enabled the file is moved to the
+system trash instead of being removed irretrievably."
   (interactive)
   (if-let* ((file (riven/keybindings-current-file)))
       (when (yes-or-no-p (format "Delete file %s? " (abbreviate-file-name file)))
-        (delete-file file)
+        (delete-file file t)
         (kill-buffer (current-buffer))
         (message "Deleted %s" (abbreviate-file-name file)))
     (kill-buffer (current-buffer))))

@@ -122,13 +122,17 @@
   (should (equal (cdr (assoc "C-c &" which-key--prefix-title-alist)) "Yas")))
 
 (ert-deftest riven/structured-keybindings-c-c-top-level-hides-non-groups ()
-  "`C-c' top-level which-key entries only show structured groups."
+  "`C-c' top-level which-key entries show labelled groups, hide the rest."
   (require 'which-key)
   (riven/test-apply-structured-keybindings)
-  (let ((embark-entry (which-key--maybe-replace '("C-c ;" . "embark-dwim")))
-        (file-entry (which-key--maybe-replace '("C-c f" . "prefix"))))
-    (should-not embark-entry)
-    (should (equal file-entry '("C-c f" . "File")))))
+  (let ((act-entry (which-key--maybe-replace '("C-c ;" . "embark-dwim")))
+        (hunk-entry (which-key--maybe-replace '("C-c h" . "diff-hl-show-hunk")))
+        (file-entry (which-key--maybe-replace '("C-c f" . "prefix")))
+        (non-group-entry (which-key--maybe-replace '("C-c z" . "some-command"))))
+    (should (equal act-entry '("C-c ;" . "Act")))
+    (should (equal hunk-entry '("C-c h" . "Hunk")))
+    (should (equal file-entry '("C-c f" . "File")))
+    (should-not non-group-entry)))
 
 (ert-deftest riven/structured-keybinding-helper-commands-are-interactive ()
   "Helper commands used by specs exist and are interactive."

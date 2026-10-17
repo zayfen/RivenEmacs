@@ -3,10 +3,10 @@
 
 (use-package rust-ts-mode
   :mode ("\\.rs\\'" . rust-ts-mode)
-  :init
-  (setq rust-ts-mode-treesitter-derive t)
   :config
-  (setq rust-ts-mode-indent-offset 2)
+  ;; Emacs 31 renamed `rust-ts-mode-indent-offset' to `rust-ts-indent-offset'
+  ;; (the old name is an obsolete variable alias since 31).
+  (setq rust-ts-indent-offset 2)
   (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-ts-mode)))
 
 ;; (use-package rustic

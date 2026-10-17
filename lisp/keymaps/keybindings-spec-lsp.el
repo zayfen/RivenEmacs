@@ -91,16 +91,4 @@
       (when (window-live-p win)
         (select-window win)))))
 
-(defvar riven/keybindings-lsp-spec
-  '(("d" riven/xref-find-definitions-or-search "Find Definition")
-    ("D" riven/eglot-find-declaration-dispatch "Find Declaration")
-    ("r" xref-find-references "Find References")
-    ("i" eglot-find-implementation "Find Implementation")
-    ("t" riven/eglot-find-type-definition-dispatch "Find Type Definition")
-    ("a" eglot-code-actions "Code Actions")
-    ("f" riven/eglot-format-dispatch "Format Buffer")
-    ("R" eglot-rename "Rename Symbol")
-    ("q" quickrun "Quickrun"))
-  "Declarative specs for Eglot-local code keybindings.")
-
 (provide 'keybindings-spec-lsp)

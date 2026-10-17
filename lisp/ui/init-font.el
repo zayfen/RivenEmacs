@@ -20,6 +20,7 @@
 
 (defun riven/apply-fonts ()
   "Apply fixed/variable/CJK/emoji font configuration consistently."
+  (interactive)
   (let* ((size (riven/font-size-default))
          (fixed (or (riven/first-available-font
                      '("Intel One Mono" "Liga SFMono Nerd Font" "JetBrainsMono Nerd Font" "Menlo" "Monaco"))
@@ -53,6 +54,11 @@
         (set-fontset-font (frame-parameter nil 'font) charset
                           (font-spec :family cjk))))))
 
-(riven/apply-fonts)
+;; Font probing and frame font reconfiguration are meaningful only on a
+;; graphical display: in -nw/daemon sessions `find-font' and `set-frame-font'
+;; add startup work with no effect.  The function is still available for
+;; interactive re-application (M-x riven/apply-fonts) after a frame change.
+(when (display-graphic-p)
+  (riven/apply-fonts))
 
 (provide 'init-font)

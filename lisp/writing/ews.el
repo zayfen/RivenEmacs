@@ -121,7 +121,7 @@ Use when adding or removing a BibTeX file from or to `ews-bibtex-directory`."
 (defun ews-bibtex-biblio-lookup ()
   "Insert Biblio search results into current buffer or select BibTeX file."
   (interactive)
-  (if-let ((current-mode major-mode)
+  (if-let* ((current-mode major-mode)
 	   ews-bibtex-files
 	   (bibfiles (length ews-bibtex-files))
 	   (bibfile (cond ((eq bibfiles 1) (car ews-bibtex-files))
@@ -274,15 +274,30 @@ current note."
 
 ;;;###autoload
 (defun ews-org-insert-screenshot ()
-  "Take a screenshot with the maim program and insert as an Org mode link."
+  "Take a screenshot and insert it as an Org mode link.
+Uses `screencapture -i' on macOS and `maim --select' elsewhere.  The
+external program is invoked with `call-process', so the file name is
+passed as a single argument and never interpreted by a shell."
   (interactive)
   (let ((filename (read-file-name "Enter filename for screenshot: " default-directory)))
     (unless (string-equal "png" (file-name-extension filename))
       (setq filename (concat (file-name-sans-extension filename) ".png")))
-    (call-process-shell-command (format "maim --select %s" filename))
-    (insert (format "#+caption: %s\n" (read-from-minibuffer "Caption: ")))
-    (insert (format "[[file:%s]]" filename))
-    (org-redisplay-inline-images)))
+    (let* ((darwinp (eq system-type 'darwin))
+           (program (if darwinp "screencapture" "maim"))
+           (args (if darwinp
+                     (list "-i" filename)
+                   (list "--select" filename)))
+           (status (if (executable-find program)
+                       (call-process program nil nil nil args)
+                     (message "[ews] `%s' not found; install it to take screenshots"
+                              program)
+                     127)))
+      (if (and (integerp status) (zerop status))
+          (progn
+            (insert (format "#+caption: %s\n" (read-from-minibuffer "Caption: ")))
+            (insert (format "[[file:%s]]" filename))
+            (org-redisplay-inline-images))
+        (message "[ews] Screenshot failed (exit %s); file: %s" status filename)))))
 
 ;;; Org mode todo enhancements
 (defun ews--org-recurring-action-p ()
@@ -293,10 +308,13 @@ current note."
 
 ;;;###autoload
 (defun ews-org-reset-checkboxes-when-done ()
-  "Reset all checkboxes in the subtree when status changes."
+  "Reset all checkboxes in the subtree when status changes.
+`org-get-todo-state' can return nil when a TODO keyword is removed, so
+guard against nil before operating on the state string."
   (when (and (ews--org-recurring-action-p)
-             (equal ews-org-completed-action
-                    (substring-no-properties (org-get-todo-state))))
+             (when-let* ((state (org-get-todo-state)))
+               (equal ews-org-completed-action
+                      (substring-no-properties state))))
     (org-reset-checkbox-state-subtree)))
 
 (add-hook #'org-after-todo-state-change-hook

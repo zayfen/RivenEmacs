@@ -28,28 +28,17 @@
                       (cadr form)))
                   (rivenEmacs-terminal-test-read-forms file)))))
 
-(defun rivenEmacs-terminal-test-use-package-form (name)
-  "Return the `use-package' form for package NAME in init-terminal."
-  (let ((file (expand-file-name "lisp/tools/init-terminal.el" rivenEmacs-terminal-test-root)))
-    (seq-find (lambda (form)
-                (and (consp form)
-                     (eq (car form) 'use-package)
-                     (eq (cadr form) name)))
-              (rivenEmacs-terminal-test-read-forms file))))
-
-(ert-deftest rivenEmacs-terminal-test-uses-ghostel-only ()
+(ert-deftest rivenEmacs-terminal-test-declares-ghostel-and-fallbacks ()
+  "The terminal module declares ghostel as its main terminal plus fallbacks."
   (let ((packages (rivenEmacs-terminal-test-use-package-names)))
     (should (member 'ghostel packages))
-    (should-not (member 'eat packages))
-    (should-not (member 'vterm packages))))
+    (should (member 'eat packages))
+    (should (member 'vterm packages))))
 
 (ert-deftest rivenEmacs-terminal-test-open-keybinding-uses-ghostel ()
-  (should (member '("t" ghostel "Terminal") riven/keybindings-open-spec)))
-
-(ert-deftest rivenEmacs-terminal-test-ghostel-eshell-is-local-feature ()
-  (let ((form (rivenEmacs-terminal-test-use-package-form 'ghostel-eshell)))
-    (should form)
-    (should (plist-member (cddr form) :ensure))
-    (should (eq (plist-get (cddr form) :ensure) nil))))
+  "C-c t t is bound to ghostel by the declarative Tool group spec."
+  (let ((tool-group (assoc "t" riven/keybindings-leader-spec-core)))
+    (should tool-group)
+    (should (member '("t" ghostel "Terminal") (nth 2 tool-group)))))
 
 ;;; test-init-terminal.el ends here

@@ -21,9 +21,8 @@
         org-archive-location (expand-file-name "archive/%s::" org-directory)
         org-startup-with-inline-images t
         org-startup-with-latex-preview t
-        org-latex-create-formula-image-program 'latexmk
         org-latex-compiler "xelatex"
-        org-latex-listings 'listings
+        org-latex-src-block-backend 'listings
         org-latex-packages-alist '(("" "amsmath" t)
                                    ("" "amssymb" t)
                                    ("" "amsfonts" t)
@@ -63,7 +62,6 @@
         org-clock-persist 'history
         org-clock-out-when-done t
         org-clock-report-include-clocking-task t
-        org-auto-clock-resolution 'when-no-clock
         org-clock-idle-time 15
         org-clock-modeline-total 'current)
   (org-babel-do-load-languages
@@ -205,7 +203,7 @@
    ;; Edit settings
    org-auto-align-tags nil
    org-tags-column 0
-   org-catch-invisible-edits 'show-and-error
+   org-fold-catch-invisible-edits 'show-and-error
    org-special-ctrl-a/e t
    org-insert-heading-respect-content t
 

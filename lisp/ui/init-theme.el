@@ -179,8 +179,13 @@
 (use-package fancy-compilation
   :commands (fancy-compilation-mode))
 
+(defun rivenEmacs-enable-fancy-compilation-mode ()
+  "Enable `fancy-compilation-mode' when its package is available."
+  (when (fboundp 'fancy-compilation-mode)
+    (fancy-compilation-mode 1)))
+
 (with-eval-after-load 'compile
-  (fancy-compilation-mode))
+  (rivenEmacs-enable-fancy-compilation-mode))
 
 ;; Show file path in header line (first line)
 (setq-default header-line-format

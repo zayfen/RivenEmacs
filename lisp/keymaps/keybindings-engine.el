@@ -7,18 +7,20 @@
   "Internal table for duplicate key detection.")
 
 (defvar riven/keybindings-owned-c-c-prefixes
-  '("!" "^" "=" "a" "b" "c" "e" "f" "g" "n" "o" "p" "q" "s" "t" "w" "x")
+  '("!" "&" "^" "=" "a" "b" "c" "e" "f" "g" "n" "o" "p" "q" "s" "t" "w" "x")
   "Top-level `C-c' prefixes owned by RivenEmacs keybinding specs.
 This includes retired prefixes so config reloads remove stale bindings.")
 
 (defconst riven/keybindings-c-c-which-key-groups
   '(("C-c =" . "Agent")
     ("C-c &" . "Yas")
+    ("C-c ;" . "Act")
     ("C-c a" . "AI")
     ("C-c c" . "Code")
     ("C-c e" . "Error")
     ("C-c f" . "File")
     ("C-c g" . "Git")
+    ("C-c h" . "Hunk")
     ("C-c n" . "Note")
     ("C-c p" . "Project")
     ("C-c s" . "Search")

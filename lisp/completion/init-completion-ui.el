@@ -32,19 +32,27 @@ METADATA is passed through to `nerd-icons-corfu-formatter' when kind data exists
     (message "[corfu] nerd-icons-corfu extension unavailable")))
 
 (defun riven/corfu-insert-index-from-key ()
-  "Insert Corfu candidate selected by `M-0..M-9' key without pressing RET.
-`M-1'..`M-9' insert candidate 1..9 in the current page. `M-0' inserts 10."
+  "Insert the Corfu candidate selected by `M-1'..`M-9' without pressing RET.
+`M-1'..`M-9' insert the 1st..9th candidate of the current page.
+`M-0' would select a 10th candidate, but `corfu-count' is 9 by default, so
+no page has a 10th slot; `M-0' only reports that instead of inserting."
   (interactive)
   (let* ((base-key (event-basic-type last-command-event))
          (digit (- base-key ?0))
          (slot (if (zerop digit) 10 digit))
          (target (+ corfu--scroll (1- slot)))
          (page-end (+ corfu--scroll corfu-count)))
-    (if (and (>= target 0) (< target corfu--total) (< target page-end))
-        (progn
-          (corfu--goto target)
-          (corfu-insert))
-      (message "[corfu] index %d out of current page range" slot))))
+    (cond
+     ;; The current page ends before SLOT (with `corfu-count' 9 there is no
+     ;; 10th slot), so report it instead of calling `corfu--goto' out of range.
+     ((>= (1- slot) corfu-count)
+      (message "[corfu] no %dth candidate on the current page (corfu-count=%d)"
+               slot corfu-count))
+     ((and (>= target 0) (< target corfu--total) (< target page-end))
+      (corfu--goto target)
+      (corfu-insert))
+     (t
+      (message "[corfu] index %d out of current page range" slot)))))
 
 (use-package corfu
   :ensure t
@@ -98,11 +106,14 @@ METADATA is passed through to `nerd-icons-corfu-formatter' when kind data exists
 
 (use-package cape
   :ensure t
+  :demand t ; load now, otherwise `use-package-always-defer' skips :config
   :config
-  (dolist (capf '(cape-file cape-dabbrev cape-keyword cape-symbol))
+  (dolist (capf '(cape-file cape-dabbrev cape-keyword))
     (setq completion-at-point-functions (delq capf completion-at-point-functions))
     (when (fboundp capf)
-      (add-hook 'completion-at-point-functions capf t)))
+      ;; Add to the global default so every buffer gets these CAPFs, not only
+      ;; the buffer that was current when this file was loaded.
+      (add-hook 'completion-at-point-functions capf)))
   (with-eval-after-load 'eglot
     (add-hook 'eglot-managed-mode-hook
               (lambda ()

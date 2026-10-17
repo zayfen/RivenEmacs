@@ -329,23 +329,29 @@ Safe if the buffer is killed before the timer fires."
   (setq +cf--poll-timer nil))
 
 (defun +cf--terminal-verdict-p (verdict)
-  "Return non-nil if VERDICT is terminal."
+  "Return non-nil if VERDICT is terminal.
+Includes every terminal value of the Codeforces API SubmissionVerdict
+enum; only nil (queued) and \"TESTING\" are non-terminal."
   (member (and verdict (if (symbolp verdict) (symbol-name verdict) verdict))
           '("OK" "WRONG_ANSWER" "TIME_LIMIT_EXCEEDED"
             "MEMORY_LIMIT_EXCEEDED" "RUNTIME_ERROR" "COMPILATION_ERROR"
-            "PARTIAL" "IDLENESS_LIMIT_EXCEEDED" "CHALLENGED"
-            "SKIPPED" "REJECTED" "FAILED")))
+            "PARTIAL" "PRESENTATION_ERROR" "IDLENESS_LIMIT_EXCEEDED"
+            "SECURITY_VIOLATED" "CRASHED" "INPUT_PREPARATION_CRASHED"
+            "CHALLENGED" "SKIPPED" "REJECTED" "FAILED")))
 
 (defun +cf--poll-once (contest-id submission-id)
   "Poll once: fetch submission CONTEST-ID/SUBMISSION-ID verdict.
-Update the status section; stop when a terminal verdict or poll-timeout."
+Update the status section; stop when a terminal verdict or poll-timeout.
+Must be called with the detail buffer current."
   (condition-case err
       (let* ((sub (+cf-fetch-submission contest-id submission-id))
              (text (+cf--format-verdict sub))
-             (v (plist-get sub :verdict)))
+             (v (plist-get sub :verdict))
+             (start (or +cf--poll-start
+                        (setq +cf--poll-start (float-time)))))
         (+cf--update-status text)
         (when (or (+cf--terminal-verdict-p v)
-                  (> (- (float-time) +cf--poll-start) codeforces-poll-timeout))
+                  (> (- (float-time) start) codeforces-poll-timeout))
           (+cf--stop-poll)
           (when (+cf--terminal-verdict-p v)
             (message "Codeforces: %s" text))))
@@ -356,13 +362,24 @@ Update the status section; stop when a terminal verdict or poll-timeout."
 (defun +cf--start-poll (contest-id submission-id)
   "Start polling submission CONTEST-ID/SUBMISSION-ID.
 Polls every `codeforces-poll-interval' seconds until a terminal verdict or
-`codeforces-poll-timeout' seconds elapse."
+`codeforces-poll-timeout' seconds elapse.  The timer captures the detail
+buffer so polling never edits whatever buffer happens to be current when
+the timer fires; if that buffer is gone, the timer cancels itself."
   (+cf--stop-poll)
   (setq +cf--poll-start (float-time))
-  (setq +cf--poll-timer
-        (run-with-timer
-         codeforces-poll-interval codeforces-poll-interval
-         #'+cf--poll-once contest-id submission-id)))
+  (let* ((buf (current-buffer))
+         (timer nil)
+         (poll-fn
+          (lambda ()
+            (if (buffer-live-p buf)
+                (with-current-buffer buf
+                  ;; Ignore a stale timer superseded by a newer submission.
+                  (if (eq timer +cf--poll-timer)
+                      (+cf--poll-once contest-id submission-id)
+                    (cancel-timer timer)))
+              (cancel-timer timer)))))
+    (setq timer (run-with-timer codeforces-poll-interval codeforces-poll-interval poll-fn))
+    (setq +cf--poll-timer timer)))
 
 (defun +cf--solution-file (problem)
   "Return the path to PROBLEM's solution file, or nil."

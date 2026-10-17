@@ -16,9 +16,8 @@
   (super-save-auto-save-when-idle t)
   (super-save-idle-duration 1)
   (super-save-silent t)
-  (super-save-delete-trailing-whitespace nil)
-  ;; Enable deleting trailing white spaces before saving (except for the current line)
-  (setq super-save-delete-trailing-whitespace 'except-current-line)
+  ;; Delete trailing whitespace before saving, except for the current line.
+  (super-save-delete-trailing-whitespace 'except-current-line)
   (super-save-exclude '(".gpg"))
   :config
   (add-to-list 'super-save-triggers 'switch-window)

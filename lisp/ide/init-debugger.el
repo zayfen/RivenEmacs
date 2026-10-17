@@ -4,6 +4,9 @@
 
 (use-package dape
   :vc (:url "https://github.com/svaante/dape")
+  ;; Load dape now: this module is loaded from `after-init-hook' (depth -20),
+  ;; so registering an `after-init-hook' activation here would run too late.
+  :demand t
   :preface
   ;; By default dape shares the same keybinding prefix as `gud'
   ;; If you do not want to use any prefix, set it to nil.
@@ -11,13 +14,7 @@
 
   :hook
   ;; Save breakpoints on quit
-  ((kill-emacs . dape-breakpoint-save)
-  ;; Load breakpoints on startup
-   (after-init . dape-breakpoint-load))
-
-  :init
-  ;; To use window configuration like gud (gdb-mi)
-  (setq dape-buffer-window-arrangement 'gud)
+  ((kill-emacs . dape-breakpoint-save))
 
   :config
   ;; Info buffers to the right
@@ -43,8 +40,12 @@
   ;; Save buffers on startup, useful for interpreted languages
   ;; (add-hook 'dape-start-hook (lambda () (save-some-buffers t t)))
 
-  ;; Projectile users
-  (setq dape-cwd-fn 'get-project-root))
+  ;; Load saved breakpoints now (after-init-hook already ran).
+  (when (fboundp 'dape-breakpoint-load)
+    (dape-breakpoint-load))
+
+  ;; Project root as the working directory.
+  (setq dape-cwd-function #'get-project-root))
 
 
 

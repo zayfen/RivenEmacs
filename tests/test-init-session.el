@@ -78,7 +78,6 @@
 
 (ert-deftest rivenEmacs-session-test-excludes-heavy-session-state ()
   (should (memq 'dired-mode desktop-modes-not-to-save))
-  (should (memq 'help-mode desktop-modes-not-to-save))
-  (should (memq 'special-mode desktop-modes-not-to-save)))
+  (should (memq 'help-mode desktop-modes-not-to-save)))
 
 ;;; test-init-session.el ends here

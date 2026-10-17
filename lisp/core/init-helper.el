@@ -45,14 +45,21 @@
     (consult-ripgrep-at-point)))
 
 (defun riven/xref-find-definitions-or-search ()
-  "Jump to definition with Xref, fallback to project ripgrep at point."
+  "Jump to definition with Xref, fallback to project ripgrep at point.
+
+On Emacs 31 `xref-find-definitions' signals a `user-error' whose message
+starts with \"No definitions found\" when there is no definition at point.
+In that case search the project with `consult-ripgrep-at-point' instead.
+Any other error is re-signaled unchanged."
   (interactive)
   (condition-case err
       (call-interactively #'xref-find-definitions)
-    (xref--not-found-error
-     (if (fboundp 'consult-ripgrep)
+    (user-error
+     (if (and (fboundp 'consult-ripgrep)
+              (string-match-p "No definitions found"
+                              (error-message-string err)))
          (consult-ripgrep-at-point)
-       (message "%s" (error-message-string err))))
+       (signal (car err) (cdr err))))
     (error
      (signal (car err) (cdr err)))))
 

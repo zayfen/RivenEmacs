@@ -43,7 +43,6 @@
          :map minibuffer-local-map
          ("M-s" . consult-history)
          ("M-r" . consult-history))
-  :hook (completion-list-mode . consult-preview-at-point-mode)
   :init
   (setq register-preview-delay 0.5
         register-preview-function #'consult-register-format)
@@ -85,8 +84,7 @@
   (setq prefix-help-command #'embark-prefix-help-command))
 
 (use-package embark-consult
-  :after (embark consult)
-  :hook (embark-collect-mode . consult-preview-at-point-mode))
+  :after (embark consult))
 
 (provide 'init-consult)
 ;;; init-consult.el ends here

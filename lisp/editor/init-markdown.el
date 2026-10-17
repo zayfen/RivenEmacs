@@ -93,13 +93,11 @@
       (markdown-insert-header-1)))
 
   (defun markdown-insert-link-dwim ()
-    "Smart link insertion based on context."
+    "Insert a link, using the active region as link text when present.
+Delegates to `markdown-insert-link', which handles the active region
+natively in current markdown-mode releases."
     (interactive)
-    (if (use-region-p)
-        (let ((link-text (buffer-substring-no-properties (region-beginning) (region-end))))
-          (delete-region (region-beginning) (region-end))
-          (markdown-insert-link nil link-text))
-      (markdown-insert-link)))
+    (call-interactively #'markdown-insert-link))
 
   (defun markdown-insert-gfm-code-block-with-lang ()
     "Insert GFM code block with language prompt."

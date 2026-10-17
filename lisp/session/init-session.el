@@ -122,7 +122,6 @@ Set to t to restore all buffers eagerly."
       desktop-save t
       desktop-auto-save-timeout rivenEmacs-session-auto-save-interval
       desktop-restore-frames rivenEmacs-session-save-geometry
-      desktop-globals-to-save (delq 'desktop-saved-frameset desktop-globals-to-save)
       desktop-restore-eager rivenEmacs-session-restore-eager
       desktop-load-locked-desktop 'check-pid
       desktop-lazy-verbose nil
@@ -145,7 +144,6 @@ Set to t to restore all buffers eagerly."
 
 (add-to-list 'desktop-modes-not-to-save 'dired-mode)
 (add-to-list 'desktop-modes-not-to-save 'help-mode)
-(add-to-list 'desktop-modes-not-to-save 'special-mode)
 
 (desktop-save-mode 1)
 

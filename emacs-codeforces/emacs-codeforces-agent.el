@@ -32,7 +32,16 @@
 Return its stdout string.  On non-zero exit, signal an error including stderr."
   (let ((script (+cf-agent--script))
         (exe (+cf-agent--python))
-        (stderr-file (make-temp-file "cf-agent-err")))
+        (stderr-file (make-temp-file "cf-agent-err"))
+        ;; Keep the agent on the same home directory as the Emacs side, so
+        ;; customizing `codeforces-home-directory' also moves the cookie file
+        ;; the Python agent reads.
+        (process-environment
+         (if (boundp 'codeforces-home-directory)
+             (cons (concat "CODEFORCES_HOME="
+                           (expand-file-name (symbol-value 'codeforces-home-directory)))
+                   process-environment)
+           process-environment)))
     (unwind-protect
         (with-temp-buffer
           (let ((status (apply #'call-process

@@ -60,18 +60,38 @@ or a bare {\"result\":{\"problems\":[...]}} wrapper."
 
 (defun +cf-fetch-problems (&optional force)
   "Fetch the problem list, caching the raw response locally.  FORCE re-fetches.
-Returns a list of problem plists."
+Returns a list of problem plists.  A response that does not parse into a
+non-empty problem list is reported as an error and never cached, so one bad
+response cannot poison the cache forever.  The cache file is replaced
+atomically."
   (let ((cache (+cf--cache-file)))
     (when (or force (not (file-exists-p cache)))
-      (let* ((resp (+cf-http-get (+cf--merge-query
-                                  (concat +cf-api-base "problemset.problems")
-                                  nil))))
-        (unless (= (car resp) 200)
-          (error "Codeforces API problemset.problems failed (HTTP %s)" (car resp)))
+      (let* ((resp (+cf-http-get (concat +cf-api-base "problemset.problems")))
+             (status (car resp))
+             (body (cdr resp))
+             (problems nil))
+        (unless (= status 200)
+          (error "Codeforces API problemset.problems failed (HTTP %s): %s"
+                 status (+cf--body-summary body)))
+        (setq problems
+              (condition-case err
+                  (+cf--parse-problems body)
+                (error
+                 (error "Codeforces API problemset.problems returned invalid JSON: %s"
+                        (error-message-string err)))))
+        (unless (and (listp problems) problems)
+          (error "Codeforces API problemset.problems returned no problems; refusing to cache"))
         (make-directory (file-name-directory cache) t)
-        (let ((coding-system-for-write 'utf-8))
-          (with-temp-file cache
-            (insert (cdr resp))))))
+        (let* ((dir (file-name-directory cache))
+               (tmp (make-temp-file (expand-file-name ".problems-" dir)))
+               (coding-system-for-write 'utf-8))
+          (unwind-protect
+              (progn
+                (with-temp-file tmp
+                  (insert body))
+                (rename-file tmp cache t))
+            (when (file-exists-p tmp)
+              (delete-file tmp))))))
     (+cf--parse-problems
      (with-temp-buffer
        (insert-file-contents cache)

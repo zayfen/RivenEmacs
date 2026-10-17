@@ -105,11 +105,17 @@
       mac-option-modifier 'none)
 
 
-(setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
-
-(setq package-archives '(("gnu"    . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
-                         ("nongnu" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/")
-                         ("melpa"  . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")))
+;; Use HTTPS for package archives.  Do not downgrade GnuTLS here: the old
+;; "NORMAL:-VERS-TLS1.3" override weakened transport security for every
+;; network connection, not just the ELPA mirrors.
+;;
+;; NOTE: `package-check-signature' is intentionally left at its default
+;; (`allow-unsigned') because MELPA does not sign its packages, while GNU and
+;; Nongnu do.  Users who only install from signed archives can set it to
+;; `all' or `good' for a stricter supply chain.
+(setq package-archives '(("gnu"    . "https://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
+                         ("nongnu" . "https://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/")
+                         ("melpa"  . "https://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")))
 
 (defun riven/initialize-package-system ()
   "Initialize package.el after RivenEmacs package directories are configured."

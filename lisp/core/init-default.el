@@ -16,7 +16,10 @@ that directory."
 (setq
  make-backup-files nil
  auto-save-default nil
- package-vc-allow-build-commands t
+ ;; `package-vc-allow-build-commands' is intentionally left at its default nil:
+ ;; enabling it would let :vc packages run arbitrary build commands while
+ ;; installing/upgrading.  `init-reader' already guards its `reader' build
+ ;; behind `(locate-library "render-core")', and the package is prebuilt.
 
  ;; No need to see GNU agitprop.
  inhibit-startup-screen t
@@ -34,14 +37,10 @@ that directory."
  mark-even-if-inactive nil
  ;; Let C-k delete the whole line.
  kill-whole-line t
- ;; search should be case-sensitive by default
- case-fold-search nil
  ;; accept 'y' or 'n' instead of yes/no
  ;; the documentation advises against setting this variable
  ;; the documentation can get bent imo
  use-short-answers t
- ;; my source directory - use configuration management
- default-directory (rivenEmacs-get-default-directory)
  ;; eke out a little more scrolling performance
  fast-but-imprecise-scrolling t
  ;; when I say to quit, I mean quit
@@ -77,7 +76,7 @@ that directory."
  recentf-filename-handlers nil
  ;; Exclude some files from being remembered by recentf
  recentf-exclude
- `(,(rx (* any)
+ `(,(rx (* anychar)
         (or
          "elfeed-db"
          "eln-cache"
@@ -86,11 +85,11 @@ that directory."
          ".cache/"
          "node_modules"
          ".git")
-        (* any)
+        (* anychar)
         (? (or "html" "pdf" "tex" "epub")))
    ,(rx "/"
         (or "rsync" "ssh" "tmp" "yadm" "sudoedit" "sudo")
-        (* any)))
+        (* anychar)))
 
  ;; ====== Default directories for builtin packages ======
  auto-save-list-file-prefix (+directory-ensure local-dir "auto-save/")
@@ -127,10 +126,17 @@ that directory."
  shadow-info-file (concat local-dir "shadow/info.el")
  shadow-todo-file (concat local-dir "shadow/todo.el")
  semanticdb-default-system-save-directory (concat local-dir "semantic/")
- desktop-dirname (+directory-ensure local-dir "desktop/")
- desktop-path (list desktop-dirname)
  warning-frame-parameters nil           ;To stop Emacs from displaying warnings in a separate frame and instead show them in the echo area (minibuffer)
  )
+
+;; `case-fold-search' and `default-directory' are automatically buffer-local
+;; (`local-variable-if-set-p' returns t for both).  Setting them with `setq' in
+;; the block above would only affect whichever buffer happened to be current
+;; while this file was loaded (normally *scratch*), not the global default.
+;; Use `setq-default' so new buffers inherit the intended defaults.
+(setq-default case-fold-search nil) ; search case-sensitively by default
+;; My source directory - use configuration management.
+(setq-default default-directory (rivenEmacs-get-default-directory))
 
 ;; Emacs 31 may warn about missing lexical-binding cookie in third-party
 ;; ELPA files. Keep startup clean by suppressing this specific warning type.
@@ -161,7 +167,7 @@ that directory."
 (delete-selection-mode t)
 ;;(global-display-line-numbers-mode t)
 (column-number-mode)
-(savehist-mode)
+;; savehist is enabled by init-minibuffer.el (`use-package savehist').
 
 (require 'hl-line)
 (add-hook 'prog-mode-hook #'hl-line-mode)
@@ -176,7 +182,6 @@ that directory."
 
 ;; (bind-key "s-<up>" #'ff-find-related-file)
 ;; (bind-key "C-c a f" #'ff-find-related-file)
-(bind-key "C-s" #'isearch-forward-regexp)
 
 (setq require-final-newline t)
 
@@ -187,7 +192,8 @@ that directory."
   (dabbrev-check-all-buffers t)
   (dabbrev-case-replace nil))
 
-(add-to-list 'default-frame-alist '(fullscreen . maximized))
+;; `default-frame-alist' already contains `(fullscreen . maximized)' in
+;; early-init.el; do not duplicate it here.
 
 (when (window-system)
   (tool-bar-mode -1)
@@ -221,8 +227,9 @@ that directory."
 
 ;; or same as DoomEmacs
 ;; (setq-default bidi-paragraph-direction 'left-to-right)
-(which-key-mode +1)
-(global-completion-preview-mode +1)
+;; which-key is enabled by init-which-key.el.  In-buffer completion is owned by
+;; corfu (init-completion-ui.el), so `global-completion-preview-mode' is not
+;; enabled here: it would duplicate the corfu popup.
 
 ;; enable auto revert buffer
 (global-auto-revert-mode 1)

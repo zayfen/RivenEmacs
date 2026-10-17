@@ -10,6 +10,7 @@
 
 ;;; Require
 (require 'treesit)
+(require 'cl-lib)
 
 ;;; Code:
 
@@ -28,7 +29,8 @@
         (make . ("https://github.com/alemuller/tree-sitter-make"))
         (ocaml . ("https://github.com/tree-sitter/tree-sitter-ocaml" nil "grammars/ocaml/src"))
         (python . ("https://github.com/tree-sitter/tree-sitter-python"))
-        (php . ("https://github.com/tree-sitter/tree-sitter-php"))
+        ;; tree-sitter-php keeps its grammar in the php/src subdirectory.
+        (php . ("https://github.com/tree-sitter/tree-sitter-php" nil "php/src"))
         (typescript . ("https://github.com/tree-sitter/tree-sitter-typescript" nil "typescript/src"))
         (tsx . ("https://github.com/tree-sitter/tree-sitter-typescript" nil "tsx/src"))
         (ruby . ("https://github.com/tree-sitter/tree-sitter-ruby"))
@@ -64,7 +66,7 @@
 
 (defconst riven/treesit-grammar-langs
   '(bash c cpp cmake css elisp go html javascript json make ocaml
-    python php typescript tsx ruby rust sql vue yaml toml zig haskell
+    python php typescript tsx ruby rust sql swift vue yaml toml zig haskell
     kotlin java lua dockerfile elixir heex angular)
   "Languages whose tree-sitter grammars RivenEmacs manages.")
 

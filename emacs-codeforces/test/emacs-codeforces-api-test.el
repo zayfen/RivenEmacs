@@ -48,3 +48,58 @@
   (let* ((problems (+cf--parse-problems +cf-test/problems-json))
          (tags (+cf--all-tags problems)))
     (should (equal tags '("dp" "graphs" "greedy")))))
+
+;;; Cache safety
+
+(require 'cl-lib)
+
+(defmacro +cf-api-test--with-temp-home (&rest body)
+  "Evaluate BODY with a fresh private `codeforces-home-directory'."
+  (declare (indent 0) (debug t))
+  `(let ((codeforces-home-directory
+          (expand-file-name (make-temp-name "cf-api-") temporary-file-directory)))
+     (unwind-protect
+         (progn ,@body)
+       (when (file-directory-p codeforces-home-directory)
+         (delete-directory codeforces-home-directory t)))))
+
+(defconst +cf-api-test/valid-response
+  "{\"status\":\"OK\",\"result\":{\"problems\":[{\"contestId\":1,\"index\":\"A\",\"name\":\"First\",\"tags\":[\"implementation\"]}]}}"
+  "Minimal valid `problemset.problems' response.")
+
+(ert-deftest +cf-fetch-problems/does-not-cache-http-error ()
+  "An HTTP failure must not create or overwrite the problems cache."
+  (+cf-api-test--with-temp-home
+    (cl-letf (((symbol-function '+cf-http-get)
+               (lambda (&rest _) (cons 500 "<html>boom</html>"))))
+      (should-error (+cf-fetch-problems 'force))
+      (should-not (file-exists-p (+cf--cache-file))))))
+
+(ert-deftest +cf-fetch-problems/does-not-cache-invalid-json ()
+  "A non-JSON response must not be written to the problems cache."
+  (+cf-api-test--with-temp-home
+    (cl-letf (((symbol-function '+cf-http-get)
+               (lambda (&rest _) (cons 200 "<html>not json</html>"))))
+      (should-error (+cf-fetch-problems 'force))
+      (should-not (file-exists-p (+cf--cache-file))))))
+
+(ert-deftest +cf-fetch-problems/does-not-cache-empty-problem-list ()
+  "A syntactically valid response with no problems is refused, not cached."
+  (+cf-api-test--with-temp-home
+    (cl-letf (((symbol-function '+cf-http-get)
+               (lambda (&rest _)
+                 (cons 200 "{\"status\":\"OK\",\"result\":{\"problems\":[]}}"))))
+      (should-error (+cf-fetch-problems 'force))
+      (should-not (file-exists-p (+cf--cache-file))))))
+
+(ert-deftest +cf-fetch-problems/caches-valid-response-atomically ()
+  "A valid response is cached and parsed, leaving no temporary file behind."
+  (+cf-api-test--with-temp-home
+    (cl-letf (((symbol-function '+cf-http-get)
+               (lambda (&rest _) (cons 200 +cf-api-test/valid-response))))
+      (let ((problems (+cf-fetch-problems 'force)))
+        (should (= (length problems) 1))
+        (should (equal (plist-get (car problems) :index) "A"))
+        (should (file-exists-p (+cf--cache-file)))
+        (should-not (directory-files (file-name-directory (+cf--cache-file))
+                                     nil "\\`\\.problems-"))))))

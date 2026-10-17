@@ -448,11 +448,11 @@ Switch backend/model interactively via `gptel-menu'."
   ;; Package name is gpt-extensions, but command library is gptel-extensions.el.
   (autoload 'gptel-extensions-refactor "gptel-extensions" nil t)
   (autoload 'gptel-extensions-ask-document "gptel-extensions" nil t)
-  (autoload 'gptel-rewrite-article "gptel-extensions" nil t)
-  (autoload 'gptel-summarize-document "gptel-extensions" nil t)
-  (autoload 'gptel-query-devdoc "gptel-extensions" nil t)
-  (autoload 'gptel-generate-commit-message "gptel-extensions" nil t)
-  (autoload 'gptel-translate-region "gptel-extensions" nil t)
+  ;; NOTE: gpt-extensions does not define gptel-rewrite-article,
+  ;; gptel-summarize-document, gptel-query-devdoc, gptel-generate-commit-message
+  ;; or gptel-translate-region.  Fallback commands for these names live in
+  ;; init-gpt-helper.el; autoloading non-existent functions here would overwrite
+  ;; those fallbacks and fail at call time.
   (keymap-global-set "C-x =" #'gptel-extensions-refactor))
 
 (provide 'init-gpt)

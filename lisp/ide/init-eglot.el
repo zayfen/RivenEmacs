@@ -38,16 +38,26 @@ auto-install is disabled.  If INSTALL-CMD is nil, only detect."
     (message "Install skipped.") nil)
    (t
     (message "Running `%s'..." (mapconcat #'identity install-cmd " "))
-    (let* ((buf (get-buffer-create "*eglot server install*"))
-           (status (with-current-buffer buf
-                     (erase-buffer)
-                     (apply #'call-process
-                            (car install-cmd) nil (list buf t) nil (cdr install-cmd)))))
-      (if (eq status 0)
-          (message "Installed %s." binary)
-        (display-buffer buf)
-        (message "Install FAILED (exit %s) — see %s." status (buffer-name buf))))
-    (executable-find binary))))
+    (let* ((program (executable-find (car install-cmd)))
+           (buf (get-buffer-create "*eglot server install*")))
+      (if (not program)
+          (message "Install FAILED: `%s' is not on PATH; install it manually."
+                   (car install-cmd))
+        (with-current-buffer buf
+          (erase-buffer))
+        (let ((status (condition-case err
+                          (apply #'call-process program nil (list buf t) nil
+                                 (cdr install-cmd))
+                        (error
+                         (message "Install FAILED: %s"
+                                  (error-message-string err))
+                         nil))))
+          (if (eq status 0)
+              (message "Installed %s." binary)
+            (display-buffer buf)
+            (message "Install FAILED (exit %s) — see %s."
+                     status (buffer-name buf)))))
+      (executable-find binary)))))
 
 (defun riven/eglot--pick-server (candidates)
   "Return (CONTACT . INSTALL-CMD) for the first available server.
@@ -61,19 +71,20 @@ first one that ends up available, or nil."
              do (cl-return contact))))
 
 (defun riven/eglot-python-contact (&optional _interactive _project)
-  "Return preferred Eglot server contact for Python.
+  "Return preferred Eglot server contact for Python, or nil.
 Offers to install the chosen server if missing.  Tries basedpyright,
-then pyright, then ruff, finally pylsp.  Optional arguments are
-accepted (and ignored) to satisfy eglot's function-form contact
-contract (see `eglot-server-programs')."
-  (or (riven/eglot--pick-server
-       '((basedpyright-langserver ("basedpyright-langserver" "--stdio")
-                                   ("pip" "install" "basedpyright"))
-         (pyright-langserver ("pyright-langserver" "--stdio")
-                              ("npm" "i" "-g" "pyright"))
-         (ruff ("ruff" "server") ("pip" "install" "ruff"))
-         (pylsp ("pylsp") ("pip" "install" "python-lsp-server"))))
-      '("pylsp")))
+then pyright, then ruff, finally pylsp.  Returns nil when no server is
+installed and the user declines installation; Eglot then reports that
+it cannot guess a server instead of silently trying a missing binary.
+Optional arguments are accepted (and ignored) to satisfy eglot's
+function-form contact contract (see `eglot-server-programs')."
+  (riven/eglot--pick-server
+   '((basedpyright-langserver ("basedpyright-langserver" "--stdio")
+                               ("pip" "install" "basedpyright"))
+     (pyright-langserver ("pyright-langserver" "--stdio")
+                         ("npm" "i" "-g" "pyright"))
+     (ruff ("ruff" "server") ("pip" "install" "ruff"))
+     (pylsp ("pylsp") ("pip" "install" "python-lsp-server")))))
 
 (defun riven/eglot-configure-python-server ()
   "Register the Python LSP for `python-mode' and `python-ts-mode'.
@@ -222,13 +233,15 @@ auto-install)."
 
 (use-package yasnippet
   :ensure t
-  :custom
-  (yas-snippet-dir rivenEmacs-snippets-dir)
   :hook ((prog-mode LaTeX-mode org-mode markdown-mode) . yas-minor-mode-on)
   :bind
   (:map yas-keymap
         ("TAB" . smarter-yas-expand-next-field)
-        ([tab] . smarter-yas-expand-next-field)))
+        ([tab] . smarter-yas-expand-next-field))
+  :config
+  ;; yasnippet's user option is `yas-snippet-dirs' (plural); there is no
+  ;; `yas-snippet-dir' variable.
+  (add-to-list 'yas-snippet-dirs rivenEmacs-snippets-dir))
 
 (use-package yasnippet-snippets
   :ensure t)

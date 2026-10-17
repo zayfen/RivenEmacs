@@ -33,11 +33,12 @@
 
 (load (expand-file-name "lisp/env.el" (file-name-directory (file-truename (or load-file-name (buffer-file-name))))) nil t)
 
+;; Keep the archives in sync with early-init.el (HTTPS).
 (setq user-emacs-directory local-dir
       package-user-dir repo-dir
-      package-archives '(("gnu"    . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
-                         ("nongnu" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/")
-                         ("melpa"  . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")))
+      package-archives '(("gnu"    . "https://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
+                         ("nongnu" . "https://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/")
+                         ("melpa"  . "https://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")))
 
 (unless (fboundp 'riven/initialize-package-system)
   (defun riven/initialize-package-system ()
@@ -103,7 +104,14 @@ Org module itself is loaded lazily in org buffers."
   (require 'init-keybindings))
 
 (defun riven/load-deferred-modules ()
-  "Load deferred modules on `emacs-startup-hook`."
+  "Load deferred modules at the front of `after-init-hook'.
+
+Running at depth -20 makes Eglot and the language/mode hooks available
+before the desktop restore (desktop.el registers its `after-init-hook'
+entry at depth 0) and before any user input is processed.  The deferred
+modules therefore also load while the aggressive startup GC settings are
+still active; early-init.el restores normal GC later on
+`emacs-startup-hook'."
   (require 'init-eglot)
   (require 'init-vc)
   (require 'init-debugger)
@@ -123,13 +131,16 @@ Org module itself is loaded lazily in org buffers."
   (require 'init-reader)
   (require 'init-codeforces))
 
-;; Keep startup behavior: immediate modules now, heavy modules deferred.
+;; Keep startup behavior: immediate modules now, heavy modules deferred to the
+;; front of `after-init-hook' (depth -20).  This runs before desktop.el's
+;; restore entry (depth 0) and before `emacs-startup-hook', where early-init.el
+;; restores the normal GC threshold.
 (riven/load-core-modules)
 (riven/load-ui-modules)
 (riven/load-writing-modules)
 (riven/load-session-modules)
 (riven/load-tooling-modules)
-(add-hook 'emacs-startup-hook #'riven/load-deferred-modules 90)
+(add-hook 'after-init-hook #'riven/load-deferred-modules -20)
 (riven/load-keymap-modules)
 
 (put 'narrow-to-region 'disabled nil)

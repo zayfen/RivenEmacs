@@ -61,3 +61,60 @@
           (should (null (+cf--handle)))
           (should-not (file-exists-p (+cf--cookie-file))))
       (delete-directory codeforces-home-directory t))))
+
+;;; Private credential storage
+
+(defmacro +cf-auth-test--with-temp-home (&rest body)
+  "Evaluate BODY with a fresh private `codeforces-home-directory'.
+The temporary directory is removed afterwards."
+  (declare (indent 0) (debug t))
+  `(let ((codeforces-home-directory
+          (expand-file-name (make-temp-name "cf-auth-") temporary-file-directory)))
+     (unwind-protect
+         (progn ,@body)
+       (when (file-directory-p codeforces-home-directory)
+         (delete-directory codeforces-home-directory t)))))
+
+(defun +cf-auth-test--file-modes (file)
+  "Return the permission bits of FILE as an integer."
+  (logand (file-modes file) #o777))
+
+(ert-deftest codeforces-login/writes-private-credentials ()
+  "Login creates 0600 credential/cookie files in a 0700 home directory."
+  (+cf-auth-test--with-temp-home
+    (codeforces-login "tourist" "session=xyz")
+    (should (= (+cf-auth-test--file-modes codeforces-home-directory) #o700))
+    (dolist (file (list (+cf--credentials-file) (+cf--cookie-file)))
+      (should (file-exists-p file))
+      (should (= (+cf-auth-test--file-modes file) #o600)))
+    ;; The atomic write must not leave temporary files behind.
+    (should-not (directory-files codeforces-home-directory nil "\\`\\.cf-tmp-"))
+    (should (file-directory-p (expand-file-name "workspace" codeforces-home-directory)))
+    (should (file-directory-p (expand-file-name "cache" codeforces-home-directory)))))
+
+(ert-deftest codeforces-login/cookie-prompt-avoids-minibuffer-history ()
+  "The interactive cookie prompt must not record the cookie in history.
+The cookie is read with `read-passwd' (hidden input, no history) and the
+only `read-string' prompt is the non-secret handle."
+  (let* ((spec (format "%S" (interactive-form 'codeforces-login)))
+         (read-string-count
+          (let ((count 0) (position 0))
+            (while (string-match "read-string" spec position)
+              (setq count (1+ count)
+                    position (match-end 0)))
+            count)))
+    (should (string-match-p "read-passwd" spec))
+    (should (= read-string-count 1))
+    (should (string-match-p "+cf--cookie-history" spec))
+    (should (boundp '+cf--cookie-history))))
+
+(ert-deftest codeforces-logout/clears-cookie-history-and-files ()
+  "Logout removes the credential files and the private cookie history."
+  (+cf-auth-test--with-temp-home
+    (codeforces-login "tourist" "session=xyz")
+    (setq +cf--cookie-history '("stale-cookie"))
+    (codeforces-logout)
+    (should-not (file-exists-p (+cf--credentials-file)))
+    (should-not (file-exists-p (+cf--cookie-file)))
+    (should-not (codeforces-logged-in-p))
+    (should-not +cf--cookie-history)))
