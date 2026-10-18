@@ -43,7 +43,7 @@ concern. Each `.el` file follows the module template (see
 | `init-pair.el` | `smartparens` for prog/text/markdown; auto-newline after `{` RET. |
 | `init-fold.el` | `treesit-fold` (`M-i` toggle, falls back to `hs-minor-mode`), `hideif` for C/C++. |
 | `init-crux.el` | `crux` (editing/buffer conveniences). |
-| `init-markdown.el` | `markdown-mode` (conceal, scaled headers), `grip-mode` live preview (`C-c C-p`), rich `C-c l` keymap. |
+| `init-markdown.el` | `markdown-ts-appear` rendered Markdown on the built-in `markdown-ts-mode`; `markdown-mode` remains the fallback (conceal, scaled headers). `grip-mode` browser preview (`C-c l p p`), rich `C-c l` keymap shared by both modes. |
 | `init-autosave.el` | `super-save` (idle save, save on switch-window). |
 | `init-undo.el` | `vundo` (`M-_`), `undo-fu` (undo/redo), `undo-fu-session` (persisted, compressed). |
 | `init-editorconfig.el` | builtin `editorconfig-mode`. |
@@ -126,7 +126,7 @@ See **[Architecture §Declarative Keybinding Engine](Architecture.md#declarative
 
 | File | Purpose |
 |------|---------|
-| `init-terminal.el` | `ghostel` is the primary terminal (`C-c t t`); `eat` and `vterm` are declared as fallbacks. `eat` starts in line mode via `eat-exec-hook`. |
+| `init-terminal.el` | `ghostel` is the primary terminal (`C-c t t`); `eat` and `vterm` are fallbacks. Selects a terminal-metric CJK font (Sarasa Term SC Nerd) for Ghostel and disables its CJK glyph shrinking. `eat` starts in line mode via `eat-exec-hook`. |
 | `init-docker.el` | `dockerfile-mode`, `docker`. |
 | `init-quickrun.el` | `quickrun`. |
 | `init-feed.el` | `elfeed` RSS (~13 preconfigured feeds) + `elfeed-goodies`. |

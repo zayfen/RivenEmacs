@@ -124,7 +124,8 @@ M-x riven/gptel-mcp-verify
 - `jinx` 提供拼写检查，`M-$` 修正拼写，`C-M-$` 设置语言。
 - `yasnippet` 统一代码片段能力，并兼容 snippet 字段跳转。
 - `desktop.el` 保存 buffer、point、窗口状态和历史，启动后按需懒恢复；会话文件固定存放在 `~/.cache/emacs/`，不会在退出时询问目录。
-- Dired、Quickrun、Terminal、Docker、Feed、Lookup、Reader 等工具按模块维护。
+- Dired、Quickrun、Terminal、Docker、Feed、Lookup、Reader 等工具按模块维护；Ghostel 终端自动使用终端等宽 CJK 字体（Sarasa Term SC Nerd），避免中文被缩小。
+- Markdown 使用 `markdown-ts-appear` + 内置 `markdown-ts-mode` 原地渲染：阅读时隐藏标记、光标所在元素显示源码；首次使用先执行 `M-x install-essential-treesit-grammars` 安装 `markdown`/`markdown-inline` grammar，缺失时自动回退到 `markdown-mode`。
 
 ### 键位系统
 

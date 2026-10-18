@@ -37,6 +37,18 @@ M-x customize-group RET rivenEmacs RET
 
 ---
 
+## Terminal / Ghostel (`lisp/tools/init-terminal.el`)
+
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| `rivenEmacs-ghostel-font-family` | `nil` | Auto-selects an installed terminal CJK font (Sarasa Term SC Nerd first) and uses it for Ghostel Latin+CJK; set a family to override. |
+
+Ghostel normally shrinks CJK fallback glyphs that do not fit the Latin cell
+(`ghostel-glyph-scale-floor` defaults to 0.0).  RivenEmacs selects a
+terminal-metric font and sets the buffer-local floor to 1.0 so Chinese text
+renders at natural size.  Reopen the Ghostel buffer (or `M-x
+ghostel-force-redraw`) after changing the font.
+
 ## IDE / LSP
 
 | Variable | File | Default | Purpose |

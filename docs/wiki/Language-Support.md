@@ -129,7 +129,8 @@ Beyond LSP, these modules add language-specific tooling:
 
 ## Tree-sitter
 
-`lisp/parser/init-treesit.el` configures 31 grammar sources. On Emacs 31+ it
+`lisp/parser/init-treesit.el` configures the managed grammar sources, including
+`markdown` and `markdown-inline` for `markdown-ts-appear`. On Emacs 31+ it
 uses the native `treesit-enabled-modes` / `treesit-major-mode-remap-alist`
 (replacing the older `treesit-auto` approach).
 

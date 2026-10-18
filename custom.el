@@ -18,6 +18,7 @@
  '(package-vc-selected-packages
    '((ai-code :url "https://github.com/tninja/ai-code-interface.el" :branch "main")
      (ghostel :url "https://github.com/dakra/ghostel" :lisp-dir "lisp")
+     (markdown-ts-appear :url "https://github.com/Thysrael/markdown-ts-appear")
      (vue-ts-mode :url "https://github.com/8uff3r/vue-ts-mode" :branch "main")
      (reader :url "https://codeberg.org/divyaranjan/emacs-reader" :make "all")
      (gpt-extensions :url "https://github.com/kamushadenes/gptel-extensions.el")

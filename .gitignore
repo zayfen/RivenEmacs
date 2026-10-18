@@ -3,6 +3,7 @@
 /local/
 /lisp/local/
 /eln-cache/
+/tree-sitter/
 .directory
 /test/
 

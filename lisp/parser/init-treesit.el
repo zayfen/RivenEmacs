@@ -27,6 +27,8 @@
         (javascript . ("https://github.com/tree-sitter/tree-sitter-javascript"))
         (json . ("https://github.com/tree-sitter/tree-sitter-json"))
         (make . ("https://github.com/alemuller/tree-sitter-make"))
+        (markdown . ("https://github.com/tree-sitter-grammars/tree-sitter-markdown" nil "tree-sitter-markdown/src"))
+        (markdown-inline . ("https://github.com/tree-sitter-grammars/tree-sitter-markdown" nil "tree-sitter-markdown-inline/src"))
         (ocaml . ("https://github.com/tree-sitter/tree-sitter-ocaml" nil "grammars/ocaml/src"))
         (python . ("https://github.com/tree-sitter/tree-sitter-python"))
         ;; tree-sitter-php keeps its grammar in the php/src subdirectory.
@@ -65,7 +67,7 @@
 (setq treesit-auto-install-grammar 'ask)
 
 (defconst riven/treesit-grammar-langs
-  '(bash c cpp cmake css elisp go html javascript json make ocaml
+  '(bash c cpp cmake css elisp go html javascript json make markdown markdown-inline ocaml
     python php typescript tsx ruby rust sql swift vue yaml toml zig haskell
     kotlin java lua dockerfile elixir heex angular)
   "Languages whose tree-sitter grammars RivenEmacs manages.")
@@ -101,7 +103,7 @@ available. Safe to re-run."
 (defun install-essential-treesit-grammars ()
   "Install essential tree-sitter grammars for common languages."
   (interactive)
-  (dolist (lang '(bash c cpp css go html javascript json python rust typescript tsx yaml))
+  (dolist (lang '(bash c cpp css go html javascript json markdown markdown-inline python rust typescript tsx yaml))
     (unless (treesit-language-available-p lang)
       (condition-case err
           (treesit-install-language-grammar lang)

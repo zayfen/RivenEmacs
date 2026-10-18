@@ -1,6 +1,8 @@
 ;; -*- lexical-binding: t; -*-
 
 (use-package markdown-mode
+  :ensure t
+  :demand t
   :hook
   (markdown-mode . nb/markdown-unhighlight)
   :custom
@@ -39,6 +41,41 @@
   (markdown-strike-through-face ((t (:strike-through t :height 1.0))))
   :hook
   (markdown-mode . abbrev-mode))
+
+;; markdown-ts-appear renders Markdown in place with the built-in
+;; `markdown-ts-mode'.  The third-party `markdown-mode' above remains the
+;; fallback when the Markdown tree-sitter grammars are unavailable, and it
+;; still supplies the insert/navigation commands used by the `C-c l' map.
+
+(defun riven/markdown-ts-ready-p ()
+  "Return non-nil when `markdown-ts-mode' and its grammars are available."
+  (and (require 'markdown-ts-mode nil t)
+       (fboundp 'treesit-language-available-p)
+       (treesit-language-available-p 'markdown)
+       (treesit-language-available-p 'markdown-inline)))
+
+(defun riven/markdown-maybe-ts-mode ()
+  "Open Markdown in `markdown-ts-mode' when its grammars are installed.
+Falls back to `markdown-mode' so a fresh checkout remains usable before
+the markdown grammars are installed.  Install them with
+`M-x install-essential-treesit-grammars' or
+`M-x install-treesit-language-grammars'."
+  (interactive)
+  (if (riven/markdown-ts-ready-p)
+      (markdown-ts-mode)
+    (message "Markdown tree-sitter grammars missing; using markdown-mode. Run M-x install-treesit-language-grammars")
+    (markdown-mode)))
+
+(add-to-list 'auto-mode-alist '("\\.md\\'" . riven/markdown-maybe-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.markdown\\'" . riven/markdown-maybe-ts-mode))
+
+(use-package markdown-ts-appear
+  :vc (:url "https://github.com/Thysrael/markdown-ts-appear" :rev :newest)
+  :hook (markdown-ts-mode . markdown-ts-appear-mode)
+  :custom
+  (markdown-ts-appear-heading-bullets '("◉" "○"))
+  (markdown-ts-appear-code-fence-style 'connected)
+  (markdown-ts-appear-table-style 'wrapped))
 
 ;; Grip live preview mode
 (use-package grip-mode
@@ -84,6 +121,17 @@
          ("g" . grip-mode)))
 
 ;; Markdown Live Commands - C-c l
+(defvar riven/markdown-command-map (make-sparse-keymap)
+  "RivenEmacs Markdown insert/navigation commands under `C-c l'.")
+
+(defun riven/markdown-install-ts-keys ()
+  "Bind the shared Markdown command map in `markdown-ts-mode-map'."
+  (when (and riven/markdown-command-map
+             (boundp 'markdown-ts-mode-map)
+             (keymapp markdown-ts-mode-map))
+    (define-key markdown-ts-mode-map (kbd "C-c l")
+                riven/markdown-command-map)))
+
 (with-eval-after-load 'markdown-mode
   (defun markdown-insert-header-dwim ()
     "Insert header based on context (DWIM - Do What I Mean)."
@@ -105,7 +153,7 @@ natively in current markdown-mode releases."
     (let ((lang (read-string "Language: " "python")))
       (markdown-insert-gfm-code-block lang)))
 
-  (let ((map (make-sparse-keymap)))
+  (let ((map riven/markdown-command-map))
     (define-key map (kbd "b") #'markdown-insert-bold)
     (define-key map (kbd "i") #'markdown-insert-italic)
     (define-key map (kbd "c") #'markdown-insert-code)
@@ -159,7 +207,11 @@ natively in current markdown-mode releases."
     (define-key map (kbd "T l") #'markdown-toggle-url-hiding)
     (define-key map (kbd "T i") #'markdown-toggle-inline-images)
     (define-key map (kbd "T m") #'markdown-toggle-markup-hiding)
-    (define-key markdown-mode-map (kbd "C-c l") map)))
+    (define-key markdown-mode-map (kbd "C-c l") map)
+    (riven/markdown-install-ts-keys)))
+
+(with-eval-after-load 'markdown-ts-mode
+  (riven/markdown-install-ts-keys))
 
 (provide 'init-markdown)
 ;;; init-markdown.el ends here
