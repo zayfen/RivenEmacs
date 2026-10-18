@@ -31,7 +31,16 @@
          (emoji (riven/first-available-font
                  '("Apple Color Emoji" "Segoe UI Emoji" "Noto Color Emoji")))
          (cjk (riven/first-available-font
-               '("Sarasa Mono SC" "PingFang SC" "Microsoft YaHei" "Source Han Sans SC" "WenQuanYi Micro Hei"))))
+               '("Sarasa Term SC Nerd"
+                 "Sarasa Term SC"
+                 "Sarasa Mono SC"
+                 "Sarasa Fixed SC"
+                 "Noto Sans Mono CJK SC"
+                 "PingFang SC"
+                 "Hiragino Sans GB"
+                 "Microsoft YaHei"
+                 "Source Han Sans SC"
+                 "WenQuanYi Micro Hei"))))
     (set-frame-font (format "%s-%s" fixed size) nil t)
     (set-face-attribute 'fixed-pitch nil :font fixed :weight 'regular :height (* 10 size))
     (set-face-attribute 'variable-pitch nil :font variable :weight 'regular :height (* 10 size))

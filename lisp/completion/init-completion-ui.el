@@ -95,6 +95,9 @@ no page has a 10th slot; `M-0' only reports that instead of inserting."
 (use-package corfu-popupinfo
   :after corfu
   :ensure nil
+  ;; Load it eagerly: otherwise `:after' only records a dependency, the
+  ;; global minor mode below never runs, and waiting/`M-h' shows no docs.
+  :demand t
   :bind (:map corfu-map
               ("M-h" . corfu-popupinfo-documentation))
   :custom
