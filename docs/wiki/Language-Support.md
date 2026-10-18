@@ -21,12 +21,49 @@ Defined in `lisp/ide/init-eglot.el`. At connect time, eglot calls a
    ```
    Eglot: `pyright-langserver' not found. Install (npm i -g pyright)? (y or n)
    ```
-3. On `y`, runs the install command synchronously, surfacing output in
-   `*eglot server install*` (auto-shown on failure).
-4. Returns the contact list once the binary is available, or errors if the user
-   declines / install fails.
+3. On `y`, runs the installer as a subprocess while continuing to process
+   input/redisplay, showing progress in the minibuffer and keeping the
+   `*eglot server install*` output buffer.  The wait is bounded by
+   `rivenEmacs-eglot-install-timeout` (default 300s).
+4. Refreshes `exec-path` with common npm/pip/cargo/Brew binary directories,
+   then returns the contact once the binary is available.
+5. A declined install is remembered for the session; run
+   `M-x riven/eglot-reset-install-prompts` to allow prompting again.
 
 Disable globally: `(setq rivenEmacs-eglot-auto-install nil)`.
+
+On-type formatting (`documentOnTypeFormattingProvider`) is disabled globally:
+some servers issue synchronous requests for characters such as `;` and RET,
+which can freeze Emacs. Use format-on-save or explicit format commands instead.
+
+LSP dynamic file watching is disabled by default
+(`rivenEmacs-eglot-disable-file-watch`), because some servers misbehave with
+Eglot's `didChangeWatchedFiles` registration; set it to nil to restore the
+standard behavior.
+
+Inlay hints are opt-in through `rivenEmacs-eglot-inlay-hint-modes`, for
+example `(setq rivenEmacs-eglot-inlay-hint-modes '(rust-ts-mode
+typescript-ts-mode))`.  Reconnect Eglot after changing the list.
+
+---
+
+## Workspace Configuration
+
+`rivenEmacs-eglot-workspace-configuration` (see `init-eglot.el`) supplies
+default server settings through `eglot-workspace-configuration`:
+
+- Pyright: `python.analysis.typeCheckingMode = "basic"` (a project
+  `pyrightconfig.json` still wins);
+- Pylsp: fuzzy Jedi completion;
+- TypeScript/JavaScript: relative import paths.
+
+Projects can override any of this with directory-local
+`eglot-workspace-configuration`, which takes precedence over the defaults.
+Inspect the effective payload with `M-x eglot-show-workspace-configuration`.
+
+Server contacts also preserve standard LSP language ids: `web-mode` sends
+`html`, `js-ts-mode` sends `javascript`, `tsx-ts-mode` sends
+`typescriptreact`, and the JSON/YAML modes send `json`/`jsonc`/`yaml`.
 
 ---
 
@@ -34,18 +71,29 @@ Disable globally: `(setq rivenEmacs-eglot-auto-install nil)`.
 
 | Language | Modes | Server (priority order) | Install command |
 |----------|-------|------------------------|-----------------|
-| **Python** | `python-mode`, `python-ts-mode` | basedpyright → pyright → ruff → pylsp | `pip install basedpyright` / `npm i -g pyright` / `pip install ruff` / `pip install python-lsp-server` |
+| **Python** | `python-mode`, `python-ts-mode` | basedpyright → pyright → pylsp → ruff | `pip install basedpyright` / `npm i -g pyright` / `pip install ruff` / `pip install python-lsp-server` |
 | **Vue** | `vue-ts-mode` | vue-language-server (Volar) + TypeScript | `npm i -g @vue/language-server @vue/language-core` (+ `typescript`) |
-| **Kotlin** | `kotlin-mode`, `kotlin-ts-mode` | kotlin-lsp → kotlin-language-server | `brew install kotlin-language-server` / `npm i -g kotlin-language-server` |
+| **Kotlin** | `kotlin-mode`, `kotlin-ts-mode` | kotlin-lsp (if present) → kotlin-language-server | `npm i -g kotlin-language-server` |
 | **Rust** | `rust-mode`, `rust-ts-mode` | rust-analyzer | `rustup component add rust-analyzer` |
 | **C / C++** | `c-mode`, `c-ts-mode`, `c++-mode`, `c++-ts-mode`, `objc-mode` | clangd | `brew install llvm` |
 | **Java** | `java-mode`, `java-ts-mode` | jdtls | `brew install jdtls` |
 | **JS / TS** | `typescript-ts-mode`, `tsx-ts-mode`, `js-ts-mode` | typescript-language-server | `npm i -g typescript-language-server typescript` |
+| **JSX** | `js-ts-mode` (`.jsx` is mapped there) | typescript-language-server | same as JS/TS |
+| **HTML** | `web-mode` (`.html`/`.ejs`), `html-mode`, `html-ts-mode` | vscode-html-language-server | `npm i -g vscode-langservers-extracted` |
+| **JSON** | `js-json-mode`, `json-mode`, `json-ts-mode`, `jsonc-mode` | vscode-json-language-server | `npm i -g vscode-langservers-extracted` |
+| **YAML** | `yaml-mode`, `yaml-ts-mode`, `yaml-ts-mode-maybe` | yaml-language-server | `npm i -g yaml-language-server` |
+| **Go** | `go-mode`, `go-ts-mode` | gopls | `go install golang.org/x/tools/gopls@latest` |
+| **Lua** | `lua-mode`, `lua-ts-mode` | lua-language-server | `brew install lua-language-server` |
+| **Bash** | `sh-mode`, `bash-ts-mode` | bash-language-server | `npm i -g bash-language-server` |
 | **PHP** | `php-mode`, `php-ts-mode` | phpactor | `composer global require phpactor/phpactor` |
 
-Modes not listed here keep eglot's built-in defaults (no auto-install): Swift
-(sourcekit-lsp), Go (gopls), Ruby, Haskell, Scala, Dart, Elixir, Erlang, …
-— eglot ships contacts for these out of the box.
+`web-mode` sends the `html` language id to the HTML server, so embedded
+JavaScript/CSS is not handled by a second server; use the corresponding
+`js-ts-mode`/`css-mode` buffer for full JS/TS/CSS features.
+
+Modes not listed here keep eglot's built-in defaults (no auto-install): Ruby,
+Haskell, Scala, Dart, Elixir, Erlang, … — eglot ships contacts for these out
+of the box.  Swift uses a custom `sourcekit-lsp` contact.
 
 ---
 
@@ -73,7 +121,7 @@ Beyond LSP, these modules add language-specific tooling:
 |------|--------|
 | `lisp/lang/init-python.el` | `python-ts-mode`, Ruff flymake backend, `pyvenv` (virtualenv), `pet`. Keys `C-c l c/r/t` send buffer/region/run pytest. |
 | `lisp/lang/init-rust.el` | `rust-ts-mode` (indent 2), `cargo` minor mode. |
-| `lisp/lang/init-web.el` | `emmet-mode`, `web-mode` (html/ejs), `vue-ts-mode`, ts/tsx/js auto-mode. React/JSX tree-sitter helpers under `C-c C-e` (`r` rename-tag, `j` jump-to-matching-tag, `d` delete-tag). JSX-aware commenting (`riv/jsx-comment-dwim` on `M-;`). |
+| `lisp/lang/init-web.el` | `emmet-mode`, `web-mode` (html/ejs, HTML LSP), `vue-ts-mode`, ts/tsx/js/jsx auto-mode (`.jsx` → `js-ts-mode`). React/JSX tree-sitter helpers under `C-c C-e` (`r` rename-tag, `j` jump-to-matching-tag, `d` delete-tag). JSX-aware commenting (`riv/jsx-comment-dwim` on `M-;`). |
 | `lisp/lang/init-java.el` | `kotlin-ts-mode` (indent 2) for `.kt`/`.kts`. Java uses builtin `java-ts-mode` + eglot jdtls. |
 | `lisp/lang/init-swift.el` | `swift-mode`, `find-sourcekit-lsp` locator. |
 

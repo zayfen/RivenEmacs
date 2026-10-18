@@ -64,7 +64,7 @@ concern. Each `.el` file follows the module template (see
 
 | File | Purpose |
 |------|---------|
-| `init-eglot.el` | **The only LSP client** — builtin `eglot` + `eglot-booster`. On-demand server install (see [Language-Support](Language-Support.md)). `yasnippet`. Xref: `M-.`/`M-,`/`M-?`. |
+| `init-eglot.el` | **The only LSP client** — builtin `eglot` + `eglot-booster`. On-demand server install, workspace defaults, HTML/web/JSON/YAML and correct LSP language ids (see [Language-Support](Language-Support.md)). `yasnippet`. Xref: `M-.`/`M-,`/`M-?`. |
 | `init-checker.el` | `flymake` (debounced current-line echo in minibuffer, colored mode-line counters), `flymake-eslint` (prefers `oxlint`), `eslint-fix`. |
 | `init-debugger.el` | `dape` (DAP client) under `C-c d`; saves/loads breakpoints, pulses source line. |
 | `init-jump.el` | `switch-window` (`C-x o/1/2/3/0`), `goto-last-change` (`M-[`), `dumb-jump`. |

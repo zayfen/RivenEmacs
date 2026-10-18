@@ -94,9 +94,12 @@ RivenEmacs
 ### IDE 与语言开发
 
 - 默认 LSP 客户端为 Emacs 内置 `eglot`，在 `rivenEmacs-lsp-modes` 中集中声明启用模式。
+- `rivenEmacs-eglot-workspace-configuration` 提供项目级默认设置（Pyright `basic` 类型检查、Pylsp 模糊补全、TS 相对导入），项目 `.dir-locals.el` 可覆盖。
 - `eglot-booster` 在可用时自动启用，提高 JSON-RPC 传输性能。
-- Python LSP 会按 `basedpyright-langserver`、`pyright-langserver`、`ruff server`、`pylsp` 顺序选择可用实现。
-- Vue、Kotlin 等语言 server 注册逻辑集中在 `lisp/ide/init-eglot.el`。
+- Python LSP 会按 `basedpyright-langserver`、`pyright-langserver`、`pylsp`、`ruff server` 顺序选择可用实现。
+- Vue、Kotlin、HTML（`web-mode`）、JSON、YAML、Go、Lua、Bash 等语言 server 注册与按需安装逻辑集中在 `lisp/ide/init-eglot.el`；`.jsx` 映射到 `js-ts-mode`。
+- on-type formatting 默认关闭，避免同步阻塞请求导致输入卡顿；格式化交由 Apheleia/显式命令处理。
+- 缺失 server 的安装以子进程运行并刷新 PATH，可设置超时、记住拒绝决策；inlay hints 可通过 `rivenEmacs-eglot-inlay-hint-modes` 按模式开启。
 - Tree-sitter 使用 Emacs 31 原生 `treesit-enabled-modes`/mode remap，支持手动 grammar 安装。
 - Flymake 负责诊断，ElDoc 保持单行 minibuffer 文档，减少窗口抖动。
 

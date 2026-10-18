@@ -2,6 +2,12 @@
 
 (require 'init-config)
 
+(declare-function project-root "project" (project))
+(declare-function eglot-server-capable "eglot" (capability &optional server))
+(declare-function yas-expand "yasnippet" ())
+(declare-function yas-next-field "yasnippet" (&optional arg))
+(declare-function riven/xref-find-definitions-or-search "init-helper" ())
+
 (defun smarter-yas-expand-next-field ()
   "Try `yas-expand`, then move to next field if no expansion happened."
   (interactive)
@@ -20,44 +26,188 @@ to disable all install prompts (servers must be installed manually)."
   :type 'boolean
   :group 'rivenEmacs)
 
+(defcustom rivenEmacs-eglot-workspace-configuration
+  '(:python (:analysis (:typeCheckingMode "basic"))
+    :pylsp (:plugins (:jedi_completion (:fuzzy t)))
+    :typescript (:preferences (:importModuleSpecifier "relative"))
+    :javascript (:preferences (:importModuleSpecifier "relative")))
+  "Default LSP workspace settings for RivenEmacs.
+This is sent as `eglot-workspace-configuration' to connected servers
+unless a project overrides it with directory-local variables.  The
+defaults keep Pyright/Pylsp and TypeScript useful without imposing
+language-specific project policy:
+
+- `python.analysis.typeCheckingMode': `basic' instead of the server
+  default (which may be off), with project pyrightconfig.json still
+  taking precedence.
+- Pylsp Jedi completion is fuzzy.
+- TS/JS prefer relative import paths.
+
+Use `M-x eglot-show-workspace-configuration' to inspect the effective
+value, or set this variable to nil to restore Eglot's defaults."
+  :type 'sexp
+  :group 'rivenEmacs)
+
+(defun riven/eglot-workspace-configuration (&optional _server)
+  "Return `rivenEmacs-eglot-workspace-configuration' for Eglot.
+The optional SERVER argument is accepted for Eglot's function-form
+`eglot-workspace-configuration' contract but ignored."
+  rivenEmacs-eglot-workspace-configuration)
+
+(defcustom rivenEmacs-eglot-install-timeout 300
+  "Maximum seconds an on-demand language-server install may run."
+  :type 'natnum
+  :group 'rivenEmacs)
+
+(defcustom rivenEmacs-eglot-disable-file-watch t
+  "Whether to disable dynamic LSP file-watching globally.
+Some servers behave poorly when Eglot registers
+`workspace/didChangeWatchedFiles'; set this to nil to keep the
+standard registration for all servers."
+  :type 'boolean
+  :group 'rivenEmacs)
+
+(defcustom rivenEmacs-eglot-inlay-hint-modes nil
+  "Major modes where Eglot inlay hints are enabled automatically.
+Inlay hints add server-provided type and parameter annotations.  This
+is opt-in because it can be visually noisy and has a per-edit cost.
+Set it to a list such as `(rust-ts-mode typescript-ts-mode)' and
+reconnect Eglot to apply it to existing buffers."
+  :type '(repeat symbol)
+  :group 'rivenEmacs)
+
+(defvar riven/eglot--declined-installs (make-hash-table :test #'equal)
+  "Language servers the user declined to install in this session.")
+
+(defun riven/eglot-reset-install-prompts ()
+  "Forget previously declined language-server installs.
+After this command, opening a file with a missing server can prompt
+again."
+  (interactive)
+  (clrhash riven/eglot--declined-installs)
+  (message "Eglot install prompt decisions reset."))
+
 (defun riven/eglot--ensure-server (binary install-cmd)
   "Ensure BINARY is on PATH, optionally installing via INSTALL-CMD.
 INSTALL-CMD is a list like (\"npm\" \"i\" \"-g\" \"foo\") or
-(\"pip\" \"install\" \"foo\"); any installer works since it is run
-via `call-process' (no shell).  If BINARY is already on PATH, return
-t immediately.  Otherwise, when `rivenEmacs-eglot-auto-install' is
-non-nil, prompt in the minibuffer; on `y' run INSTALL-CMD
-synchronously and surface its output.  Returns non-nil if BINARY is
-available afterwards, nil if the user declined, install failed, or
-auto-install is disabled.  If INSTALL-CMD is nil, only detect."
+(\"pip\" \"install\" \"foo\"); any installer works since it is run as a
+subprocess (no shell).  If BINARY is already on PATH, return t
+immediately.  Otherwise, when `rivenEmacs-eglot-auto-install' is
+non-nil, prompt in the minibuffer; on `y' run INSTALL-CMD in a
+subprocess, keep redisplay alive while it runs, refresh `exec-path'
+afterwards, and surface its output.  Declining is remembered for the
+session; use `riven/eglot-reset-install-prompts' to ask again.
+Returns non-nil if BINARY is available afterwards, nil if the user
+declined, install failed, or auto-install is disabled.  If INSTALL-CMD
+is nil, only detect."
   (cond
    ((executable-find binary) t)
    ((or (null install-cmd) (not rivenEmacs-eglot-auto-install)) nil)
+   ((gethash binary riven/eglot--declined-installs) nil)
    ((not (y-or-n-p (format "Eglot: `%s' not found. Install (%s)? "
                            binary (mapconcat #'identity install-cmd " "))))
-    (message "Install skipped.") nil)
+    (puthash binary t riven/eglot--declined-installs)
+    (message "Install skipped; run M-x riven/eglot-reset-install-prompts to ask again.")
+    nil)
    (t
     (message "Running `%s'..." (mapconcat #'identity install-cmd " "))
     (let* ((program (executable-find (car install-cmd)))
            (buf (get-buffer-create "*eglot server install*")))
       (if (not program)
-          (message "Install FAILED: `%s' is not on PATH; install it manually."
-                   (car install-cmd))
+          (progn
+            (message "Install FAILED: `%s' is not on PATH; install it manually."
+                     (car install-cmd))
+            nil)
         (with-current-buffer buf
           (erase-buffer))
         (let ((status (condition-case err
-                          (apply #'call-process program nil (list buf t) nil
-                                 (cdr install-cmd))
+                          (riven/eglot--run-install program (cdr install-cmd) buf)
+                        (quit
+                         (message "Install cancelled.")
+                         nil)
                         (error
                          (message "Install FAILED: %s"
                                   (error-message-string err))
                          nil))))
-          (if (eq status 0)
-              (message "Installed %s." binary)
+          (cond
+           ((eq status 0)
+            (riven/eglot--refresh-exec-path)
+            (if (executable-find binary)
+                (progn
+                  (message "Installed %s." binary)
+                  t)
+              (display-buffer buf)
+              (message "Install finished but `%s' is still not on PATH; check %s."
+                       binary (buffer-name buf))
+              nil))
+           ((null status) nil)
+           (t
             (display-buffer buf)
             (message "Install FAILED (exit %s) — see %s."
-                     status (buffer-name buf)))))
-      (executable-find binary)))))
+                     status (buffer-name buf))
+            nil))))))))
+
+(defun riven/eglot--run-install (program args buffer)
+  "Run PROGRAM with ARGS, writing output to BUFFER; return exit status.
+The process is asynchronous internally and `accept-process-output'
+keeps redisplay and timers alive while waiting, so an install does not
+freeze the whole UI.  Aborts after `rivenEmacs-eglot-install-timeout'
+seconds."
+  (let* ((proc (make-process :name "eglot-install"
+                             :command (cons program args)
+                             :buffer buffer
+                             :stderr buffer
+                             :noquery t))
+         (start (float-time))
+         (deadline (+ start rivenEmacs-eglot-install-timeout))
+         status)
+    (unwind-protect
+        (progn
+          (while (and (process-live-p proc) (< (float-time) deadline))
+            (accept-process-output proc 0.2)
+            (message "Installing language server... (%.0fs)"
+                     (- (float-time) start)))
+          (if (process-live-p proc)
+              (progn
+                (delete-process proc)
+                (error "Install timed out after %ss"
+                       rivenEmacs-eglot-install-timeout))
+            (setq status (process-exit-status proc))))
+      (when (process-live-p proc)
+        (delete-process proc)))
+    status))
+
+(defun riven/eglot--refresh-exec-path ()
+  "Add common user and package-manager bin directories to `exec-path'.
+This makes a freshly installed npm/pip/cargo server discoverable even
+when the GUI Emacs process started with a shorter PATH."
+  (let ((dirs (append
+               (list (expand-file-name "~/.npm-global/bin")
+                     (expand-file-name "~/.local/bin")
+                     (expand-file-name "~/bin")
+                     (expand-file-name "~/.cargo/bin")
+                     (expand-file-name "~/go/bin")
+                     "/opt/homebrew/bin"
+                     "/usr/local/bin")
+               (file-expand-wildcards "~/Library/Python/*/bin"))))
+    (dolist (dir dirs)
+      (when (file-directory-p dir)
+        (add-to-list 'exec-path dir)))
+    (setenv "PATH"
+            (mapconcat #'identity
+                       (delq nil (mapcar (lambda (entry)
+                                           (and (stringp entry) entry))
+                                         exec-path))
+                       path-separator))))
+
+(defun riven/eglot--maybe-enable-inlay-hints ()
+  "Enable Eglot inlay hints when the current mode is configured for them."
+  (when (and rivenEmacs-eglot-inlay-hint-modes
+             (memq major-mode rivenEmacs-eglot-inlay-hint-modes)
+             (bound-and-true-p eglot--managed-mode)
+             (fboundp 'eglot-inlay-hints-mode)
+             (eglot-server-capable :inlayHintProvider))
+    (eglot-inlay-hints-mode 1)))
 
 (defun riven/eglot--pick-server (candidates)
   "Return (CONTACT . INSTALL-CMD) for the first available server.
@@ -73,8 +223,9 @@ first one that ends up available, or nil."
 (defun riven/eglot-python-contact (&optional _interactive _project)
   "Return preferred Eglot server contact for Python, or nil.
 Offers to install the chosen server if missing.  Tries basedpyright,
-then pyright, then ruff, finally pylsp.  Returns nil when no server is
-installed and the user declines installation; Eglot then reports that
+then pyright, then pylsp, and finally ruff (ruff's LSP is primarily a
+linter/formatter, so it is the last resort).  Returns nil when no server
+is installed and the user declines installation; Eglot then reports that
 it cannot guess a server instead of silently trying a missing binary.
 Optional arguments are accepted (and ignored) to satisfy eglot's
 function-form contact contract (see `eglot-server-programs')."
@@ -83,17 +234,19 @@ function-form contact contract (see `eglot-server-programs')."
                                ("pip" "install" "basedpyright"))
      (pyright-langserver ("pyright-langserver" "--stdio")
                          ("npm" "i" "-g" "pyright"))
-     (ruff ("ruff" "server") ("pip" "install" "ruff"))
-     (pylsp ("pylsp") ("pip" "install" "python-lsp-server")))))
+     (pylsp ("pylsp") ("pip" "install" "python-lsp-server"))
+     (ruff ("ruff" "server") ("pip" "install" "ruff")))))
 
 (defun riven/eglot-configure-python-server ()
   "Register the Python LSP for `python-mode' and `python-ts-mode'.
 The contact is a function so servers are detected/offered for
 installation when a Python buffer first connects."
   (when (boundp 'eglot-server-programs)
-    (setf (alist-get 'python-mode eglot-server-programs nil nil #'eq)
+    (setf (alist-get '(python-mode :language-id "python")
+                     eglot-server-programs nil nil #'equal)
           #'riven/eglot-python-contact)
-    (setf (alist-get 'python-ts-mode eglot-server-programs nil nil #'eq)
+    (setf (alist-get '(python-ts-mode :language-id "python")
+                     eglot-server-programs nil nil #'equal)
           #'riven/eglot-python-contact)))
 
 (defun riven/eglot--vue-tsdk ()
@@ -151,19 +304,19 @@ The contact is a function, so missing packages are detected and
 offered for installation the first time a Vue buffer connects,
 not at startup."
   (when (boundp 'eglot-server-programs)
-    (setf (alist-get 'vue-ts-mode eglot-server-programs nil nil #'eq)
+    (setf (alist-get '(vue-ts-mode :language-id "vue")
+                     eglot-server-programs nil nil #'equal)
           #'riven/eglot--vue-contact)))
 
 (defun riven/eglot-kotlin-contact (&optional _interactive _project)
   "Return Eglot server contact for Kotlin, or nil if none can be set up.
-Offers to install `kotlin-language-server' (npm) or `kotlin-lsp'
-(brew) when missing.  Returns the contact of the first available
-server, or nil if the user declines.  Optional arguments are
+Uses `kotlin-lsp' when already installed; otherwise offers to install
+`kotlin-language-server' via npm.  Returns the contact of the first
+available server, or nil if the user declines.  Optional arguments are
 accepted (and ignored) to satisfy eglot's function-form contact
 contract."
   (or (riven/eglot--pick-server
-       '((kotlin-lsp ("kotlin-lsp" "--stdio")
-                      ("brew" "install" "kotlin-language-server"))
+       '((kotlin-lsp ("kotlin-lsp" "--stdio") nil)
          (kotlin-language-server ("kotlin-language-server")
                                   ("npm" "i" "-g" "kotlin-language-server"))))
       (error "No Kotlin language server available")))
@@ -173,26 +326,32 @@ contract."
 The contact is a function so servers are detected/offered for
 installation when a Kotlin buffer first connects."
   (when (boundp 'eglot-server-programs)
-    (setf (alist-get 'kotlin-mode eglot-server-programs nil nil #'eq)
+    (setf (alist-get '(kotlin-mode :language-id "kotlin")
+                     eglot-server-programs nil nil #'equal)
           #'riven/eglot-kotlin-contact)
-    (setf (alist-get 'kotlin-ts-mode eglot-server-programs nil nil #'eq)
+    (setf (alist-get '(kotlin-ts-mode :language-id "kotlin")
+                     eglot-server-programs nil nil #'equal)
           #'riven/eglot-kotlin-contact)))
 
-(defun riven/eglot-register-simple-server (modes binary contact install-cmd)
+(defun riven/eglot-register-simple-server (modes binary contact install-cmd &optional language-id)
   "Register a function-form CONTACT for MODES using BINARY + INSTALL-CMD.
 MODES is a list of major-mode symbols.  BINARY is the executable to
 detect; CONTACT is the eglot contact list (e.g. (\"clangd\")); INSTALL-CMD
 is a list run on user consent to install BINARY (e.g.
 (\"brew\" \"install\" \"llvm\")).  If BINARY is missing at connect time
 the user is offered INSTALL-CMD.  If INSTALL-CMD is nil the server is
-only detected, not installed."
+only detected, not installed.  LANGUAGE-ID, when non-nil, is sent as
+the LSP language id (useful for e.g. `web-mode' -> \"html\")."
   (when (boundp 'eglot-server-programs)
     (let ((fn (lambda (&optional _interactive _project)
                 (if (riven/eglot--ensure-server binary install-cmd)
                     contact
                   (error "`%s' not installed" binary)))))
       (dolist (mode modes)
-        (setf (alist-get mode eglot-server-programs nil nil #'eq) fn)))))
+        (let ((key (if language-id
+                       (list mode :language-id language-id)
+                     mode)))
+          (setf (alist-get key eglot-server-programs nil nil #'equal) fn))))))
 
 (defun riven/eglot-configure-default-servers ()
   "Register common LSPs with on-demand install for built-in modes.
@@ -202,34 +361,108 @@ is missing.  Modes not listed here keep eglot's defaults (no
 auto-install)."
   (riven/eglot-register-simple-server
    '(rust-mode rust-ts-mode) "rust-analyzer" '("rust-analyzer")
-   '("rustup" "component" "add" "rust-analyzer"))
+   '("rustup" "component" "add" "rust-analyzer")
+   "rust")
   (riven/eglot-register-simple-server
-   '(c-mode c-ts-mode c++-mode c++-ts-mode objc-mode) "clangd" '("clangd")
-   '("brew" "install" "llvm"))
+   '(c-mode c-ts-mode) "clangd" '("clangd")
+   '("brew" "install" "llvm") "c")
+  (riven/eglot-register-simple-server
+   '(c++-mode c++-ts-mode) "clangd" '("clangd")
+   '("brew" "install" "llvm") "c++")
+  (riven/eglot-register-simple-server
+   '(objc-mode) "clangd" '("clangd")
+   '("brew" "install" "llvm") "objective-c")
   (riven/eglot-register-simple-server
    '(java-mode java-ts-mode) "jdtls" '("jdtls")
-   '("brew" "install" "jdtls"))
+   '("brew" "install" "jdtls") "java")
   (riven/eglot-register-simple-server
    '(php-mode php-ts-mode) "phpactor" '("phpactor" "language-server")
-   '("composer" "global" "require" "phpactor/phpactor"))
-  ;; JS/TS via typescript-language-server (covers js-ts-mode,
-  ;; typescript-ts-mode, tsx-ts-mode, etc.).
+   '("composer" "global" "require" "phpactor/phpactor") "php")
+  ;; JS/TS via typescript-language-server.  Preserve the language ids Eglot's
+  ;; built-in contacts use; otherwise -ts modes would send \"js-ts\" etc.
   (riven/eglot-register-simple-server
-   '(typescript-ts-mode tsx-ts-mode js-ts-mode) "typescript-language-server"
+   '(js-ts-mode) "typescript-language-server"
    '("typescript-language-server" "--stdio")
-   '("npm" "i" "-g" "typescript-language-server" "typescript")))
+   '("npm" "i" "-g" "typescript-language-server" "typescript")
+   "javascript")
+  (riven/eglot-register-simple-server
+   '(typescript-ts-mode) "typescript-language-server"
+   '("typescript-language-server" "--stdio")
+   '("npm" "i" "-g" "typescript-language-server" "typescript")
+   "typescript")
+  (riven/eglot-register-simple-server
+   '(tsx-ts-mode) "typescript-language-server"
+   '("typescript-language-server" "--stdio")
+   '("npm" "i" "-g" "typescript-language-server" "typescript")
+   "typescriptreact")
+  ;; HTML templates edited with `web-mode' get the HTML language server.
+  ;; The server is installed together with the CSS/JSON servers by
+  ;; `vscode-langservers-extracted'.
+  (riven/eglot-register-simple-server
+   '(web-mode) "vscode-html-language-server"
+   '("vscode-html-language-server" "--stdio")
+   '("npm" "i" "-g" "vscode-langservers-extracted")
+   "html")
+  (riven/eglot-register-simple-server
+   '(html-mode html-ts-mode) "vscode-html-language-server"
+   '("vscode-html-language-server" "--stdio")
+   '("npm" "i" "-g" "vscode-langservers-extracted")
+   "html")
+  (riven/eglot-register-simple-server
+   '(css-mode css-ts-mode) "vscode-css-language-server"
+   '("vscode-css-language-server" "--stdio")
+   '("npm" "i" "-g" "vscode-langservers-extracted")
+   "css")
+  ;; JSON files are edited with `js-json-mode' in Emacs 31; JSONC is used by
+  ;; VS Code-style config files.
+  (riven/eglot-register-simple-server
+   '(js-json-mode json-mode json-ts-mode)
+   "vscode-json-language-server"
+   '("vscode-json-language-server" "--stdio")
+   '("npm" "i" "-g" "vscode-langservers-extracted")
+   "json")
+  (riven/eglot-register-simple-server
+   '(jsonc-mode) "vscode-json-language-server"
+   '("vscode-json-language-server" "--stdio")
+   '("npm" "i" "-g" "vscode-langservers-extracted")
+   "jsonc")
+  ;; YAML language server is smaller and installed on demand.
+  (riven/eglot-register-simple-server
+   '(yaml-mode yaml-ts-mode yaml-ts-mode-maybe)
+   "yaml-language-server" '("yaml-language-server" "--stdio")
+   '("npm" "i" "-g" "yaml-language-server")
+   "yaml")
+  ;; Go, Lua and Bash get the same on-demand treatment.
+  (riven/eglot-register-simple-server
+   '(go-mode go-ts-mode) "gopls" '("gopls")
+   '("go" "install" "golang.org/x/tools/gopls@latest")
+   "go")
+  (riven/eglot-register-simple-server
+   '(lua-mode lua-ts-mode) "lua-language-server" '("lua-language-server")
+   '("brew" "install" "lua-language-server")
+   "lua")
+  (riven/eglot-register-simple-server
+   '(bash-ts-mode sh-mode) "bash-language-server"
+   '("bash-language-server" "start")
+   '("npm" "i" "-g" "bash-language-server")
+   "shellscript"))
 
 (defun riven/eglot-client-capabilities-no-file-watch (orig-fn server)
-  "Call ORIG-FN for SERVER, disabling dynamic file-watch registration."
-  (let* ((caps (funcall orig-fn server))
-         (workspace (plist-get caps :workspace))
-         (watch (and (listp workspace)
-                     (plist-get workspace :didChangeWatchedFiles))))
-    (when (listp watch)
-      (setq watch (plist-put watch :dynamicRegistration :json-false))
-      (setq workspace (plist-put workspace :didChangeWatchedFiles watch))
-      (setq caps (plist-put caps :workspace workspace)))
-    caps))
+  "Call ORIG-FN for SERVER, disabling dynamic file watch when configured.
+The default is to disable the registration; set
+`rivenEmacs-eglot-disable-file-watch' to nil to keep Eglot's normal
+`workspace/didChangeWatchedFiles' behavior."
+  (let ((caps (funcall orig-fn server)))
+    (if (not rivenEmacs-eglot-disable-file-watch)
+        caps
+      (let* ((workspace (plist-get caps :workspace))
+             (watch (and (listp workspace)
+                         (plist-get workspace :didChangeWatchedFiles))))
+        (when (listp watch)
+          (setq watch (plist-put watch :dynamicRegistration :json-false))
+          (setq workspace (plist-put workspace :didChangeWatchedFiles watch))
+          (setq caps (plist-put caps :workspace workspace)))
+        caps))))
 
 (use-package yasnippet
   :ensure t
@@ -274,10 +507,15 @@ auto-install)."
   ;; Use ASCII indicator to avoid emoji fallback fonts affecting glyph height.
   (eglot-code-action-indicator "*")
   (eglot-events-buffer-config '(:size 0 :format short))
-  ;; on-type formatting makes a synchronous blocking request to the server,
-  ;; causing Emacs to freeze on characters like `;' and RET.
-  ;; (eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider))
   :config
+  ;; on-type formatting makes a synchronous blocking request to the server,
+  ;; causing Emacs to freeze on characters like `;' and RET.  Keep it off;
+  ;; format-on-save is handled by Apheleia/LSP formatting commands instead.
+  (setq eglot-ignored-server-capabilities
+        '(:documentOnTypeFormattingProvider))
+  (setq-default eglot-workspace-configuration
+                #'riven/eglot-workspace-configuration)
+  (add-hook 'eglot-managed-mode-hook #'riven/eglot--maybe-enable-inlay-hints)
   (riven/eglot-configure-python-server)
   (riven/eglot-configure-vue-server)
   (riven/eglot-configure-kotlin-server)

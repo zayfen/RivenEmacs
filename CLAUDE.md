@@ -68,7 +68,7 @@ M-x auto-install-treesit-grammars       ;; All supported grammars
 
 ### LSP Configuration
 - **Language servers**: configured via Eglot in `lisp/ide/init-eglot.el`
-- **Python**: server priority chain basedpyright → pyright → ruff → pylsp
+- **Python**: server priority chain basedpyright → pyright → pylsp → ruff
 - **JS/TS**: `typescript-language-server` / `vtsls`; Vue via Volar
 - **Rust**: rust-analyzer (on-demand install)
 - **Auto-install**: `rivenEmacs-eglot-auto-install` (default `t`)

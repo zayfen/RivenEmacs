@@ -20,7 +20,8 @@ M-x customize-group RET rivenEmacs RET
 | `rivenEmacs-snippets-dir` | directory | `<emacs-dir>/snippets` | yasnippet snippets location. |
 | `rivenEmacs-org-directory` | directory | `~/org` | Org files directory. |
 | `rivenEmacs-dashboard-delay` | number | `0.5` | Delay before opening dashboard. |
-| `rivenEmacs-lsp-modes` | list of symbols | (swift, python, js/ts, vue, rust, c/c++, java, kotlin, php, css, html — both `-ts-mode` and base `-mode`) | Modes where LSP is auto-enabled. |
+| `rivenEmacs-lsp-modes` | list of symbols | (swift, python, js/ts, vue, rust, c/c++, java, kotlin, php, css, html/web, json, yaml, go, lua, bash — both `-ts-mode` and base `-mode`) | Modes where LSP is auto-enabled. |
+| `rivenEmacs-eglot-workspace-configuration` | plist | Default workspace settings sent to Pyright/Pylsp/TypeScript servers. |
 | `rivenEmacs-auto-install-treesit` | boolean | `nil` | Auto-install tree-sitter grammars at startup. |
 
 ---
@@ -41,6 +42,10 @@ M-x customize-group RET rivenEmacs RET
 | Variable | File | Default | Purpose |
 |----------|------|---------|---------|
 | `rivenEmacs-eglot-auto-install` | `init-eglot.el` | `t` | Offer to install missing LSP servers on connect. |
+| `rivenEmacs-eglot-install-timeout` | `init-eglot.el` | `300` | Abort an on-demand server install after this many seconds. |
+| `rivenEmacs-eglot-disable-file-watch` | `init-eglot.el` | `t` | Disable dynamic LSP file-watching globally; set nil to restore it. |
+| `rivenEmacs-eglot-inlay-hint-modes` | `init-eglot.el` | `nil` | Modes where Eglot inlay hints are auto-enabled (opt-in). |
+| `rivenEmacs-eglot-workspace-configuration` | `init-eglot.el` | plist | Default workspace settings (Pyright basic typing, Pylsp fuzzy completion, TS relative imports); override per project with dir-locals. |
 | `riven/flymake-echo-idle-delay` | `init-checker.el` | number | Delay before echoing current-line diagnostic. |
 | `riven/treesit-auto-create-modes` | `init-treesit.el` | — | Modes where tree-sitter parsers are created eagerly. |
 | `riven/aggressive-indent-max-size` | `init-format.el` | — | Skip aggressive-indent above this buffer size. |

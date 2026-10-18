@@ -36,7 +36,8 @@ clear error when sourcekit-lsp cannot be found."
 ;; server for those modes.
 (with-eval-after-load 'eglot
   (dolist (mode '(swift-mode swift-ts-mode))
-    (setf (alist-get mode eglot-server-programs nil nil #'eq)
+    (setf (alist-get (list mode :language-id "swift")
+                     eglot-server-programs nil nil #'equal)
           #'riven/eglot-swift-contact)))
 
 ;; Swift editing support

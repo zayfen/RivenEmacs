@@ -66,7 +66,12 @@
     kotlin-ts-mode
     php-ts-mode php-mode
     css-ts-mode css-mode
-    html-ts-mode html-mode)
+    html-ts-mode html-mode web-mode
+    js-json-mode json-ts-mode json-mode jsonc-mode
+    yaml-mode yaml-ts-mode yaml-ts-mode-maybe
+    go-ts-mode go-mode
+    lua-ts-mode lua-mode
+    bash-ts-mode sh-mode)
   "List of modes where LSP should be enabled."
   :type '(repeat symbol)
   :group 'rivenEmacs)
