@@ -119,6 +119,7 @@ still active; early-init.el restores normal GC later on
   (require 'init-project)
   (require 'init-gpt)
   (require 'init-ai-code)
+  (require 'init-dsh-emacs)
   (require 'init-web)
   (require 'init-rust)
   (require 'init-python)

@@ -187,8 +187,9 @@ uses:
 5. **Tooling**: `init-terminal`
 6. **Keymaps**: `init-keybindings` (registers its `after-init-hook` handler)
 7. **Deferred**: `riven/load-deferred-modules` on `after-init-hook` at depth
-   -20 — eglot, vc, debugger, envrc, project, gpt, ai-code, web, rust, python,
-   java, swift, docker, quickrun, feed, lookup, reader, codeforces.
+   -20 — eglot, vc, debugger, envrc, project, gpt, ai-code, dsh-emacs, web,
+   rust, python, java, swift, docker, quickrun, feed, lookup, reader,
+   codeforces.
    The keybinding specs are then applied by the default-depth `after-init-hook`
    handler, so every deferred command exists before its spec is validated.
 

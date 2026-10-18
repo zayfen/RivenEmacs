@@ -7,7 +7,7 @@ RivenEmacs 是一套面向现代开发工作流的 Emacs 配置，重点放在�
 - **架构清晰**：所有能力按目录分层放在 `lisp/` 下，入口只负责装配，模块只负责自己的领域。
 - **启动快**：`early-init.el` 处理 GC、文件名处理器、native-comp 缓存等启动期优化，重型模块延迟到 `after-init-hook` 的前部（depth -20，在桌面恢复/键位应用之前、首次 redisplay 之前）加载。
 - **现代 IDE 体验**：默认使用 `eglot`（唯一 LSP 客户端），配合 `eglot-booster`、Tree-sitter、Flymake、Apheleia、Corfu/Cape，覆盖跳转、诊断、格式化、补全和文档。
-- **AI 与 MCP 原生集成**：内置 `gptel`、`ai-code` 和多种 MCP server 配置，支持文件系统、记忆、浏览器、搜索等工具能力。
+- **AI 与 MCP 原生集成**：内置 `gptel`、`ai-code`、`dsh-emacs`（DeepSeek Harness 客户端，`C-c d`）和多种 MCP server 配置，支持文件系统、记忆、浏览器、搜索等工具能力。
 - **声明式键位**：键位集中在 `lisp/keymaps/`，由声明式 spec 和引擎生成（`C-c` leader，已退役 general.el/SPC），便于查重、重载和维护 which-key 分组。
 - **可复现依赖管理**：`scripts/riven-deps.sh` 可以检查、安装和修复核心依赖、LSP、AI、MCP、拼写和 Markdown 预览工具。
 - **可维护升级**：`scripts/update-packages.sh` 同时升级 ELPA 包和 package-vc（Git/源码）包，支持 `--dry-run`、`--only`，并按分支/release tag 语义更新 VC 包。
@@ -55,7 +55,7 @@ RivenEmacs
 │   ├── parser/                # Tree-sitter 自动 remap 与 grammar 管理
 │   ├── ide/                   # Eglot、Flymake、跳转、调试、项目和 envrc
 │   ├── vcs/                   # Magit、Git gutter/hunk 等版本控制能力
-│   ├── ai/                    # gptel、MCP、AI Code Interface
+│   ├── ai/                    # gptel、MCP、AI Code Interface、dsh-emacs
 │   ├── lang/                  # Web、Rust、Python、Java、Swift、Org 等语言配置
 │   ├── keymaps/               # 声明式键位 spec、命令和应用引擎
 │   ├── session/               # desktop.el 会话持久化
@@ -78,7 +78,7 @@ RivenEmacs
 3. **写作与会话**：写作模块、Org 按需加载、`desktop.el` 会话管理
 4. **工具与键位**：`init-terminal`，然后 `init-keybindings` 注册键位应用回调
 5. **延迟模块**：Eglot、VCS、调试、项目、GPT/MCP、语言和工具模块在 `after-init-hook`（depth -20）加载，先于桌面恢复与键位实际应用（depth 0），但仍是同步启动工作
-6. **AI 入口**：`gptel`、MCP 与 `ai-code` 同样在延迟阶段加载
+6. **AI 入口**：`gptel`、MCP、`ai-code` 与 `dsh-emacs` 同样在延迟阶段加载
 
 这种结构让立即加载路径保持精简；重模块仍在本次启动中同步加载，但保证各自的 hook 在桌面恢复和首次交互前就绪。
 
@@ -111,6 +111,7 @@ RivenEmacs
 - MCP 配置集中在 `lisp/ai/init-gpt.el`，支持 filesystem、memory、Playwright browser、browser-use、Brave Search、Tavily 等 server。
 - 缺少 `BRAVE_API_KEY` 或 `TAVILY_API_KEY` 时，对应 MCP server 会自动跳过，不阻塞主配置加载。
 - `ai-code` 提供 Codex、Claude Code、Opencode、Aider 等 AI 编码入口，默认后端为 Codex。
+- `C-c d` 打开 `dsh-emacs`（DeepSeek Harness 客户端）：按工作区分组的会话列表、流式对话、工具调用/思考折叠、模型切换和子代理；默认自动管理本地 `dsh web` 服务。
 
 在 Emacs 内验证 MCP 配置：
 

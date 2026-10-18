@@ -6,6 +6,9 @@ by the declarative engine at `after-init-hook`.
 
 > Tip: press `C-c` then wait 1 s — `which-key` shows every available prefix.
 
+`C-c d` is a direct launcher (not a prefix): it opens the DeepSeek Harness
+client (`dsh-emacs`). The debugger's dape prefix moved to `C-c D`.
+
 ---
 
 ## `C-c` Leader Prefixes
@@ -236,6 +239,7 @@ work everywhere.
 | `M-[` | goto-last-change | global |
 | `C-x o/1/2/3/0` | switch-window variants | global |
 | `C-x d` | dirvish | global |
+| `C-c d` | dsh — DeepSeek Harness client (session list) | global (visible in which-key) |
 | `C-c h` | diff-hl-show-hunk | global (visible in which-key) |
 | `C-c ;` | embark-dwim | global (visible in which-key) |
 | `C-c m` | smerge resolution hydra (auto-enabled in conflicted files) | merge buffers |
@@ -243,6 +247,6 @@ work everywhere.
 | `C-c l` | markdown insert/menu keymap (includes `p p` grip preview) | markdown-mode / markdown-ts-mode |
 | `C-c C-p` | grip live preview | legacy markdown-mode fallback only |
 | `<f5>` | toggle ef-themes (dark `ef-night` ↔ `ef-cherie` by default) | global |
-| `C-c d` | dape debug | prog |
+| `C-c D` | dape debug | prog |
 | `M-0..M-9` | indexed candidate insert | corfu active |
 | `M-h` | toggle documentation for the selected completion candidate | corfu popup active |

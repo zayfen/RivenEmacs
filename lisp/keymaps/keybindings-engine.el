@@ -7,9 +7,12 @@
   "Internal table for duplicate key detection.")
 
 (defvar riven/keybindings-owned-c-c-prefixes
-  '("!" "&" "^" "=" "a" "b" "c" "e" "f" "g" "n" "o" "p" "q" "s" "t" "w" "x")
+  '("!" "&" "^" "=" "a" "b" "c" "d" "e" "f" "g" "n" "o" "p" "q" "s" "t" "w" "x")
   "Top-level `C-c' prefixes owned by RivenEmacs keybinding specs.
-This includes retired prefixes so config reloads remove stale bindings.")
+This includes retired prefixes so config reloads remove stale bindings.
+`C-c d' is a direct command launcher rather than a group prefix, but it is
+owned here so a stale dape `C-c d' map from an older configuration is
+cleared before the DeepSeek Harness client is bound.")
 
 (defconst riven/keybindings-c-c-which-key-groups
   '(("C-c =" . "Agent")
@@ -17,6 +20,8 @@ This includes retired prefixes so config reloads remove stale bindings.")
     ("C-c ;" . "Act")
     ("C-c a" . "AI")
     ("C-c c" . "Code")
+    ("C-c d" . "DSH")
+    ("C-c D" . "Debug")
     ("C-c e" . "Error")
     ("C-c f" . "File")
     ("C-c g" . "Git")
@@ -27,7 +32,10 @@ This includes retired prefixes so config reloads remove stale bindings.")
     ("C-c t" . "Tool")
     ("C-c w" . "Window")
     ("C-c x" . "Session"))
-  "Top-level `C-c' group keys and labels shown by which-key.")
+  "Top-level `C-c' keys and labels shown by which-key.
+Most entries are prefix groups.  Direct command launchers (`C-c h',
+`C-c ;', `C-c d') are listed too so the top-level filter does not hide
+them from the `C-c' menu.")
 
 (defconst riven/keybindings-c-c-which-key-filter
   '(("\\`C-c [^ ]+\\'" . nil) . riven/keybindings-c-c-which-key-group-p)

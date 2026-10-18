@@ -66,7 +66,7 @@ concern. Each `.el` file follows the module template (see
 |------|---------|
 | `init-eglot.el` | **The only LSP client** — builtin `eglot` + `eglot-booster`. On-demand server install, workspace defaults, HTML/web/JSON/YAML and correct LSP language ids (see [Language-Support](Language-Support.md)). `yasnippet`. Xref: `M-.`/`M-,`/`M-?`. |
 | `init-checker.el` | `flymake` (debounced current-line echo in minibuffer, colored mode-line counters), `flymake-eslint` (prefers `oxlint`), `eslint-fix`. |
-| `init-debugger.el` | `dape` (DAP client) under `C-c d`; saves/loads breakpoints, pulses source line. |
+| `init-debugger.el` | `dape` (DAP client) under `C-c D`; saves/loads breakpoints, pulses source line. |
 | `init-jump.el` | `switch-window` (`C-x o/1/2/3/0`), `goto-last-change` (`M-[`), `dumb-jump`. |
 | `init-envrc.el` | `envrc` (direnv) when `direnv` binary present. |
 | `init-project.el` | Minimal; aliases `project-switch-project-ex`. |
@@ -87,6 +87,7 @@ See **[AI-Integration](AI-Integration.md)** for details.
 | `init-gpt-helper.el` | Fallback commands + review workflow (`riven/gptel-review-mode`). |
 | `init-gpt-tools.el` | gptel core agent tools + `work` preset (`C-c a W`). |
 | `init-ai-code.el` | `ai-code` CLI agents (Codex/Claude Code/Opencode/Aider). |
+| `init-dsh-emacs.el` | `dsh-emacs` — Emacs client for DeepSeek Harness (`C-c d`): session list, streaming chat, subagents; lazy-loaded, manages its own `dsh web` server. |
 
 ## `lisp/lang/` — Per-Language Config
 

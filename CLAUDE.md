@@ -20,7 +20,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **core/init-default.el**: global defaults and state-file relocation into `local/`
 - **core/init-helper.el**: shared commands (`riven/*`, `+consult-*`, `riven/xref-find-definitions-or-search`, …)
 - **ide/init-eglot.el**: **the only LSP client** — Eglot + `eglot-booster`, on-demand server install
-- **ai/init-gpt.el** / **ai/init-ai-code.el**: gptel + MCP; CLI coding agents
+- **ai/init-gpt.el** / **ai/init-ai-code.el** / **ai/init-dsh-emacs.el**: gptel + MCP; CLI coding agents; DeepSeek Harness client (`C-c d`)
 - **keymaps/**: declarative keybinding spec files, engine, and helper commands
 - **tools/init-terminal.el**: terminal — `ghostel` primary, `eat`/`vterm` fallbacks
 - **vcs/init-vc.el**: magit, diff-hl, git-timemachine, ediff/smerge
@@ -109,6 +109,8 @@ All leader bindings live in spec files under `lisp/keymaps/`
 - **C-c w**: Windows
 - **C-c a**: AI (gptel)
 - **C-c =**: AI coding agents (ai-code)
+- **C-c d**: DeepSeek Harness client (dsh-emacs; direct launcher, not a group)
+- **C-c D**: dape debugger
 - **C-c n**: Org notes
 - **C-c x**: Session
 

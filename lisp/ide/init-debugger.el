@@ -8,9 +8,11 @@
   ;; so registering an `after-init-hook' activation here would run too late.
   :demand t
   :preface
-  ;; By default dape shares the same keybinding prefix as `gud'
-  ;; If you do not want to use any prefix, set it to nil.
-  (setq dape-key-prefix "\C-cd")
+  ;; `C-c d' launches the DeepSeek Harness client (see
+  ;; lisp/ai/init-dsh-emacs.el), so dape keeps its own global map on `C-c D'.
+  ;; By default dape shares the keybinding prefix of `gud' instead; set this
+  ;; to nil if you do not want a prefix at all.
+  (setq dape-key-prefix "\C-cD")
 
   :hook
   ;; Save breakpoints on quit

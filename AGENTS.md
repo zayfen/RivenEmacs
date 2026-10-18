@@ -166,7 +166,7 @@ lisp/files/                  # dired/dirvish
 lisp/parser/                 # tree-sitter
 lisp/ide/                    # eglot (only LSP client), checker, debugger, jump, envrc, project
 lisp/vcs/                    # magit, diff-hl, git-timemachine, smerge
-lisp/ai/                     # gptel, MCP, ai-code
+lisp/ai/                     # gptel, MCP, ai-code, dsh-emacs
 lisp/lang/                   # per-language config
 lisp/keymaps/                # declarative keybinding specs + engine
 lisp/session/                # desktop.el session persistence
@@ -205,7 +205,8 @@ do not recreate `lisp/custom.el` (it would shadow the built-in `custom`).
    so it adds to total startup time; `emacs-startup-hook`, where `early-init.el`
    restores the normal GC threshold, runs after them:
    `init-eglot` → `init-vc` → `init-debugger` → `init-envrc` →
-   `init-project` → `init-gpt` → `init-ai-code` → `init-web` → `init-rust` →
+   `init-project` → `init-gpt` → `init-ai-code` → `init-dsh-emacs` →
+   `init-web` → `init-rust` →
    `init-python` → `init-java` → `init-swift` → `init-docker` →
    `init-quickrun` → `init-feed` → `init-lookup` → `init-reader` →
    `init-codeforces`.

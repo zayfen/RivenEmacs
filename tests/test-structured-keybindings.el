@@ -50,6 +50,13 @@
                    ("C-c x d" . rivenEmacs-session-delete)))
     (should (eq (key-binding (kbd (car entry))) (cdr entry)))))
 
+(ert-deftest riven/structured-keybindings-c-c-d-opens-dsh-emacs ()
+  "`C-c d' launches the DeepSeek Harness client directly."
+  (riven/test-apply-structured-keybindings)
+  (should (fboundp 'dsh-emacs))
+  (should (eq (key-binding (kbd "C-c d")) 'dsh-emacs))
+  (should-not (keymapp (lookup-key (current-global-map) (kbd "C-c d")))))
+
 (ert-deftest riven/structured-keybindings-code-error-tool-window-ai-agent-groups ()
   "Remaining top-level groups expose representative approved commands."
   (riven/test-apply-structured-keybindings)
@@ -110,6 +117,7 @@
                    ("C-c s d" . rivenEmacs-session-delete)
                    ("C-c ! l" . flymake-show-buffer-diagnostics)
                    ("C-c ^" . ignore)
+                   ("C-c d" . ignore)
                    ("C-c e u" . sp-splice-sexp)))
     (keymap-global-set (car entry) (cdr entry)))
   (riven/test-apply-structured-keybindings)
@@ -119,6 +127,7 @@
                    ("C-c s d" . rivenEmacs-session-delete)
                    ("C-c ! l" . flymake-show-buffer-diagnostics)
                    ("C-c ^" . ignore)
+                   ("C-c d" . ignore)
                    ("C-c e u" . sp-splice-sexp)))
     (should-not (eq (key-binding (kbd (car entry))) (cdr entry)))))
 
@@ -135,10 +144,14 @@
   (riven/test-apply-structured-keybindings)
   (let ((act-entry (which-key--maybe-replace '("C-c ;" . "embark-dwim")))
         (hunk-entry (which-key--maybe-replace '("C-c h" . "diff-hl-show-hunk")))
+        (dsh-entry (which-key--maybe-replace '("C-c d" . "dsh-emacs")))
+        (debug-entry (which-key--maybe-replace '("C-c D" . "prefix")))
         (file-entry (which-key--maybe-replace '("C-c f" . "prefix")))
         (non-group-entry (which-key--maybe-replace '("C-c z" . "some-command"))))
     (should (equal act-entry '("C-c ;" . "Act")))
     (should (equal hunk-entry '("C-c h" . "Hunk")))
+    (should (equal dsh-entry '("C-c d" . "DSH")))
+    (should (equal debug-entry '("C-c D" . "Debug")))
     (should (equal file-entry '("C-c f" . "File")))
     (should-not non-group-entry)))
 

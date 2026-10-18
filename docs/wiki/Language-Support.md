@@ -159,7 +159,8 @@ Or enable auto-install at startup via `rivenEmacs-auto-install-treesit` (default
 
 ## Debugging
 
-`lisp/ide/init-debugger.el` configures **dape** (DAP client) under the `C-c d`
+`lisp/ide/init-debugger.el` configures **dape** (DAP client) under the `C-c D`
 prefix. Saves/loads breakpoints across sessions, pulses the source line on hit,
 and uses a gud-style window layout. Debug adapter definitions come from the
-`debug-adapters/` git submodule.
+`debug-adapters/` git submodule. (`C-c d` now opens the DeepSeek Harness client
+instead; see [AI-Integration](AI-Integration.md#5-dsh-emacs--deepseek-harness-client).)

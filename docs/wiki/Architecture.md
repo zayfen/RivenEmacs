@@ -69,7 +69,7 @@ Runs before any package is loaded. Handles:
 | `riven/load-session-modules` | `init-session` |
 | `riven/load-tooling-modules` | `init-terminal` |
 | `riven/load-keymap-modules` | `init-keybindings` |
-| `riven/load-deferred-modules` | eglot, vc, debugger, envrc, project, gpt, ai-code, web, rust, python, java, swift, docker, quickrun, feed, lookup, reader, codeforces |
+| `riven/load-deferred-modules` | eglot, vc, debugger, envrc, project, gpt, ai-code, dsh-emacs, web, rust, python, java, swift, docker, quickrun, feed, lookup, reader, codeforces |
 
 ---
 
