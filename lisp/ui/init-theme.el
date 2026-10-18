@@ -1,6 +1,11 @@
 ;; -*- coding: utf-8; lexical-binding: t -*-
 ;;; init-theme.el --- config theme
 
+;; Functions provided by packages that are only loaded at runtime; declare
+;; them so byte-compiling this file stays warning-free.
+(declare-function ef-themes-get-color-value "ef-themes" (color &optional theme))
+(declare-function ligature-set-ligatures "ligature" (characters &rest sequences))
+
 ;; use-package with package.el:
 ;; (use-package dashboard
 ;;   :vc (:url "https://github.com/emacs-dashboard/emacs-dashboard")
@@ -56,20 +61,41 @@
   (riven/theme-warn-missing-nerd-font))
 
 ;; load theme and config
-;; Replaced modus-themes with ef-themes (by the same author, Protesilaos).
-;; ef-themes are more vivid/colorful and build on top of modus under the hood,
-;; with best-in-class org-mode faces.
+;; ef-themes (by Protesilaos) are vivid and legible, and build on top of
+;; modus-themes under the hood.  The configuration below defaults to a
+;; *dark* theme; all choices are dark variants of ef-themes.
+(defcustom rivenEmacs-default-theme 'ef-night
+  "Default Ef theme loaded at startup.
+All choices are dark and colorful.  `ef-night' is a dark sky-blue theme
+with vivid green, blue and purple accents.  Other good picks are
+`ef-cherie' (purple-black with pink/magenta/gold), `ef-atlantis' (deep
+indigo with aquatic colors) and `ef-melissa-dark' (warm honeybee
+yellow/red/green/cyan).  Use `M-x ef-themes-select' to preview any of
+them, or set this variable and restart Emacs."
+  :type '(choice
+          (const :tag "ef-night (dark sky blue; green/blue/purple)" ef-night)
+          (const :tag "ef-cherie (purple-black; pink/magenta/gold)" ef-cherie)
+          (const :tag "ef-atlantis (deep indigo; aquatic colors)" ef-atlantis)
+          (const :tag "ef-melissa-dark (warm honeybee colors)" ef-melissa-dark)
+          (const :tag "ef-elea-dark (green/brown/magenta)" ef-elea-dark)
+          (const :tag "ef-owl (grey; blue/cyan/magenta)" ef-owl)
+          (const :tag "ef-dark (black; blue/cyan/magenta)" ef-dark))
+  :group 'rivenEmacs)
+
 (use-package ef-themes
   :ensure t
   :demand t                                  ; load now — a theme must be active at startup
-  :bind ("<f5>" . ef-themes-toggle)          ; quick light/dark switch
+  :bind ("<f5>" . ef-themes-toggle)          ; switch between vivid dark variants
   :config
   ;; Set theme user options BEFORE loading the theme. These are defcustoms with
   ;; custom :set setters, so use `customize-set-variable' (a plain `setq' or
   ;; `use-package' :custom would not run the setter and the value would be
   ;; silently ignored — verified).
-  ;; Light/dark pair cycled by `ef-themes-toggle' (<f5>).
-  (customize-set-variable 'ef-themes-to-toggle '(ef-cyprus ef-elea-dark))
+  ;; <f5> toggles between the configured default and a second vivid dark theme.
+  (customize-set-variable
+   'ef-themes-to-toggle
+   (list rivenEmacs-default-theme
+         (if (eq rivenEmacs-default-theme 'ef-cherie) 'ef-night 'ef-cherie)))
   ;; Heading styling: rainbow per-level + weight gradient, no manual foreground
   ;; colors (let the theme decide, so it stays consistent on theme switch).
   ;; Keyed by level (0=document title, 1..6=headings, t=catch-all).
@@ -80,10 +106,10 @@
      (2 . (rainbow semibold 1.15))
      (3 . (rainbow semibold 1.1))
      (t . (rainbow semibold))))
-  ;; Default to the light variant on startup.
+  ;; Default to a dark variant; see `rivenEmacs-default-theme'.
   ;; NOTE: `ef-themes-select' is interactive-only (takes no args); to load a
   ;; specific theme programmatically, use `load-theme' directly.
-  (load-theme 'ef-cyprus t))
+  (load-theme rivenEmacs-default-theme t))
 
 
 (use-package doom-modeline
@@ -107,8 +133,17 @@
   (set-face-attribute 'font-lock-keyword-face nil :weight 'semi-bold :slant 'normal)
   (set-face-attribute 'font-lock-function-name-face nil :weight 'semi-bold :slant 'normal)
   (let* ((dark-mode (eq (frame-parameter nil 'background-mode) 'dark))
-         (line-number-fg (if dark-mode "#6e7681" "#9aa0a6"))
-         (line-number-current-fg (if dark-mode "#c3ccd7" "#4f5660")))
+         ;; Follow the active Ef theme palette so line numbers keep the
+         ;; theme's tint instead of a hard-coded grey.
+         (theme-color (lambda (name fallback)
+                        (or (ignore-errors (ef-themes-get-color-value name))
+                            fallback)))
+         (line-number-fg (funcall theme-color
+                                  'fg-dim
+                                  (if dark-mode "#6e7681" "#9aa0a6")))
+         (line-number-current-fg (funcall theme-color
+                                          'fg-alt
+                                          (if dark-mode "#c3ccd7" "#4f5660"))))
     (set-face-attribute 'line-number nil
                         :foreground line-number-fg
                         :background 'unspecified

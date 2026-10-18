@@ -228,7 +228,7 @@ work everywhere.
 | `C-c C-e` | JSX tag ops (rename/jump/delete) | tsx-ts-mode |
 | `C-c l` | markdown insert/menu hydra | markdown-mode |
 | `C-c C-p` | grip live preview | markdown-mode |
-| `<f5>` | toggle ef-themes | global |
+| `<f5>` | toggle ef-themes (dark `ef-night` ↔ `ef-cherie` by default) | global |
 | `C-x =` | gptel refactor | global |
 | `C-c d` | dape debug | prog |
 | `M-0..M-9` | indexed candidate insert | corfu active |
