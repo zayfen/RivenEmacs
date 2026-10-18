@@ -7,7 +7,21 @@
 
 (ert-deftest rivenEmacs-session-test-directory-setup ()
   (should (stringp rivenEmacs-session-directory))
-  (should (file-name-absolute-p rivenEmacs-session-directory)))
+  (should (file-name-absolute-p rivenEmacs-session-directory))
+  (should (equal rivenEmacs-session-directory
+                 (expand-file-name "emacs/" "~/.cache/"))))
+
+(ert-deftest rivenEmacs-session-test-handles-locked-desktop ()
+  "A locked desktop must not leave `desktop-dirname' nil at exit."
+  (let ((desktop-dirname nil)
+        (desktop-save-mode t))
+    (cl-letf (((symbol-function 'desktop-owner)
+               (lambda () (1+ (emacs-pid)))))
+      (rivenEmacs-session-handle-desktop-read))
+    (should (equal desktop-dirname rivenEmacs-session-directory))
+    (should-not desktop-save-mode))
+  (should (advice-member-p #'rivenEmacs-session-prepare-desktop-kill
+                           'desktop-kill)))
 
 (ert-deftest rivenEmacs-session-test-customization-types ()
   (should (boundp 'rivenEmacs-session-directory))

@@ -12,7 +12,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **early-init.el**: startup performance (GC, file-name handlers, native-comp cache), package archives, `custom-file`
 - **init.el**: assembly only — `load-path` construction, package system, phased `require`s
 - **lisp/**: feature modules grouped by concern (see `docs/wiki/Modules.md`)
-- **local/**: user-specific data (gitignored: cache, savehist, desktop, eln)
+- **local/**: user-specific data (gitignored: cache, savehist, eln; desktop sessions now live in `~/.cache/emacs/`)
 - **elpa/**: package installation directory
 
 ### Key Modules (paths are relative to `lisp/`)

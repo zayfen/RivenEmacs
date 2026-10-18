@@ -6,6 +6,17 @@ Common problems and fixes.
 
 ## Startup
 
+### Exit asks "Directory for desktop file"
+
+RivenEmacs stores the desktop session in the fixed directory
+`~/.cache/emacs/`; it no longer asks where to save on exit. A one-time
+migration copies a legacy `local/desktop/.emacs.desktop` into that cache
+directory. If a second Emacs instance finds the desktop lock owned by another
+process, it keeps the fixed directory but disables session saving for that
+instance (instead of prompting or overwriting the owner's session). Inspect the
+active file with `M-x rivenEmacs-session-current`; change
+`rivenEmacs-session-directory` only if you need a different fixed location.
+
 ### Slow startup / frame takes long to appear
 
 Heavy modules (LSP, AI, languages, tools) load on `after-init-hook` at depth
