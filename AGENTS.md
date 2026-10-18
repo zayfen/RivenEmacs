@@ -26,6 +26,10 @@ python3 -m unittest discover -s emacs-codeforces/test -v
 # (slow, may install packages over the network)
 RIVENEMACS_RUN_INIT_TESTS=1 scripts/run-tests.sh
 
+# Upgrade ELPA packages and package-vc (Git) checkouts; dry-run first
+scripts/update-packages.sh --dry-run
+scripts/update-packages.sh
+
 # Byte compile a single module (configuration modules live in lisp/<group>/)
 emacs --batch -f batch-byte-compile lisp/core/init-config.el
 
@@ -170,7 +174,8 @@ lisp/tools/                  # terminal, docker, quickrun, feed, lookup, reader,
 lisp/writing/                # ews, beamer lecture export
 emacs-codeforces/            # bundled Codeforces client (Elisp + Python agent)
 tests/                       # project ERT suite
-scripts/                     # riven-deps.sh (deps), run-tests.sh (tests)
+scripts/                     # riven-deps.sh (deps), run-tests.sh (tests),
+                             # update-packages.sh (ELPA/VC upgrades)
 ```
 
 `lisp/custom.el` was removed: `custom-file` points to `custom.el` at the

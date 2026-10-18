@@ -10,6 +10,7 @@ RivenEmacs 是一套面向现代开发工作流的 Emacs 配置，重点放在�
 - **AI 与 MCP 原生集成**：内置 `gptel`、`ai-code` 和多种 MCP server 配置，支持文件系统、记忆、浏览器、搜索等工具能力。
 - **声明式键位**：键位集中在 `lisp/keymaps/`，由声明式 spec 和引擎生成（`C-c` leader，已退役 general.el/SPC），便于查重、重载和维护 which-key 分组。
 - **可复现依赖管理**：`scripts/riven-deps.sh` 可以检查、安装和修复核心依赖、LSP、AI、MCP、拼写和 Markdown 预览工具。
+- **可维护升级**：`scripts/update-packages.sh` 同时升级 ELPA 包和 package-vc（Git/源码）包，支持 `--dry-run`、`--only`，并按分支/release tag 语义更新 VC 包。
 - **离线测试入口**：`scripts/run-tests.sh` 自动构造 `load-path`，运行项目 ERT、emacs-codeforces ERT 与 Python agent 单测，不加载 `init.el`、不联网。
 - **集中配置入口**：常用变量放在 `rivenEmacs` defgroup 下，可通过 `customize` 或环境变量调整。
 
@@ -27,6 +28,10 @@ bash scripts/riven-deps.sh doctor
 
 # 4) 运行离线测试（项目 ERT + emacs-codeforces ERT + Python 单测）
 scripts/run-tests.sh
+
+# 5) 升级 ELPA 与 package-vc 包（先 dry-run 查看，再实际执行）
+scripts/update-packages.sh --dry-run
+scripts/update-packages.sh
 ```
 
 手动验证配置是否能完整加载（会按需安装 ELPA 包，可能联网）：
@@ -60,6 +65,7 @@ RivenEmacs
 ├── tests/                     # 项目 ERT 测试
 ├── scripts/riven-deps.sh      # 跨平台依赖检查、安装和修复脚本
 ├── scripts/run-tests.sh       # 离线测试入口（ERT + Python unittest）
+├── scripts/update-packages.sh # ELPA + package-vc(Git) 升级工具
 └── docs/                      # 性能报告、wiki 和设计文档
 ```
 

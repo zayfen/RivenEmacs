@@ -25,6 +25,10 @@ python3 -m unittest discover -s emacs-codeforces/test -v
 # Byte compile a single module
 emacs --batch -f batch-byte-compile lisp/core/init-config.el
 
+# Upgrade ELPA packages and package-vc (Git) checkouts; dry-run first
+scripts/update-packages.sh --dry-run
+scripts/update-packages.sh
+
 # Interactive smoke test; may install packages from ELPA (network access)
 emacs -q -l /path/to/RivenEmacs/init.el
 
@@ -34,6 +38,47 @@ emacs -Q --batch -l benchmark-startup.el
 
 > `batch-byte-compile lisp/*.el` is obsolete: configuration modules live in
 > `lisp/<group>/`, so use the per-module form above (or an explicit file list).
+
+---
+
+## Updating Packages
+
+`scripts/update-packages.sh` upgrades both kinds of installed packages without
+loading `init.el`:
+
+```bash
+# See what would change (also refreshes the ELPA index and fetches VC remotes)
+scripts/update-packages.sh --dry-run
+
+# Upgrade everything, then restart Emacs to load the new versions
+scripts/update-packages.sh
+
+# Only one side / one package / offline
+scripts/update-packages.sh --elpa-only
+scripts/update-packages.sh --vc-only --only vertico
+scripts/update-packages.sh --no-refresh --no-fetch
+```
+
+How each package kind is handled:
+
+- **ELPA packages** — refreshed with `package-refresh-contents`, then upgraded
+  with `package-upgrade` (the same operation as `M-x package-upgrade-all`
+  without the confirmation prompt).
+- **package-vc checkouts** — updated in place with synchronous Git commands,
+  then rebuilt with `package-vc-rebuild` (autoloads, package metadata, byte
+  code; native compilation is deferred to the next Emacs start):
+  - branch checkouts are fast-forwarded to their upstream;
+  - checkouts detached at a release commit (tagged or not) advance to the newest release commit
+    (the last commit that changed the `Version:` header);
+  - checkouts detached at the remote tip (use-package `:rev :newest`) advance
+    to the new tip;
+  - pinned commits and checkouts with tracked local changes are skipped and
+    reported.
+- VC packages that use `:make`/`:shell-command` build steps (for example
+  `reader`) require `--allow-build`; build commands stay disabled otherwise.
+
+The script never edits `init.el` or `custom.el` and returns non-zero if any
+upgrade failed. `scripts/update-packages.sh --help` lists all options.
 
 ---
 
