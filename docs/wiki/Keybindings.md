@@ -68,8 +68,18 @@ by the declarative engine at `after-init-hook`.
 | `C-c g c` | magit-clone |
 | `C-c g i` | magit-init |
 | `C-c g s` | magit-stage |
+| `C-c g m` | magit-merge (merge transient) |
+| `C-c g P` | magit-merge-preview |
+| `C-c g r` | magit-rebase |
+| `C-c g A` | magit-merge-abort |
 | `C-c g h` / `n` / `p` | diff-hl hunk prev/next |
 | `C-c g t` | git-timemachine |
+
+Merge/rebase conflicts: visiting a conflicted file automatically enables
+`smerge-mode`; `C-c m` opens the resolution hydra (`n`/`p` navigate, `u`/`l`/`b`
+keep side, `RET` current, `R` refine, `E` ediff, `A` resolve all). The Magit
+merge transient (`C-c g m`) already exposes `--ff-only`/`--no-ff`, strategy,
+edit-message, no-commit, preview and squash actions.
 
 ### `C-c c` — Code (LSP)
 
@@ -142,6 +152,7 @@ work everywhere.
 | `C-c a m` | gptel-menu |
 | `C-c a s` | gptel send |
 | `C-c a r` | rewrite region |
+| `C-c a R` | refactor region/buffer (gptel-extensions) |
 | `C-c a t` | translate region (review) |
 | `C-c a S` | summarize region (review) |
 | `C-c a w` | write article |
@@ -149,15 +160,18 @@ work everywhere.
 | `C-c a g` | generate commit message |
 | `C-c a M` | MCP connect popular |
 | `C-c a V` | MCP verify |
+| `C-c a W` | gptel Work mode (core agent tools) |
 
 ### `C-c =` — AI Code Agent
 
 | Key | Action |
 |-----|--------|
 | `C-c = =` | ai-code-menu |
-| `C-c = 1` | claude-code |
+| `C-c = 1` | codex |
 | `C-c = 2` | opencode |
 | `C-c = 3` | cursor-cli |
+| `C-c = 4` | claude-code |
+| `C-c = 5` | aider |
 
 ### `C-c n` — Note (Org)
 
@@ -224,11 +238,10 @@ work everywhere.
 | `C-x d` | dirvish | global |
 | `C-c h` | diff-hl-show-hunk | global (visible in which-key) |
 | `C-c ;` | embark-dwim | global (visible in which-key) |
-| `C-c m` | smerge hydra | merge buffers |
+| `C-c m` | smerge resolution hydra (auto-enabled in conflicted files) | merge buffers |
 | `C-c C-e` | JSX tag ops (rename/jump/delete) | tsx-ts-mode |
 | `C-c l` | markdown insert/menu hydra | markdown-mode |
 | `C-c C-p` | grip live preview | markdown-mode |
 | `<f5>` | toggle ef-themes (dark `ef-night` ↔ `ef-cherie` by default) | global |
-| `C-x =` | gptel refactor | global |
 | `C-c d` | dape debug | prog |
 | `M-0..M-9` | indexed candidate insert | corfu active |

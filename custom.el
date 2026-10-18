@@ -34,9 +34,6 @@
      (deadgrep :url "https://github.com/Wilfred/deadgrep" :branch "master")
      (color-rg :url "https://github.com/manateelazycat/color-rg")
      (dashboard :url "https://github.com/emacs-dashboard/emacs-dashboard")
-     (claude-code-ide :url "https://github.com/manzaltu/claude-code-ide.el")
-     (claude-code :url "https://github.com/stevemolitor/claude-code.el")
-     (gptel-aibo :vc-backend Git :url "https://github.com/dolmens/gptel-aibo")
      (pet :vc-backend Git :url "https://github.com/wyuenho/emacs-pet"))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

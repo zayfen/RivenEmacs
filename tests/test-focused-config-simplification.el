@@ -48,9 +48,11 @@
   (riven/test-with-quiet-keybinding-diagnostics
    (riven/keybindings-config))
   (should (eq (key-binding (kbd "C-c = =")) #'ai-code-menu))
-  (should (eq (key-binding (kbd "C-c = 1")) #'ai-code-claude-code))
+  (should (eq (key-binding (kbd "C-c = 1")) #'ai-code-codex-cli))
   (should (eq (key-binding (kbd "C-c = 2")) #'ai-code-opencode))
   (should (eq (key-binding (kbd "C-c = 3")) #'ai-code-cursor-cli))
+  (should (eq (key-binding (kbd "C-c = 4")) #'ai-code-claude-code))
+  (should (eq (key-binding (kbd "C-c = 5")) #'ai-code-aider-cli))
   (should-not (key-binding (kbd "C-c = s"))))
 
 (ert-deftest riven/early-init-initializes-package-system ()

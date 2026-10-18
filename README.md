@@ -103,6 +103,8 @@ RivenEmacs
 ### AI 与 MCP
 
 - `gptel` 支持 Zayfen、DeepSeek、OpenAI-compatible 后端，并可配置 Responses API 模型。
+- `C-c a W`（或 prompt 中的 `@work`）打开 gptel Work 模式：内置 `read_file`、`write_file`、`grep_files`、`run_shell_command`、`web_search`、`read_url` 等核心 tools，破坏性操作需确认，路径限制在项目根内。
+- 如使用 ChatGPT Plus/Pro 订阅，可设置 `rivenEmacs-gptel-chatgpt-oauth-backend` 并运行 `M-x gptel-openai-oauth-login`，Work 模式会优先使用该 OAuth 后端。
 - MCP 配置集中在 `lisp/ai/init-gpt.el`，支持 filesystem、memory、Playwright browser、browser-use、Brave Search、Tavily 等 server。
 - 缺少 `BRAVE_API_KEY` 或 `TAVILY_API_KEY` 时，对应 MCP server 会自动跳过，不阻塞主配置加载。
 - `ai-code` 提供 Codex、Claude Code、Opencode、Aider 等 AI 编码入口，默认后端为 Codex。
@@ -118,7 +120,7 @@ M-x riven/gptel-mcp-verify
 - `apheleia` 负责格式化，`C-S-i` 可对 region 或整个 buffer 格式化。
 - `jinx` 提供拼写检查，`M-$` 修正拼写，`C-M-$` 设置语言。
 - `yasnippet` 统一代码片段能力，并兼容 snippet 字段跳转。
-- `desktop.el` 保存 buffer、point、窗口状态和历史，启动后按需懒恢复。
+- `desktop.el` 保存 buffer、point、窗口状态和历史，启动后按需懒恢复；会话文件固定存放在 `~/.cache/emacs/`，不会在退出时询问目录。
 - Dired、Quickrun、Terminal、Docker、Feed、Lookup、Reader 等工具按模块维护。
 
 ### 键位系统

@@ -29,7 +29,8 @@ exporting them.
 **Key commands** (see also [Keybindings](Keybindings.md) → `C-c a`):
 
 - `M-x gptel` / `gptel-menu` / `gptel-send` / `gptel-rewrite` — chat, menu, send, rewrite.
-- `C-x =` → `gptel-extensions-refactor` — refactor region/buffer.
+- `C-c a W` → `riven/gptel-work` — open a Work-style agent chat with core tools.
+- `C-c a R` → `gptel-extensions-refactor` — refactor region/buffer.
 - Auto-scroll and end-of-response hooks are wired in.
 
 ### gptel-extensions + helper fallbacks
@@ -55,7 +56,43 @@ These fallbacks keep the `C-c a` keybindings working even when optional
 
 ---
 
-## 2. MCP — Tool Servers
+## 2. ChatGPT Work-style mode — `C-c a W`
+
+ChatGPT Work is a ChatGPT product mode without a public API. RivenEmacs
+provides a local equivalent for gptel: the `work` preset defined in
+`lisp/ai/init-gpt-tools.el`.
+
+- `M-x riven/gptel-work` (also `C-c a W`) opens a dedicated Work buffer and
+  applies the preset buffer-locally.
+- `@work ...` in any gptel prompt applies the same preset to that one query.
+
+The preset activates seven core tools and asks for confirmation before
+destructive actions:
+
+| Tool | Purpose |
+|------|---------|
+| `read_file` | read a text file under the workspace root |
+| `list_directory` | list a directory |
+| `grep_files` | search with ripgrep |
+| `write_file` | create/overwrite a file (confirmation required) |
+| `run_shell_command` | run a shell command in the root (confirmation required) |
+| `web_search` | Tavily search (requires `TAVILY_API_KEY`) |
+| `read_url` | fetch and extract readable page text |
+
+Safety defaults: every path must resolve below the current project root (or
+`rivenEmacs-default-workspace`); use `rivenEmacs-gptel-tool-roots` to narrow
+or extend that root. Tool results are shown as calls only so long file or
+search output does not flood the chat.
+
+If you have a ChatGPT Plus/Pro subscription, gptel's Codex OAuth backend can
+be used instead of an API key: set `rivenEmacs-gptel-chatgpt-oauth-backend`
+(for example to `"ChatGPT-Codex"`), run `M-x gptel-openai-oauth-login` once,
+and `C-c a W` will prefer that backend when it is registered.  Its model is
+`rivenEmacs-gptel-chatgpt-oauth-model` (default `gpt-5.3-codex`).
+
+---
+
+## 3. MCP — Tool Servers
 
 RivenEmacs configures MCP (Model Context Protocol) servers so gptel can call
 external tools (read files, browse the web, run searches, remember things).
@@ -84,11 +121,13 @@ time and silently skips itself if missing — no errors, no blocking.
 - `M-x riven/gptel-mcp-verify` (also `C-c a V`) — validate MCP config; reports
   which servers connected and which were skipped.
 
-`rivenEmacs-gptel-mcp-auto-connect` (default `t`) connects on startup.
+`rivenEmacs-gptel-mcp-auto-connect` defaults to `nil`; set it to `t` to
+connect configured MCP servers automatically at startup, or use `C-c a M`
+for one-off connections.
 
 ---
 
-## 3. ai-code — CLI Coding Agents
+## 4. ai-code — CLI Coding Agents
 
 Configured in `lisp/ai/init-ai-code.el` via `tninja/ai-code-interface.el`.
 Launches a coding agent in a terminal pane (backend: `ghostel`).
@@ -106,22 +145,9 @@ Two-column `ai-code-menu` integrates with magit transients for staging context.
 
 - `M-*` (global) → `ai-code-menu`
 - `C-c = =` → `ai-code-menu`
-- `C-c = 1` / `2` / `3` → claude-code / opencode / cursor-cli directly
+- `C-c = 1` / `2` / `3` / `4` / `5` → codex / opencode / cursor-cli / claude-code / aider directly
 
 Switch backend on the fly: `M-x riven/ai-code-configure-backend`.
-
----
-
-## Prompt Templates
-
-`lisp/ai/init-prompt-template.el` centralizes shared prompts as defcustoms:
-
-- `riven-prompt-explain-code`
-- `riven-prompt-refactor-code`
-- `riven-prompt-add-comments`
-- `riven-prompt-fix-errors`
-
-Edit them via `M-x customize-group RET rivenEmacs RET`.
 
 ---
 

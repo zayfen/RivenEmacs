@@ -9,7 +9,6 @@
 
 (require 'cl-lib)
 (require 'subr-x)
-(require 'init-prompt-template nil t)
 (require 'init-gpt-helper)
 
 (declare-function gptel-make-deepseek "gptel-openai-extras" (&rest args))
@@ -25,11 +24,6 @@
 (declare-function mcp--status "mcp" (connection))
 (declare-function gptel-extensions-refactor "gptel-extensions" (&optional arg))
 (declare-function gptel-extensions-ask-document "gptel-extensions" (&optional arg))
-(declare-function gptel-rewrite-article "gptel-extensions" (&optional arg))
-(declare-function gptel-summarize-document "gptel-extensions" (&optional arg))
-(declare-function gptel-query-devdoc "gptel-extensions" (&optional arg))
-(declare-function gptel-generate-commit-message "gptel-extensions" (&optional arg))
-(declare-function gptel-translate-region "gptel-extensions" (&optional arg))
 (defvar gptel-model)
 (defvar gptel-backend)
 (defvar gptel-api-key)
@@ -72,6 +66,21 @@ These models are served via /v1/responses."
 (defcustom rivenEmacs-gptel-mcp-auto-connect nil
   "Whether to connect MCP tools to gptel automatically after init."
   :type 'boolean
+  :group 'rivenEmacs)
+
+(defcustom rivenEmacs-gptel-chatgpt-oauth-backend nil
+  "Optional ChatGPT/Codex OAuth backend name for gptel.
+When non-nil, register a `gptel-make-openai-oauth' backend with this name
+on gptel load; run `M-x gptel-openai-oauth-login' once to authenticate.
+The `C-c a W' Work preset uses this backend when it is available."
+  :type '(choice (const :tag "Disabled" nil) string)
+  :group 'rivenEmacs)
+
+(defcustom rivenEmacs-gptel-chatgpt-oauth-model 'gpt-5.3-codex
+  "Model used by the Work preset when the ChatGPT OAuth backend is active.
+The ChatGPT subscription backend exposes models such as `gpt-5.3-codex'
+and `gpt-5.4'; adjust this if your account supports a different one."
+  :type 'symbol
   :group 'rivenEmacs)
 
 (defcustom rivenEmacs-mcp-filesystem-roots
@@ -133,8 +142,9 @@ These models are served via /v1/responses."
   :group 'rivenEmacs)
 
 (defconst riven/gptel-api-key-env-vars
-  '("ZAYFEN_API_KEY" "DEEPSEEK_API_KEY" "OPENAI_API_KEY" "ANTHROPIC_AUTH_TOKEN")
-  "Environment variable names used for AI API keys.")
+  '("ZAYFEN_API_KEY" "DEEPSEEK_API_KEY" "OPENAI_API_KEY"
+    "ANTHROPIC_AUTH_TOKEN" "TAVILY_API_KEY" "BRAVE_API_KEY" "GITHUB_TOKEN")
+  "Environment variable names used for AI and MCP credentials.")
 
 (defun riven/gptel--sync-api-key-env-vars ()
   "Sync AI API key env vars from shell when possible."
@@ -248,6 +258,40 @@ Switch backend/model interactively via `gptel-menu'."
     ('zayfen   (riven/gptel--configure-zayfen-backend))
     ('deepseek (riven/gptel--configure-deepseek-backend))
     (_ nil)))
+
+(defun riven/gptel-configure-chatgpt-oauth ()
+  "Register the optional ChatGPT subscription (Codex) backend."
+  (when rivenEmacs-gptel-chatgpt-oauth-backend
+    (require 'gptel-openai-oauth nil t)
+    (if (fboundp 'gptel-make-openai-oauth)
+        (gptel-make-openai-oauth rivenEmacs-gptel-chatgpt-oauth-backend)
+      (message "[gptel] gptel-make-openai-oauth is unavailable"))))
+
+(defun riven/gptel-work ()
+  "Open a gptel chat with the ChatGPT Work-style agent preset.
+Applies the `work' preset buffer-locally: core filesystem/grep/shell/web
+tools, an agent system prompt, and confirmation for destructive tools."
+  (interactive)
+  (require 'gptel)
+  (require 'gptel-transient)
+  (let* ((backend (default-value 'gptel-backend))
+         (buffer (gptel (format "*%s-Work*"
+                                (if backend
+                                    (gptel-backend-name backend)
+                                  "gptel")))))
+    (pop-to-buffer buffer)
+    (with-current-buffer buffer
+      (gptel-preset 'work
+                    (lambda (sym val)
+                      (set (make-local-variable sym) val)))
+      (when-let* ((oauth-name rivenEmacs-gptel-chatgpt-oauth-backend)
+                  (oauth-backend
+                   (ignore-errors (gptel-get-backend oauth-name))))
+        (setq-local gptel-backend oauth-backend
+                    gptel-model rivenEmacs-gptel-chatgpt-oauth-model))
+      (message "gptel Work mode: core tools + confirmation; model=%s backend=%s"
+               gptel-model (gptel-backend-name gptel-backend)))
+    buffer))
 
 (defun riven/gptel--mcp-command-spec (binary npm-package)
   "Build MCP server command plist from BINARY or NPM-PACKAGE fallback."
@@ -417,6 +461,8 @@ Switch backend/model interactively via `gptel-menu'."
   (add-hook 'gptel-post-response-functions #'gptel-end-of-response)
   (riven/gptel-configure-api-key)
   (riven/gptel-configure-backend)
+  (riven/gptel-configure-chatgpt-oauth)
+  (require 'init-gpt-tools)
   (require 'gptel-integrations nil t))
 
 ;; MCP integration using lizqwerscott/mcp.el
@@ -453,7 +499,9 @@ Switch backend/model interactively via `gptel-menu'."
   ;; or gptel-translate-region.  Fallback commands for these names live in
   ;; init-gpt-helper.el; autoloading non-existent functions here would overwrite
   ;; those fallbacks and fail at call time.
-  (keymap-global-set "C-x =" #'gptel-extensions-refactor))
+  ;; `gptel-extensions-refactor' is bound in `keybindings-spec-ai.el'
+  ;; (C-c a R), not on the standard `C-x =' key.
+  )
 
 (provide 'init-gpt)
 

@@ -114,6 +114,7 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
     (">" smerge-diff-base-lower)
     ("R" smerge-refine)
     ("E" smerge-ediff)
+    ("A" smerge-resolve-all "resolve all")
     ("C" smerge-combine-with-next)
     ("r" smerge-resolve)
     ("k" smerge-kill-current)
@@ -122,6 +123,21 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
   :bind (:map smerge-mode-map
               ("C-c m" . hydra/smerge/body))
   )
+
+;; Make conflict resolution reachable without manually enabling smerge-mode:
+;; `magit-merge'/`magit-rebase' visit conflicted files through find-file, and
+;; buffers that were already open get another chance after a revert.
+(defun riven/smerge-mode-maybe-enable ()
+  "Enable `smerge-mode' when the current buffer contains conflict markers."
+  (when (and buffer-file-name
+             (not (bound-and-true-p smerge-mode))
+             (save-excursion
+               (goto-char (point-min))
+               (re-search-forward "^<<<<<<< " nil t)))
+    (smerge-mode 1)))
+
+(add-hook 'find-file-hook #'riven/smerge-mode-maybe-enable)
+(add-hook 'after-revert-hook #'riven/smerge-mode-maybe-enable)
 
 (setq ediff-window-setup-function 'ediff-setup-windows-plain)
 

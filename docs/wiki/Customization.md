@@ -29,7 +29,7 @@ M-x customize-group RET rivenEmacs RET
 
 | Variable | Default | Purpose |
 |----------|---------|---------|
-| `rivenEmacs-session-directory` | `local-dir/sessions` | Where desktop files are saved. |
+| `rivenEmacs-session-directory` | `~/.cache/emacs/` | Fixed directory where desktop files are saved. |
 | `rivenEmacs-session-auto-save-interval` | number | Autosave interval (seconds). |
 | `rivenEmacs-session-save-geometry` | boolean | Persist frame/window geometry. |
 | `rivenEmacs-session-restore-eager` | boolean | Restore buffers eagerly on load. |
@@ -56,7 +56,12 @@ M-x customize-group RET rivenEmacs RET
 | `rivenEmacs-zayfen-chat-models` | `(deepseek-v4-flash …)` | Models offered via `/v1/chat/completions`. |
 | `rivenEmacs-zayfen-responses-models` | `(gpt-5.4 gpt-5.5)` | Models offered via `/v1/responses`. |
 | `rivenEmacs-zayfen-default-model` | — | Default model. |
-| `rivenEmacs-gptel-mcp-auto-connect` | `t` | Connect MCP servers on startup. |
+| `rivenEmacs-gptel-chatgpt-oauth-backend` | `nil` | Optional ChatGPT Plus/Pro Codex OAuth backend name. |
+| `rivenEmacs-gptel-chatgpt-oauth-model` | `gpt-5.3-codex` | Model for Work mode when the OAuth backend is active. |
+| `rivenEmacs-gptel-tool-roots` | `nil` | Directories the Work mode core tools may access (nil = project root/workspace). |
+| `rivenEmacs-gptel-tool-max-file-bytes` | `200000` | Max file size for `read_file`. |
+| `rivenEmacs-gptel-tool-max-output-chars` | `20000` | Max output returned by a core tool. |
+| `rivenEmacs-gptel-mcp-auto-connect` | `nil` | Connect MCP servers on startup. |
 | `rivenEmacs-mcp-filesystem-roots` | list | Roots the filesystem MCP server may access. |
 | `rivenEmacs-mcp-enable-github-server` | — | Toggle GitHub MCP server. |
 | `rivenEmacs-mcp-enable-browser-server` | — | Toggle Playwright browser MCP server. |
@@ -71,10 +76,6 @@ M-x customize-group RET rivenEmacs RET
 
 **AI — ai-code** (`init-ai-code.el`): `rivenEmacs-ai-code-backend` —
 `codex` (default) / `claude-code` / `opencode` / `aider`.
-
-**AI prompts** (`init-prompt-template.el`): `riven-prompt-explain-code`,
-`riven-prompt-refactor-code`, `riven-prompt-add-comments`,
-`riven-prompt-fix-errors`.
 
 **Review workflow** (`init-gpt-helper.el`): `rivenEmacs-gptel-max-input-chars`.
 

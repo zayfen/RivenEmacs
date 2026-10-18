@@ -75,7 +75,7 @@ concern. Each `.el` file follows the module template (see
 
 | File | Purpose |
 |------|---------|
-| `init-vc.el` | `magit` (fullcolumn, gravatars, todos), `magit-todos`, `diff-hl` (gutter), `git-timemachine`, `git-modes`, `ediff` (horizontal), `smerge-mode` with `hydra/smerge` (`C-c m`). `C-c h` → diff-hl-show-hunk. |
+| `init-vc.el` | `magit` (fullcolumn, gravatars, todos), `magit-todos`, `diff-hl` (gutter), `git-timemachine`, `git-modes`, `ediff` (horizontal), `smerge-mode` with auto-enabled conflicted buffers and `hydra/smerge` (`C-c m`). `C-c g m/P/r/A` → merge / preview / rebase / abort. `C-c h` → diff-hl-show-hunk. |
 
 ## `lisp/ai/` — AI Integration
 
@@ -85,8 +85,8 @@ See **[AI-Integration](AI-Integration.md)** for details.
 |------|---------|
 | `init-gpt.el` | `gptel` (Zayfen / DeepSeek / OpenAI backends) + MCP tool servers. |
 | `init-gpt-helper.el` | Fallback commands + review workflow (`riven/gptel-review-mode`). |
+| `init-gpt-tools.el` | gptel core agent tools + `work` preset (`C-c a W`). |
 | `init-ai-code.el` | `ai-code` CLI agents (Codex/Claude Code/Opencode/Aider). |
-| `init-prompt-template.el` | Shared prompt definitions. |
 
 ## `lisp/lang/` — Per-Language Config
 
@@ -120,7 +120,7 @@ See **[Architecture §Declarative Keybinding Engine](Architecture.md#declarative
 
 | File | Purpose |
 |------|---------|
-| `init-session.el` | `desktop.el`-based session persistence. Commands `rivenEmacs-session-save/load/reload/clear/delete/current`. Autosave timer, lazy restore. |
+| `init-session.el` | `desktop.el`-based session persistence in `~/.cache/emacs/`. Commands `rivenEmacs-session-save/load/reload/clear/delete/current`. Autosave timer, lazy restore, lock-aware secondary instances. |
 
 ## `lisp/tools/` — Miscellaneous Tools
 
