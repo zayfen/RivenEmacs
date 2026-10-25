@@ -250,3 +250,5 @@ work everywhere.
 | `C-c D` | dape debug | prog |
 | `M-0..M-9` | indexed candidate insert | corfu active |
 | `M-h` | toggle documentation for the selected completion candidate | corfu popup active |
+| `M-n` / `M-p` | scroll the documentation popup forward/backward (falls back to next/previous candidate when no docs are shown) | corfu popup active |
+| `C-n` / `C-p` | next/previous completion candidate | corfu popup active |

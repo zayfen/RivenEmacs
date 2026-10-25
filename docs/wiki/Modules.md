@@ -32,7 +32,7 @@ concern. Each `.el` file follows the module template (see
 | `init-minibuffer.el` | `vertico` (+ directory/multiform/indexed), `orderless`, `marginalia`, `savehist`, `prescient`. The actual minibuffer stack. |
 | `init-vertico.el` | Compatibility shim → loads `init-minibuffer`. |
 | `init-consult.el` | `consult` (M-g/M-s/C-x bindings, preview-on-`M-.`), `embark` (`C-.` act, `C-c ;` dwim, `C-h B` bindings), `embark-consult`. |
-| `init-completion-ui.el` | In-buffer completion: `corfu` (auto, cycle, `M-0..M-9` indexed insert), `corfu-popupinfo` (`M-h`), `cape` (file/dabbrev/keyword), `nerd-icons-corfu`. Special eglot-managed capf ordering. |
+| `init-completion-ui.el` | In-buffer completion: `corfu` (auto, cycle, `M-0..M-9` indexed insert), `corfu-popupinfo` (`M-h` toggles docs; `M-n`/`M-p` scroll the docs popup, falling back to next/previous candidate), `cape` (file/dabbrev/keyword), `nerd-icons-corfu`. Special eglot-managed capf ordering. |
 
 ## `lisp/editor/` — Editing Experience
 

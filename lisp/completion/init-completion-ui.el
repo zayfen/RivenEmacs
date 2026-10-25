@@ -6,6 +6,12 @@
 
 (require 'init-minibuffer)
 
+(declare-function corfu-next "corfu" (&optional n))
+(declare-function corfu-previous "corfu" (&optional n))
+(declare-function corfu-popupinfo-scroll-up "corfu-popupinfo" (&optional n))
+(declare-function corfu-popupinfo-scroll-down "corfu-popupinfo" (&optional n))
+(declare-function corfu-popupinfo--visible-p "corfu-popupinfo" (&optional frame))
+
 (defun riven/corfu-nerd-icons-formatter (metadata)
   "Return a Corfu margin formatter using nerd-icons with a fallback icon.
 METADATA is passed through to `nerd-icons-corfu-formatter' when kind data exists."
@@ -54,6 +60,30 @@ no page has a 10th slot; `M-0' only reports that instead of inserting."
      (t
       (message "[corfu] index %d out of current page range" slot)))))
 
+(defun riven/corfu-doc-visible-p ()
+  "Return non-nil when Corfu's documentation popup is visible."
+  (and (fboundp 'corfu-popupinfo--visible-p)
+       (corfu-popupinfo--visible-p)))
+
+(defun riven/corfu-scroll-doc-forward (&optional n)
+  "Scroll Corfu's documentation popup forward, or select the next candidate.
+When the documentation popup is visible, scroll it by N lines (a whole
+page when N is nil).  Otherwise keep Corfu's usual `M-n' meaning and move
+to the next candidate, so the key still works for candidates without
+documentation."
+  (interactive "P")
+  (if (riven/corfu-doc-visible-p)
+      (corfu-popupinfo-scroll-up n)
+    (corfu-next n)))
+
+(defun riven/corfu-scroll-doc-backward (&optional n)
+  "Scroll Corfu's documentation popup backward, or select the previous candidate.
+The backward counterpart of `riven/corfu-scroll-doc-forward'."
+  (interactive "P")
+  (if (riven/corfu-doc-visible-p)
+      (corfu-popupinfo-scroll-down n)
+    (corfu-previous n)))
+
 (use-package corfu
   :ensure t
   :demand t
@@ -81,6 +111,10 @@ no page has a 10th slot; `M-0' only reports that instead of inserting."
               ("M-7" . riven/corfu-insert-index-from-key)
               ("M-8" . riven/corfu-insert-index-from-key)
               ("M-9" . riven/corfu-insert-index-from-key)
+              ;; C-n/C-p keep switching candidates; M-n/M-p scroll the
+              ;; documentation popup when it is visible.
+              ("M-n" . riven/corfu-scroll-doc-forward)
+              ("M-p" . riven/corfu-scroll-doc-backward)
               ("M-P" . corfu-scroll-down)
               ("M-N" . corfu-scroll-up))
   :config
