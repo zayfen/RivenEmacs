@@ -67,6 +67,7 @@
                    ("C-c c d" . riven/xref-find-definitions-or-search)
                    ("C-c c D" . riven/eglot-find-declaration-dispatch)
                    ("C-c c a" . eglot-code-actions)
+                   ("C-c c h" . riven/eldoc-doc-buffer-focus)
                    ("C-c c s" . sp-splice-sexp)
                    ("C-c c q" . quickrun)
                    ("C-c e l" . riven/flymake-show-buffer-diagnostics-focus)
@@ -165,7 +166,8 @@
 
 (ert-deftest riven/structured-keybinding-helper-commands-are-interactive ()
   "Helper commands used by specs exist and are interactive."
-  (dolist (command '(riven/keybindings-copy-current-file-path
+  (dolist (command '(riven/eldoc-doc-buffer-focus
+                     riven/keybindings-copy-current-file-path
                      riven/keybindings-rename-current-file-or-buffer
                      riven/keybindings-delete-current-file-or-buffer
                      riven/keybindings-project-dired

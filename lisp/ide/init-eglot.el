@@ -2,11 +2,15 @@
 
 (require 'init-config)
 (require 'cl-lib)
+(require 'seq)
+(require 'subr-x)
 
 (declare-function project-root "project" (project))
 (declare-function eglot-server-capable "eglot" (capability &optional server))
 (declare-function eglot-current-server "eglot" ())
 (declare-function eglot-completion-at-point "eglot" ())
+(declare-function eglot-hover-eldoc-function "eglot" (cb &rest ignored))
+(defvar eglot-mode-map)
 (declare-function jsonrpc--process "jsonrpc" (server))
 (declare-function yas-expand "yasnippet" ())
 (declare-function yas-next-field "yasnippet" (&optional arg))
@@ -529,6 +533,9 @@ is no Cargo project).  The report is shown in *Riven LSP Diagnostics*."
                    (if corfu-on "on" "off")
                    (if corfu-auto-on "on" "off")
                    (if auto-hook "present" "missing"))
+           (format "mouse hover: %s"
+                   (if (bound-and-true-p riven/eglot-mouse-hover-mode)
+                       "on" "off"))
            (format "rust cargo project: %s" (if rust-standalone "no" "yes")))))
     (with-current-buffer (get-buffer-create "*Riven LSP Diagnostics*")
       (erase-buffer)
@@ -560,6 +567,148 @@ is no Cargo project).  The report is shown in *Riven LSP Diagnostics*."
       (goto-char (point-min))
       (display-buffer (current-buffer)))
     (message "LSP diagnostics written to *Riven LSP Diagnostics*")))
+
+;;; Mouse-hover documentation
+;;
+;; Eglot exposes hover support through ElDoc, which is bound to the text at
+;; point.  These members add the mouse equivalent: resting the pointer on a
+;; symbol in a managed buffer asks the server for hover documentation after a
+;; short idle delay and shows it in the echo area.
+
+(defcustom rivenEmacs-eglot-mouse-hover t
+  "Whether resting the mouse on a symbol shows its hover documentation.
+When non-nil, `riven/eglot-mouse-hover-mode' is enabled after Eglot
+loads: a `mouse-movement' binding asks the language server for hover
+information and shows it in the echo area after
+`rivenEmacs-eglot-mouse-hover-delay' seconds."
+  :type 'boolean
+  :group 'rivenEmacs)
+
+(defcustom rivenEmacs-eglot-mouse-hover-delay 0.25
+  "Idle seconds before mouse-hover documentation is requested."
+  :type 'number
+  :group 'rivenEmacs)
+
+(defcustom rivenEmacs-eglot-mouse-hover-max-lines 6
+  "Maximum number of hover documentation lines shown in the echo area.
+Longer documentation is truncated; use `M-x eldoc-doc-buffer' for the
+full text of the symbol at point."
+  :type 'natnum
+  :group 'rivenEmacs)
+
+(defvar riven/eglot-mouse-hover--timer nil
+  "Pending idle timer for mouse-hover documentation.")
+
+(defvar riven/eglot-mouse-hover--token 0
+  "Counter used to discard out-of-order hover responses.")
+
+(defvar riven/eglot-mouse-hover--last nil
+  "Identifier of the last hovered symbol, or nil.")
+
+(defvar riven/eglot-mouse-hover--shown nil
+  "Non-nil when the echo area currently shows hover documentation.")
+
+(defun riven/eglot-mouse-hover--cancel ()
+  "Cancel a pending hover request and invalidate in-flight responses."
+  (when (timerp riven/eglot-mouse-hover--timer)
+    (cancel-timer riven/eglot-mouse-hover--timer))
+  (setq riven/eglot-mouse-hover--timer nil)
+  (setq riven/eglot-mouse-hover--token (1+ riven/eglot-mouse-hover--token)))
+
+(defun riven/eglot-mouse-hover--symbol-at (posn)
+  "Return (BUFFER POSITION SYMBOL) for the symbol at mouse position POSN.
+Return nil when POSN is not over a symbol in an Eglot-managed buffer."
+  (when-let* ((window (posn-window posn))
+              ((window-live-p window))
+              (position (posn-point posn))
+              ((integer-or-marker-p position))
+              (buffer (window-buffer window)))
+    (with-current-buffer buffer
+      (when (and (bound-and-true-p eglot--managed-mode)
+                 (eglot-current-server))
+        (save-excursion
+          (goto-char position)
+          (when-let* ((bounds (bounds-of-thing-at-point 'symbol)))
+            (list buffer (car bounds)
+                  (buffer-substring-no-properties (car bounds) (cdr bounds)))))))))
+
+(defun riven/eglot-mouse-hover--code-fence-p (line)
+  "Return non-nil when LINE is a Markdown code fence."
+  (string-match-p "\\`[ \t]*```[ \t]*[[:alnum:]_+.-]*[ \t]*\\'" line))
+
+(defun riven/eglot-mouse-hover--format (text)
+  "Return TEXT shortened and cleaned up for the echo area."
+  (let* ((lines (split-string (string-trim text "[ \t\n\r]+" "[ \t\n\r]+") "\n"))
+         (cleaned (seq-remove #'riven/eglot-mouse-hover--code-fence-p lines))
+         (kept (seq-take cleaned rivenEmacs-eglot-mouse-hover-max-lines))
+         (omitted (- (length cleaned) (length kept))))
+    (concat (mapconcat #'string-trim-right kept "\n")
+            (when (> omitted 0)
+              (format "\n... %d more line(s)" omitted)))))
+
+(defun riven/eglot-mouse-hover--hide ()
+  "Clear hover documentation from the echo area when it is shown there."
+  (when riven/eglot-mouse-hover--shown
+    (message nil)
+    (setq riven/eglot-mouse-hover--shown nil)))
+
+(defun riven/eglot-mouse-hover--fetch (info)
+  "Request and display hover documentation described by INFO.
+INFO is the list returned by `riven/eglot-mouse-hover--symbol-at'."
+  (setq riven/eglot-mouse-hover--timer nil)
+  (let ((buffer (nth 0 info))
+        (position (nth 1 info))
+        (token riven/eglot-mouse-hover--token))
+    (when (and (buffer-live-p buffer)
+               (not (equal info riven/eglot-mouse-hover--last)))
+      (setq riven/eglot-mouse-hover--last info)
+      (with-current-buffer buffer
+        (save-excursion
+          (goto-char position)
+          (when (and (bound-and-true-p eglot--managed-mode)
+                     (eglot-current-server))
+            (eglot-hover-eldoc-function
+             (lambda (text &rest _plist)
+               (when (= token riven/eglot-mouse-hover--token)
+                 (if (and (stringp text)
+                          (not (string-empty-p (string-trim text))))
+                     (progn
+                       (message "%s" (riven/eglot-mouse-hover--format text))
+                       (setq riven/eglot-mouse-hover--shown t))
+                   (riven/eglot-mouse-hover--hide)))))))))))
+
+(defun riven/eglot-mouse-hover (event)
+  "Show Eglot documentation for the symbol under the mouse.
+This is the `mouse-movement' handler installed by
+`riven/eglot-mouse-hover-mode'; documentation appears in the echo area
+after `rivenEmacs-eglot-mouse-hover-delay' idle seconds."
+  (interactive "e")
+  (riven/eglot-mouse-hover--cancel)
+  (if-let* ((info (riven/eglot-mouse-hover--symbol-at (event-start event))))
+      (setq riven/eglot-mouse-hover--timer
+            (run-with-idle-timer rivenEmacs-eglot-mouse-hover-delay nil
+                                 #'riven/eglot-mouse-hover--fetch info))
+    (setq riven/eglot-mouse-hover--last nil)
+    (riven/eglot-mouse-hover--hide)))
+
+(define-minor-mode riven/eglot-mouse-hover-mode
+  "Show Eglot hover documentation when the mouse rests on a symbol.
+The documentation is displayed in the echo area after
+`rivenEmacs-eglot-mouse-hover-delay' seconds.  Enabled at startup when
+`rivenEmacs-eglot-mouse-hover' is non-nil; toggle with
+\\[riven/eglot-mouse-hover-mode]."
+  :global t
+  :group 'rivenEmacs
+  (cond
+   ((not (boundp 'eglot-mode-map))
+    nil)
+   (riven/eglot-mouse-hover-mode
+    (keymap-set eglot-mode-map "<mouse-movement>" #'riven/eglot-mouse-hover))
+   ((eq (lookup-key eglot-mode-map [mouse-movement])
+        #'riven/eglot-mouse-hover)
+    (keymap-unset eglot-mode-map "<mouse-movement>")
+    (riven/eglot-mouse-hover--cancel)
+    (riven/eglot-mouse-hover--hide))))
 
 (defun riven/eglot-client-capabilities-no-file-watch (orig-fn server)
   "Call ORIG-FN for SERVER, disabling dynamic file watch when configured.
@@ -635,6 +784,9 @@ The default is to disable the registration; set
   (riven/eglot-configure-kotlin-server)
   (riven/eglot-configure-default-servers)
   (setq-default jsonrpc-default-request-timeout 30)
+  ;; Mouse-hover documentation; see `riven/eglot-mouse-hover-mode'.
+  (when rivenEmacs-eglot-mouse-hover
+    (riven/eglot-mouse-hover-mode 1))
   (keymap-global-set "M-." #'riven/xref-find-definitions-or-search)
   (keymap-global-set "M-," #'xref-go-back)
   (keymap-global-set "M-?" #'xref-find-references))

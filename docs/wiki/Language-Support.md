@@ -44,6 +44,19 @@ buffer, its server process, the effective `completion-at-point-functions`, and
 the Corfu auto-popup state, plus a targeted hint for each failure mode (for
 example a Rust file without a Cargo project).
 
+### Hover documentation
+
+Rest the mouse on a symbol in an Eglot-managed buffer and the server's hover
+documentation appears in the echo area after a short idle delay
+(`rivenEmacs-eglot-mouse-hover`, `rivenEmacs-eglot-mouse-hover-delay`; toggle at
+runtime with `M-x riven/eglot-mouse-hover-mode`).  Long documentation is
+truncated to `rivenEmacs-eglot-mouse-hover-max-lines` lines.
+
+With point on a symbol, ElDoc shows the same information in the echo area after
+`eldoc-idle-delay`; `C-c c h` (or `M-x riven/eldoc-doc-buffer-focus`) opens the
+complete text in the `*eldoc*` buffer.  `M-x riven/eglot-diagnose` also reports
+whether mouse-hover documentation is enabled.
+
 On-type formatting (`documentOnTypeFormattingProvider`) is disabled globally:
 some servers issue synchronous requests for characters such as `;` and RET,
 which can freeze Emacs. Use format-on-save or explicit format commands instead.

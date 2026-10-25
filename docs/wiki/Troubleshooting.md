@@ -111,6 +111,15 @@ for the observed failure mode:
   workspaces get a generated manifest) or create a Cargo project around the
   file.
 
+### Hover documentation does not show up
+
+Hover documentation only appears in Eglot-managed buffers with a live server
+that advertises `hoverProvider` (check `M-x riven/eglot-diagnose`).  Make sure
+`rivenEmacs-eglot-mouse-hover` is non-nil and
+`M-x riven/eglot-mouse-hover-mode` is enabled; the pointer must rest on a
+symbol for `rivenEmacs-eglot-mouse-hover-delay` seconds.  For the symbol at
+point use `C-c c h` (full ElDoc buffer) or wait for the ElDoc echo area.
+
 Python contacts prefer an installed server before prompting: with
 `pyright-langserver` installed, an absent BasedPyright does not trigger an
 install prompt.  Declining or quitting one prompt only skips that server.

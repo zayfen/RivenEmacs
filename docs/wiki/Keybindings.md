@@ -96,6 +96,10 @@ Eglot/xref commands; the Eglot-specific entries (rename, code actions, …)
 naturally require an Eglot-managed buffer, while the smartparens/quickrun keys
 work everywhere.
 
+Mouse hover: in Eglot-managed buffers, resting the pointer on a symbol shows its
+hover documentation in the echo area (no key; toggle with
+`M-x riven/eglot-mouse-hover-mode`).
+
 | Key | Action |
 |-----|--------|
 | `C-c c d` | find definition (`M-.`) |
@@ -106,6 +110,7 @@ work everywhere.
 | `C-c c a` | code actions |
 | `C-c c f` | format (`riven/eglot-format-dispatch`) |
 | `C-c c R` | rename symbol |
+| `C-c c h` | show documentation for the symbol at point (ElDoc buffer) |
 | `C-c c k` | kill smart line |
 | `C-c c s` | splice sexp |
 | `C-c c w` | rewrap sexp |

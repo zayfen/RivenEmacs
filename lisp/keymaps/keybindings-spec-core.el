@@ -67,6 +67,7 @@
       ("a" eglot-code-actions "Code action")
       ("f" riven/eglot-format-dispatch "Format buffer")
       ("R" eglot-rename "Rename symbol")
+      ("h" riven/eldoc-doc-buffer-focus "Show documentation")
       ("k" sp-kill-whole-line "Kill smart line")
       ("s" sp-splice-sexp "Splice sexp")
       ("w" sp-rewrap-sexp "Rewrap sexp")
