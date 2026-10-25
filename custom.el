@@ -5,6 +5,10 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(ai-code-onboarding-seen t)
+ '(custom-safe-themes
+   '("7d9c94cc1edddc6162c89c85bbdeed14e5b93a21ec83a55710d6a501bf295cf7"
+     "2b0531a540f4b51e524f551ed7374099f9d743b4de458ade0c52ba18ee6bfe46" default))
+ '(flymake-inline-diagnostics t nil nil "Customized with use-package flymake")
  '(package-selected-packages
    '(ace-window agent-shell aggressive-indent-mode ai-code apheleia cape cargo color-rg corfu crux dape dashboard deadgrep
                 devdocs diff-hl dirvish docker dockerfile-mode doom-modeline dumb-jump easysession eat ef-themes
