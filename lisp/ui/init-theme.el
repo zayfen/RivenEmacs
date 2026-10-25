@@ -62,16 +62,17 @@
 
 ;; load theme and config
 ;; ef-themes (by Protesilaos) are vivid and legible, and build on top of
-;; modus-themes under the hood.  The configuration below defaults to a
-;; *dark* theme; all choices are dark variants of ef-themes.
-(defcustom rivenEmacs-default-theme 'ef-night
-  "Default Ef theme loaded at startup.
-All choices are dark and colorful.  `ef-night' is a dark sky-blue theme
-with vivid green, blue and purple accents.  Other good picks are
-`ef-cherie' (purple-black with pink/magenta/gold), `ef-atlantis' (deep
-indigo with aquatic colors) and `ef-melissa-dark' (warm honeybee
-yellow/red/green/cyan).  Use `M-x ef-themes-select' to preview any of
-them, or set this variable and restart Emacs."
+;; modus-themes under the hood.  A light theme is loaded by default and
+;; `<f5>' toggles between the configured light and dark themes.
+(defcustom rivenEmacs-dark-theme 'ef-night
+  "Dark Ef theme used by the `<f5>' theme toggle.
+Also loaded at startup when `rivenEmacs-default-background' is `dark'.
+`ef-night' is a dark sky-blue theme with vivid green, blue and purple
+accents.  Other good picks are `ef-cherie' (purple-black with
+pink/magenta/gold), `ef-atlantis' (deep indigo with aquatic colors) and
+`ef-melissa-dark' (warm honeybee yellow/red/green/cyan).  Use
+`M-x ef-themes-select' to preview any of them, or set this variable and
+restart Emacs."
   :type '(choice
           (const :tag "ef-night (dark sky blue; green/blue/purple)" ef-night)
           (const :tag "ef-cherie (purple-black; pink/magenta/gold)" ef-cherie)
@@ -82,20 +83,52 @@ them, or set this variable and restart Emacs."
           (const :tag "ef-dark (black; blue/cyan/magenta)" ef-dark))
   :group 'rivenEmacs)
 
+(defcustom rivenEmacs-light-theme 'ef-deuteranopia-light
+  "Light Ef theme loaded at startup by default and toggled to by `<f5>'.
+The dark counterpart is `rivenEmacs-dark-theme'.  The default,
+`ef-deuteranopia-light', is the accessible light variant with
+blue/yellow accents and strong contrast.  Other light alternatives are
+`ef-tritanopia-light' (red/pink, tritanopia-safe), `ef-cyprus',
+`ef-light', `ef-maris-light', `ef-duo-light', `ef-elea-light',
+`ef-melissa-light' and `ef-trio-light'.  Use `M-x ef-themes-select' to
+preview them, or set this variable and restart Emacs."
+  :type '(choice
+          (const :tag "ef-deuteranopia-light (accessible; blue/yellow)"
+                 ef-deuteranopia-light)
+          (const :tag "ef-tritanopia-light (accessible; red/pink)"
+                 ef-tritanopia-light)
+          (const :tag "ef-cyprus (light; green/red)" ef-cyprus)
+          (const :tag "ef-light (light; blue/cyan/magenta)" ef-light)
+          (const :tag "ef-maris-light (light; blue/green)" ef-maris-light)
+          (const :tag "ef-duo-light (light; two colors)" ef-duo-light)
+          (const :tag "ef-elea-light (light; green/brown)" ef-elea-light)
+          (const :tag "ef-melissa-light (light; honeybee colors)"
+                 ef-melissa-light)
+          (const :tag "ef-trio-light (light; three colors)" ef-trio-light))
+  :group 'rivenEmacs)
+
+(defcustom rivenEmacs-default-background 'light
+  "Which Ef theme family is loaded at startup.
+`light' loads `rivenEmacs-light-theme' (default `ef-deuteranopia-light');
+`dark' loads `rivenEmacs-dark-theme' (default `ef-night').  The `<f5>'
+toggle switches between the two themes regardless of this setting."
+  :type '(choice (const :tag "light (rivenEmacs-light-theme)" light)
+                 (const :tag "dark (rivenEmacs-dark-theme)" dark))
+  :group 'rivenEmacs)
+
 (use-package ef-themes
   :ensure t
   :demand t                                  ; load now — a theme must be active at startup
-  :bind ("<f5>" . ef-themes-toggle)          ; switch between vivid dark variants
+  :bind ("<f5>" . ef-themes-toggle)          ; switch between light and dark themes
   :config
   ;; Set theme user options BEFORE loading the theme. These are defcustoms with
   ;; custom :set setters, so use `customize-set-variable' (a plain `setq' or
   ;; `use-package' :custom would not run the setter and the value would be
   ;; silently ignored — verified).
-  ;; <f5> toggles between the configured default and a second vivid dark theme.
+  ;; <f5> toggles between the configured light and dark themes.
   (customize-set-variable
    'ef-themes-to-toggle
-   (list rivenEmacs-default-theme
-         (if (eq rivenEmacs-default-theme 'ef-cherie) 'ef-night 'ef-cherie)))
+   (list rivenEmacs-light-theme rivenEmacs-dark-theme))
   ;; Heading styling: rainbow per-level + weight gradient, no manual foreground
   ;; colors (let the theme decide, so it stays consistent on theme switch).
   ;; Keyed by level (0=document title, 1..6=headings, t=catch-all).
@@ -106,10 +139,14 @@ them, or set this variable and restart Emacs."
      (2 . (rainbow semibold 1.15))
      (3 . (rainbow semibold 1.1))
      (t . (rainbow semibold))))
-  ;; Default to a dark variant; see `rivenEmacs-default-theme'.
+  ;; Load the configured light theme by default; see
+  ;; `rivenEmacs-default-background'.
   ;; NOTE: `ef-themes-select' is interactive-only (takes no args); to load a
   ;; specific theme programmatically, use `load-theme' directly.
-  (load-theme rivenEmacs-default-theme t))
+  (load-theme (if (eq rivenEmacs-default-background 'dark)
+                  rivenEmacs-dark-theme
+                rivenEmacs-light-theme)
+              t))
 
 
 (use-package doom-modeline

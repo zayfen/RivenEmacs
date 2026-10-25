@@ -20,7 +20,7 @@ concern. Each `.el` file follows the module template (see
 
 | File | Purpose |
 |------|---------|
-| `init-theme.el` | `ef-themes` (dark `ef-night` default, configurable via `rivenEmacs-default-theme`; `<f5>` toggles to `ef-cherie`), `doom-modeline`, `nerd-icons`, `rainbow-delimiters`, `ligature` (Cascadia Code), `spacious-padding`, `fancy-compilation`, header-line file path, face overrides. |
+| `init-theme.el` | `ef-themes` (light `ef-deuteranopia-light` default via `rivenEmacs-light-theme`/`rivenEmacs-default-background`; `<f5>` toggles to the dark `ef-night` from `rivenEmacs-dark-theme`), `doom-modeline`, `nerd-icons`, `rainbow-delimiters`, `ligature` (Cascadia Code), `spacious-padding`, `fancy-compilation`, header-line file path, face overrides. |
 | `init-font.el` | `riven/apply-fonts` — picks first available fixed / variable / CJK / emoji font per-platform. |
 | `init-which-key.el` | `which-key` with minibuffer display, 1.0 s idle, `→` separator. |
 | `init-hydra.el` | `hydra` (used by smerge). |

@@ -246,7 +246,7 @@ work everywhere.
 | `C-c C-e` | JSX tag ops (rename/jump/delete) | tsx-ts-mode |
 | `C-c l` | markdown insert/menu keymap (includes `p p` grip preview) | markdown-mode / markdown-ts-mode |
 | `C-c C-p` | grip live preview | legacy markdown-mode fallback only |
-| `<f5>` | toggle ef-themes (dark `ef-night` ↔ `ef-cherie` by default) | global |
+| `<f5>` | toggle ef-themes (light `ef-deuteranopia-light` ↔ dark `ef-night` by default) | global |
 | `C-c D` | dape debug | prog |
 | `M-0..M-9` | indexed candidate insert | corfu active |
 | `M-h` | toggle documentation for the selected completion candidate | corfu popup active |
