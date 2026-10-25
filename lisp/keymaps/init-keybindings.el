@@ -7,17 +7,15 @@
 (autoload 'dsh-emacs "dsh-emacs" nil t)
 
 (defun riven/keybindings-config ()
-  "Apply all RivenEmacs keybindings from declarative specs."
+  "Apply all RivenEmacs keybindings from declarative specs.
+All AI entry points (gptel, `ai-code' agents, `dsh-emacs', MCP) live
+under the single `C-c a' hub; the former `C-c =' and `C-c d' bindings
+are retired."
   (riven/keybindings-reset-owned-prefixes)
   (riven/keybindings-apply-leader-spec)
-  (riven/keybindings-apply-agent-spec)
   (riven/keybindings-apply-navigate)
   (riven/keybindings-apply-default-cleanups)
-  (riven/keybindings-configure-which-key-display)
-  (keymap-global-set "M-*" #'ai-code-menu)
-  ;; Direct top-level launcher (not a prefix group): the DeepSeek Harness
-  ;; client loads from its autoload on the first press.
-  (keymap-global-set "C-c d" #'dsh-emacs))
+  (riven/keybindings-configure-which-key-display))
 
 (add-hook 'after-init-hook #'riven/keybindings-config)
 

@@ -30,30 +30,34 @@
   `(cl-letf (((symbol-function 'riven/keybindings--warn-missing-command) #'ignore))
      ,@body))
 
-(ert-deftest riven/keybindings-agent-spec-uses-ai-code-only ()
-  "Dedicated agent keys should route through ai-code, not agent-shell."
+(ert-deftest riven/ai-spec-uses-ai-code-only ()
+  "Coding-agent keys in the AI hub route through ai-code, not agent-shell."
   (should-not
    (cl-some (lambda (entry)
               (memq (cadr entry) '(agent-shell agent-shell-setup)))
-            riven/keybindings-agent-spec)))
+            riven/keybindings-ai-spec))
+  (should (eq (cadr (assoc "a" riven/keybindings-ai-spec)) 'ai-code-menu)))
 
-(ert-deftest riven/ai-code-menu-is-primary-global-entry ()
-  "The primary AI coding key invokes `ai-code-menu'."
+(ert-deftest riven/ai-code-menu-is-under-ai-hub ()
+  "`ai-code-menu' has a single entry point under the AI hub."
   (riven/test-with-quiet-keybinding-diagnostics
    (riven/keybindings-config))
-  (should (eq (key-binding (kbd "M-*")) #'ai-code-menu)))
+  (should (eq (key-binding (kbd "C-c a a")) #'ai-code-menu))
+  ;; The previous duplicate entry points are retired.
+  (should-not (eq (key-binding (kbd "M-*")) #'ai-code-menu))
+  (should-not (key-binding (kbd "C-c = =")))
+  (should-not (key-binding (kbd "C-c ="))))
 
 (ert-deftest riven/agent-bindings-use-ai-code-entrypoints ()
-  "Dedicated agent keys expose ai-code entrypoints only."
+  "Agent keys live under `C-c a' and expose ai-code entrypoints only."
   (riven/test-with-quiet-keybinding-diagnostics
    (riven/keybindings-config))
-  (should (eq (key-binding (kbd "C-c = =")) #'ai-code-menu))
-  (should (eq (key-binding (kbd "C-c = 1")) #'ai-code-codex-cli))
-  (should (eq (key-binding (kbd "C-c = 2")) #'ai-code-opencode))
-  (should (eq (key-binding (kbd "C-c = 3")) #'ai-code-cursor-cli))
-  (should (eq (key-binding (kbd "C-c = 4")) #'ai-code-claude-code))
-  (should (eq (key-binding (kbd "C-c = 5")) #'ai-code-aider-cli))
-  (should-not (key-binding (kbd "C-c = s"))))
+  (should (eq (key-binding (kbd "C-c a 1")) #'ai-code-codex-cli))
+  (should (eq (key-binding (kbd "C-c a 2")) #'ai-code-opencode))
+  (should (eq (key-binding (kbd "C-c a 3")) #'ai-code-cursor-cli))
+  (should (eq (key-binding (kbd "C-c a 4")) #'ai-code-claude-code))
+  (should (eq (key-binding (kbd "C-c a 5")) #'ai-code-aider-cli))
+  (should-not (key-binding (kbd "C-c = 1"))))
 
 (ert-deftest riven/early-init-initializes-package-system ()
   "Startup initializes package.el so installed ELPA packages are discoverable."

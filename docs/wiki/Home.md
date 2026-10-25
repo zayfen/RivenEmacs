@@ -53,7 +53,7 @@ They are synchronous startup work, not idle-deferred.
   Rust, C/C++, Java, JS/TS, PHP).
 - **AI first-class** — gptel (Zayfen / DeepSeek / OpenAI) + MCP tool servers +
   ai-code CLI agents (Codex / Claude Code / Opencode / Aider) +
-  dsh-emacs DeepSeek Harness client (`C-c d`).
+  dsh-emacs DeepSeek Harness client (`C-c a d`).
 - **Tree-sitter everywhere** — Emacs 31 native `treesit-enabled-modes`.
 - **Bundled extras** — Codeforces client, epub reader, RSS feed, Beamer
   lecture-series export.

@@ -6,7 +6,7 @@ layers, all under `lisp/ai/`:
 1. **gptel** — chat-style LLM client (Zayfen / DeepSeek / OpenAI backends)
 2. **MCP** — Model Context Protocol tool servers (filesystem, browser, search, …)
 3. **ai-code** — CLI coding agents (Codex / Claude Code / Opencode / Aider)
-4. **dsh-emacs** — Emacs client for DeepSeek Harness (`C-c d`)
+4. **dsh-emacs** — Emacs client for DeepSeek Harness (`C-c a d`)
 
 Each layer degrades gracefully when its API key / binary is missing.
 
@@ -118,9 +118,10 @@ time and silently skips itself if missing — no errors, no blocking.
 
 **Commands**:
 
-- `M-x riven/gptel-mcp-connect-popular` (also `C-c a M`) — connect all enabled servers.
-- `M-x riven/gptel-mcp-verify` (also `C-c a V`) — validate MCP config; reports
-  which servers connected and which were skipped.
+- `M-x riven/gptel-mcp-verify` (also `C-c a M`) — connect all enabled servers
+  and validate the tool registration in one step; reports which servers
+  connected and which were skipped.
+- `M-x riven/gptel-mcp-connect-popular` — the underlying connect-only command.
 
 `rivenEmacs-gptel-mcp-auto-connect` defaults to `nil`; set it to `t` to
 connect configured MCP servers automatically at startup, or use `C-c a M`
@@ -142,11 +143,10 @@ Launches a coding agent in a terminal pane (backend: `ghostel`).
 
 Two-column `ai-code-menu` integrates with magit transients for staging context.
 
-**Entry points**:
+**Entry points** (all under the `C-c a` AI hub):
 
-- `M-*` (global) → `ai-code-menu`
-- `C-c = =` → `ai-code-menu`
-- `C-c = 1` / `2` / `3` / `4` / `5` → codex / opencode / cursor-cli / claude-code / aider directly
+- `C-c a a` → `ai-code-menu` (the single entry point for the menu)
+- `C-c a 1` / `2` / `3` / `4` / `5` → codex / opencode / cursor-cli / claude-code / aider directly
 
 Switch backend on the fly: `M-x riven/ai-code-configure-backend`.
 
@@ -160,7 +160,7 @@ DeepSeek Harness (`dsh web`) server over HTTP/WebSocket and offers a session
 list grouped by workspace, streaming chat with foldable tool calls and
 reasoning, model/effort selection, attachments, and subagents.
 
-- `C-c d` → `dsh-emacs` (session list); the package and server load lazily on
+- `C-c a d` → `dsh-emacs` (session list); the package and server load lazily on
   the first press.
 - With the default `dsh-emacs-base-url` the client manages a loopback server:
   it starts `dsh web --host 127.0.0.1 --port 3080 --no-open`, captures the
@@ -173,7 +173,8 @@ reasoning, model/effort selection, attachments, and subagents.
 - Requires the `dsh` CLI (0.2.1-rc.2 or newer) on `exec-path`; `dsh-emacs`
   offers to install it when missing.
 
-The debugger's dape prefix moved from `C-c d` to `C-c D` to free this key.
+The debugger's dape prefix is `C-c D`.  The old direct `C-c d` launcher is
+retired now that the DSH client lives under the `C-c a` hub.
 
 ---
 

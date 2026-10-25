@@ -8,7 +8,7 @@
   ;; so registering an `after-init-hook' activation here would run too late.
   :demand t
   :preface
-  ;; `C-c d' launches the DeepSeek Harness client (see
+  ;; The DeepSeek Harness client lives under the AI hub (`C-c a d', see
   ;; lisp/ai/init-dsh-emacs.el), so dape keeps its own global map on `C-c D'.
   ;; By default dape shares the keybinding prefix of `gud' instead; set this
   ;; to nil if you do not want a prefix at all.

@@ -55,7 +55,8 @@
       ("h" diff-hl-show-hunk "Show hunk")
       ("n" diff-hl-next-hunk "Next hunk")
       ("p" diff-hl-previous-hunk "Previous hunk")
-      ("t" git-timemachine-toggle "Time machine")))
+      ("t" git-timemachine-toggle "Time machine")
+      ("G" gptel-generate-commit-message "Generate commit message")))
 
     ("c" "Code"
      (("d" riven/xref-find-definitions-or-search "Find definition")

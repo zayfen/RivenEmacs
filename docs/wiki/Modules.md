@@ -86,8 +86,8 @@ See **[AI-Integration](AI-Integration.md)** for details.
 | `init-gpt.el` | `gptel` (Zayfen / DeepSeek / OpenAI backends) + MCP tool servers. |
 | `init-gpt-helper.el` | Fallback commands + review workflow (`riven/gptel-review-mode`). |
 | `init-gpt-tools.el` | gptel core agent tools + `work` preset (`C-c a W`). |
-| `init-ai-code.el` | `ai-code` CLI agents (Codex/Claude Code/Opencode/Aider). |
-| `init-dsh-emacs.el` | `dsh-emacs` — Emacs client for DeepSeek Harness (`C-c d`): session list, streaming chat, subagents; lazy-loaded, manages its own `dsh web` server. |
+| `init-ai-code.el` | `ai-code` CLI agents (Codex/Claude Code/Opencode/Aider), launched from the AI hub with `C-c a 1`..`5` or the `C-c a a` menu. |
+| `init-dsh-emacs.el` | `dsh-emacs` — Emacs client for DeepSeek Harness (`C-c a d`): session list, streaming chat, subagents; lazy-loaded, manages its own `dsh web` server. |
 
 ## `lisp/lang/` — Per-Language Config
 
@@ -111,7 +111,7 @@ See **[Architecture §Declarative Keybinding Engine](Architecture.md#declarative
 | `keybindings-engine.el` | Applies specs, clears owned prefixes, warns on duplicates/missing. |
 | `keybindings-spec.el` | Aggregates all spec files. |
 | `keybindings-spec-core.el` | File/Project/Git/Code/Search/Window/Note/Error specs. |
-| `keybindings-spec-ai.el` | AI/agent specs. |
+| `keybindings-spec-ai.el` | AI hub specs for `C-c a`: gptel chat/text actions, `ai-code` agents, `dsh-emacs`, MCP. |
 | `keybindings-spec-lsp.el` | LSP specs. |
 | `keybindings-spec-org.el` | Org/session specs. |
 | `keybindings-commands.el` | Interactive helpers backing specs. |

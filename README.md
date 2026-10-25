@@ -7,7 +7,7 @@ RivenEmacs 是一套面向现代开发工作流的 Emacs 配置，重点放在�
 - **架构清晰**：所有能力按目录分层放在 `lisp/` 下，入口只负责装配，模块只负责自己的领域。
 - **启动快**：`early-init.el` 处理 GC、文件名处理器、native-comp 缓存等启动期优化，重型模块延迟到 `after-init-hook` 的前部（depth -20，在桌面恢复/键位应用之前、首次 redisplay 之前）加载。
 - **现代 IDE 体验**：默认使用 `eglot`（唯一 LSP 客户端），配合 `eglot-booster`、Tree-sitter、Flymake、Apheleia、Corfu/Cape，覆盖跳转、诊断、格式化、补全和文档。
-- **AI 与 MCP 原生集成**：内置 `gptel`、`ai-code`、`dsh-emacs`（DeepSeek Harness 客户端，`C-c d`）和多种 MCP server 配置，支持文件系统、记忆、浏览器、搜索等工具能力。
+- **AI 与 MCP 原生集成**：内置 `gptel`、`ai-code`、`dsh-emacs`（DeepSeek Harness 客户端，`C-c a d`）和多种 MCP server 配置，支持文件系统、记忆、浏览器、搜索等工具能力。
 - **声明式键位**：键位集中在 `lisp/keymaps/`，由声明式 spec 和引擎生成（`C-c` leader，已退役 general.el/SPC），便于查重、重载和维护 which-key 分组。
 - **可复现依赖管理**：`scripts/riven-deps.sh` 可以检查、安装和修复核心依赖、LSP、AI、MCP、拼写和 Markdown 预览工具。
 - **可维护升级**：`scripts/update-packages.sh` 同时升级 ELPA 包和 package-vc（Git/源码）包，支持 `--dry-run`、`--only`，并按分支/release tag 语义更新 VC 包。
@@ -111,7 +111,7 @@ RivenEmacs
 - MCP 配置集中在 `lisp/ai/init-gpt.el`，支持 filesystem、memory、Playwright browser、browser-use、Brave Search、Tavily 等 server。
 - 缺少 `BRAVE_API_KEY` 或 `TAVILY_API_KEY` 时，对应 MCP server 会自动跳过，不阻塞主配置加载。
 - `ai-code` 提供 Codex、Claude Code、Opencode、Aider 等 AI 编码入口，默认后端为 Codex。
-- `C-c d` 打开 `dsh-emacs`（DeepSeek Harness 客户端）：按工作区分组的会话列表、流式对话、工具调用/思考折叠、模型切换和子代理；默认自动管理本地 `dsh web` 服务。
+- `C-c a d` 打开 `dsh-emacs`（DeepSeek Harness 客户端）：按工作区分组的会话列表、流式对话、工具调用/思考折叠、模型切换和子代理；默认自动管理本地 `dsh web` 服务。
 
 在 Emacs 内验证 MCP 配置：
 

@@ -5,7 +5,7 @@
 ;; session list grouped by workspace, streaming chat with foldable tool calls
 ;; and reasoning, model/effort selection, attachments, and subagents.
 ;;
-;; The package stays lazy and loads from its autoload on the first `C-c d'
+;; The package stays lazy and loads from its autoload on the first `C-c a d'
 ;; press.  With the default `dsh-emacs-base-url' it manages a loopback
 ;; server: when nothing answers at http://127.0.0.1:3080 it runs
 ;; `dsh web --host 127.0.0.1 --port 3080 --no-open' in a `*dsh-server*'

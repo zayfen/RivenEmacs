@@ -6,8 +6,10 @@ by the declarative engine at `after-init-hook`.
 
 > Tip: press `C-c` then wait 1 s — `which-key` shows every available prefix.
 
-`C-c d` is a direct launcher (not a prefix): it opens the DeepSeek Harness
-client (`dsh-emacs`). The debugger's dape prefix moved to `C-c D`.
+All AI entry points live under one hub: `C-c a` covers gptel, the `ai-code`
+CLI agents, the DeepSeek Harness client (`dsh-emacs`) and MCP setup.  The old
+`C-c =` (agents) and `C-c d` (DSH) bindings are retired; the debugger's dape
+prefix stays on `C-c D`.
 
 ---
 
@@ -77,6 +79,7 @@ client (`dsh-emacs`). The debugger's dape prefix moved to `C-c D`.
 | `C-c g A` | magit-merge-abort |
 | `C-c g h` / `n` / `p` | diff-hl hunk prev/next |
 | `C-c g t` | git-timemachine |
+| `C-c g G` | generate commit message (gptel) |
 
 Merge/rebase conflicts: visiting a conflicted file automatically enables
 `smerge-mode`; `C-c m` opens the resolution hydra (`n`/`p` navigate, `u`/`l`/`b`
@@ -146,35 +149,32 @@ work everywhere.
 | `C-c w b` | balance windows |
 | `C-c w u` / `r` | winner undo / redo |
 
-### `C-c a` — AI
+### `C-c a` — AI (gptel + agents + DSH + MCP)
 
 | Key | Action |
 |-----|--------|
-| `C-c a a` | ai-code-menu |
-| `C-c a c` | gptel console |
-| `C-c a m` | gptel-menu |
+| `C-c a c` | gptel chat (console) |
+| `C-c a m` | gptel-menu (models, backends, presets) |
 | `C-c a s` | gptel send |
 | `C-c a r` | rewrite region |
 | `C-c a R` | refactor region/buffer (gptel-extensions) |
 | `C-c a t` | translate region (review) |
 | `C-c a S` | summarize region (review) |
 | `C-c a w` | write article |
-| `C-c a d` | ask document |
-| `C-c a g` | generate commit message |
-| `C-c a M` | MCP connect popular |
-| `C-c a V` | MCP verify |
 | `C-c a W` | gptel Work mode (core agent tools) |
+| `C-c a D` | ask document |
+| `C-c a a` | ai-code-menu (agent menu) |
+| `C-c a 1` | codex |
+| `C-c a 2` | opencode |
+| `C-c a 3` | cursor-cli |
+| `C-c a 4` | claude-code |
+| `C-c a 5` | aider |
+| `C-c a d` | DeepSeek Harness client (dsh-emacs, session list) |
+| `C-c a M` | MCP tools (connect and verify) |
 
-### `C-c =` — AI Code Agent
-
-| Key | Action |
-|-----|--------|
-| `C-c = =` | ai-code-menu |
-| `C-c = 1` | codex |
-| `C-c = 2` | opencode |
-| `C-c = 3` | cursor-cli |
-| `C-c = 4` | claude-code |
-| `C-c = 5` | aider |
+`C-c a a` is the single entry point for `ai-code-menu`; the retired
+`M-*`, `C-c = =` duplicates were removed.  Commit-message generation moved to
+the Git group (`C-c g G`).
 
 ### `C-c n` — Note (Org)
 
@@ -225,7 +225,6 @@ work everywhere.
 
 | Key | Action | Where |
 |-----|--------|-------|
-| `M-*` | ai-code-menu | global |
 | `M-.` / `M-,` / `M-?` | xref find-def / back / refs | LSP buffers |
 | `M-y` | consult-yank-pop | global |
 | `C-x b` | consult-buffer | global |
@@ -239,7 +238,6 @@ work everywhere.
 | `M-[` | goto-last-change | global |
 | `C-x o/1/2/3/0` | switch-window variants | global |
 | `C-x d` | dirvish | global |
-| `C-c d` | dsh — DeepSeek Harness client (session list) | global (visible in which-key) |
 | `C-c h` | diff-hl-show-hunk | global (visible in which-key) |
 | `C-c ;` | embark-dwim | global (visible in which-key) |
 | `C-c m` | smerge resolution hydra (auto-enabled in conflicted files) | merge buffers |

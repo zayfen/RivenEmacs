@@ -10,17 +10,14 @@
   '("!" "&" "^" "=" "a" "b" "c" "d" "e" "f" "g" "n" "o" "p" "q" "s" "t" "w" "x")
   "Top-level `C-c' prefixes owned by RivenEmacs keybinding specs.
 This includes retired prefixes so config reloads remove stale bindings.
-`C-c d' is a direct command launcher rather than a group prefix, but it is
-owned here so a stale dape `C-c d' map from an older configuration is
-cleared before the DeepSeek Harness client is bound.")
+In particular `C-c =' (agent group) and `C-c d' (DSH launcher) are
+retired: their commands now live under the single AI hub `C-c a'.")
 
 (defconst riven/keybindings-c-c-which-key-groups
-  '(("C-c =" . "Agent")
-    ("C-c &" . "Yas")
+  '(("C-c &" . "Yas")
     ("C-c ;" . "Act")
     ("C-c a" . "AI")
     ("C-c c" . "Code")
-    ("C-c d" . "DSH")
     ("C-c D" . "Debug")
     ("C-c e" . "Error")
     ("C-c f" . "File")
@@ -34,8 +31,8 @@ cleared before the DeepSeek Harness client is bound.")
     ("C-c x" . "Session"))
   "Top-level `C-c' keys and labels shown by which-key.
 Most entries are prefix groups.  Direct command launchers (`C-c h',
-`C-c ;', `C-c d') are listed too so the top-level filter does not hide
-them from the `C-c' menu.")
+`C-c ;') are listed too so the top-level filter does not hide them from
+the `C-c' menu.")
 
 (defconst riven/keybindings-c-c-which-key-filter
   '(("\\`C-c [^ ]+\\'" . nil) . riven/keybindings-c-c-which-key-group-p)
@@ -91,22 +88,6 @@ them from the `C-c' menu.")
           (riven/keybindings--warn-missing-command cmd)
           (riven/keybindings--bind-and-describe
            (concat "C-c " prefix " " key) cmd wk))))))
-
-(defun riven/keybindings-apply-simple-spec (prefix namespace title spec)
-  "Bind SPEC keys under C-c PREFIX, registering TITLE and descriptions."
-  (when (fboundp 'which-key-add-key-based-replacements)
-    (which-key-add-key-based-replacements (concat "C-c " prefix) title))
-  (dolist (entry spec)
-    (pcase-let ((`(,key ,cmd ,wk) entry))
-      (riven/keybindings--register namespace key cmd)
-      (riven/keybindings--warn-missing-command cmd)
-      (riven/keybindings--bind-and-describe
-       (concat "C-c " prefix " " key) cmd wk))))
-
-(defun riven/keybindings-apply-agent-spec ()
-  "Apply the dedicated AI coding agent spec under `C-c ='."
-  (riven/keybindings-apply-simple-spec "=" "agent" "AI Code"
-                                       riven/keybindings-agent-spec))
 
 (defun riven/keybindings-apply-navigate ()
   "Apply M-g navigation spec."
