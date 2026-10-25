@@ -216,6 +216,10 @@ do not recreate `lisp/custom.el` (it would shadow the built-in `custom`).
 - **LSP**: `eglot` is the only LSP client (see `lisp/ide/init-eglot.el`).
   `lsp-bridge` was removed; do not reference `lsp-bridge-*` in new code.
   `rivenEmacs-lsp-modes` in `lisp/core/init-config.el` lists auto-enabled modes.
+  When a buffer looks managed but completion is missing, run
+  `M-x riven/eglot-diagnose`.  rust-analyzer needs a Cargo project
+  (`Cargo.toml`/`rust-project.json`); the bundled Codeforces client generates
+  a `Cargo.toml` with `[[bin]] path = "solution.rs"` for Rust workspaces.
 - **Terminal**: `ghostel` is the primary terminal (`C-c t t`); `eat` and
   `vterm` are declared as fallbacks (`lisp/tools/init-terminal.el`).
 

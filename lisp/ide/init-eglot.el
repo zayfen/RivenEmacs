@@ -1,9 +1,13 @@
 ;;; -*- coding: utf-8; lexical-binding: t -*-
 
 (require 'init-config)
+(require 'cl-lib)
 
 (declare-function project-root "project" (project))
 (declare-function eglot-server-capable "eglot" (capability &optional server))
+(declare-function eglot-current-server "eglot" ())
+(declare-function eglot-completion-at-point "eglot" ())
+(declare-function jsonrpc--process "jsonrpc" (server))
 (declare-function yas-expand "yasnippet" ())
 (declare-function yas-next-field "yasnippet" (&optional arg))
 (declare-function riven/xref-find-definitions-or-search "init-helper" ())
@@ -209,33 +213,61 @@ when the GUI Emacs process started with a shorter PATH."
              (eglot-server-capable :inlayHintProvider))
     (eglot-inlay-hints-mode 1)))
 
+(defun riven/eglot--installed-server (candidates)
+  "Return the CONTACT of the first already-installed server in CANDIDATES.
+CANDIDATES is a list of (BINARY CONTACT INSTALL-CMD) triples in
+preference order; BINARY must be an executable name string (not a
+symbol), as required by `executable-find'.  This check never prompts
+and never installs: it lets Eglot use a working server before the
+user is asked to install a more preferred, but absent, one.  Returns
+nil when none is installed."
+  (cl-loop for (binary contact _install) in candidates
+           when (executable-find binary)
+           return contact))
+
 (defun riven/eglot--pick-server (candidates)
-  "Return (CONTACT . INSTALL-CMD) for the first available server.
+  "Return CONTACT for the best available server among CANDIDATES.
 CANDIDATES is a list of (BINARY CONTACT INSTALL-CMD) triples, tried
-in order.  For each, ensures BINARY is available (offering to install
-via `riven/eglot--ensure-server' if missing); returns CONTACT of the
-first one that ends up available, or nil."
-  (cl-block nil
-    (cl-loop for (bin contact install) in candidates
-             when (riven/eglot--ensure-server bin install)
-             do (cl-return contact))))
+in order; BINARY must be an executable name string (not a symbol), as
+required by `executable-find'.  A server that is already installed
+wins immediately, so no install prompt appears when e.g. Pyright
+exists but BasedPyright does not.  Only when none is installed are
+the missing servers offered for installation in preference order, via
+`riven/eglot--ensure-server'.  Quitting an install prompt counts as
+declining that server and moves on to the next candidate, so a stray
+\\[keyboard-quit] cannot leave a buffer without any connection attempt.
+Returns the chosen CONTACT, or nil when every candidate is missing and
+declined."
+  (or (riven/eglot--installed-server candidates)
+      (cl-block nil
+        (cl-loop for (bin contact install) in candidates
+                 when (condition-case nil
+                          (riven/eglot--ensure-server bin install)
+                        (quit
+                         (puthash bin t riven/eglot--declined-installs)
+                         (message "Install of `%s' cancelled; trying next server."
+                                  bin)
+                         nil))
+                 do (cl-return contact)))))
 
 (defun riven/eglot-python-contact (&optional _interactive _project)
   "Return preferred Eglot server contact for Python, or nil.
-Offers to install the chosen server if missing.  Tries basedpyright,
-then pyright, then pylsp, and finally ruff (ruff's LSP is primarily a
-linter/formatter, so it is the last resort).  Returns nil when no server
-is installed and the user declines installation; Eglot then reports that
-it cannot guess a server instead of silently trying a missing binary.
-Optional arguments are accepted (and ignored) to satisfy eglot's
-function-form contact contract (see `eglot-server-programs')."
+Already-installed servers win in the order basedpyright, pyright,
+pylsp, ruff (ruff's LSP is primarily a linter/formatter, so it is the
+last resort).  Only when none of them is installed does it offer to
+install the missing ones in that preference order.  Returns nil when
+no server is installed and the user declines installation; Eglot then
+reports that it cannot guess a server instead of silently trying a
+missing binary.  Optional arguments are accepted (and ignored) to
+satisfy eglot's function-form contact contract (see
+`eglot-server-programs')."
   (riven/eglot--pick-server
-   '((basedpyright-langserver ("basedpyright-langserver" "--stdio")
-                               ("pip" "install" "basedpyright"))
-     (pyright-langserver ("pyright-langserver" "--stdio")
-                         ("npm" "i" "-g" "pyright"))
-     (pylsp ("pylsp") ("pip" "install" "python-lsp-server"))
-     (ruff ("ruff" "server") ("pip" "install" "ruff")))))
+   '(("basedpyright-langserver" ("basedpyright-langserver" "--stdio")
+                                ("pip" "install" "basedpyright"))
+     ("pyright-langserver" ("pyright-langserver" "--stdio")
+                           ("npm" "i" "-g" "pyright"))
+     ("pylsp" ("pylsp") ("pip" "install" "python-lsp-server"))
+     ("ruff" ("ruff" "server") ("pip" "install" "ruff")))))
 
 (defun riven/eglot-configure-python-server ()
   "Register the Python LSP for `python-mode' and `python-ts-mode'.
@@ -316,9 +348,9 @@ available server, or nil if the user declines.  Optional arguments are
 accepted (and ignored) to satisfy eglot's function-form contact
 contract."
   (or (riven/eglot--pick-server
-       '((kotlin-lsp ("kotlin-lsp" "--stdio") nil)
-         (kotlin-language-server ("kotlin-language-server")
-                                  ("npm" "i" "-g" "kotlin-language-server"))))
+       '(("kotlin-lsp" ("kotlin-lsp" "--stdio") nil)
+         ("kotlin-language-server" ("kotlin-language-server")
+                                   ("npm" "i" "-g" "kotlin-language-server"))))
       (error "No Kotlin language server available")))
 
 (defun riven/eglot-configure-kotlin-server ()
@@ -446,6 +478,88 @@ auto-install)."
    '("bash-language-server" "start")
    '("npm" "i" "-g" "bash-language-server")
    "shellscript"))
+
+(defun riven/eglot--process-command-string (server)
+  "Return SERVER's process command line and status, or nil.
+SERVER may be nil, in which case nil is returned."
+  (when-let* ((process (ignore-errors (jsonrpc--process server))))
+    (format "%s [%s]"
+            (ignore-errors
+              (mapconcat #'identity (process-command process) " "))
+            (ignore-errors (process-status process)))))
+
+(defun riven/eglot-diagnose ()
+  "Report Eglot and in-buffer completion state for the current buffer.
+Run this when completion does not appear.  It distinguishes the cases
+that look alike in the mode line: Eglot is not managing the buffer, it
+claims to manage it but has no live server, the server is alive but
+`eglot-completion-at-point' is missing from
+`completion-at-point-functions', or the server is alive but the
+completion backend returns nothing (for Rust this usually means there
+is no Cargo project).  The report is shown in *Riven LSP Diagnostics*."
+  (interactive)
+  (let* ((server (ignore-errors (eglot-current-server)))
+         (managed (and (bound-and-true-p eglot--managed-mode) t))
+         (capf (and (boundp 'completion-at-point-functions)
+                    completion-at-point-functions))
+         (corfu-on (and (boundp 'corfu-mode)
+                        (bound-and-true-p corfu-mode)))
+         (corfu-auto-on (and (boundp 'corfu-auto) corfu-auto))
+         (auto-hook (and (boundp 'post-command-hook)
+                         (memq 'corfu-auto--post-command post-command-hook)))
+         (rust-standalone
+          (and (derived-mode-p 'rust-ts-mode 'rust-mode)
+               (not (locate-dominating-file default-directory "Cargo.toml"))
+               (not (locate-dominating-file default-directory "rust-project.json"))))
+         (report
+          (list
+           (format "buffer: %s (%s)" (buffer-name) major-mode)
+           (format "file: %s" (or buffer-file-name "(none)"))
+           (format "project: %s"
+                   (or (ignore-errors
+                         (project-root (project-current)))
+                       "(none)"))
+           (format "Eglot managed: %s" (if managed "yes" "no"))
+           (format "Eglot server: %s" (if server "yes" "no"))
+           (format "server process: %s"
+                   (or (and server (riven/eglot--process-command-string server))
+                       "(none)"))
+           (format "capf: %S" capf)
+           (format "corfu-mode: %s  corfu-auto: %s  auto hook: %s"
+                   (if corfu-on "on" "off")
+                   (if corfu-auto-on "on" "off")
+                   (if auto-hook "present" "missing"))
+           (format "rust cargo project: %s" (if rust-standalone "no" "yes")))))
+    (with-current-buffer (get-buffer-create "*Riven LSP Diagnostics*")
+      (erase-buffer)
+      (insert "RivenEmacs LSP diagnostics\n"
+              (make-string 32 ?-) "\n")
+      (dolist (line report)
+        (insert line "\n"))
+      (insert "\nNotes:\n")
+      (unless managed
+        (insert "  - Eglot does not manage this buffer, so LSP completion is\n"
+                "    unavailable.  Check the *EGLOT (...) events* buffer for\n"
+                "    connection/install errors, then retry `M-x eglot-ensure'.\n"))
+      (when (and managed (null server))
+        (insert "  - Eglot reports a managed buffer but has no live server.\n"
+                "    Run `M-x eglot-reconnect'.\n"))
+      (when (and server capf (not (memq #'eglot-completion-at-point capf)))
+        (insert "  - The server is alive but its completion back-end is not in\n"
+                "    `completion-at-point-functions'.  Run `M-x eglot-reconnect'.\n"))
+      (when (and server (not corfu-on))
+        (insert "  - Corfu is disabled in this buffer; `M-x corfu-mode' enables it.\n"))
+      (when (and corfu-auto-on (not auto-hook))
+        (insert "  - Corfu auto-popup hook is missing; toggle `M-x corfu-mode'\n"
+                "    twice (or restart Emacs) to rebuild it.\n"))
+      (when (and server rust-standalone)
+        (insert "  - rust-analyzer without Cargo.toml/rust-project.json runs in\n"
+                "    detached-file mode and returns no completions.  Start the\n"
+                "    problem again with `C-c C-c' in its statement buffer, or\n"
+                "    add a Cargo.toml whose [[bin]] points at this file.\n"))
+      (goto-char (point-min))
+      (display-buffer (current-buffer)))
+    (message "LSP diagnostics written to *Riven LSP Diagnostics*")))
 
 (defun riven/eglot-client-capabilities-no-file-watch (orig-fn server)
   "Call ORIG-FN for SERVER, disabling dynamic file watch when configured.

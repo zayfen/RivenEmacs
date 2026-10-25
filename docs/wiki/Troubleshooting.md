@@ -94,6 +94,27 @@ it with `(interactive project)`. All RivenEmacs contacts use
 `(&optional _interactive _project)` — if you see this, a contact was defined
 without that signature.
 
+### LSP looks started but completion does not pop up
+
+Run `M-x riven/eglot-diagnose` in the affected buffer. It reports whether Eglot
+really manages the buffer, the server process and its status, the effective
+`completion-at-point-functions`, and the Corfu auto-popup state, plus a hint
+for the observed failure mode:
+
+- **Not managed** — Eglot never connected. Check the `*EGLOT (...) events*`
+  buffer for connection errors or an install prompt that was declined.
+- **Managed but no live server** — the mode line outlived the connection; run
+  `M-x eglot-reconnect`.
+- **Managed with a live server but no candidates** — for Rust this usually
+  means rust-analyzer is in detached-file mode because the file has no
+  `Cargo.toml`; start the Codeforces problem again with `C-c C-c` (Rust
+  workspaces get a generated manifest) or create a Cargo project around the
+  file.
+
+Python contacts prefer an installed server before prompting: with
+`pyright-langserver` installed, an absent BasedPyright does not trigger an
+install prompt.  Declining or quitting one prompt only skips that server.
+
 ### lsp-bridge
 
 `lsp-bridge` is no longer part of RivenEmacs: the `init-lsp-bridge.el` module

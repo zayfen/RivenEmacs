@@ -58,9 +58,52 @@ already-set value).")
   (expand-file-name (+cf--ws-problem-id problem)
                     (expand-file-name "workspace" codeforces-home-directory)))
 
+(defconst +cf--rust-cargo-template
+  "[package]
+name = \"%s\"
+version = \"0.1.0\"
+edition = \"2021\"
+
+[[bin]]
+name = \"solution\"
+path = \"solution.rs\"
+"
+  "Cargo manifest written for a Rust workspace.
+rust-analyzer only provides type-aware completion and diagnostics
+inside a Cargo project; a manifest whose single `[[bin]]' points at
+the workspace's `solution.rs' keeps the familiar flat file layout.")
+
+(defun +cf--rust-package-name (problem)
+  "Return a valid Cargo package name for PROBLEM."
+  (let ((raw (format "cf-%s-%s"
+                     (plist-get problem :contestId)
+                     (plist-get problem :index))))
+    (downcase (replace-regexp-in-string "[^[:alnum:]_-]" "-" raw))))
+
+(defun +cf--ensure-rust-project (problem)
+  "Ensure PROBLEM's Rust workspace has a Cargo manifest.
+Without a Cargo project rust-analyzer runs in its limited
+detached-file mode, so LSP completion silently returns nothing even
+though Eglot reports the buffer as managed.  Create `Cargo.toml' when
+it is missing or blank (for example a 0-byte placeholder), but never
+rewrite an existing non-blank manifest.  Return the manifest path."
+  (let* ((dir (+cf--problem-dir problem))
+         (manifest (expand-file-name "Cargo.toml" dir))
+         (blank (or (not (file-exists-p manifest))
+                    (with-temp-buffer
+                      (insert-file-contents manifest)
+                      (string-blank-p (buffer-string))))))
+    (when blank
+      (with-temp-file manifest
+        (insert (format +cf--rust-cargo-template
+                        (+cf--rust-package-name problem)))))
+    manifest))
+
 (defun +cf-init-solution (problem language)
   "Create PROBLEM's workspace dir and init solution.<ext> from LANGUAGE template.
-Returns the path to the solution file.  Never overwrites an existing solution."
+Returns the path to the solution file.  Never overwrites an existing solution.
+For Rust, also ensure a Cargo manifest exists so rust-analyzer can offer
+type-aware completion (see `+cf--ensure-rust-project')."
   (let* ((dir (+cf--problem-dir problem))
          (ext (+cf--language-extension language))
          (sol (expand-file-name (concat "solution." ext) dir)))
@@ -72,6 +115,8 @@ Returns the path to the solution file.  Never overwrites an existing solution."
           (goto-char (point-min))
           (while (search-forward "{problem_id}" nil t)
             (replace-match (+cf--ws-problem-id problem) t t)))))
+    (when (equal language "rust")
+      (+cf--ensure-rust-project problem))
     sol))
 
 (provide 'emacs-codeforces-workspace)

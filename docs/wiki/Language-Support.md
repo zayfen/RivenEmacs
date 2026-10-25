@@ -16,11 +16,17 @@ composer/rustup) and connects.
 Defined in `lisp/ide/init-eglot.el`. At connect time, eglot calls a
 **function-form contact** which:
 
-1. Checks if the server binary is on `PATH`.
-2. If missing and `rivenEmacs-eglot-auto-install` is non-nil, prompts:
+1. First prefers a server that is already on `PATH`.  For Python the order is
+   basedpyright → pyright → pylsp → ruff, so with Pyright installed no
+   BasedPyright install prompt is shown.
+2. Only when *none* of the candidate servers is installed, and
+   `rivenEmacs-eglot-auto-install` is non-nil, prompts for the missing ones in
+   preference order:
    ```
    Eglot: `pyright-langserver' not found. Install (npm i -g pyright)? (y or n)
    ```
+   Declining or quitting one prompt (`C-g`) skips only that server and moves on
+   to the next candidate instead of aborting the whole connection attempt.
 3. On `y`, runs the installer as a subprocess while continuing to process
    input/redisplay, showing progress in the minibuffer and keeping the
    `*eglot server install*` output buffer.  The wait is bounded by
@@ -31,6 +37,12 @@ Defined in `lisp/ide/init-eglot.el`. At connect time, eglot calls a
    `M-x riven/eglot-reset-install-prompts` to allow prompting again.
 
 Disable globally: `(setq rivenEmacs-eglot-auto-install nil)`.
+
+When a server appears to be connected but completion does not pop up, run
+`M-x riven/eglot-diagnose`.  It reports whether Eglot actually manages the
+buffer, its server process, the effective `completion-at-point-functions`, and
+the Corfu auto-popup state, plus a targeted hint for each failure mode (for
+example a Rust file without a Cargo project).
 
 On-type formatting (`documentOnTypeFormattingProvider`) is disabled globally:
 some servers issue synchronous requests for characters such as `;` and RET,
@@ -90,6 +102,16 @@ Server contacts also preserve standard LSP language ids: `web-mode` sends
 `web-mode` sends the `html` language id to the HTML server, so embedded
 JavaScript/CSS is not handled by a second server; use the corresponding
 `js-ts-mode`/`css-mode` buffer for full JS/TS/CSS features.
+
+rust-analyzer only offers type-aware completion and diagnostics when the file
+belongs to a Cargo project; for a standalone `.rs` file it runs in
+detached-file mode and returns no completions even though Eglot reports the
+buffer as managed.  Rust solutions created by the bundled Codeforces client
+therefore get a generated `Cargo.toml` whose `[[bin]] path` points at
+`solution.rs` (re-opening a problem with `C-c C-c` repairs older workspaces).
+For unrelated standalone Rust files, create a Cargo project around the file or
+add a `Cargo.toml` with a matching `[[bin]]` entry.  `M-x riven/eglot-diagnose`
+flags this case explicitly.
 
 Modes not listed here keep eglot's built-in defaults (no auto-install): Ruby,
 Haskell, Scala, Dart, Elixir, Erlang, … — eglot ships contacts for these out

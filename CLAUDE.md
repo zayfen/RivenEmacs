@@ -178,8 +178,9 @@ All leader bindings live in spec files under `lisp/keymaps/`
 ### Common Issues
 1. **Tree-sitter errors**: Check network connectivity and git authentication, then run `M-x install-essential-treesit-grammars`
 2. **LSP not starting**: Verify the language server binary is on `PATH` (`M-x eglot-reconnect`; see `docs/wiki/Language-Support.md`)
-3. **Slow startup**: Check package conflicts; re-run `emacs -Q --batch -l benchmark-startup.el`
-4. **Proxy issues**: Configure `rivenEmacs-use-proxy` and environment variables
+3. **LSP looks connected but no completion**: run `M-x riven/eglot-diagnose`; Rust files additionally need a Cargo project (`Cargo.toml`/`rust-project.json`) because rust-analyzer otherwise stays in detached-file mode
+4. **Slow startup**: Check package conflicts; re-run `emacs -Q --batch -l benchmark-startup.el`
+5. **Proxy issues**: Configure `rivenEmacs-use-proxy` and environment variables
 
 ### Debug Commands
 ```elisp
