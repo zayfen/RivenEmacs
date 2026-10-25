@@ -111,6 +111,8 @@ hover documentation in the echo area (no key; toggle with
 | `C-c c f` | format (`riven/eglot-format-dispatch`) |
 | `C-c c R` | rename symbol |
 | `C-c c h` | show documentation for the symbol at point (ElDoc buffer) |
+| `C-c c n` | next signature overload of the call at point |
+| `C-c c p` | previous signature overload of the call at point |
 | `C-c c k` | kill smart line |
 | `C-c c s` | splice sexp |
 | `C-c c w` | rewrap sexp |

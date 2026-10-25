@@ -10,6 +10,10 @@
 (declare-function eglot-current-server "eglot" ())
 (declare-function eglot-completion-at-point "eglot" ())
 (declare-function eglot-hover-eldoc-function "eglot" (cb &rest ignored))
+(declare-function eglot--request "eglot" (server method params &rest args))
+(declare-function eglot--TextDocumentIdentifier "eglot" ())
+(declare-function eglot--pos-to-lsp-position "eglot" (&optional pos))
+(declare-function eglot--sig-info "eglot" (sig &optional sig-active briefp))
 (defvar eglot-mode-map)
 (declare-function jsonrpc--process "jsonrpc" (server))
 (declare-function yas-expand "yasnippet" ())
@@ -709,6 +713,72 @@ The documentation is displayed in the echo area after
     (keymap-unset eglot-mode-map "<mouse-movement>")
     (riven/eglot-mouse-hover--cancel)
     (riven/eglot-mouse-hover--hide))))
+
+;;; Signature-help overload cycling
+;;
+;; Eglot's ElDoc signature help echoes only the server's active signature (the
+;; `:echo' hint).  These commands cycle through the other overloads of the
+;; call at point and echo the selected one; the full list stays available in
+;; the ElDoc buffer (`C-c c h').
+
+(defvar riven/eglot-signature--state nil
+  "Cycle state for signature overloads.
+A list (BUFFER POINT TICK INDEX TOTAL) describing the last echoed
+overload, or nil.")
+
+(defun riven/eglot-signature--cycle (delta)
+  "Cycle DELTA positions through the overloads at point and echo the result."
+  (let ((server (eglot-current-server)))
+    (unless (and server (bound-and-true-p eglot--managed-mode))
+      (user-error "No Eglot server in this buffer"))
+    (unless (eglot-server-capable :signatureHelpProvider)
+      (user-error "The language server provides no signature help"))
+    (let* ((response
+            (condition-case err
+                (eglot--request
+                 server :textDocument/signatureHelp
+                 (list :textDocument (eglot--TextDocumentIdentifier)
+                       :position (eglot--pos-to-lsp-position))
+                 :timeout 3
+                 :cancel-on-input t)
+              (error
+               (user-error "Signature help failed: %s"
+                           (error-message-string err)))))
+           (signatures (plist-get response :signatures))
+           (active (or (plist-get response :activeSignature) 0))
+           (active-parameter (or (plist-get response :activeParameter) 0)))
+      (if (or (null signatures) (zerop (length signatures)))
+          (message "No signature help at point")
+        (let* ((total (length signatures))
+               (key (list (current-buffer) (point)
+                          (buffer-chars-modified-tick) total))
+               (previous (when (equal (seq-take riven/eglot-signature--state 4)
+                                      key)
+                           (nth 4 riven/eglot-signature--state)))
+               (index (mod (if previous
+                               (+ previous delta)
+                             (+ active delta))
+                           total)))
+          (setq riven/eglot-signature--state (append key (list index)))
+          (message "%s"
+                   (concat (format "[%d/%d] " (1+ index) total)
+                           (eglot--sig-info (aref signatures index)
+                                            active-parameter t))))))))
+
+(defun riven/eglot-signature-next (&optional n)
+  "Echo the next N signature overload of the call at point.
+The selected overload is shown in the echo area as \"[i/n] SIGNATURE\"
+and the active parameter is highlighted.  Press repeatedly to cycle.
+The full list with parameter documentation is available in the ElDoc
+buffer (`\\[eldoc-doc-buffer]', also on `C-c c h')."
+  (interactive "p")
+  (riven/eglot-signature--cycle (or n 1)))
+
+(defun riven/eglot-signature-previous (&optional n)
+  "Echo the previous N signature overload of the call at point.
+The counterpart of `riven/eglot-signature-next'."
+  (interactive "p")
+  (riven/eglot-signature--cycle (- (or n 1))))
 
 (defun riven/eglot-client-capabilities-no-file-watch (orig-fn server)
   "Call ORIG-FN for SERVER, disabling dynamic file watch when configured.

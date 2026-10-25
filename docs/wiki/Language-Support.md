@@ -57,6 +57,15 @@ With point on a symbol, ElDoc shows the same information in the echo area after
 complete text in the `*eldoc*` buffer.  `M-x riven/eglot-diagnose` also reports
 whether mouse-hover documentation is enabled.
 
+### Signature overloads
+
+ElDoc only echoes the server's active signature, so functions with several
+overloads (for example `print(...)`) look like they have a single signature.
+Press `C-c c n` / `C-c c p` to cycle forward/backward through the overloads;
+the echo area shows `[i/n] SIGNATURE` with the active parameter highlighted.
+A numeric prefix moves several overloads at once.  `C-c c h` lists every
+overload with its parameter documentation in the `*eldoc*` buffer.
+
 On-type formatting (`documentOnTypeFormattingProvider`) is disabled globally:
 some servers issue synchronous requests for characters such as `;` and RET,
 which can freeze Emacs. Use format-on-save or explicit format commands instead.
