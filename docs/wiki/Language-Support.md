@@ -61,7 +61,7 @@ whether mouse-hover documentation is enabled.
 
 ElDoc only echoes the server's active signature, so functions with several
 overloads (for example `print(...)`) look like they have a single signature.
-Press `C-c c n` / `C-c c p` to cycle forward/backward through the overloads;
+Press `C-c C-n` / `C-c C-p` to cycle forward/backward through the overloads;
 the echo area shows `[i/n] SIGNATURE` with the active parameter highlighted.
 A numeric prefix moves several overloads at once.  `C-c c h` lists every
 overload with its parameter documentation in the `*eldoc*` buffer.

@@ -68,8 +68,6 @@
                    ("C-c c D" . riven/eglot-find-declaration-dispatch)
                    ("C-c c a" . eglot-code-actions)
                    ("C-c c h" . riven/eldoc-doc-buffer-focus)
-                   ("C-c c n" . riven/eglot-signature-next)
-                   ("C-c c p" . riven/eglot-signature-previous)
                    ("C-c c s" . sp-splice-sexp)
                    ("C-c c q" . quickrun)
                    ("C-c e l" . riven/flymake-show-buffer-diagnostics-focus)

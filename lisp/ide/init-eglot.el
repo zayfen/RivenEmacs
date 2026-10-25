@@ -823,7 +823,13 @@ The default is to disable the registration; set
   (dolist (mode rivenEmacs-lsp-modes)
     (add-hook (intern (format "%s-hook" mode)) #'eglot-ensure))
   :bind (:map eglot-mode-map
-              ("M-?" . xref-find-references))
+              ("M-?" . xref-find-references)
+              ;; Signature-help overload cycling.  The minor-mode map takes
+              ;; precedence over major-mode bindings (e.g. cc-mode's
+              ;; `C-c C-n'/`C-c C-p' conditional navigation and python-mode's
+              ;; `C-c C-p' run-python), so these only exist in LSP buffers.
+              ("C-c C-n" . riven/eglot-signature-next)
+              ("C-c C-p" . riven/eglot-signature-previous))
   :custom
   ;; Built-in ElDoc behavior is enough; keep it compact and predictable.
   (eldoc-echo-area-use-multiline-p nil)

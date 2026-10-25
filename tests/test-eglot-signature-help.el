@@ -66,6 +66,16 @@ The variable MESSAGES collects everything passed to `message'."
                           messages))))
          ,@body))))
 
+(ert-deftest riven/eglot-signature-keys-are-bound-in-eglot-mode-map ()
+  "C-c C-n/C-c C-p are bound in `eglot-mode-map', not globally."
+  (should (eq (lookup-key eglot-mode-map (kbd "C-c C-n"))
+              #'riven/eglot-signature-next))
+  (should (eq (lookup-key eglot-mode-map (kbd "C-c C-p"))
+              #'riven/eglot-signature-previous))
+  ;; The previous `C-c c n'/`C-c c p' bindings are retired.
+  (should-not (eq (key-binding (kbd "C-c c n")) #'riven/eglot-signature-next))
+  (should-not (eq (key-binding (kbd "C-c c p")) #'riven/eglot-signature-previous)))
+
 (ert-deftest riven/eglot-signature-next-cycles-and-wraps ()
   "Next moves through overloads and wraps back to the first."
   (riven/test-signature-help-environment

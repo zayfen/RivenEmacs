@@ -111,8 +111,6 @@ hover documentation in the echo area (no key; toggle with
 | `C-c c f` | format (`riven/eglot-format-dispatch`) |
 | `C-c c R` | rename symbol |
 | `C-c c h` | show documentation for the symbol at point (ElDoc buffer) |
-| `C-c c n` | next signature overload of the call at point |
-| `C-c c p` | previous signature overload of the call at point |
 | `C-c c k` | kill smart line |
 | `C-c c s` | splice sexp |
 | `C-c c w` | rewrap sexp |
@@ -246,6 +244,7 @@ the Git group (`C-c g G`).
 | `C-x o/1/2/3/0` | switch-window variants | global |
 | `C-x d` | dirvish | global |
 | `C-c h` | diff-hl-show-hunk | global (visible in which-key) |
+| `C-c C-n` / `C-c C-p` | next / previous signature overload | Eglot-managed buffers (shadows major-mode `C-c C-n`/`C-c C-p`) |
 | `C-c ;` | embark-dwim | global (visible in which-key) |
 | `C-c m` | smerge resolution hydra (auto-enabled in conflicted files) | merge buffers |
 | `C-c C-e` | JSX tag ops (rename/jump/delete) | tsx-ts-mode |

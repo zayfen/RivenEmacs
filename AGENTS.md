@@ -219,7 +219,7 @@ do not recreate `lisp/custom.el` (it would shadow the built-in `custom`).
   When a buffer looks managed but completion is missing, run
   `M-x riven/eglot-diagnose`.  Hover documentation appears when the mouse
   rests on a symbol (`riven/eglot-mouse-hover-mode`, `C-c c h` opens the full
-  ElDoc buffer, `C-c c n`/`C-c c p` cycle signature overloads).
+  ElDoc buffer, `C-c C-n`/`C-c C-p` cycle signature overloads).
   rust-analyzer needs a Cargo project
   (`Cargo.toml`/`rust-project.json`); the bundled Codeforces client generates
   a `Cargo.toml` with `[[bin]] path = "solution.rs"` for Rust workspaces.

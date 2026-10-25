@@ -68,8 +68,6 @@
       ("f" riven/eglot-format-dispatch "Format buffer")
       ("R" eglot-rename "Rename symbol")
       ("h" riven/eldoc-doc-buffer-focus "Show documentation")
-      ("n" riven/eglot-signature-next "Next signature overload")
-      ("p" riven/eglot-signature-previous "Previous signature overload")
       ("k" sp-kill-whole-line "Kill smart line")
       ("s" sp-splice-sexp "Splice sexp")
       ("w" sp-rewrap-sexp "Rewrap sexp")
